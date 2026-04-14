@@ -20,8 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // 定期的に fetch して接続状態を判定する
 // ------------------------------------------------------------
 
-const CHECK_URL = 'https://clients3.google.com/generate_204';
-const CHECK_INTERVAL_MS = 8_000; // 8秒ごと
+const CHECK_INTERVAL_MS = 10_000; // 10秒ごと
 
 function useNetworkStatus(): boolean {
   const [isConnected, setIsConnected] = useState(true);
@@ -29,11 +28,28 @@ function useNetworkStatus(): boolean {
   useEffect(() => {
     let mounted = true;
 
+    // Web版: navigator.onLine を使う（CORSの問題を回避）
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const handleOnline = () => { if (mounted) setIsConnected(true); };
+      const handleOffline = () => { if (mounted) setIsConnected(false); };
+
+      setIsConnected(navigator.onLine);
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+
+      return () => {
+        mounted = false;
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      };
+    }
+
+    // ネイティブ版: fetch ベースの定期チェック
     const check = async () => {
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 5_000);
-        await fetch(CHECK_URL, {
+        await fetch('https://clients3.google.com/generate_204', {
           method: 'HEAD',
           cache: 'no-store',
           signal: controller.signal,
@@ -45,10 +61,7 @@ function useNetworkStatus(): boolean {
       }
     };
 
-    // 初回チェック
     check();
-
-    // 定期チェック
     const id = setInterval(check, CHECK_INTERVAL_MS);
 
     return () => {

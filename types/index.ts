@@ -244,9 +244,9 @@ export interface Subscription {
 
 // プラン価格
 export const PLAN_PRICES = {
-  monthly: 1280,
-  yearly_first: 4300,    // 初年度
-  yearly_renewal: 3300,  // 2年目以降（継続割引）
+  monthly: 980,
+  pack6: 3900,       // 合格パック（6ヶ月）
+  yearly: 5800,      // 年間プラン
 } as const;
 
 // AI解説の1日あたり上限（フェア利用ポリシー）

@@ -189,9 +189,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   getRenewalPrice() {
-    return get().isContinuingMember()
-      ? PLAN_PRICES.yearly_renewal
-      : PLAN_PRICES.yearly_first;
+    return PLAN_PRICES.yearly;
   },
 
   canUseAI(): boolean {

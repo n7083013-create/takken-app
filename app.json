@@ -14,13 +14,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.takken.app",
-      "buildNumber": "1",
       "infoPlist": {
         "CFBundleDisplayName": "宅建士 完全対策",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false
         },
-        "NSUserNotificationsUsageDescription": "学習リマインダーや復習通知をお送りするために使用します"
+        "NSUserNotificationsUsageDescription": "学習リマインダーや復習通知をお送りするために使用します",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -48,6 +48,13 @@
       "expo-router",
       "expo-font",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "05b417d4-feb6-4ef1-aff0-888d2e0a377e"
+      }
+    },
+    "owner": "naoyataira"
   }
 }

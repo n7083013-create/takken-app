@@ -27,7 +27,7 @@ import { canAccess } from '../../services/accessControl';
 import { askAI } from '../../services/claude';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
-import { LawAmendmentBadge } from '../../components/LawAmendmentBadge';
+// LawAmendmentBadge は運営側の内部管理用（ユーザーには非表示）
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const STMT_LABELS = ['ア', 'イ', 'ウ', 'エ'] as const;
@@ -349,9 +349,6 @@ export default function QuestionDetailScreen() {
           <Text style={[s.metaPillText, { color: DifficultyColor[q.difficulty] }]}>{DifficultyLabel[q.difficulty]}</Text>
         </View>
       </View>
-
-      {/* 法改正バッジ */}
-      <LawAmendmentBadge question={q} />
 
       {/* Question */}
       <View style={[s.questionBox, Shadow.sm]}>
