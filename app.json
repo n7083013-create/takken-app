@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "宅建士 完全対策",
+    "slug": "takken-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "takken-app",
+    "splash": {
+      "backgroundColor": "#1B5E20"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.takken.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "宅建士 完全対策",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false
+        },
+        "NSUserNotificationsUsageDescription": "学習リマインダーや復習通知をお送りするために使用します"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1B5E20"
+      },
+      "package": "com.takken.app",
+      "versionCode": 1,
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store"
+    ]
+  }
+}

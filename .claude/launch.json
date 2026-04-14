@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "takken-web",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-c", "cd /Users/tairanaoya/Desktop/takken-app && PATH=/usr/local/bin:/opt/homebrew/bin:$PATH npx expo start --web --port 8085"],
+      "port": 8085
+    }
+  ]
+}
