@@ -200,6 +200,8 @@ export default function QuickQuizScreen() {
           <Pressable
             style={[s.chip, !selectedCategory && s.chipActive]}
             onPress={() => handleCategoryChange(null)}
+            accessibilityRole="tab"
+            accessibilityLabel="すべてのカテゴリを表示"
           >
             <Text style={[s.chipText, !selectedCategory && s.chipTextActive]}>すべて</Text>
           </Pressable>
@@ -213,6 +215,8 @@ export default function QuickQuizScreen() {
                   active && { backgroundColor: CATEGORY_COLORS[cat], borderColor: CATEGORY_COLORS[cat] },
                 ]}
                 onPress={() => handleCategoryChange(active ? null : cat)}
+                accessibilityRole="tab"
+                accessibilityLabel={`${CATEGORY_LABELS[cat]}カテゴリを${active ? '解除' : '選択'}`}
               >
                 <Text style={[s.chipText, active && s.chipTextActive]}>
                   {CATEGORY_ICONS[cat]} {CATEGORY_LABELS[cat]}
@@ -305,7 +309,7 @@ export default function QuickQuizScreen() {
                     {currentQuiz.explanation}
                   </Text>
                   {isPro && (
-                    <Pressable style={s.feedbackAiBtn} onPress={openAI}>
+                    <Pressable style={s.feedbackAiBtn} onPress={openAI} accessibilityRole="button" accessibilityLabel="AIに質問する">
                       <Text style={s.feedbackAiBtnText}>🤖 AIに質問する</Text>
                     </Pressable>
                   )}
@@ -319,6 +323,8 @@ export default function QuickQuizScreen() {
                 <Pressable
                   style={[s.answerBtn, s.answerBtnCorrect, Shadow.md]}
                   onPress={() => handleAnswer(true)}
+                  accessibilityRole="button"
+                  accessibilityLabel="正しいと回答"
                 >
                   <Text style={s.answerBtnIcon}>○</Text>
                   <Text style={s.answerBtnLabel}>正しい</Text>
@@ -326,6 +332,8 @@ export default function QuickQuizScreen() {
                 <Pressable
                   style={[s.answerBtn, s.answerBtnIncorrect, Shadow.md]}
                   onPress={() => handleAnswer(false)}
+                  accessibilityRole="button"
+                  accessibilityLabel="誤りと回答"
                 >
                   <Text style={s.answerBtnIcon}>✗</Text>
                   <Text style={s.answerBtnLabel}>誤り</Text>
@@ -333,7 +341,7 @@ export default function QuickQuizScreen() {
               </View>
             ) : (
               <>
-                <Pressable style={[s.nextBtn, Shadow.md]} onPress={handleNext}>
+                <Pressable style={[s.nextBtn, Shadow.md]} onPress={handleNext} accessibilityRole="button" accessibilityLabel={currentIndex < filteredQuizzes.length - 1 ? '次の問題へ' : '最初に戻る'}>
                   <Text style={s.nextBtnText}>
                     {currentIndex < filteredQuizzes.length - 1 ? '次の問題へ →' : '最初に戻る ↻'}
                   </Text>
@@ -341,6 +349,8 @@ export default function QuickQuizScreen() {
                 <Pressable
                   style={s.exitBtn}
                   onPress={() => router.navigate('/')}
+                  accessibilityRole="button"
+                  accessibilityLabel="終了してホームに戻る"
                 >
                   <Text style={s.exitBtnText}>✕ 終了してホームに戻る</Text>
                 </Pressable>
@@ -358,7 +368,7 @@ export default function QuickQuizScreen() {
           {/* Header */}
           <View style={s.aiHeader}>
             <Text style={s.aiHeaderTitle}>🤖 AI解説アシスタント</Text>
-            <Pressable onPress={() => setAiVisible(false)} hitSlop={12}>
+            <Pressable onPress={() => setAiVisible(false)} hitSlop={12} accessibilityRole="button" accessibilityLabel="AIチャットを閉じる">
               <Text style={s.aiClose}>✕</Text>
             </Pressable>
           </View>
@@ -441,6 +451,8 @@ export default function QuickQuizScreen() {
                 style={[s.aiSendBtn, (!aiInput.trim() || aiLoading || !canAI) && s.aiSendBtnDisabled]}
                 onPress={sendAIMessage}
                 disabled={!aiInput.trim() || aiLoading || !canAI}
+                accessibilityRole="button"
+                accessibilityLabel="AI質問を送信"
               >
                 <Text style={s.aiSendIcon}>↑</Text>
               </Pressable>

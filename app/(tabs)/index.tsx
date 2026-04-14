@@ -310,6 +310,13 @@ export default function HomeScreen() {
         {/* ── メインCTA: 状況に応じて最適なアクションを1つ提示 ── */}
         <Pressable
           style={[s.mainCTA, Shadow.lg]}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isEvening ? '就寝前復習を始める'
+              : dueCount > 0 ? `復習${dueCount}問を解く`
+              : weakCount > 3 ? '弱点を克服する'
+              : '今日の学習を始める'
+          }
           onPress={() => {
             if (isEvening) { router.push('/pre-sleep-review'); }
             else if (dueCount > 0) { router.push('/(tabs)/review'); }
@@ -341,19 +348,19 @@ export default function HomeScreen() {
 
         {/* ── クイックアクション（厳選4つ・横スクロール風） ── */}
         <View style={s.quickGrid}>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/micro-challenge')}>
+          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/micro-challenge')} accessibilityRole="button" accessibilityLabel="1分チャレンジを開始">
             <Text style={s.quickIcon}>⚡</Text>
             <Text style={s.quickTitle}>1分</Text>
           </Pressable>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={startSmartQuestion}>
+          <Pressable style={[s.quickCard, Shadow.sm]} onPress={startSmartQuestion} accessibilityRole="button" accessibilityLabel="問題を解く">
             <Text style={s.quickIcon}>📝</Text>
             <Text style={s.quickTitle}>問題</Text>
           </Pressable>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/(tabs)/quick-quiz')}>
+          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/(tabs)/quick-quiz')} accessibilityRole="button" accessibilityLabel="一問一答を開始">
             <Text style={s.quickIcon}>⚡</Text>
             <Text style={s.quickTitle}>一問一答</Text>
           </Pressable>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/study-timer')}>
+          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/study-timer')} accessibilityRole="button" accessibilityLabel="学習タイマーを開く">
             <Text style={s.quickIcon}>⏱️</Text>
             <Text style={s.quickTitle}>タイマー</Text>
           </Pressable>
@@ -362,6 +369,8 @@ export default function HomeScreen() {
         {/* ── クエスト学習（メインの学習パス） ── */}
         <Pressable
           style={[s.questBanner, Shadow.md]}
+          accessibilityRole="button"
+          accessibilityLabel="クエスト学習を開く"
           onPress={() => nextMission ? router.push(`/quest/${nextMission}`) : router.push('/quest')}
         >
           <View style={s.questBannerLeft}>
@@ -439,22 +448,22 @@ export default function HomeScreen() {
         {/* ── その他の学習モード ── */}
         <Text style={s.sectionTitle}>学習モード</Text>
         <View style={s.modeGrid}>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/weak-drill')}>
+          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/weak-drill')} accessibilityRole="button" accessibilityLabel="弱点ドリルを開始">
             <Text style={s.modeIcon}>💪</Text>
             <Text style={s.modeTitle}>弱点ドリル</Text>
             <Text style={s.modeSub}>苦手を集中攻撃</Text>
           </Pressable>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/exam')}>
+          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/exam')} accessibilityRole="button" accessibilityLabel="模擬試験を開始">
             <Text style={s.modeIcon}>📋</Text>
             <Text style={s.modeTitle}>模擬試験</Text>
             <Text style={s.modeSub}>本番形式50問</Text>
           </Pressable>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/pre-sleep-review')}>
+          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/pre-sleep-review')} accessibilityRole="button" accessibilityLabel="就寝前復習を開始">
             <Text style={s.modeIcon}>🌙</Text>
             <Text style={s.modeTitle}>就寝前復習</Text>
             <Text style={s.modeSub}>記憶固定5問</Text>
           </Pressable>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/achievements')}>
+          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/achievements')} accessibilityRole="button" accessibilityLabel="実績を表示">
             <Text style={s.modeIcon}>🏅</Text>
             <Text style={s.modeTitle}>実績</Text>
             <Text style={s.modeSub}>{unlockedCount}個獲得</Text>
@@ -496,6 +505,8 @@ export default function HomeScreen() {
             <View key={category} style={s.catWrapper}>
               <Pressable
                 style={[s.catCard, Shadow.sm]}
+                accessibilityRole="button"
+                accessibilityLabel={`${CATEGORY_LABELS[category]}の詳細を${expanded ? '閉じる' : '開く'}`}
                 onPress={() => setExpandedCat(expanded ? null : category)}
               >
                 <View style={[s.catAccent, { backgroundColor: catColor }]} />

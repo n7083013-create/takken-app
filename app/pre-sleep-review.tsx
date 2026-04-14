@@ -132,7 +132,7 @@ export default function PreSleepReviewScreen() {
           <Text style={s.emptyEmoji}>🌙</Text>
           <Text style={s.emptyTitle}>復習する問題がありません</Text>
           <Text style={s.emptyDesc}>問題を解いてから復習しましょう</Text>
-          <Pressable style={[s.homeBtn, Shadow.md]} onPress={handleGoHome}>
+          <Pressable style={[s.homeBtn, Shadow.md]} onPress={handleGoHome} accessibilityRole="button" accessibilityLabel="ホームに戻る">
             <Text style={s.homeBtnText}>ホームに戻る</Text>
           </Pressable>
         </View>
@@ -182,7 +182,7 @@ export default function PreSleepReviewScreen() {
             お疲れさまでした。ぐっすり眠って記憶を定着させましょう 🌙
           </Text>
 
-          <Pressable style={[s.homeBtn, Shadow.md]} onPress={handleGoHome}>
+          <Pressable style={[s.homeBtn, Shadow.md]} onPress={handleGoHome} accessibilityRole="button" accessibilityLabel="ホームに戻る">
             <Text style={s.homeBtnText}>ホームに戻る</Text>
           </Pressable>
         </ScrollView>
@@ -201,7 +201,7 @@ export default function PreSleepReviewScreen() {
       <ScrollView ref={scrollRef} contentContainerStyle={s.scroll}>
         {/* Header */}
         <View style={s.header}>
-          <Pressable onPress={() => router.back()} hitSlop={12}>
+          <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="戻る">
             <Text style={s.backArrow}>←</Text>
           </Pressable>
           <View style={s.headerCenter}>
@@ -269,6 +269,8 @@ export default function PreSleepReviewScreen() {
                 style={[s.choiceCard, cardExtra, Shadow.sm]}
                 onPress={() => handleSelect(origIdx)}
                 disabled={answered}
+                accessibilityRole="button"
+                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}`}
               >
                 <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
                   <Text style={[s.choiceLabelText, { color: labelColor }]}>
@@ -331,18 +333,24 @@ export default function PreSleepReviewScreen() {
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceNone]}
                     onPress={() => handleConfidence('none')}
+                    accessibilityRole="button"
+                    accessibilityLabel="難しいと評価"
                   >
                     <Text style={s.confidenceNoneText}>難しい</Text>
                   </Pressable>
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceDefault]}
                     onPress={() => handleConfidence('low')}
+                    accessibilityRole="button"
+                    accessibilityLabel="普通と評価"
                   >
                     <Text style={s.confidenceDefaultText}>普通 →</Text>
                   </Pressable>
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceHigh]}
                     onPress={() => handleConfidence('high')}
+                    accessibilityRole="button"
+                    accessibilityLabel="簡単と評価"
                   >
                     <Text style={s.confidenceHighText}>簡単</Text>
                   </Pressable>
@@ -352,7 +360,7 @@ export default function PreSleepReviewScreen() {
 
             {/* Show "次へ" only after confidence selected */}
             {confidence && (
-              <Pressable style={[s.nextBtn, Shadow.md]} onPress={handleNext}>
+              <Pressable style={[s.nextBtn, Shadow.md]} onPress={handleNext} accessibilityRole="button" accessibilityLabel={currentIndex + 1 >= questionIds.length ? '結果を見る' : '次の問題へ'}>
                 <Text style={s.nextBtnText}>
                   {currentIndex + 1 >= questionIds.length ? '結果を見る' : '次へ'}
                 </Text>

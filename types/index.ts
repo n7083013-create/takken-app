@@ -145,6 +145,42 @@ export interface Question {
   statementExplanations?: string[];
   tags: string[];
   imageUrl?: string;
+
+  // ── 法改正・正確性トラッキング ──
+  /** 出題元の試験年度（例: 2024 = 令和6年度本試験） */
+  sourceExamYear?: number;
+  /** 最終検証日（ISO 8601形式）: この日時点で法的に正確であることを確認 */
+  lastVerifiedAt?: string;
+  /** 関連法令の施行日（例: "2025-04-01"）: この日以降の法律に基づく */
+  lawEffectiveFrom?: string;
+  /** 特例・経過措置の期限（例: "2027-03-31"）: この日を過ぎたら要見直し */
+  expiresAt?: string;
+  /** 関連する法改正タグ（例: ["民法改正2020", "建築基準法改正2025"]） */
+  lawAmendments?: string[];
+  /** true = この問題は現在の法律と整合しない可能性がある（要レビュー） */
+  needsReview?: boolean;
+  /** レビュー理由（needsReview=true のとき） */
+  reviewReason?: string;
+}
+
+/**
+ * 法改正レジストリ
+ * アプリ内で参照できる主要法改正の一覧
+ */
+export interface LawAmendment {
+  id: string;
+  /** 改正法の名称 */
+  lawName: string;
+  /** 施行日 */
+  effectiveDate: string;
+  /** 概要 */
+  summary: string;
+  /** 影響を受ける科目 */
+  affectedCategories: Category[];
+  /** 影響を受ける問題のタグ */
+  affectedTags: string[];
+  /** 試験への影響度: high=必ず出る, medium=出る可能性あり, low=参考 */
+  examImpact: 'high' | 'medium' | 'low';
 }
 
 // 用語辞典

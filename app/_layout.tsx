@@ -18,6 +18,8 @@ import {
   scheduleDailyReminder,
   scheduleWeeklySummary,
 } from '../services/notifications';
+import ErrorBoundary from '../components/ErrorBoundary';
+import { OfflineBanner } from '../components/OfflineBanner';
 
 export default function RootLayout() {
   const loadProgress = useProgressStore((s) => s.loadProgress);
@@ -68,6 +70,7 @@ export default function RootLayout() {
   }, [settings.notificationsEnabled, settings.notificationTime]);
 
   return (
+    <ErrorBoundary>
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack
@@ -114,6 +117,8 @@ export default function RootLayout() {
         <Stack.Screen name="legal/terms" options={{ title: '利用規約', headerTintColor: '#2E7D32' }} />
         <Stack.Screen name="legal/tokushoho" options={{ title: '特定商取引法表記', headerTintColor: '#2E7D32' }} />
       </Stack>
+      <OfflineBanner />
     </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

@@ -218,7 +218,7 @@ export default function MicroChallengeScreen() {
       <SafeAreaView style={s.safe}>
         <FeedbackOverlay />
         <View style={s.header}>
-          <Pressable onPress={handleGoBack} style={s.backBtn}>
+          <Pressable onPress={handleGoBack} style={s.backBtn} accessibilityRole="button" accessibilityLabel="戻る">
             <Text style={s.backText}>‹ 戻る</Text>
           </Pressable>
           <Text style={s.headerTitle}>⚡ 1分チャレンジ</Text>
@@ -274,10 +274,12 @@ export default function MicroChallengeScreen() {
             <Pressable
               style={[s.retryBtn, { backgroundColor: colors.primary }]}
               onPress={handleRetry}
+              accessibilityRole="button"
+              accessibilityLabel="もう1回チャレンジする"
             >
               <Text style={s.retryBtnText}>⚡ もう1回</Text>
             </Pressable>
-            <Pressable style={s.goBackBtn} onPress={handleGoBack}>
+            <Pressable style={s.goBackBtn} onPress={handleGoBack} accessibilityRole="button" accessibilityLabel="戻る">
               <Text style={s.goBackBtnText}>戻る</Text>
             </Pressable>
           </View>
@@ -291,7 +293,7 @@ export default function MicroChallengeScreen() {
       <FeedbackOverlay />
       {/* Header */}
       <View style={s.header}>
-        <Pressable onPress={handleGoBack} style={s.backBtn}>
+        <Pressable onPress={handleGoBack} style={s.backBtn} accessibilityRole="button" accessibilityLabel="戻る">
           <Text style={s.backText}>‹ 戻る</Text>
         </Pressable>
         <Text style={s.headerTitle}>⚡ 1分チャレンジ</Text>
@@ -380,6 +382,8 @@ export default function MicroChallengeScreen() {
               style={[s.choiceBtn, choiceStyle]}
               onPress={() => handleSelectAnswer(idx)}
               disabled={showFeedback}
+              accessibilityRole="button"
+              accessibilityLabel={`選択肢${CHOICE_LABELS[idx]}: ${choice}`}
             >
               <Text style={[s.choiceLabel, showFeedback && isCorrectChoice && s.choiceLabelCorrect]}>
                 {CHOICE_LABELS[idx]}
@@ -396,7 +400,7 @@ export default function MicroChallengeScreen() {
 
         {/* AI質問ボタン（フィードバック表示中のみ） */}
         {showFeedback && isPro && (
-          <Pressable style={s.aiQuickBtn} onPress={openAI}>
+          <Pressable style={s.aiQuickBtn} onPress={openAI} accessibilityRole="button" accessibilityLabel="AIに質問する（タイマー停止）">
             <Text style={s.aiQuickIcon}>🤖</Text>
             <Text style={s.aiQuickText}>AIに聞く</Text>
             <Text style={s.aiQuickSub}>⏸ タイマー停止</Text>

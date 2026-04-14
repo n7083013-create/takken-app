@@ -42,8 +42,14 @@ export async function askAI(
     context,
   ].join('\n');
 
+  const TIMEOUT_MS = 15_000; // 15秒タイムアウト
+
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
     const res = await fetch(CLAUDE_API_URL, {
+      signal: controller.signal,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -77,9 +83,14 @@ export async function askAI(
       throw new Error('AI解説の取得に失敗しました。時間をおいて再度お試しください。');
     }
 
+    clearTimeout(timeoutId);
     const data = await res.json();
     return data.content?.[0]?.text ?? 'AIからの回答を取得できませんでした。';
   } catch (e: any) {
+    // タイムアウト
+    if (e.name === 'AbortError') {
+      throw new Error('AI応答がタイムアウトしました。通信環境をご確認の上、再度お試しください。');
+    }
     // 既にサニタイズ済みのエラーはそのまま throw
     if (e.message && !e.message.includes('fetch')) throw e;
     console.error('[Claude API] Network error:', e);

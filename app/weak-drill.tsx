@@ -161,7 +161,7 @@ export default function WeakDrillScreen() {
           <Text style={s.emptyEmoji}>💪</Text>
           <Text style={s.emptyTitle}>弱点が見つかりません</Text>
           <Text style={s.emptyDesc}>もっと問題を解きましょう！</Text>
-          <Pressable style={[s.backBtn, Shadow.md]} onPress={() => router.back()}>
+          <Pressable style={[s.backBtn, Shadow.md]} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="戻る">
             <Text style={s.backBtnText}>戻る</Text>
           </Pressable>
         </View>
@@ -239,10 +239,10 @@ export default function WeakDrillScreen() {
 
           {/* Action buttons */}
           <View style={s.summaryActions}>
-            <Pressable style={[s.retryBtn, Shadow.md]} onPress={handleRetry}>
+            <Pressable style={[s.retryBtn, Shadow.md]} onPress={handleRetry} accessibilityRole="button" accessibilityLabel="もう1セット挑戦する">
               <Text style={s.retryBtnText}>もう1セット</Text>
             </Pressable>
-            <Pressable style={[s.backBtn, Shadow.sm]} onPress={() => router.back()}>
+            <Pressable style={[s.backBtn, Shadow.sm]} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="戻る">
               <Text style={s.backBtnText}>戻る</Text>
             </Pressable>
           </View>
@@ -263,7 +263,7 @@ export default function WeakDrillScreen() {
       <ScrollView ref={scrollRef} contentContainerStyle={s.scroll}>
         {/* Header */}
         <View style={s.header}>
-          <Pressable onPress={() => router.back()} hitSlop={12}>
+          <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="戻る">
             <Text style={s.headerBackArrow}>←</Text>
           </Pressable>
           <Text style={s.headerTitle}>💪 弱点ドリル</Text>
@@ -333,6 +333,8 @@ export default function WeakDrillScreen() {
                 style={[s.choiceCard, cardExtra, Shadow.sm]}
                 onPress={() => handleSelect(origIdx)}
                 disabled={answered}
+                accessibilityRole="button"
+                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}`}
               >
                 <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
                   <Text style={[s.choiceLabelText, { color: labelColor }]}>
@@ -395,18 +397,24 @@ export default function WeakDrillScreen() {
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceNone]}
                     onPress={() => handleConfidenceAndNext('none')}
+                    accessibilityRole="button"
+                    accessibilityLabel="難しいと評価"
                   >
                     <Text style={s.confidenceNoneText}>難しい</Text>
                   </Pressable>
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceDefault]}
                     onPress={() => handleConfidenceAndNext('low')}
+                    accessibilityRole="button"
+                    accessibilityLabel="普通と評価"
                   >
                     <Text style={s.confidenceDefaultText}>普通 →</Text>
                   </Pressable>
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceHigh]}
                     onPress={() => handleConfidenceAndNext('high')}
+                    accessibilityRole="button"
+                    accessibilityLabel="簡単と評価"
                   >
                     <Text style={s.confidenceHighText}>簡単</Text>
                   </Pressable>

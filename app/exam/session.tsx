@@ -83,7 +83,7 @@ export default function ExamSessionScreen() {
       <View style={[s.timerBar, current.remainingSec < 600 && s.timerBarWarn]}>
         <Text style={s.timerText}>⏱ {formatTime(current.remainingSec)}</Text>
         <Text style={s.answeredText}>回答 {answeredCount}/50</Text>
-        <Pressable onPress={() => setShowNav(!showNav)}>
+        <Pressable onPress={() => setShowNav(!showNav)} accessibilityRole="button" accessibilityLabel={showNav ? '問題一覧を閉じる' : '問題一覧を表示'}>
           <Text style={s.navBtn}>{showNav ? '閉じる' : '一覧'}</Text>
         </Pressable>
       </View>
@@ -107,6 +107,8 @@ export default function ExamSessionScreen() {
                     setIndex(i);
                     setShowNav(false);
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`問題${i + 1}${ans ? ' 回答済み' : ' 未回答'}${flag ? ' マーク付き' : ''}`}
                 >
                   <Text style={s.gridCellText}>{i + 1}</Text>
                   {flag && <Text style={s.gridFlag}>🚩</Text>}
@@ -114,7 +116,7 @@ export default function ExamSessionScreen() {
               );
             })}
           </View>
-          <Pressable style={[s.submitBtn, Shadow.md]} onPress={handleSubmit}>
+          <Pressable style={[s.submitBtn, Shadow.md]} onPress={handleSubmit} accessibilityRole="button" accessibilityLabel="試験を終了して採点する">
             <Text style={s.submitBtnText}>試験を終了して採点</Text>
           </Pressable>
         </ScrollView>
@@ -123,7 +125,7 @@ export default function ExamSessionScreen() {
           <ScrollView contentContainerStyle={s.scroll}>
             <View style={s.meta}>
               <Text style={s.metaCat}>{CATEGORY_LABELS[q.category]}</Text>
-              <Pressable onPress={() => toggleFlag(q.id)}>
+              <Pressable onPress={() => toggleFlag(q.id)} accessibilityRole="button" accessibilityLabel={isFlagged ? 'マークを解除' : '問題をマークする'}>
                 <Text style={s.flagBtn}>{isFlagged ? '🚩 マーク済み' : '🏳 マーク'}</Text>
               </Pressable>
             </View>
@@ -146,6 +148,8 @@ export default function ExamSessionScreen() {
                 key={i}
                 style={[s.choice, chosen === i && s.choiceSelected]}
                 onPress={() => answerQuestion(q.id, i)}
+                accessibilityRole="button"
+                accessibilityLabel={`選択肢${i + 1}: ${c}`}
               >
                 <Text style={[s.choiceNum, chosen === i && s.choiceNumSelected]}>
                   {i + 1}
@@ -160,15 +164,17 @@ export default function ExamSessionScreen() {
               style={[s.navFooterBtn, index === 0 && s.navFooterBtnDisabled]}
               disabled={index === 0}
               onPress={() => setIndex(index - 1)}
+              accessibilityRole="button"
+              accessibilityLabel="前の問題へ"
             >
               <Text style={s.navFooterText}>‹ 前</Text>
             </Pressable>
             {index < questions.length - 1 ? (
-              <Pressable style={s.navFooterBtn} onPress={() => setIndex(index + 1)}>
+              <Pressable style={s.navFooterBtn} onPress={() => setIndex(index + 1)} accessibilityRole="button" accessibilityLabel="次の問題へ">
                 <Text style={s.navFooterText}>次 ›</Text>
               </Pressable>
             ) : (
-              <Pressable style={[s.navFooterBtn, s.submitFooterBtn]} onPress={handleSubmit}>
+              <Pressable style={[s.navFooterBtn, s.submitFooterBtn]} onPress={handleSubmit} accessibilityRole="button" accessibilityLabel="試験を終了する">
                 <Text style={[s.navFooterText, { color: colors.white }]}>終了</Text>
               </Pressable>
             )}

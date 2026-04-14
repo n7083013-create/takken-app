@@ -27,6 +27,7 @@ import { canAccess } from '../../services/accessControl';
 import { askAI } from '../../services/claude';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
+import { LawAmendmentBadge } from '../../components/LawAmendmentBadge';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const STMT_LABELS = ['ア', 'イ', 'ウ', 'エ'] as const;
@@ -96,10 +97,10 @@ export default function QuestionDetailScreen() {
     nav.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Pressable onPress={() => setReportVisible(true)} style={{ paddingHorizontal: 8 }}>
+          <Pressable onPress={() => setReportVisible(true)} style={{ paddingHorizontal: 8 }} accessibilityRole="button" accessibilityLabel="問題を報告する">
             <Text style={{ fontSize: 20 }}>⚠️</Text>
           </Pressable>
-          <Pressable onPress={() => toggleBookmark(q.id)} style={{ paddingHorizontal: 16 }}>
+          <Pressable onPress={() => toggleBookmark(q.id)} style={{ paddingHorizontal: 16 }} accessibilityRole="button" accessibilityLabel={prog?.bookmarked ? 'ブックマークを解除' : 'ブックマークに追加'}>
             <Text style={{ fontSize: 22 }}>{prog?.bookmarked ? '🔖' : '📑'}</Text>
           </Pressable>
         </View>
@@ -322,6 +323,8 @@ export default function QuestionDetailScreen() {
             style={[s.aiSendBtn, (!aiInput.trim() || aiLoading || !canAI) && s.aiSendBtnDisabled]}
             onPress={sendAIMessage}
             disabled={!aiInput.trim() || aiLoading || !canAI}
+            accessibilityRole="button"
+            accessibilityLabel="AI質問を送信"
           >
             <Text style={s.aiSendIcon}>↑</Text>
           </Pressable>
@@ -346,6 +349,9 @@ export default function QuestionDetailScreen() {
           <Text style={[s.metaPillText, { color: DifficultyColor[q.difficulty] }]}>{DifficultyLabel[q.difficulty]}</Text>
         </View>
       </View>
+
+      {/* 法改正バッジ */}
+      <LawAmendmentBadge question={q} />
 
       {/* Question */}
       <View style={[s.questionBox, Shadow.sm]}>
@@ -415,6 +421,8 @@ export default function QuestionDetailScreen() {
                 style={[s.choiceCard, cardExtra, Shadow.sm]}
                 onPress={() => handleSelect(origIdx)}
                 disabled={answered}
+                accessibilityRole="button"
+                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}`}
               >
                 <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
                   <Text style={[s.choiceLabelText, { color: labelColor }]}>{LABELS[displayIdx]}</Text>
@@ -428,7 +436,7 @@ export default function QuestionDetailScreen() {
                 <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
                   <Text style={s.choiceExplText}>{choiceExpl}</Text>
                   {isPro && (
-                    <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)}>
+                    <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
                       <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
                     </Pressable>
                   )}
@@ -456,7 +464,7 @@ export default function QuestionDetailScreen() {
 
           {/* AI Button */}
           {isPro && (
-            <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()}>
+            <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()} accessibilityRole="button" accessibilityLabel="AIに質問する">
               <Text style={s.aiBtnIcon}>🤖</Text>
               <View>
                 <Text style={s.aiBtnText}>AIに質問する</Text>
@@ -471,18 +479,24 @@ export default function QuestionDetailScreen() {
               <Pressable
                 style={[s.confidenceBtn, s.confidenceNone]}
                 onPress={() => handleConfidenceAndNext('none')}
+                accessibilityRole="button"
+                accessibilityLabel="難しいと評価"
               >
                 <Text style={s.confidenceNoneText}>難しい</Text>
               </Pressable>
               <Pressable
                 style={[s.confidenceBtn, s.confidenceDefault]}
                 onPress={() => handleConfidenceAndNext('low')}
+                accessibilityRole="button"
+                accessibilityLabel="普通と評価"
               >
                 <Text style={s.confidenceDefaultText}>普通 →</Text>
               </Pressable>
               <Pressable
                 style={[s.confidenceBtn, s.confidenceHigh]}
                 onPress={() => handleConfidenceAndNext('high')}
+                accessibilityRole="button"
+                accessibilityLabel="簡単と評価"
               >
                 <Text style={s.confidenceHighText}>簡単</Text>
               </Pressable>
@@ -491,6 +505,8 @@ export default function QuestionDetailScreen() {
 
           <Pressable
             style={s.exitBtn}
+            accessibilityRole="button"
+            accessibilityLabel="終了してホームに戻る"
             onPress={() => {
               // 未記録の場合はデフォルトで記録
               if (pendingAnswer) {

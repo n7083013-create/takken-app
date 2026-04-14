@@ -177,7 +177,7 @@ export default function QuestionsScreen() {
             onChangeText={setSearchText}
           />
           {searchText.length > 0 && (
-            <Pressable onPress={() => setSearchText('')} hitSlop={8}>
+            <Pressable onPress={() => setSearchText('')} hitSlop={8} accessibilityRole="button" accessibilityLabel="検索をクリア">
               <Text style={s.clearBtn}>✕</Text>
             </Pressable>
           )}
@@ -194,6 +194,8 @@ export default function QuestionsScreen() {
         <Pressable
           style={[s.chip, !selectedCategory && s.chipActive]}
           onPress={() => setSelectedCategory(null)}
+          accessibilityRole="tab"
+          accessibilityLabel="すべてのカテゴリを表示"
         >
           <Text style={[s.chipText, !selectedCategory && s.chipTextActive]}>すべて</Text>
         </Pressable>
@@ -210,6 +212,8 @@ export default function QuestionsScreen() {
                 setSelectedCategory(active ? null : cat);
                 setCollapsedSections(new Set());
               }}
+              accessibilityRole="tab"
+              accessibilityLabel={`${CATEGORY_LABELS[cat]}カテゴリを${active ? '解除' : '選択'}`}
             >
               <Text style={[s.chipText, active && s.chipTextActive]}>
                 {CATEGORY_ICONS[cat]} {CATEGORY_LABELS[cat]}
@@ -235,6 +239,8 @@ export default function QuestionsScreen() {
             <Pressable
               style={[s.sectionHeader, Shadow.sm]}
               onPress={() => toggleSection(section.key)}
+              accessibilityRole="button"
+              accessibilityLabel={`${section.title} ${section.count}問 ${collapsed ? '展開する' : '折りたたむ'}`}
             >
               <View style={s.sectionLeft}>
                 <Text style={s.sectionTitle}>{section.title}</Text>
@@ -256,6 +262,8 @@ export default function QuestionsScreen() {
             <Pressable
               style={[s.qCard, Shadow.sm]}
               onPress={() => router.push(`/question/${item.id}`)}
+              accessibilityRole="button"
+              accessibilityLabel={`問題: ${item.text}`}
             >
               <View style={[s.qAccent, { backgroundColor: catColor }]} />
               <View style={s.qBody}>

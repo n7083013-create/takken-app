@@ -162,7 +162,7 @@ export default function ReviewScreen() {
                   ? '良い調子です。間違えた問題は再度復習しましょう'
                   : '繰り返しが大切です。もう一度挑戦しましょう'}
             </Text>
-            <Pressable style={[s.doneBtn, Shadow.md]} onPress={() => setMode('menu')}>
+            <Pressable style={[s.doneBtn, Shadow.md]} onPress={() => setMode('menu')} accessibilityRole="button" accessibilityLabel="メニューに戻る">
               <Text style={s.doneBtnText}>メニューに戻る</Text>
             </Pressable>
           </View>
@@ -182,7 +182,7 @@ export default function ReviewScreen() {
         <ScrollView contentContainerStyle={s.sessionScroll} showsVerticalScrollIndicator={false}>
           {/* Top Bar */}
           <View style={s.sessionTopBar}>
-            <Pressable style={s.sessionCloseBtn} onPress={() => setMode('menu')}>
+            <Pressable style={s.sessionCloseBtn} onPress={() => setMode('menu')} accessibilityRole="button" accessibilityLabel="復習セッションを閉じる">
               <Text style={s.sessionCloseBtnText}>✕</Text>
             </Pressable>
             <Text style={s.sessionProgress}>
@@ -249,6 +249,8 @@ export default function ReviewScreen() {
                   style={[s.choiceCard, cardExtra, Shadow.sm]}
                   onPress={() => handleSelect(i)}
                   disabled={answered}
+                  accessibilityRole="button"
+                  accessibilityLabel={`選択肢${LABELS[i]}: ${choice}`}
                 >
                   <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
                     <Text style={[s.choiceLabelText, { color: labelColor }]}>{LABELS[i]}</Text>
@@ -277,12 +279,16 @@ export default function ReviewScreen() {
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceNone]}
                     onPress={() => handleConfidenceAndNext('none')}
+                    accessibilityRole="button"
+                    accessibilityLabel="難しいと評価"
                   >
                     <Text style={s.confidenceNoneText}>難しい</Text>
                   </Pressable>
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceDefault]}
                     onPress={() => handleConfidenceAndNext('low')}
+                    accessibilityRole="button"
+                    accessibilityLabel="普通と評価"
                   >
                     <Text style={s.confidenceDefaultText}>
                       {isLastQuestion ? '普通（結果を見る）' : '普通 →'}
@@ -291,6 +297,8 @@ export default function ReviewScreen() {
                   <Pressable
                     style={[s.confidenceBtn, s.confidenceHigh]}
                     onPress={() => handleConfidenceAndNext('high')}
+                    accessibilityRole="button"
+                    accessibilityLabel="簡単と評価"
                   >
                     <Text style={s.confidenceHighText}>簡単</Text>
                   </Pressable>
@@ -364,6 +372,8 @@ export default function ReviewScreen() {
           style={[s.queueCard, Shadow.sm, dueIds.length === 0 && s.queueCardDisabled]}
           onPress={() => dueIds.length > 0 && startSession('due')}
           disabled={dueIds.length === 0}
+          accessibilityRole="button"
+          accessibilityLabel={`今日の復習 ${dueIds.length}問`}
         >
           <View style={[s.queueIcon, { backgroundColor: colors.accent + '14' }]}>
             <Text style={s.queueIconText}>⏰</Text>
@@ -389,6 +399,8 @@ export default function ReviewScreen() {
           style={[s.queueCard, Shadow.sm, weakIds.length === 0 && s.queueCardDisabled]}
           onPress={() => weakIds.length > 0 && startSession('weak')}
           disabled={weakIds.length === 0}
+          accessibilityRole="button"
+          accessibilityLabel={`苦手克服 ${weakIds.length}問`}
         >
           <View style={[s.queueIcon, { backgroundColor: colors.error + '14' }]}>
             <Text style={s.queueIconText}>💪</Text>
@@ -414,6 +426,8 @@ export default function ReviewScreen() {
           style={[s.queueCard, Shadow.sm, bookmarkedIds.length === 0 && s.queueCardDisabled]}
           onPress={() => bookmarkedIds.length > 0 && startSession('bookmarked')}
           disabled={bookmarkedIds.length === 0}
+          accessibilityRole="button"
+          accessibilityLabel={`ブックマーク ${bookmarkedIds.length}問`}
         >
           <View style={[s.queueIcon, { backgroundColor: colors.primary + '14' }]}>
             <Text style={s.queueIconText}>🔖</Text>
