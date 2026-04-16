@@ -49,20 +49,30 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'アクティブなサブスクリプションがありません' });
     }
 
-    // --- PAY.JP サブスクリプション解約 ---
-    await payjp.subscriptions.cancel(profile.payjp_subscription_id);
+    // --- PAY.JP サブスクリプション解約（期間終了時に停止） ---
+    const result = await payjp.subscriptions.cancel(profile.payjp_subscription_id);
+    const periodEnd = result.current_period_end
+      ? new Date(result.current_period_end * 1000).toISOString()
+      : null;
 
     // --- Supabase profiles 更新 ---
+    // plan は 'standard' のまま維持（期間終了まで利用可能）
+    // webhook subscription.deleted で最終的に plan: 'free' へ遷移
     await supabaseAdmin
       .from('profiles')
       .update({
-        plan: 'free',
         subscription_status: 'canceled',
-        payjp_subscription_id: null,
+        // plan は変更しない — ユーザーは期間終了まで利用可能
+        subscription_ends_at: periodEnd,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
 
-    return res.status(200).json({ success: true, message: '解約が完了しました' });
+    return res.status(200).json({
+      success: true,
+      message: '解約が完了しました。期間終了まで引き続きご利用いただけます。',
+      periodEnd,
+    });
   } catch (err) {
     console.error('[CancelSub] Error:', err.message);
     return res.status(500).json({ error: '解約処理に失敗しました' });

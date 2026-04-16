@@ -237,6 +237,7 @@ export type SubscriptionPlan = 'free' | 'standard' | 'unlimited';
 export interface Subscription {
   plan: SubscriptionPlan;
   expiresAt?: string;
+  subscriptionStatus?: string;
   aiQueriesUsed: number;
   aiQueriesResetAt: string;
   // 1日あたり制限（フェア利用ポリシー）

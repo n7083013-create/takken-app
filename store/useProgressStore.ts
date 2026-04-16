@@ -638,13 +638,17 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         });
         await get().saveProgress();
       }
-      // ローカル → クラウド push
-      const cur = get();
-      await Promise.all([
-        pushProgressToCloud(userId, cur.progress),
-        pushStatsToCloud(userId, cur.stats, cur.quickQuizStats),
-      ]);
-      // push 成功 → エラーをクリア
+      // Only push if pull succeeded (remote is not null).
+      // If pull failed, we keep local data but do NOT push to avoid
+      // overwriting potentially newer remote data.
+      if (remote !== null) {
+        const cur = get();
+        await Promise.all([
+          pushProgressToCloud(userId, cur.progress),
+          pushStatsToCloud(userId, cur.stats, cur.quickQuizStats),
+        ]);
+      }
+      // sync 成功 → エラーをクリア
       set({ syncError: null });
     } catch (e) {
       logError(e, { context: 'progress.syncWithCloud' });

@@ -95,6 +95,15 @@ export default function LoginScreen() {
       infoAlert(mode === 'signin' ? 'ログイン失敗' : '登録失敗', error);
       return;
     }
+    if (mode === 'signup') {
+      // Show verification prompt and stay on the login screen
+      Alert.alert(
+        'メール確認',
+        '確認メールを送信しました。メール内のリンクをクリックしてアカウントを有効化してください。',
+        [{ text: 'OK' }],
+      );
+      return;
+    }
     const safeReturn = returnTo && typeof returnTo === 'string' && returnTo.startsWith('/') && !returnTo.startsWith('//')
       ? returnTo : '/(tabs)';
     router.replace(safeReturn as any);

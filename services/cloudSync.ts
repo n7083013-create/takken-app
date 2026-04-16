@@ -67,6 +67,7 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
         nextReviewAt: row.next_review_at,
         easeFactor: Number(row.ease_factor),
         interval: row.interval_days,
+        lastConfidence: row.last_confidence ?? undefined,
       };
     });
 
@@ -80,6 +81,10 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
           longestStreak: statsRow.longest_streak,
           lastStudyAt: statsRow.last_study_at ?? undefined,
           categoryStats: statsRow.category_stats ?? {},
+          dailyLog: statsRow.daily_log ?? {},
+          streakFreezeCount: statsRow.streak_freeze_count ?? 0,
+          streakFreezeUsedAt: statsRow.streak_freeze_used_at ?? undefined,
+          streakFreezeRefilledAt: statsRow.streak_freeze_refilled_at ?? undefined,
         }
       : null;
 
@@ -120,6 +125,7 @@ export async function pushProgressToCloud(
       next_review_at: p.nextReviewAt,
       ease_factor: p.easeFactor,
       interval_days: p.interval,
+      last_confidence: p.lastConfidence ?? null,
       updated_at: new Date().toISOString(),
     }));
     if (rows.length === 0) return true;
@@ -160,6 +166,10 @@ export async function pushStatsToCloud(
       longest_streak: stats.longestStreak,
       last_study_at: stats.lastStudyAt ?? null,
       category_stats: stats.categoryStats,
+      daily_log: stats.dailyLog ?? {},
+      streak_freeze_count: stats.streakFreezeCount ?? 0,
+      streak_freeze_used_at: stats.streakFreezeUsedAt ?? null,
+      streak_freeze_refilled_at: stats.streakFreezeRefilledAt ?? null,
       quick_quiz_stats: quickQuizStats,
       updated_at: new Date().toISOString(),
     });

@@ -42,6 +42,7 @@ interface SettingsState {
   getRenewalPrice(): number;
   getAIDailyRemaining(): number;
   getDaysUntilExam(): number | null;
+  resetStore(): void;
   loadSettings(): Promise<void>;
   saveSettings(): Promise<void>;
 }
@@ -258,16 +259,18 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       if (!res.ok) return;
       const data = await res.json();
       // サーバーの状態でローカルを上書き（改ざん防止）
-      const currentSub = get().subscription;
       set({
         subscription: {
-          ...currentSub,
+          ...get().subscription,
           plan: data.plan || 'free',
+          subscriptionStatus: data.subscriptionStatus || 'none',
+          expiresAt: data.subscriptionEndsAt || data.trialEndsAt || undefined,
         },
       });
       get().saveSettings();
-    } catch {
+    } catch (e) {
       // ネットワークエラー時はローカル状態を維持（オフライン対応）
+      logError(e, { context: 'verifySubscription' });
     }
   },
 
@@ -277,6 +280,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const diff = new Date(examDate).getTime() - Date.now();
     if (diff < 0) return null;
     return Math.ceil(diff / (24 * 60 * 60 * 1000));
+  },
+
+  resetStore() {
+    set({
+      settings: { ...defaultSettings },
+      subscription: { ...defaultSubscription },
+    });
   },
 
   async loadSettings() {

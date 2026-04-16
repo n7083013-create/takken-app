@@ -72,15 +72,18 @@ module.exports = async (req, res) => {
       .eq('subscription_status', 'creating')
       .lt('updated_at', new Date(Date.now() - 5 * 60 * 1000).toISOString());
 
-    // 処理中フラグで二重送信を防止
-    const { error: lockError } = await supabaseAdmin
+    // 処理中フラグで二重送信を防止（count: 'exact' で実際の更新行数を検証）
+    const { error: lockError, count } = await supabaseAdmin
       .from('profiles')
-      .update({ subscription_status: 'creating' })
+      .update(
+        { subscription_status: 'creating', updated_at: new Date().toISOString() },
+        { count: 'exact' }
+      )
       .eq('id', user.id)
       .in('subscription_status', ['none', 'canceled']);
 
-    if (lockError) {
-      return res.status(409).json({ error: '処理中です。しばらくお待ちください。' });
+    if (lockError || count === 0) {
+      return res.status(409).json({ error: '既に処理中です。しばらくお待ちください。' });
     }
 
     // --- PAY.JP 顧客作成 (既存顧客がいればカード更新) ---

@@ -6,10 +6,29 @@
 
 import { create } from 'zustand';
 import type { Session, User } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { logError } from '../services/errorLogger';
 import { isValidEmail, validatePassword } from '../services/validation';
 import { useProgressStore } from './useProgressStore';
+import { useSettingsStore } from './useSettingsStore';
+
+/**
+ * Clear all app-specific AsyncStorage keys on logout/account deletion.
+ * This prevents stale data from leaking into the next session.
+ */
+async function clearAllLocalData() {
+  const keys = [
+    '@takken_progress',
+    '@takken_settings',
+    '@takken_quest',
+    '@takken_reports',
+    '@takken_achievements',
+    '@takken_exam_history',
+    '@takken_onboarding_done',
+  ];
+  await AsyncStorage.multiRemove(keys);
+}
 
 interface AuthState {
   user: User | null;
@@ -158,6 +177,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   async signOut() {
     if (!isSupabaseConfigured()) return;
     await supabase.auth.signOut();
+    await clearAllLocalData();
+    // Reset all stores to initial state
+    useProgressStore.getState().resetProgress();
+    useSettingsStore.getState().resetStore();
     set({ user: null, session: null });
   },
 
@@ -169,6 +192,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { error } = await supabase.rpc('delete_current_user');
     if (!error) {
       await supabase.auth.signOut();
+      await clearAllLocalData();
+      // Reset all stores to initial state
+      useProgressStore.getState().resetProgress();
+      useSettingsStore.getState().resetStore();
       set({ user: null, session: null });
     }
     return { error: error?.message ?? null };
