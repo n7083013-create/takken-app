@@ -123,9 +123,9 @@ export default function QuestSessionScreen() {
     [answerState, currentQuestion, recordAnswer],
   );
 
-  const openAI = useCallback((prefill?: string, choiceIdx?: number) => {
+  const openAI = useCallback((_prefill?: string, choiceIdx?: number) => {
     if (!aiVisible) setAiMessages([]);
-    setAiInput(prefill ?? '');
+    setAiInput('');
     setAiTargetChoice(choiceIdx ?? null);
     setAiVisible(true);
   }, [aiVisible]);

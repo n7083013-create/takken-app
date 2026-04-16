@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
+import { CATEGORIES } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import {
   CATEGORY_LABELS,
@@ -21,6 +22,7 @@ import {
   CATEGORY_COLORS,
   Category,
   QuickQuiz,
+  AIChatMessage,
 } from '../../types';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -29,13 +31,6 @@ import { HighlightedText } from '../../components/HighlightedText';
 import { askAI } from '../../services/claude';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
-
-type AIChatMessage = {
-  role: 'user' | 'assistant';
-  content: string;
-};
-
-const CATEGORIES: Category[] = ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'];
 
 type AnswerState = 'unanswered' | 'correct' | 'incorrect';
 

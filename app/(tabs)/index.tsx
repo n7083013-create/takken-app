@@ -9,7 +9,9 @@ import {
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
+import { EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
+import { useExamPrediction } from '../../hooks/useExamPrediction';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, SUBCATEGORIES } from '../../types';
 import { ALL_QUESTIONS, getCategoryStats } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
@@ -17,8 +19,11 @@ import { useSettingsStore } from '../../store/useSettingsStore';
 import { useQuestStore } from '../../store/useQuestStore';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievementStore';
 import { useExamStore } from '../../store/useExamStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
+import { LoadingSkeleton } from '../../components/LoadingSkeleton';
+import LandingPage from '../../components/LandingPage';
 import type { Question, QuestionProgress } from '../../types';
 
 /**
@@ -66,34 +71,33 @@ function pickSmartQuestion(
   return ALL_QUESTIONS[Math.floor(Math.random() * ALL_QUESTIONS.length)];
 }
 
-const CATEGORIES: Category[] = ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'];
 const TOTAL_Q = ALL_QUESTIONS.length;
 const CATEGORY_STATS = getCategoryStats('takken');
 
-/** 本試験の科目別配点（50問満点） */
-const EXAM_ALLOCATION: Record<Category, number> = {
-  kenri: 14,
-  takkengyoho: 20,
-  horei_seigen: 8,
-  tax_other: 8,
-};
-const EXAM_TOTAL = 50;
-const PASS_LINE = 36; // 近年の合格ライン目安
-
-function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h < 6) return 'お疲れさまです';
-  if (h < 12) return 'おはようございます';
-  if (h < 18) return 'こんにちは';
-  return 'こんばんは';
-}
 
 /** サブカテゴリにマッチするタグがあるか判定 */
 function matchSubcat(tags: string[], matchTags: string[]): boolean {
   return tags.some((t) => matchTags.includes(t));
 }
 
-export default function HomeScreen() {
+/** 認証状態に応じてLP or ダッシュボードを切り替えるラッパー */
+export default function HomeScreenWrapper() {
+  const user = useAuthStore((s) => s.user);
+  const initialized = useAuthStore((s) => s.initialized);
+
+  // ストア初期化完了前はスケルトンを表示
+  if (!initialized) {
+    return <LoadingSkeleton />;
+  }
+
+  if (!user) {
+    return <LandingPage />;
+  }
+
+  return <HomeScreen />;
+}
+
+function HomeScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const stats = useProgressStore((s) => s.stats);
@@ -123,7 +127,6 @@ export default function HomeScreen() {
   const getBestScore = useExamStore((s) => s.getBestScore);
   const getDailyLog = useProgressStore((s) => s.getDailyLog);
   const getStreakFreezeCount = useProgressStore((s) => s.getStreakFreezeCount);
-  const [greeting] = useState(getGreeting);
   const [expandedCat, setExpandedCat] = useState<Category | null>(null);
   const [streakCelebVisible, setStreakCelebVisible] = useState(() => {
     // ストリークマイルストーン到達時に祝福を表示
@@ -160,49 +163,7 @@ export default function HomeScreen() {
   const dueCount = useMemo(() => getDueForReview().length, [getDueForReview]);
   const weakCount = useMemo(() => getWeakQuestions().length, [getWeakQuestions]);
 
-  /**
-   * 忘却曲線を考慮した科目別予測得点
-   * - 復習期限切れの問題は記憶の減衰を反映（Ebbinghaus decay）
-   * - 未解答の問題は正答率0%として計算
-   * → 「今受験したら何点取れるか」のリアルな予測
-   */
-  const examPrediction = useMemo(() => {
-    const now = Date.now();
-    const perCategory = CATEGORIES.map((cat) => {
-      const catQuestions = ALL_QUESTIONS.filter((q: Question) => q.category === cat);
-      const allocation = EXAM_ALLOCATION[cat];
-      if (catQuestions.length === 0) return { category: cat, allocation, accuracy: 0, predicted: 0 };
-
-      let retentionSum = 0;
-      for (const q of catQuestions) {
-        const prog = progress[q.id];
-        if (!prog || prog.attempts === 0) {
-          // 未解答 → 正答期待値0
-          continue;
-        }
-        const rawAccuracy = prog.correctCount / prog.attempts;
-        const reviewDue = new Date(prog.nextReviewAt).getTime();
-        if (now > reviewDue) {
-          // 復習期限切れ → 忘却曲線で減衰
-          const overdueDays = (now - reviewDue) / (1000 * 60 * 60 * 24);
-          // stability = SM-2のintervalに比例（長期記憶ほど減衰が緩やか）
-          const stability = Math.max(prog.interval, 1);
-          // R = e^(-t/S) : 指数関数的忘却
-          const retention = Math.exp(-overdueDays / stability);
-          retentionSum += rawAccuracy * retention;
-        } else {
-          // 期限内 → そのまま
-          retentionSum += rawAccuracy;
-        }
-      }
-      const accuracy = retentionSum / catQuestions.length;
-      const predicted = Math.round(allocation * accuracy * 10) / 10;
-      return { category: cat, allocation, accuracy, predicted };
-    });
-    const totalPredicted = perCategory.reduce((sum, c) => sum + c.predicted, 0);
-    const hasData = stats.totalQuestions > 0;
-    return { perCategory, totalPredicted: Math.round(totalPredicted), hasData };
-  }, [progress, stats.totalQuestions]);
+  const examPrediction = useExamPrediction();
 
   // 時間帯に応じた最適アクションのサジェスト
   const hourNow = new Date().getHours();
@@ -221,10 +182,19 @@ export default function HomeScreen() {
         {/* ── Hero（コンパクト） ── */}
         <View style={s.hero}>
           <View style={s.heroTop}>
-            <View>
-              <Text style={s.heroGreeting}>{greeting}</Text>
-              <Text style={s.heroTitle}>宅建士 完全対策</Text>
-            </View>
+            {examDays !== null ? (
+              <View>
+                <Text style={s.examCountdownLabel}>試験まであと</Text>
+                <View style={s.examCountdownRow}>
+                  <Text style={s.examCountdownNum}>{examDays}</Text>
+                  <Text style={s.examCountdownUnit}>日</Text>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <Text style={s.heroTitle}>宅建士 完全対策</Text>
+              </View>
+            )}
             {stats.streak > 0 && (
               <View style={s.streakBadge}>
                 <Text style={s.streakBadgeNum}>{stats.streak}</Text>
@@ -234,7 +204,7 @@ export default function HomeScreen() {
             )}
           </View>
           {examDays !== null && (
-            <Text style={s.examCountdown}>試験まであと{examDays}日</Text>
+            <Text style={s.heroAppName}>宅建士 完全対策</Text>
           )}
         </View>
 
@@ -339,7 +309,7 @@ export default function HomeScreen() {
                 {isEvening ? '睡眠中の記憶固定を最大化'
                   : dueCount > 0 ? '忘れる前に記憶を定着'
                   : weakCount > 3 ? `${weakCount}問の苦手問題を集中攻撃`
-                  : 'AIが最適な問題を選択'}
+                  : `今日 ${todayAnswered}/${dailyGoal}問完了 — AIが最適な問題を選択`}
               </Text>
             </View>
             <Text style={s.mainCTAArrow}>→</Text>
@@ -484,7 +454,7 @@ export default function HomeScreen() {
             <Pressable style={[s.bannerCard, s.bannerGold, Shadow.md]} onPress={() => router.push('/paywall')}>
               <Text style={s.bannerEmoji}>✨</Text>
               <View style={{ flex: 1 }}>
-                <Text style={s.bannerTitle}>STANDARDで合格を目指す</Text>
+                <Text style={s.bannerTitle}>PREMIUMで合格を目指す</Text>
                 <Text style={s.bannerSub}>全{TOTAL_Q}問・模試・AI解説が使い放題</Text>
               </View>
               <Text style={s.bannerArrow}>›</Text>
@@ -602,18 +572,41 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  heroGreeting: {
-    fontSize: FontSize.subhead,
-    color: 'rgba(255,255,255,0.75)',
-    fontWeight: '500',
-    letterSpacing: LetterSpacing.wide,
-  },
   heroTitle: {
     fontSize: FontSize.largeTitle,
     fontWeight: '800',
     color: C.white,
     letterSpacing: LetterSpacing.tight,
-    marginTop: 4,
+  },
+  examCountdownLabel: {
+    fontSize: FontSize.subhead,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.8)',
+    letterSpacing: LetterSpacing.wide,
+  },
+  examCountdownRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginTop: 2,
+  },
+  examCountdownNum: {
+    fontSize: 48,
+    fontWeight: '900',
+    color: C.white,
+    letterSpacing: -1,
+  },
+  examCountdownUnit: {
+    fontSize: FontSize.title1,
+    fontWeight: '800',
+    color: 'rgba(255,255,255,0.9)',
+    marginLeft: 4,
+  },
+  heroAppName: {
+    fontSize: FontSize.caption,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.5)',
+    textAlign: 'right',
+    marginTop: 8,
   },
   streakBadge: {
     backgroundColor: 'rgba(255,255,255,0.18)',
@@ -638,12 +631,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     color: 'rgba(200,230,255,0.9)',
     fontWeight: '600',
     marginTop: 4,
-  },
-  examCountdown: {
-    fontSize: FontSize.footnote,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
-    marginTop: 12,
   },
 
   // ─── Trial Banner ───

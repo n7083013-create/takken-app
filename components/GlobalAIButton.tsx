@@ -20,10 +20,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import { FontSize, LineHeight, Spacing, BorderRadius } from '../constants/theme';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { AIChatMessage } from '../types';
 import { askAI } from '../services/claude';
 import { sanitizeAIQuery } from '../services/validation';
-
-type AIChatMessage = { role: 'user' | 'assistant'; content: string };
 
 export function GlobalAIButton() {
   const colors = useThemeColors();

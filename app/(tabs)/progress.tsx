@@ -4,14 +4,15 @@ import {
   ScrollView,
   Pressable,
   StyleSheet,
-  Alert,
 } from 'react-native';
+import { confirmAlert, infoAlert } from '../../services/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
+import { CATEGORIES, EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
-import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, AI_QUERY_LIMITS, Question } from '../../types';
-import { ALL_QUESTIONS } from '../../data';
+import { useExamPrediction } from '../../hooks/useExamPrediction';
+import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, AI_QUERY_LIMITS } from '../../types';
 import { useMemo } from 'react';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -22,19 +23,7 @@ import {
   requestNotificationPermission,
   scheduleDailyReminder,
   cancelDailyReminder,
-  sendTestNotification,
 } from '../../services/notifications';
-
-const CATEGORIES: Category[] = ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'];
-
-const EXAM_ALLOCATION: Record<Category, number> = {
-  kenri: 14,
-  takkengyoho: 20,
-  horei_seigen: 8,
-  tax_other: 8,
-};
-const EXAM_TOTAL = 50;
-const PASS_LINE = 36;
 
 function SettingsSection() {
   const colors = useThemeColors();
@@ -53,7 +42,7 @@ function SettingsSection() {
     if (next) {
       const ok = await requestNotificationPermission();
       if (!ok) {
-        Alert.alert('通知権限', '設定アプリから通知を許可してください');
+        infoAlert('通知権限', '設定アプリから通知を許可してください');
         return;
       }
       updateSettings({ notificationsEnabled: true });
@@ -73,9 +62,26 @@ function SettingsSection() {
     }
   };
 
+  const goalOptions = [5, 10, 15, 20, 30, 50];
+
   return (
     <View style={sset.box}>
       <Text style={sset.title}>設定</Text>
+
+      <Text style={sset.label}>1日の目標問題数</Text>
+      <View style={sset.segRow}>
+        {goalOptions.map((g) => (
+          <Pressable
+            key={g}
+            style={[sset.segBtn, settings.dailyGoal === g && sset.segBtnActive]}
+            onPress={() => updateSettings({ dailyGoal: g })}
+          >
+            <Text style={[sset.segText, settings.dailyGoal === g && sset.segTextActive]}>
+              {g}問
+            </Text>
+          </Pressable>
+        ))}
+      </View>
 
       <Text style={sset.label}>テーマ</Text>
       <View style={sset.segRow}>
@@ -140,9 +146,6 @@ function SettingsSection() {
               </Pressable>
             ))}
           </View>
-          <Pressable style={sset.testBtn} onPress={() => sendTestNotification()}>
-            <Text style={sset.testText}>🔔 テスト通知を送信</Text>
-          </Pressable>
         </>
       )}
     </View>
@@ -220,16 +223,6 @@ function makeSettingsStyles(C: ThemeColors) {
     timeBtnActive: { backgroundColor: C.primary, borderColor: C.primary },
     timeText: { fontSize: FontSize.footnote, color: C.textSecondary, fontWeight: '600' },
     timeTextActive: { color: C.white },
-    testBtn: {
-      marginTop: Spacing.md,
-      padding: Spacing.md,
-      borderRadius: BorderRadius.md,
-      backgroundColor: C.background,
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: C.border,
-    },
-    testText: { fontSize: FontSize.footnote, color: C.primary, fontWeight: '700' },
   });
 }
 
@@ -243,35 +236,21 @@ function AccountSection() {
   const syncWithCloud = useProgressStore((s) => s.syncWithCloud);
 
   const handleSignOut = () => {
-    Alert.alert('ログアウト', 'ログアウトしますか？', [
-      { text: 'キャンセル', style: 'cancel' },
-      { text: 'ログアウト', style: 'destructive', onPress: () => signOut() },
-    ]);
+    confirmAlert('ログアウト', 'ログアウトしますか？', () => signOut());
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      'アカウント削除',
-      '全ての学習データが完全に削除されます。この操作は取り消せません。',
-      [
-        { text: 'キャンセル', style: 'cancel' },
-        {
-          text: '削除',
-          style: 'destructive',
-          onPress: async () => {
-            const { error } = await deleteAccount();
-            if (error) Alert.alert('削除失敗', error);
-            else Alert.alert('削除完了', 'アカウントを削除しました');
-          },
-        },
-      ],
-    );
+    confirmAlert('アカウント削除', '全ての学習データが完全に削除されます。この操作は取り消せません。', async () => {
+      const { error } = await deleteAccount();
+      if (error) infoAlert('削除失敗', error);
+      else infoAlert('削除完了', 'アカウントを削除しました');
+    });
   };
 
   const handleSync = async () => {
     if (!user) return;
     await syncWithCloud(user.id);
-    Alert.alert('同期完了', 'クラウドと同期しました');
+    infoAlert('同期完了', 'クラウドと同期しました');
   };
 
   return (
@@ -346,7 +325,6 @@ export default function ProgressScreen() {
   const s = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
   const stats = useProgressStore((s) => s.stats);
-  const progress = useProgressStore((s) => s.progress);
   const getCategoryAccuracy = useProgressStore((s) => s.getCategoryAccuracy);
   const getBookmarkedQuestions = useProgressStore((s) => s.getBookmarkedQuestions);
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
@@ -362,45 +340,10 @@ export default function ProgressScreen() {
   const aiLimit = AI_QUERY_LIMITS[subscription.plan];
   const aiUsed = subscription.aiQueriesUsed;
 
-  /** 忘却曲線を考慮した予測（ホーム画面と同じロジック） */
-  const examPrediction = useMemo(() => {
-    const now = Date.now();
-    const perCategory = CATEGORIES.map((cat) => {
-      const catQuestions = ALL_QUESTIONS.filter((q: Question) => q.category === cat);
-      const allocation = EXAM_ALLOCATION[cat];
-      if (catQuestions.length === 0) return { category: cat, allocation, accuracy: 0, predicted: 0, attempted: 0 };
-
-      let retentionSum = 0;
-      let attempted = 0;
-      for (const q of catQuestions) {
-        const prog = progress[q.id];
-        if (!prog || prog.attempts === 0) continue;
-        attempted++;
-        const rawAccuracy = prog.correctCount / prog.attempts;
-        const reviewDue = new Date(prog.nextReviewAt).getTime();
-        if (now > reviewDue) {
-          const overdueDays = (now - reviewDue) / (1000 * 60 * 60 * 24);
-          const stability = Math.max(prog.interval, 1);
-          const retention = Math.exp(-overdueDays / stability);
-          retentionSum += rawAccuracy * retention;
-        } else {
-          retentionSum += rawAccuracy;
-        }
-      }
-      const accuracy = retentionSum / catQuestions.length;
-      const predicted = Math.round(allocation * accuracy * 10) / 10;
-      return { category: cat, allocation, accuracy, predicted, attempted };
-    });
-    const totalPredicted = perCategory.reduce((sum, c) => sum + c.predicted, 0);
-    const hasData = stats.totalQuestions > 0;
-    return { perCategory, totalPredicted: Math.round(totalPredicted), hasData };
-  }, [progress, stats.totalQuestions]);
+  const examPrediction = useExamPrediction();
 
   const handleReset = () => {
-    Alert.alert('学習データのリセット', '全ての学習記録が削除されます。この操作は取り消せません。', [
-      { text: 'キャンセル', style: 'cancel' },
-      { text: 'リセット', style: 'destructive', onPress: () => resetProgress() },
-    ]);
+    confirmAlert('学習データのリセット', '全ての学習記録が削除されます。この操作は取り消せません。', () => resetProgress());
   };
 
   return (
@@ -536,7 +479,7 @@ export default function ProgressScreen() {
             <View style={s.upgradeLeft}>
               <Text style={s.upgradeIcon}>✨</Text>
               <View>
-                <Text style={s.upgradeTitle}>STANDARDプラン</Text>
+                <Text style={s.upgradeTitle}>PREMIUMプラン</Text>
                 <Text style={s.upgradeDesc}>全問題・AI解説が使い放題</Text>
               </View>
             </View>
@@ -672,31 +615,6 @@ export default function ProgressScreen() {
             <Text style={s.legalRowText}>特定商取引法に基づく表記</Text>
             <Text style={s.legalArrow}>›</Text>
           </Pressable>
-        </View>
-
-        {/* DEV: プラン切り替え */}
-        <View style={s.devBox}>
-          <Text style={s.devTitle}>開発用プラン切り替え</Text>
-          <View style={s.devRow}>
-            {(['free', 'standard'] as const).map((plan) => (
-              <Pressable
-                key={plan}
-                style={[
-                  s.devBtn,
-                  subscription.plan === plan && s.devBtnActive,
-                ]}
-                onPress={() => {
-                  const setPlan = useSettingsStore.getState().setPlan;
-                  setPlan(plan, plan === 'standard' ? new Date(Date.now() + 365 * 86400000).toISOString() : undefined);
-                }}
-              >
-                <Text style={[s.devBtnText, subscription.plan === plan && s.devBtnTextActive]}>
-                  {plan === 'free' ? 'FREE' : 'STANDARD'}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text style={s.devNote}>現在: {subscription.plan.toUpperCase()}</Text>
         </View>
 
         {/* Reset */}
@@ -1083,48 +1001,6 @@ function makeStyles(C: ThemeColors) {
       fontSize: FontSize.caption,
       color: C.textTertiary,
       fontStyle: 'italic',
-    },
-
-    // ─── DEV ───
-    devBox: {
-      marginTop: Spacing.xxl,
-      backgroundColor: '#FFFBEB',
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      borderWidth: 1,
-      borderColor: '#FDE68A',
-    },
-    devTitle: {
-      fontSize: FontSize.caption,
-      fontWeight: '700',
-      color: '#92400E',
-      marginBottom: 10,
-    },
-    devRow: { flexDirection: 'row', gap: 10 },
-    devBtn: {
-      flex: 1,
-      paddingVertical: 12,
-      borderRadius: BorderRadius.md,
-      borderWidth: 1.5,
-      borderColor: C.border,
-      alignItems: 'center',
-      backgroundColor: C.card,
-    },
-    devBtnActive: {
-      backgroundColor: C.primary,
-      borderColor: C.primary,
-    },
-    devBtnText: {
-      fontSize: FontSize.subhead,
-      fontWeight: '700',
-      color: C.textSecondary,
-    },
-    devBtnTextActive: { color: C.white },
-    devNote: {
-      fontSize: FontSize.caption,
-      color: '#B45309',
-      marginTop: 8,
-      textAlign: 'center',
     },
 
     // ─── Reset ───

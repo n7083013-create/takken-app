@@ -1,4 +1,4 @@
-import { useState, useCallback, useLayoutEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius, DifficultyLabel, DifficultyColor } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
-import { CATEGORY_LABELS, CATEGORY_COLORS, Category, ConfidenceLevel } from '../../types';
+import { CATEGORY_LABELS, CATEGORY_COLORS, Category, ConfidenceLevel, AIChatMessage } from '../../types';
 import { getQuestionById, getGlossaryByTags, getGlossaryBySlug, ALL_QUESTIONS } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -43,11 +43,6 @@ function shuffleIndices(length: number): number[] {
   return arr;
 }
 
-type AIChatMessage = {
-  role: 'user' | 'assistant';
-  content: string;
-};
-
 export default function QuestionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -56,7 +51,7 @@ export default function QuestionDetailScreen() {
   const toggleBookmark = useProgressStore((s) => s.toggleBookmark);
   const getProgress = useProgressStore((s) => s.getProgress);
   const checkAchievements = useAchievementChecker();
-  const { triggerCorrect, triggerWrong, resetCombo, FeedbackOverlay } = useAnswerFeedback();
+  const { triggerCorrect, triggerWrong, FeedbackOverlay } = useAnswerFeedback();
 
   // ★ 現在の問題IDをReact stateで管理（router.replaceを使わない）
   const [currentId, setCurrentId] = useState(id);
@@ -92,7 +87,7 @@ export default function QuestionDetailScreen() {
   const isWideScreen = screenWidth >= 768;
   const s = useMemo(() => makeStyles(colors, isWideScreen), [colors, isWideScreen]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!q) return;
     nav.setOptions({
       headerRight: () => (
@@ -160,9 +155,9 @@ export default function QuestionDetailScreen() {
     nextQ();
   }, [pendingAnswer, recordAnswer, checkAchievements, nextQ]);
 
-  const openAI = useCallback((prefill?: string, choiceIdx?: number) => {
+  const openAI = useCallback((_prefill?: string, choiceIdx?: number) => {
     if (!aiVisible) setAiMessages([]);
-    setAiInput(prefill ?? '');
+    setAiInput('');
     setAiTargetChoice(choiceIdx ?? null);
     setAiVisible(true);
   }, [aiVisible]);
@@ -209,9 +204,9 @@ export default function QuestionDetailScreen() {
     return (
       <View style={[s.safe, s.lockContainer]}>
         <Text style={s.lockEmoji}>🔒</Text>
-        <Text style={s.lockTitle}>STANDARD会員限定</Text>
+        <Text style={s.lockTitle}>PREMIUM会員限定</Text>
         <Text style={s.lockDesc}>
-          この問題はSTANDARDプランでご利用いただけます。{'\n'}
+          この問題はPREMIUMプランでご利用いただけます。{'\n'}
           無料プランでは最初の30問をご利用いただけます。
         </Text>
         <Pressable
@@ -283,9 +278,9 @@ export default function QuestionDetailScreen() {
           {aiMessages.length === 0 && (
             <View style={s.aiSuggestions}>
               {[
-                'この問題をもっと簡単に説明して',
-                '選択肢Aがなぜ間違いなのか詳しく教えて',
+                'この問題をわかりやすく解説して',
                 '具体例を使って説明して',
+                '関連する条文を教えて',
               ].map((sug) => (
                 <Pressable key={sug} style={s.aiSuggestionChip} onPress={() => setAiInput(sug)}>
                   <Text style={s.aiSuggestionText}>{sug}</Text>

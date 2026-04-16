@@ -33,6 +33,7 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
         questionId: row.question_id,
         attempts: row.attempts,
         correctCount: row.correct_count,
+        correctStreak: row.correct_streak ?? 0,
         lastAttemptAt: row.last_attempt_at,
         bookmarked: row.bookmarked,
         nextReviewAt: row.next_review_at,
@@ -75,6 +76,7 @@ export async function pushProgressToCloud(
       question_id: p.questionId,
       attempts: p.attempts,
       correct_count: p.correctCount,
+      correct_streak: p.correctStreak ?? 0,
       last_attempt_at: p.lastAttemptAt,
       bookmarked: p.bookmarked,
       next_review_at: p.nextReviewAt,
@@ -123,19 +125,51 @@ export async function pushStatsToCloud(
 }
 
 /**
- * マージ戦略: lastAttemptAt の新しい方を採用
+ * マージ戦略: フィールドごとの賢いマージ
+ *
+ * - attempts / correctCount → MAX（学習量は多い方が正しい）
+ * - bookmarked → OR（どちらかで付けていれば残す）
+ * - lastAttemptAt → 新しい方
+ * - correctStreak / nextReviewAt / easeFactor / interval / lastConfidence
+ *   → lastAttemptAt が新しいレコード側を採用（SM-2 状態は最新解答に従う）
  */
 export function mergeProgress(
   local: Record<string, QuestionProgress>,
   remote: Record<string, QuestionProgress>,
 ): Record<string, QuestionProgress> {
   const merged = { ...local };
+
   Object.keys(remote).forEach((qid) => {
     const r = remote[qid];
     const l = merged[qid];
-    if (!l || new Date(r.lastAttemptAt) > new Date(l.lastAttemptAt)) {
+
+    // ローカルに存在しない問題はリモートをそのまま採用
+    if (!l) {
       merged[qid] = r;
+      return;
     }
+
+    // lastAttemptAt が新しい方を「最新レコード」として SM-2 状態を採る
+    const localIsNewer = new Date(l.lastAttemptAt) >= new Date(r.lastAttemptAt);
+    const newer = localIsNewer ? l : r;
+
+    merged[qid] = {
+      questionId: qid,
+      // 累積値: 多い方を採用（片方のデバイスだけで解いた分を失わない）
+      attempts: Math.max(l.attempts, r.attempts),
+      correctCount: Math.max(l.correctCount, r.correctCount),
+      // ブックマーク: どちらかで付けていれば残す
+      bookmarked: l.bookmarked || r.bookmarked,
+      // 時系列: 新しい方
+      lastAttemptAt: newer.lastAttemptAt,
+      // SM-2 状態: 最新解答のレコードに従う
+      correctStreak: newer.correctStreak,
+      nextReviewAt: newer.nextReviewAt,
+      easeFactor: newer.easeFactor,
+      interval: newer.interval,
+      lastConfidence: newer.lastConfidence,
+    };
   });
+
   return merged;
 }

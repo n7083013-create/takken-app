@@ -6,7 +6,7 @@ import { GlobalAIButton } from '../../components/GlobalAIButton';
 
 function TabIcon({ icon, label, focused, colors }: { icon: string; label: string; focused: boolean; colors: ThemeColors }) {
   return (
-    <View style={styles.tabIconContainer}>
+    <View style={styles.tabIconContainer} accessibilityLabel={label} accessibilityRole="tab" accessibilityState={{ selected: focused }}>
       <Text style={[styles.tabEmoji, focused && styles.tabEmojiActive]}>{icon}</Text>
       <Text style={[styles.tabLabel, { color: focused ? colors.primary : colors.textTertiary }, focused && styles.tabLabelActiveWeight]}>{label}</Text>
       {focused && <View style={[styles.activeIndicator, { backgroundColor: colors.primary }]} />}

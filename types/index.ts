@@ -2,6 +2,12 @@
 // 宅建士 完全対策 - 型定義
 // ============================================================
 
+/** AI チャットメッセージ */
+export interface AIChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 // 試験カテゴリ（宅建試験4分野）
 export type Category = 'kenri' | 'takkengyoho' | 'horei_seigen' | 'tax_other';
 
@@ -202,6 +208,7 @@ export interface QuestionProgress {
   questionId: string;
   attempts: number;
   correctCount: number;
+  correctStreak: number;  // SM-2: 連続正答数（不正解でリセット）
   lastAttemptAt: string;
   bookmarked: boolean;
   nextReviewAt: string;
@@ -222,8 +229,8 @@ export interface StudySession {
   questionIds: string[];
 }
 
-// サブスクリプションプラン（2プラン構成: FREE / STANDARD）
-// unlimited は後方互換のため残置（廃止予定）
+// サブスクリプションプラン（2プラン構成: FREE / PREMIUM）
+// 内部キーは 'standard' を維持（DB互換）、UIでは「PREMIUM」表示
 export type SubscriptionPlan = 'free' | 'standard' | 'unlimited';
 
 // サブスクリプション情報
@@ -242,16 +249,14 @@ export interface Subscription {
   trialStartedAt?: string;     // トライアル開始日
 }
 
-// プラン価格
+// プラン価格（月額のみ・7日間無料トライアル→自動課金）
 export const PLAN_PRICES = {
   monthly: 980,
-  pack6: 3900,       // 合格パック（6ヶ月）
-  yearly: 5800,      // 年間プラン
 } as const;
 
 // AI解説の1日あたり上限（フェア利用ポリシー）
 export const AI_DAILY_LIMITS: Record<SubscriptionPlan, number> = {
-  free: 0,
+  free: 3,        // 無料でも1日3回（体験してもらう）
   standard: 100,
   unlimited: 100,
 };

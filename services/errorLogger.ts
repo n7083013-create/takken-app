@@ -42,8 +42,6 @@ export async function logError(
     const trimmed = logs.slice(-MAX_LOGS);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
 
-    // TODO: Sentryを導入したら以下を有効化
-    // Sentry.captureException(error, { tags: { context: meta?.context }, extra: meta?.extra });
   } catch {
     // ロガー自体のエラーは握り潰す
   }

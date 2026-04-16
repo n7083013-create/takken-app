@@ -4,13 +4,15 @@
 
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Category, ConfidenceLevel, QuestionProgress, StudyStats } from '../types';
+import { Category, ConfidenceLevel, QuestionProgress, StudyStats, SUBCATEGORIES } from '../types';
+import { ALL_QUESTIONS } from '../data';
 import {
   pullFromCloud,
   pushProgressToCloud,
   pushStatsToCloud,
   mergeProgress,
 } from '../services/cloudSync';
+import { logError } from '../services/errorLogger';
 
 const STORAGE_KEY = '@takken_progress';
 
@@ -53,6 +55,8 @@ interface ProgressState {
   loadProgress(): Promise<void>;
   saveProgress(): Promise<void>;
   syncWithCloud(userId: string): Promise<void>;
+  syncError: string | null;
+  clearSyncError(): void;
 }
 
 const initialQuickQuizStats: QuickQuizStats = {
@@ -99,7 +103,7 @@ const initialStats: StudyStats = {
  *   'low'  → 普通（デフォルト）: 標準SM-2
  *   'none' → 難しい: 間隔を半分に、easeFactor減少
  */
-function calculateSM2(
+export function calculateSM2(
   isCorrect: boolean,
   currentInterval: number,
   currentEaseFactor: number,
@@ -213,6 +217,11 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   progress: {},
   stats: { ...initialStats },
   quickQuizStats: { ...initialQuickQuizStats },
+  syncError: null,
+
+  clearSyncError() {
+    set({ syncError: null });
+  },
 
   recordQuickQuizAnswer(quizId: string, category: Category, isCorrect: boolean) {
     const state = get();
@@ -240,9 +249,10 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     // 確信度ベース SM-2 計算
     const currentInterval = existing?.interval ?? 0;
     const currentEaseFactor = existing?.easeFactor ?? INITIAL_EASE_FACTOR;
+    // [FIX ED1] correctStreak は「連続正答数」を使う（correctCount は累計なので不適切）
     const correctStreak = existing
       ? isCorrect
-        ? existing.correctCount
+        ? (existing.correctStreak ?? 0) + 1
         : 0
       : isCorrect
         ? 1
@@ -264,6 +274,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       questionId,
       attempts: (existing?.attempts ?? 0) + 1,
       correctCount: (existing?.correctCount ?? 0) + (isCorrect ? 1 : 0),
+      correctStreak,
       lastAttemptAt: now,
       bookmarked: existing?.bookmarked ?? false,
       nextReviewAt: nextReview.toISOString(),
@@ -328,6 +339,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         questionId,
         attempts: 0,
         correctCount: 0,
+        correctStreak: 0,
         lastAttemptAt: new Date().toISOString(),
         bookmarked: true,
         nextReviewAt: new Date().toISOString(),
@@ -439,10 +451,9 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     }));
 
     const result: string[] = [];
-    const ALL_Q = require('../data').ALL_QUESTIONS as Array<{ id: string; category: Category }>;
 
     for (const { cat, count: needed } of catCounts) {
-      const catQuestions = ALL_Q.filter((q) => q.category === cat);
+      const catQuestions = ALL_QUESTIONS.filter((q) => q.category === cat);
       const scored = catQuestions.map((q) => {
         const p = progress[q.id];
         let priority = 0;
@@ -458,7 +469,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     }
 
     // 同一カテゴリが連続しないようシャッフル（interleave）
-    const questionCatMap = new Map(ALL_Q.map((q) => [q.id, q.category]));
+    const questionCatMap = new Map(ALL_QUESTIONS.map((q) => [q.id, q.category]));
     const interleaved: string[] = [];
     const pools = new Map<Category, string[]>();
     for (const id of result) {
@@ -527,17 +538,15 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
    */
   getWeakAreaDrill(count: number): string[] {
     const { progress, stats } = get();
-    const ALL_Q = require('../data').ALL_QUESTIONS as Array<{ id: string; category: Category; tags: string[] }>;
-    const { SUBCATEGORIES } = require('../types');
 
     // 各サブカテゴリの正答率を計算
     type SubcatScore = { cat: Category; key: string; tags: string[]; accuracy: number; total: number };
     const subcatScores: SubcatScore[] = [];
 
     for (const cat of ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'] as Category[]) {
-      const subcats = (SUBCATEGORIES as Record<Category, Array<{ key: string; matchTags: string[] }>>)[cat];
+      const subcats = SUBCATEGORIES[cat];
       for (const sc of subcats) {
-        const questions = ALL_Q.filter(
+        const questions = ALL_QUESTIONS.filter(
           (q) => q.category === cat && q.tags.some((t: string) => sc.matchTags.includes(t)),
         );
         if (questions.length === 0) continue;
@@ -562,7 +571,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const result: string[] = [];
     for (const sc of subcatScores) {
       if (result.length >= count) break;
-      const questions = ALL_Q.filter(
+      const questions = ALL_QUESTIONS.filter(
         (q) => q.category === sc.cat && q.tags.some((t: string) => sc.tags.includes(t)),
       );
       // 未正解・低正答率の問題を優先
@@ -600,33 +609,40 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         });
       }
     } catch (e) {
-      console.error('[ProgressStore] Failed to load progress:', e);
+      logError(e, { context: 'progress.load' });
     }
   },
 
   async syncWithCloud(userId: string) {
-    const remote = await pullFromCloud(userId);
-    const state = get();
-    if (remote) {
-      const merged = mergeProgress(state.progress, remote.progress);
-      // 統計は lastStudyAt が新しい方を採用
-      const useRemoteStats =
-        remote.stats &&
-        (!state.stats.lastStudyAt ||
-          (remote.stats.lastStudyAt &&
-            new Date(remote.stats.lastStudyAt) > new Date(state.stats.lastStudyAt)));
-      set({
-        progress: merged,
-        stats: useRemoteStats ? remote.stats! : state.stats,
-      });
-      await get().saveProgress();
+    try {
+      const remote = await pullFromCloud(userId);
+      const state = get();
+      if (remote) {
+        const merged = mergeProgress(state.progress, remote.progress);
+        // 統計は lastStudyAt が新しい方を採用
+        const useRemoteStats =
+          remote.stats &&
+          (!state.stats.lastStudyAt ||
+            (remote.stats.lastStudyAt &&
+              new Date(remote.stats.lastStudyAt) > new Date(state.stats.lastStudyAt)));
+        set({
+          progress: merged,
+          stats: useRemoteStats ? remote.stats! : state.stats,
+        });
+        await get().saveProgress();
+      }
+      // ローカル → クラウド push
+      const cur = get();
+      await Promise.all([
+        pushProgressToCloud(userId, cur.progress),
+        pushStatsToCloud(userId, cur.stats, cur.quickQuizStats),
+      ]);
+      // push 成功 → エラーをクリア
+      set({ syncError: null });
+    } catch (e) {
+      logError(e, { context: 'progress.syncWithCloud' });
+      set({ syncError: 'クラウド同期に失敗しました。次回起動時に再試行します。' });
     }
-    // ローカル → クラウド push
-    const cur = get();
-    await Promise.all([
-      pushProgressToCloud(userId, cur.progress),
-      pushStatsToCloud(userId, cur.stats, cur.quickQuizStats),
-    ]);
   },
 
   async saveProgress() {
@@ -634,7 +650,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       const { progress, stats, quickQuizStats } = get();
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ progress, stats, quickQuizStats }));
     } catch (e) {
-      console.error('[ProgressStore] Failed to save progress:', e);
+      logError(e, { context: 'progress.save' });
     }
   },
 }));

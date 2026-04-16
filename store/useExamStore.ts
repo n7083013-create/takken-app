@@ -7,17 +7,15 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Question, Category, ExamResult } from '../types';
 import { ALL_QUESTIONS } from '../data';
+import { logError } from '../services/errorLogger';
+import { EXAM_ALLOCATION, PASS_LINE } from '../constants/exam';
 
 const STORAGE_KEY = '@takken_exam_session';
 const HISTORY_KEY = '@takken_exam_history';
 
 export const EXAM_DURATION_SEC = 120 * 60; // 120分
-export const EXAM_COMPOSITION: Record<Category, number> = {
-  kenri: 14,
-  takkengyoho: 20,
-  horei_seigen: 8,
-  tax_other: 8,
-};
+/** @deprecated EXAM_ALLOCATION from constants/exam を使用してください */
+export const EXAM_COMPOSITION = EXAM_ALLOCATION;
 
 export interface ExamSession {
   id: string;
@@ -173,7 +171,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
     if (!cur) return;
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(cur));
-    } catch {}
+    } catch (e) {
+      logError(e, { context: 'exam.saveSession' });
+    }
   },
 
   async loadHistory() {
@@ -183,7 +183,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         set({ examHistory: JSON.parse(raw) });
       }
     } catch (e) {
-      console.error('[ExamStore] Failed to load history:', e);
+      logError(e, { context: 'exam.loadHistory' });
     }
   },
 
@@ -192,7 +192,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
       const { examHistory } = get();
       await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(examHistory));
     } catch (e) {
-      console.error('[ExamStore] Failed to save history:', e);
+      logError(e, { context: 'exam.saveHistory' });
     }
   },
 
@@ -240,8 +240,7 @@ export function scoreExam(session: ExamSession): {
       byCategory[q.category].correct += 1;
     }
   });
-  // 合格ライン: 目安35点
-  return { total: session.questionIds.length, correct, byCategory, passed: correct >= 35 };
+  return { total: session.questionIds.length, correct, byCategory, passed: correct >= PASS_LINE };
 }
 
 export function getExamQuestions(session: ExamSession): Question[] {

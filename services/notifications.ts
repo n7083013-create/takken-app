@@ -95,7 +95,9 @@ export async function cancelDailyReminder(): Promise<void> {
   try {
     if (Platform.OS === 'web') return;
     await Notifications.cancelScheduledNotificationAsync(REMINDER_IDENTIFIER);
-  } catch {}
+  } catch (e) {
+    logError(e, { context: 'notification.cancelDaily' });
+  }
 }
 
 /**
@@ -105,7 +107,9 @@ export async function cancelAllNotifications(): Promise<void> {
   try {
     if (Platform.OS === 'web') return;
     await Notifications.cancelAllScheduledNotificationsAsync();
-  } catch {}
+  } catch (e) {
+    logError(e, { context: 'notification.cancelAll' });
+  }
 }
 
 /**

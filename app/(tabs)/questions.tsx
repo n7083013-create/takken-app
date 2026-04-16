@@ -11,6 +11,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius, DifficultyLabel, DifficultyColor } from '../../constants/theme';
+import { CATEGORIES } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import {
   CATEGORY_LABELS,
@@ -23,8 +24,6 @@ import {
 } from '../../types';
 import { ALL_QUESTIONS } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
-
-const CATEGORIES: Category[] = ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'];
 
 /** タグベースでサブカテゴリに振り分け */
 function matchSubcategory(q: Question, subcats: Subcategory[]): string {

@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { confirmAlert } from '../../services/alert';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shadow } from '../../constants/theme';
@@ -33,7 +34,7 @@ export default function ExamHomeScreen() {
         <View style={{ flex: 1, padding: 24, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ fontSize: 56, marginBottom: 16 }}>📝</Text>
           <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text, marginBottom: 8 }}>
-            模擬試験はSTANDARD会員限定
+            模擬試験はPREMIUM会員限定
           </Text>
           <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', marginBottom: 24, lineHeight: 20 }}>
             本試験形式 50問・120分の模擬試験で{'\n'}時間配分を本番同様に練習できます
@@ -42,7 +43,7 @@ export default function ExamHomeScreen() {
             style={[s.primaryBtn, Shadow.md, { paddingHorizontal: 40 }]}
             onPress={() => router.push('/paywall')}
           >
-            <Text style={s.primaryBtnText}>STANDARDプランを見る</Text>
+            <Text style={s.primaryBtnText}>PREMIUMプランを見る</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -101,21 +102,14 @@ export default function ExamHomeScreen() {
           style={[s.primaryBtn, Shadow.md, hasActive && s.secondaryBtn]}
           onPress={() => {
             if (hasActive) {
-              Alert.alert(
+              confirmAlert(
                 '新しい試験を開始',
                 '進行中の試験は破棄されます。よろしいですか？',
-                [
-                  { text: 'キャンセル', style: 'cancel' },
-                  {
-                    text: '開始',
-                    style: 'destructive',
-                    onPress: () => {
-                      abandonExam();
-                      startExam();
-                      router.push('/exam/session');
-                    },
-                  },
-                ],
+                () => {
+                  abandonExam();
+                  startExam();
+                  router.push('/exam/session');
+                },
               );
             } else {
               startExam();

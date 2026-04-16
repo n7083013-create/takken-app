@@ -20,6 +20,8 @@ interface AuthState {
   init(): Promise<void>;
   signInWithEmail(email: string, password: string): Promise<{ error: string | null }>;
   signUpWithEmail(email: string, password: string): Promise<{ error: string | null }>;
+  signInWithGoogle(): Promise<{ error: string | null }>;
+  resetPassword(email: string): Promise<{ error: string | null }>;
   signOut(): Promise<void>;
   deleteAccount(): Promise<{ error: string | null }>;
 }
@@ -68,8 +70,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       set({ loading: false });
       if (error) {
-        // セキュリティ: 具体的なエラー原因をユーザーに漏洩しない
-        console.error('[Auth] signIn error:', error.message);
+        logError(error, { context: 'auth.signIn' });
         return { error: 'メールアドレスまたはパスワードが正しくありません' };
       }
       return { error: null };
@@ -91,8 +92,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { error } = await supabase.auth.signUp({ email: email.trim(), password });
       set({ loading: false });
       if (error) {
-        console.error('[Auth] signUp error:', error.message);
-        // 既存ユーザーやレート制限のエラーをサニタイズ
+        logError(error, { context: 'auth.signUp' });
         if (error.message.includes('already registered')) {
           return { error: 'このメールアドレスは既に登録されています' };
         }
@@ -103,6 +103,51 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
       logError(e, { context: 'auth.signUp' });
       return { error: 'アカウント作成に失敗しました。通信環境を確認してください' };
+    }
+  },
+
+  async signInWithGoogle() {
+    if (!isSupabaseConfigured()) return { error: '認証サーバーが未設定です' };
+    set({ loading: true });
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: typeof window !== 'undefined'
+            ? `${window.location.origin}`
+            : undefined,
+        },
+      });
+      set({ loading: false });
+      if (error) {
+        logError(error, { context: 'auth.signInWithGoogle' });
+        return { error: 'Googleログインに失敗しました' };
+      }
+      return { error: null };
+    } catch (e) {
+      set({ loading: false });
+      logError(e, { context: 'auth.signInWithGoogle' });
+      return { error: 'Googleログインに失敗しました。通信環境を確認してください' };
+    }
+  },
+
+  async resetPassword(email: string) {
+    if (!isSupabaseConfigured()) return { error: '認証サーバーが未設定です' };
+    if (!isValidEmail(email)) return { error: 'メールアドレスの形式が正しくありません' };
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/reset-password`
+          : undefined,
+      });
+      if (error) {
+        logError(error, { context: 'auth.resetPassword' });
+        return { error: 'パスワードリセットメールの送信に失敗しました' };
+      }
+      return { error: null };
+    } catch (e) {
+      logError(e, { context: 'auth.resetPassword' });
+      return { error: '通信エラーが発生しました' };
     }
   },
 

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>宅建士 完全対策 - 合格への最短ルート</title>
+  <meta name="description" content="宅建試験の合格率を最大化する学習アプリ。AI解説・模擬試験・一問一答で効率的に学習。7日間無料トライアル。" />
+  <!-- OGP -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="宅建士 完全対策 - 合格への最短ルート" />
+  <meta property="og:description" content="AI解説・模擬試験・一問一答で宅建合格を最短ルートで。7日間無料トライアル。" />
+  <meta property="og:url" content="https://takken-app-olive.vercel.app/lp" />
+  <meta property="og:image" content="https://takken-app-olive.vercel.app/ogp.png" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="宅建士 完全対策 - 合格への最短ルート" />
+  <meta name="twitter:description" content="AI解説・模擬試験・一問一答で宅建合格を最短ルートで。7日間無料トライアル。" />
+  <meta name="twitter:image" content="https://takken-app-olive.vercel.app/ogp.png" />
+  <link rel="icon" href="/favicon.ico" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      color: #1a1a1a;
+      background: #f8f9fa;
+      line-height: 1.7;
+    }
+    a { color: #1B7A3D; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { font-size: 18px; font-weight: 800; color: #1B7A3D; }
+    .header-cta {
+      background: #1B7A3D;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1B7A3D 0%, #2ea050 50%, #1B7A3D 100%);
+      color: #fff;
+      text-align: center;
+      padding: 60px 24px 50px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+    .hero p {
+      font-size: 17px;
+      opacity: 0.9;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      line-height: 1.8;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: #fff;
+      color: #1B7A3D;
+      padding: 16px 40px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    /* Section */
+    .section {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 50px 24px;
+    }
+    .section h2 {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 32px;
+      color: #1B7A3D;
+    }
+
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 500px) {
+      .features { grid-template-columns: 1fr; }
+    }
+    .feature {
+      background: #fff;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .feature-icon { font-size: 28px; margin-bottom: 10px; }
+    .feature h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .feature p { font-size: 13px; color: #666; }
+
+    /* Pricing */
+    .pricing-card {
+      background: #fff;
+      border: 3px solid #1B7A3D;
+      border-radius: 20px;
+      padding: 36px;
+      text-align: center;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 4px 20px rgba(27,122,61,0.12);
+    }
+    .pricing-trial {
+      display: inline-block;
+      background: #FF6B35;
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .pricing-price {
+      font-size: 48px;
+      font-weight: 800;
+      color: #1B7A3D;
+    }
+    .pricing-unit { font-size: 18px; color: #888; margin-left: 4px; }
+    .pricing-daily {
+      font-size: 15px;
+      color: #1B7A3D;
+      font-weight: 600;
+      margin: 8px 0;
+    }
+    .pricing-note {
+      font-size: 13px;
+      color: #888;
+      margin-top: 6px;
+      margin-bottom: 24px;
+    }
+    .pricing-cta {
+      display: block;
+      background: #1B7A3D;
+      color: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .pricing-safe {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* Trust */
+    .trust {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 30px;
+    }
+    .trust-item { text-align: center; }
+    .trust-icon { font-size: 24px; margin-bottom: 4px; }
+    .trust-text { font-size: 12px; color: #888; font-weight: 600; }
+
+    /* How it works */
+    .steps { counter-reset: step; }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: #1B7A3D;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .step p { font-size: 14px; color: #666; }
+
+    /* Company */
+    .company-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .company-table th, .company-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e5e5e5;
+      font-size: 14px;
+    }
+    .company-table th {
+      width: 130px;
+      font-weight: 700;
+      color: #444;
+      background: #f8f9fa;
+    }
+    .company-table td { color: #666; }
+
+    /* Footer */
+    .footer {
+      background: #1a1a1a;
+      color: #fff;
+      text-align: center;
+      padding: 40px 24px;
+    }
+    .footer-links { margin-bottom: 16px; }
+    .footer-links a {
+      color: rgba(255,255,255,0.7);
+      margin: 0 12px;
+      font-size: 13px;
+    }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">宅建士 完全対策</div>
+    <a href="/" class="header-cta">アプリを開く</a>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">宅建試験 合格率No.1を目指すアプリ</div>
+    <h1>宅建士 完全対策</h1>
+    <p>AI解説・模擬試験・一問一答で、<br>合格への最短ルートを実現する学習アプリ</p>
+    <a href="/" class="hero-cta">7日間 無料で始める</a>
+    <p class="hero-sub">無料期間終了後 ¥980/月 ・ いつでも解約OK</p>
+  </section>
+
+  <!-- Features -->
+  <section class="section">
+    <h2>主な機能</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📚</div>
+        <h3>豊富な問題数</h3>
+        <p>過去問ベースの4択問題と一問一答で徹底演習。全問にわかりやすい解説付き。</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <h3>AI解説</h3>
+        <p>わからない問題はAIがその場で解説。理解が深まるまで何度でも質問できます。</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📝</div>
+        <h3>本試験形式 模擬試験</h3>
+        <p>50問・2時間の本番と同じ形式。合否判定と分野別分析で弱点を可視化。</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>AI苦手分析</h3>
+        <p>学習データからAIが苦手分野を特定。効率的な学習プランを自動で提案します。</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>スキマ時間学習</h3>
+        <p>通勤中やお昼休みに一問一答。短時間でも毎日続けやすい設計です。</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚖️</div>
+        <h3>2026年法改正対応</h3>
+        <p>最新の法改正に完全対応。古い情報で間違った知識を覚える心配がありません。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" style="background:#fff;">
+    <h2>始め方</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>無料トライアルを開始</h3>
+          <p>7日間の無料体験をスタート。すべての機能が使えます。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>毎日学習を続ける</h3>
+          <p>問題演習・模擬試験・AI解説で効率的に学習。ストリーク機能で習慣化。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>合格を勝ち取る</h3>
+          <p>苦手を克服し、本番で力を発揮。8日目以降は月額¥980で継続利用。いつでも解約可能です。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="section">
+    <h2>料金プラン</h2>
+    <div class="pricing-card">
+      <div class="pricing-trial">7日間無料</div>
+      <div>
+        <span class="pricing-price">¥980</span>
+        <span class="pricing-unit">/月（税込）</span>
+      </div>
+      <div class="pricing-daily">1日わずか33円</div>
+      <div class="pricing-note">トライアル中にキャンセルすれば料金はかかりません</div>
+      <a href="/" class="pricing-cta">7日間 無料で始める</a>
+      <p class="pricing-safe">いつでも解約OK</p>
+    </div>
+    <div class="trust">
+      <div class="trust-item">
+        <div class="trust-icon">🔒</div>
+        <div class="trust-text">安全な決済</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">✋</div>
+        <div class="trust-text">いつでも解約</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Company info -->
+  <section class="section" style="background:#fff;">
+    <h2>運営情報</h2>
+    <table class="company-table">
+      <tr><th>サービス名</th><td>宅建士 完全対策</td></tr>
+      <tr><th>運営</th><td>合同会社カケル</td></tr>
+      <tr><th>所在地</th><td>沖縄県沖縄市美里仲原町18-7-20世紀Mカマキチ303</td></tr>
+      <tr><th>お問い合わせ</th><td><a href="mailto:taira@2023kakeru.com">taira@2023kakeru.com</a></td></tr>
+      <tr><th>サービス内容</th><td>宅地建物取引士試験の学習支援アプリ（Web・iOS・Android対応）。問題演習、模擬試験、AI解説、学習分析機能を提供。</td></tr>
+      <tr><th>料金</th><td>月額980円（税込）・7日間の無料トライアルあり</td></tr>
+      <tr><th>支払方法</th><td>クレジットカード（Visa, Mastercard, JCB, American Express）</td></tr>
+    </table>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="/">アプリを開く</a>
+      <a href="/tokushoho.html">特定商取引法に基づく表記</a>
+      <a href="/terms.html">利用規約</a>
+      <a href="/privacy.html">プライバシーポリシー</a>
+      <a href="mailto:taira@2023kakeru.com">お問い合わせ</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 合同会社カケル All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

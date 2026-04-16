@@ -4,6 +4,8 @@
 
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logError } from '../services/errorLogger';
+import { API_BASE_URL } from '../constants/config';
 import {
   UserSettings,
   Subscription,
@@ -28,6 +30,7 @@ interface SettingsState {
   // Actions
   updateSettings(partial: Partial<UserSettings>): void;
   setPlan(plan: SubscriptionPlan, expiresAt?: string): void;
+  verifySubscription(accessToken: string): Promise<void>;
   cancelPlan(): void;
   startTrial(): void;
   isTrialActive(): boolean;
@@ -37,6 +40,7 @@ interface SettingsState {
   isPro(): boolean;
   isContinuingMember(): boolean; // 2年目以降
   getRenewalPrice(): number;
+  getAIDailyRemaining(): number;
   getDaysUntilExam(): number | null;
   loadSettings(): Promise<void>;
   saveSettings(): Promise<void>;
@@ -189,7 +193,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   getRenewalPrice() {
-    return PLAN_PRICES.yearly;
+    return PLAN_PRICES.monthly;
   },
 
   canUseAI(): boolean {
@@ -242,6 +246,31 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     return Math.max(0, limit - usedToday);
   },
 
+  async verifySubscription(accessToken: string) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/verify-subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      // サーバーの状態でローカルを上書き（改ざん防止）
+      const currentSub = get().subscription;
+      set({
+        subscription: {
+          ...currentSub,
+          plan: data.plan || 'free',
+        },
+      });
+      get().saveSettings();
+    } catch {
+      // ネットワークエラー時はローカル状態を維持（オフライン対応）
+    }
+  },
+
   getDaysUntilExam() {
     const { examDate } = get().settings;
     if (!examDate) return null;
@@ -264,7 +293,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         });
       }
     } catch (e) {
-      console.error('[SettingsStore] Failed to load settings:', e);
+      logError(e, { context: 'settings.load' });
     }
   },
 
@@ -273,7 +302,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       const { settings, subscription } = get();
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ settings, subscription }));
     } catch (e) {
-      console.error('[SettingsStore] Failed to save settings:', e);
+      logError(e, { context: 'settings.save' });
     }
   },
 }));

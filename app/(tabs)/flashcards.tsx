@@ -12,11 +12,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius, Shadow } from '../../constants/theme';
+import { CATEGORIES } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category } from '../../types';
 import { ALL_GLOSSARY } from '../../data';
 
-const CATEGORIES: Category[] = ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = Math.min(SCREEN_WIDTH - 40, 420);
 

@@ -5,6 +5,7 @@
 
 import { Category, Question, QuestionProgress, StudyStats } from '../types';
 import { ALL_QUESTIONS, ALL_QUICK_QUIZZES } from '../data';
+import { PASS_LINE } from '../constants/exam';
 
 // 試験本番の配点目標
 export const TARGET_SCORES: Record<Category, { total: number; target: number }> = {
@@ -185,8 +186,8 @@ export function analyzeOverall(
 
   const predictedTotal = analyses.reduce((sum, a) => sum + a.predictedScore, 0);
 
-  // 合格確率の算出（41点を中心としたシグモイド近似）
-  const diff = predictedTotal - 35;
+  // 合格確率の算出（合格ラインを中心としたシグモイド近似）
+  const diff = predictedTotal - PASS_LINE;
   const passProbability = Math.max(0, Math.min(100, Math.round(50 + diff * 6)));
 
   // 最弱・最強カテゴリ

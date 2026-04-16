@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { confirmAlert } from '../../services/alert';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shadow } from '../../constants/theme';
@@ -54,19 +55,10 @@ export default function ExamSessionScreen() {
   const answeredCount = Object.keys(current.answers).length;
 
   const handleSubmit = () => {
-    Alert.alert(
+    confirmAlert(
       '試験を終了',
       `${answeredCount}/50 問回答済み。採点しますか？`,
-      [
-        { text: 'キャンセル', style: 'cancel' },
-        {
-          text: '終了して採点',
-          style: 'destructive',
-          onPress: () => {
-            submitExam();
-          },
-        },
-      ],
+      () => submitExam(),
     );
   };
 

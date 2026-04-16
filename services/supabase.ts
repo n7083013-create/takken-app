@@ -27,7 +27,7 @@ function getClient(): SupabaseClient {
         },
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: false,
+        detectSessionInUrl: true,
       },
     });
   }
@@ -43,6 +43,7 @@ export const supabase = new Proxy({} as SupabaseClient, {
           getSession: async () => ({ data: { session: null }, error: null }),
           onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
           signInWithPassword: async () => ({ error: { message: '認証サーバーが未設定です' } }),
+          signInWithOAuth: async () => ({ error: { message: '認証サーバーが未設定です' } }),
           signUp: async () => ({ error: { message: '認証サーバーが未設定です' } }),
           signOut: async () => ({}),
         };

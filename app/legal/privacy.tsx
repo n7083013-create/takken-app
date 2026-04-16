@@ -11,7 +11,7 @@ export default function PrivacyScreen() {
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
         <Text style={s.h1}>プライバシーポリシー</Text>
-        <Text style={s.meta}>最終更新日: 2026年4月1日</Text>
+        <Text style={s.meta}>最終更新日: 2026年4月15日</Text>
 
         <Text style={s.h2}>1. はじめに</Text>
         <Text style={s.p}>
@@ -51,10 +51,8 @@ export default function PrivacyScreen() {
         <Text style={s.h2}>5. 外部サービスの利用</Text>
         <Text style={s.p}>
           本アプリは以下の外部サービスを利用しています。{'\n'}
-          ・Apple App Store / Google Play（課金処理）{'\n'}
+          ・PAY.JP（決済処理・サブスクリプション管理）{'\n'}
           ・Supabase（認証・学習履歴クラウド同期）{'\n'}
-          ・RevenueCat（サブスクリプション管理）{'\n'}
-          ・Sentry（エラーログ・クラッシュ解析）{'\n'}
           ・Anthropic Claude API（AI解説機能）{'\n'}
           各サービスのプライバシーポリシーが適用されます。
         </Text>
@@ -90,8 +88,8 @@ export default function PrivacyScreen() {
 
         <Text style={s.h2}>11. お問い合わせ</Text>
         <Text style={s.p}>
-          本ポリシーに関するお問い合わせは、アプリ内の「お問い合わせ」または
-          下記連絡先までお願いいたします。{'\n'}
+          本ポリシーに関するお問い合わせは、下記連絡先までお願いいたします。{'\n'}
+          運営者: 合同会社カケル{'\n'}
           Email: taira@2023kakeru.com
         </Text>
       </ScrollView>

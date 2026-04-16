@@ -1,0 +1,8 @@
+{
+  "buildCommand": "",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/((?!_expo|assets|favicon).*)", "destination": "/index.html" }
+  ]
+}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -47,7 +47,7 @@ export default function ReviewScreen() {
   const getProgress = useProgressStore((s) => s.getProgress);
   const recordAnswer = useProgressStore((s) => s.recordAnswer);
   const checkAchievements = useAchievementChecker();
-  const { triggerCorrect, triggerWrong, resetCombo, FeedbackOverlay } = useAnswerFeedback();
+  const { triggerCorrect, triggerWrong, FeedbackOverlay } = useAnswerFeedback();
 
   const [mode, setMode] = useState<ReviewMode>('menu');
   const [reviewType, setReviewType] = useState<ReviewType>('due');
@@ -56,7 +56,7 @@ export default function ReviewScreen() {
   const [answerState, setAnswerState] = useState<AnswerState>('idle');
   const [sessionCorrect, setSessionCorrect] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
-  const [explainAnim] = useState(new Animated.Value(0));
+  const explainAnim = useRef(new Animated.Value(0)).current;
 
   const s = useMemo(() => makeStyles(colors), [colors]);
 

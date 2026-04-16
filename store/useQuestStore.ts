@@ -6,6 +6,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QuestMissionProgress } from '../types';
 import { QUEST_CHAPTERS, ALL_QUEST_MISSIONS } from '../data/quests';
+import { logError } from '../services/errorLogger';
 
 const STORAGE_KEY = '@takken_quest';
 
@@ -139,7 +140,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
         set({ missionProgress: data.missionProgress ?? {} });
       }
     } catch (e) {
-      console.error('[QuestStore] Failed to load quest:', e);
+      logError(e, { context: 'quest.load' });
     }
   },
 
@@ -148,7 +149,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
       const { missionProgress } = get();
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ missionProgress }));
     } catch (e) {
-      console.error('[QuestStore] Failed to save quest:', e);
+      logError(e, { context: 'quest.save' });
     }
   },
 }));

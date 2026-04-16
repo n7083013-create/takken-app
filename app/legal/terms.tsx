@@ -11,7 +11,7 @@ export default function TermsScreen() {
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
         <Text style={s.h1}>利用規約</Text>
-        <Text style={s.meta}>最終更新日: 2026年4月1日</Text>
+        <Text style={s.meta}>最終更新日: 2026年4月15日</Text>
 
         <Text style={s.h2}>第1条（適用）</Text>
         <Text style={s.p}>
@@ -27,11 +27,12 @@ export default function TermsScreen() {
 
         <Text style={s.h2}>第3条（サブスクリプション）</Text>
         <Text style={s.p}>
-          1. 本アプリは、無料プランおよび有料プラン（STANDARD / AI UNLIMITED）を提供します。{'\n'}
-          2. 課金・更新・解約は、Apple App Store または Google Play の各プラットフォーム規約に従います。{'\n'}
-          3. 購読は自動更新され、更新の24時間前までに解約しない場合、同一期間で自動更新されます。{'\n'}
-          4. 解約は、App Store / Google Play の設定画面から行ってください。{'\n'}
-          5. 課金後の返金については各プラットフォームのポリシーに従います。
+          1. 本アプリは、無料プランおよび有料プラン（PREMIUM・月額980円税込）を提供します。{'\n'}
+          2. 有料プランには初回7日間の無料トライアル期間があります。トライアル終了後に自動的に課金が開始されます。{'\n'}
+          3. 決済はPAY株式会社（PAY.JP）を通じて処理されます。クレジットカード情報は当方のサーバーには保存されません。{'\n'}
+          4. 購読は自動更新され、次回更新日の24時間前までに解約しない場合、同一期間・同一料金で自動更新されます。{'\n'}
+          5. 解約は、アプリ内の設定画面またはお問い合わせフォームから行ってください。解約後も当月の残り期間は引き続きご利用いただけます。{'\n'}
+          6. デジタルコンテンツの性質上、原則として返金はお受けしておりません。サービスに重大な不具合がある場合はお問い合わせください。
         </Text>
 
         <Text style={s.h2}>第4条（禁止事項）</Text>

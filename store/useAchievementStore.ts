@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Achievement, AchievementId, Category } from '../types';
+import { logError } from '../services/errorLogger';
 
 const STORAGE_KEY = '@takken_achievements';
 
@@ -203,7 +204,7 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
         });
       }
     } catch (e) {
-      console.error('[AchievementStore] Failed to load:', e);
+      logError(e, { context: 'achievement.load' });
     }
   },
 
@@ -212,7 +213,7 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
       const { unlocked, newlyUnlocked } = get();
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ unlocked, newlyUnlocked }));
     } catch (e) {
-      console.error('[AchievementStore] Failed to save:', e);
+      logError(e, { context: 'achievement.save' });
     }
   },
 }));

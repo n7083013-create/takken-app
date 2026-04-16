@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /paywall
+
+Sitemap: https://takken-app-olive.vercel.app/sitemap.xml

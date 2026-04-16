@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logError } from '../services/errorLogger';
 
 const STORAGE_KEY = '@takken_reports';
 
@@ -67,12 +68,16 @@ export const useReportStore = create<ReportState>((set, get) => ({
     try {
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
       if (raw) set({ reports: JSON.parse(raw) });
-    } catch {}
+    } catch (e) {
+      logError(e, { context: 'report.loadReports' });
+    }
   },
 
   async saveReports() {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(get().reports));
-    } catch {}
+    } catch (e) {
+      logError(e, { context: 'report.save' });
+    }
   },
 }));
