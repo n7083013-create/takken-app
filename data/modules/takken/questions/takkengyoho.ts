@@ -5,6 +5,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-001',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -28,6 +29,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-002',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、宅地建物取引業法の規定によれば、免許を受けることができないものはどれか。',
     choices: [
@@ -51,6 +53,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-003',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -74,6 +77,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-004',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '営業保証金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -97,6 +101,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-005',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅地建物取引業保証協会に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -120,6 +125,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-006',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅建業者Aが、BからB所有の甲住宅の売却の媒介を依頼された場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -143,6 +149,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-007',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅建業者が行う重要事項の説明（宅建業法第35条）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -166,6 +173,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-008',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅建業法第35条の規定により、宅建業者が建物の売買の媒介を行う場合に、買主に対して説明しなければならない重要事項として、誤っているものはどれか。',
     choices: [
@@ -189,6 +197,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-009',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '宅建業法第37条の規定により交付すべき書面（37条書面）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -212,6 +221,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-010',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅建業者Aが自ら売主として、宅建業者でないBに新築マンションを4,000万円で売却する場合のクーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -235,6 +245,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-011',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅建業者Aが自ら売主として、宅建業者でないBに宅地を5,000万円で売却する場合の手付に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -258,6 +269,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-012',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅建業者Aが自ら売主として、宅建業者でないBに建物を売却する場合の損害賠償額の予定等の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -281,6 +293,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-013',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 3,
     text: '宅建業者Aが自ら売主として、宅建業者でないBに新築住宅を売却する場合の契約不適合責任の特約制限に関する次の記述のうち、宅地建物取引業法の規定によれば、有効なものはどれか。',
     choices: [
@@ -304,6 +317,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-014',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅地建物取引業者の報酬に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。なお、消費税及び地方消費税に関しては考慮しないものとする。',
     choices: [
@@ -327,6 +341,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-015',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '宅建業者の事務所に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -350,6 +365,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-016',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 3,
     text: '宅建業者Aが自ら売主として、宅建業者でないBに建物（完成物件・代金5,000万円）を売却する場合の手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -373,6 +389,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-017',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '宅地建物取引業法に規定する監督処分及び罰則に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -396,6 +413,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-018',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '宅建業者が行う広告に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -419,6 +437,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-019',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '宅地建物取引業者が、その業務に関して行う次の行為のうち、宅地建物取引業法の規定に違反しないものはどれか。',
     choices: [
@@ -442,6 +461,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-020',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2024,
     difficulty: 3,
     text: '宅建業者Aが自ら売主として、宅建業者でないBに未完成の建売住宅（代金4,000万円）を売却する場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -468,6 +488,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-021',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 1,
     text: '宅地建物取引業の免許の有効期間及び更新に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -491,6 +512,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-022',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業者Aは、甲県知事の免許を受けて営業していたが、新たに乙県にも事務所を設置することとした。この場合の免許換えに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -514,6 +536,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-023',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引士Aが甲県知事の登録を受けている場合の変更届出に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -537,6 +560,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-024',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 1,
     text: '宅地建物取引士の登録に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -560,6 +584,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-025',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引士Aが甲県知事の登録を受け、宅地建物取引士証の交付を受けている場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -583,6 +608,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-026',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引士Aの宅地建物取引士証に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -606,6 +632,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-027',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 1,
     text: '宅地建物取引業者の事務所における専任の宅地建物取引士の設置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -629,6 +656,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-028',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業者A（甲県知事免許）が、乙県内に一団の宅地の分譲のための案内所を設置する場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -652,6 +680,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-029',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業者A（甲県知事免許）が、乙県所在の一団のマンション（30戸）の分譲の代理を行うため、乙県内に案内所を設けて契約の申込みを受ける場合に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -675,6 +704,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-030',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 1,
     text: '宅地建物取引業者の従業者名簿に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -698,6 +728,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-031',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業者の帳簿の記載事項及び保存に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -721,6 +752,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-032',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 1,
     text: '宅地建物取引業者が掲示すべき標識に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -744,6 +776,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-033',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業者Aが、宅地（代金3,000万円、消費税等相当額を含まない。）の売買の媒介を行う場合の報酬に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。なお、報酬には消費税等相当額を含むものとする。',
     choices: [
@@ -767,6 +800,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-034',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '宅地建物取引業者Aが、Bの所有する居住用建物（1か月の借賃15万円、消費税等相当額を含まない。）の賃貸借の媒介を行う場合の報酬に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。なお、報酬には消費税等相当額を含むものとする。',
     choices: [
@@ -790,6 +824,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-035',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '宅地建物取引業者Aが、B所有の宅地（代金200万円、消費税等相当額を含まない。）の売買の媒介を行う場合の報酬に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。なお、報酬には消費税等相当額を含むものとする。',
     choices: [
@@ -813,6 +848,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-036',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業者Aが、BからB所有の甲宅地の売却の依頼を受け、専属専任媒介契約を締結した場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -836,6 +872,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-037',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業者Aが、BからB所有の甲建物の売却の媒介を依頼され、Bと媒介契約を締結した場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -859,6 +896,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-038',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業法第35条に規定する重要事項の説明に関する次の記述のうち、区分所有建物の売買の場合に説明しなければならない事項として、正しいものはどれか。',
     choices: [
@@ -882,6 +920,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-039',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業法第35条に規定する重要事項の説明に関する次の記述のうち、建物の貸借の場合に説明しなければならない事項として、誤っているものはどれか。',
     choices: [
@@ -905,6 +944,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-040',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地建物取引業法第37条の規定により交付すべき書面（37条書面）の記載事項に関する次の記述のうち、売買契約の場合に必ず記載しなければならない事項として、誤っているものはどれか。',
     choices: [
@@ -928,6 +968,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-041',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業法第37条の規定により交付すべき書面（37条書面）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -951,6 +992,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-042',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに未完成の建売住宅（代金6,000万円）を売却する場合の手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -974,6 +1016,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-043',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに完成済みの新築マンション（代金8,000万円）を売却する場合の手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -997,6 +1040,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-044',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBとの間で宅地の売買契約を締結した場合における、いわゆる8種制限に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -1020,6 +1064,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-045',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに宅地（代金3,000万円）を売却する場合のクーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1043,6 +1088,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-046',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに建物（代金2,000万円）を売却する場合のクーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1066,6 +1112,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-047',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに建物（代金5,000万円）を売却する場合の損害賠償額の予定等の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1089,6 +1136,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-048',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに宅地（代金4,000万円）を売却する場合の手付に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1112,6 +1160,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-049',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに建物を売却する場合の契約不適合責任の特約制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1135,6 +1184,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-050',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに建売住宅を割賦販売する場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1158,6 +1208,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-051',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに建物を売却する場合の所有権留保等の禁止に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1181,6 +1232,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-052',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業者が行う広告に関する次の記述のうち、宅地建物取引業法の規定によれば、誇大広告等の禁止（第32条）に違反するものはどれか。',
     choices: [
@@ -1204,6 +1256,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-053',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 1,
     text: '宅地建物取引業法に規定する不当な履行遅延の禁止に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1227,6 +1280,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-054',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 1,
     text: '宅地建物取引業者の守秘義務に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1250,6 +1304,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-055',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業法に規定する監督処分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1273,6 +1328,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-056',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '宅地建物取引業法に規定する免許の取消事由に関する次の記述のうち、必ず免許を取り消さなければならない場合（必要的取消事由）に該当するものはどれか。',
     choices: [
@@ -1296,6 +1352,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-057',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業法に規定する罰則に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1319,6 +1376,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-058',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '宅地建物取引業法に規定する罰則に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1342,6 +1400,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-059',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 1,
     text: '特定住宅瑕疵担保責任の履行の確保等に関する法律（住宅瑕疵担保履行法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1365,6 +1424,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-060',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '特定住宅瑕疵担保責任の履行の確保等に関する法律（住宅瑕疵担保履行法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1388,6 +1448,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-061',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '宅地建物取引業者が従業者に携帯させなければならない従業者証明書に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1411,6 +1472,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-062',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBに宅地（代金2,500万円）を売却する場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1434,6 +1496,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-063',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1457,6 +1520,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-064',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '宅地建物取引士の登録の消除に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1480,6 +1544,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-065',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '宅地建物取引業法第35条に規定する重要事項の説明に関する次の記述のうち、建物の売買の場合と貸借の場合で説明事項が異なるものとして、正しいものはどれか。',
     choices: [
@@ -1503,6 +1568,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-066',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '宅地建物取引業者Aが、B所有の甲宅地（代金350万円、消費税等相当額を含まない。）の売買の媒介を行う場合の報酬に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。なお、甲宅地は空家等の売買に該当するものとする。報酬には消費税等相当額を含むものとする。',
     choices: [
@@ -1526,6 +1592,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-067',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '宅地建物取引業者の業務上の規制に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1549,6 +1616,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-068',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '宅地建物取引業法に規定する宅地建物取引士の事務禁止処分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1572,6 +1640,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-069',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '宅地建物取引業者Aが、宅地建物取引業者でないBに対し、A所有の宅地（代金1億円）を売却する場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1595,6 +1664,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-070',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '特定住宅瑕疵担保責任の履行の確保等に関する法律（住宅瑕疵担保履行法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1619,6 +1689,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-071',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '令和7年6月施行の改正刑法に伴う宅地建物取引業の免許の欠格事由に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1642,6 +1713,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-072',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '令和7年刑法改正後の宅地建物取引士の登録の欠格事由に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1665,6 +1737,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-073',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和7年12月1日施行の改正により変更された宅地建物取引業者の事務所に掲示する標識（宅建業者票）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1688,6 +1761,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-074',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和7年施行の改正に伴い重要事項説明（宅建業法第35条）に追加された区分所有建物の売買に関する説明事項として、正しいものはどれか。',
     choices: [
@@ -1711,6 +1785,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-075',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和7年刑法改正後における宅地建物取引業の免許取消事由に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1734,6 +1809,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-076',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和7年刑法改正の経過措置に関する次の記述のうち、宅地建物取引業の免許の欠格事由の観点から正しいものはどれか。',
     choices: [
@@ -1757,6 +1833,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-077',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和7年施行の改正により新設された「管理業者管理方式」の説明義務の趣旨として、正しいものはどれか。',
     choices: [
@@ -1780,6 +1857,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-078',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '宅地建物取引業法に規定する罰則に関する次の記述のうち、令和7年刑法改正後の規定として正しいものはどれか。',
     choices: [
@@ -1803,6 +1881,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-079',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '宅地建物取引業の免許に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1826,6 +1905,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-080',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '宅地建物取引業の免許換えに関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1849,6 +1929,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-081',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、免許を受けることができるものはどれか。',
     choices: [
@@ -1872,6 +1953,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-082',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1895,6 +1977,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-083',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1918,6 +2001,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-084',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業に該当するものはどれか。',
     choices: [
@@ -1941,6 +2025,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-085',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '宅地建物取引業の免許に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1964,6 +2049,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-086',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '次の者のうち、宅地建物取引業の免許を受けることができないものはどれか。',
     choices: [
@@ -1987,6 +2073,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-087',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2010,6 +2097,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-088',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '宅地建物取引業の免許に関する次の記述のうち、免許が必要な場合はどれか。',
     choices: [
@@ -2033,6 +2121,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-089',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '宅地建物取引業法の免許の届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2056,6 +2145,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-090',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '宅地建物取引業の免許に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2079,6 +2169,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-091',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2102,6 +2193,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-092',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '宅地建物取引士の登録に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2125,6 +2217,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-093',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '宅地建物取引士の登録の欠格事由に関する次の記述のうち、登録を受けることができないものはどれか。',
     choices: [
@@ -2148,6 +2241,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-094',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '宅地建物取引士証に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2171,6 +2265,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-095',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '宅地建物取引士に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2194,6 +2289,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-096',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '宅地建物取引士の登録の移転に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2217,6 +2313,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-097',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '宅地建物取引士の登録及び取引士証に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2240,6 +2337,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-098',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '専任の宅地建物取引士に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2263,6 +2361,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-099',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '宅地建物取引士に対する監督処分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2286,6 +2385,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-100',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '宅地建物取引士の登録の消除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2309,6 +2409,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-101',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '宅地建物取引士に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2332,6 +2433,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-102',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '宅地建物取引士の登録に必要な実務経験に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2355,6 +2457,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-103',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '営業保証金に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2378,6 +2481,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-104',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '営業保証金に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2401,6 +2505,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-105',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '営業保証金の還付に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2424,6 +2529,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-106',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '営業保証金の供託に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2447,6 +2553,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-107',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '保証協会に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2470,6 +2577,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-108',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '保証協会に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2493,6 +2601,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-109',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '保証協会と弁済業務保証金に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2516,6 +2625,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-110',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '営業保証金の取戻しに関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2539,6 +2649,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-111',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '保証協会に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2562,6 +2673,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-112',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '宅建業者の事務所に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2585,6 +2697,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-113',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '宅建業者の事務所に備え付けるべきものに関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2608,6 +2721,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-114',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '宅建業者の標識に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2631,6 +2745,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-115',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '宅建業者の届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2654,6 +2769,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-116',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '宅建業者の従業者証明書に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2677,6 +2793,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-117',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '宅建業者の事務所及び案内所等に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2700,6 +2817,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-118',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '媒介契約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2723,6 +2841,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-119',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '媒介契約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2746,6 +2865,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-120',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '媒介契約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2769,6 +2889,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-121',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2792,6 +2913,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-122',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2815,6 +2937,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-123',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '宅地建物取引業の免許換えに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2838,6 +2961,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-124',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2861,6 +2985,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-125',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2884,6 +3009,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-126',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2907,6 +3033,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-127',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2930,6 +3057,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-128',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引士証に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2953,6 +3081,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-129',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引士の登録の移転に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2976,6 +3105,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-130',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引士の登録に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2999,6 +3129,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-131',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '営業保証金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3022,6 +3153,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-132',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '営業保証金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3045,6 +3177,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-133',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '保証協会に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3068,6 +3201,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-134',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '保証協会に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3091,6 +3225,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-135',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '宅地建物取引業者の事務所に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3114,6 +3249,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-136',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引業者の標識に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3137,6 +3273,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-137',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '宅地建物取引業者の届出に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3160,6 +3297,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-138',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '宅地建物取引業者の事務所の設置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3183,6 +3321,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-139',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '媒介契約に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3206,6 +3345,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-140',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '媒介契約に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3229,6 +3369,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-141',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '媒介契約に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3252,6 +3393,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-142',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '媒介契約に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3275,6 +3417,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-143',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3298,6 +3441,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-144',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3321,6 +3465,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-145',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3344,6 +3489,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-146',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3367,6 +3513,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-147',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、説明が必要なものはどれか。',
     choices: [
@@ -3390,6 +3537,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-148',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3413,6 +3561,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-149',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3436,6 +3585,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-150',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、建物の貸借の媒介を行う場合に説明が必要なものはどれか。',
     choices: [
@@ -3459,6 +3609,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-151',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3482,6 +3633,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-152',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3505,6 +3657,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-153',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '37条書面（契約書面）に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3528,6 +3681,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-154',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '37条書面（契約書面）に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3551,6 +3705,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-155',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '37条書面（契約書面）に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3574,6 +3729,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-156',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '37条書面（契約書面）に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3597,6 +3753,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-157',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '手付金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3620,6 +3777,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-158',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3643,6 +3801,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-159',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3666,6 +3825,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-160',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '手付に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3689,6 +3849,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-161',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 1,
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3712,6 +3873,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-162',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3735,6 +3897,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-163',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3758,6 +3921,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-164',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3781,6 +3945,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-165',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '損害賠償額の予定等の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3804,6 +3969,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-166',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '損害賠償額の予定等の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3827,6 +3993,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-167',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3850,6 +4017,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-168',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3873,6 +4041,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-169',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3896,6 +4065,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-170',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '空家等の売買又は交換の媒介における報酬の特例に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3919,6 +4089,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-171',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '空家等の報酬特例に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3942,6 +4113,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-172',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3965,6 +4137,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-173',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3988,6 +4161,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-174',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4011,6 +4185,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-175',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 1,
     text: '広告に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4034,6 +4209,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-176',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '広告に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4057,6 +4233,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-177',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '業務に関する禁止事項について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4080,6 +4257,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-178',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '業務に関する禁止事項について、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4103,6 +4281,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-179',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '宅地建物取引業者の広告及び契約の規制に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4126,6 +4305,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-180',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '自ら売主制限（8種制限）に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4149,6 +4329,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-181',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '自ら売主制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4172,6 +4353,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-182',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '自ら売主制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4195,6 +4377,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-183',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '監督処分に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4218,6 +4401,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-184',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '監督処分・罰則に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4241,6 +4425,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-185',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4264,6 +4449,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-186',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4287,6 +4473,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-187',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4310,6 +4497,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-188',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '営業保証金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4333,6 +4521,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-189',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '営業保証金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4356,6 +4545,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-190',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '保証協会に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4379,6 +4569,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-191',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4402,6 +4593,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-192',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4425,6 +4617,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-193',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4448,6 +4641,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-194',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '37条書面に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4471,6 +4665,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-195',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '37条書面に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4494,6 +4689,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-196',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4517,6 +4713,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-197',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4540,6 +4737,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-198',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 1,
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4563,6 +4761,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-199',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '損害賠償額の予定等の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4586,6 +4785,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-200',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4609,6 +4809,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-201',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4632,6 +4833,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-202',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4655,6 +4857,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-203',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '広告に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4678,6 +4881,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-204',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '業務に関する規制について、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4701,6 +4905,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-205',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4724,6 +4929,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-206',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '宅地建物取引業の免許の欠格事由に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4747,6 +4953,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-207',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 1,
     text: '宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4770,6 +4977,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-208',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '営業保証金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4793,6 +5001,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-209',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '保証協会に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4816,6 +5025,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-210',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '事務所に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4839,6 +5049,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-211',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '媒介契約に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4862,6 +5073,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-212',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4885,6 +5097,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-213',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4908,6 +5121,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-214',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '37条書面に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4931,6 +5145,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-215',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '手付に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4954,6 +5169,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-216',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4977,6 +5193,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-217',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '損害賠償額の予定等の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5000,6 +5217,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-218',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5023,6 +5241,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-219',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '業務に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5046,6 +5265,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-220',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '自ら売主制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5069,6 +5289,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-221',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '免許に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5092,6 +5313,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-222',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '免許の欠格事由に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5115,6 +5337,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-223',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '宅地建物取引士の登録に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5138,6 +5361,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-224',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '保証協会に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5161,6 +5385,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-225',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 1,
     text: '事務所に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -5184,6 +5409,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-226',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '媒介契約に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5207,6 +5433,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-227',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5230,6 +5457,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-228',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5253,6 +5481,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-229',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '37条書面に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5276,6 +5505,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-230',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '手付金等の保全措置に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5299,6 +5529,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-231',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5322,6 +5553,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-232',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5345,6 +5577,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-233',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '広告に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5368,6 +5601,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-234',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '業務に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5391,6 +5625,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-235',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '免許の欠格事由に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5414,6 +5649,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-236',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 1,
     text: '宅地建物取引士に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -5437,6 +5673,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-237',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '営業保証金に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5460,6 +5697,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-238',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '保証協会に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5483,6 +5721,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-239',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5506,6 +5745,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-240',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '37条書面に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5529,6 +5769,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-241',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '手付に関する次の記述のうち、宅地建物取引業法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -5552,6 +5793,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-242',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5575,6 +5817,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-243',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5598,6 +5841,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-244',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '業務に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5621,6 +5865,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-245',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '自ら売主制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5644,6 +5889,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-246',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '監督処分に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5667,6 +5913,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-247',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '罰則に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5690,6 +5937,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-248',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '報酬額の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5713,6 +5961,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-249',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '広告に関する規制について、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5736,6 +5985,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-250',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '損害賠償額の予定等の制限に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはどれか。',
     choices: [
@@ -5760,6 +6010,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-251',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '宅地建物取引業者Aが自ら売主として、宅地建物取引業者でないBとの間で建物の売買契約を締結した場合に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものはいくつあるか。',
@@ -5791,6 +6042,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-252',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: '重要事項の説明に関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものの組合せはどれか。',
@@ -5822,6 +6074,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-253',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '宅地建物取引業者の報酬に関する次の記述のうち、正しいものはいくつあるか。',
@@ -5853,6 +6106,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-254',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: 'クーリング・オフに関する次の記述のうち、宅地建物取引業法の規定によれば、正しいものの組合せはどれか。',
@@ -5884,6 +6138,7 @@ export const takkengyohoQuestions: Question[] = [
     id: 'takkengyoho-255',
     moduleId: 'takken',
     category: 'takkengyoho',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '宅地建物取引業の免許に関する次の記述のうち、宅地建物取引業法の規定によれば、免許を受けることができないものはいくつあるか。',

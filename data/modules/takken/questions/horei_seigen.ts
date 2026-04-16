@@ -5,6 +5,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-001',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '都市計画法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -28,6 +29,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-002',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '都市計画法の開発許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -51,6 +53,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-003',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -74,6 +77,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-004',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '建築基準法の建ぺい率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -97,6 +101,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-005',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '建築基準法の容積率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -120,6 +125,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-006',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '建築基準法の道路に関する規定についての次の記述のうち、正しいものはどれか。',
     choices: [
@@ -143,6 +149,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-007',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '国土利用計画法第23条の届出（事後届出）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -166,6 +173,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-008',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -189,6 +197,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-009',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '土地区画整理法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -212,6 +221,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-010',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '宅地造成及び特定盛土等規制法（旧：宅地造成等規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -235,6 +245,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-011',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '都市計画法に定める地域地区に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -258,6 +269,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-012',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '都市計画法における都市施設及び市街地開発事業に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -281,6 +293,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-013',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '地区計画に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -304,6 +317,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-014',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '開発許可の手続及び例外に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -327,6 +341,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-015',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '開発許可を受けた開発区域内における建築制限及び開発許可後の規制に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -350,6 +365,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-016',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '建築基準法の建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -373,6 +389,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-017',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '建築協定に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -396,6 +413,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-018',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '建築基準法の単体規定に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -419,6 +437,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-019',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '建築基準法の集団規定（高さ制限・日影規制）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -442,6 +461,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-020',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '防火地域及び準防火地域内の建築物の制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -465,6 +485,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-021',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '用途地域における建築物の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -488,6 +509,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-022',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '建築基準法の接道義務及びその例外に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -511,6 +533,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-023',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '国土利用計画法の事前届出制（注視区域・監視区域）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -534,6 +557,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-024',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '農地法の許可権者に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -557,6 +581,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-025',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '土地区画整理法の仮換地指定及び換地処分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -580,6 +605,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-026',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '宅地造成及び特定盛土等規制法（盛土規制法、令和5年5月施行）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -603,6 +629,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-027',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '都市緑地法及び景観法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -626,6 +653,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-028',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '法令上の制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -650,6 +678,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-029',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '令和7年4月1日施行の改正建築基準法における「4号特例」の縮小に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -673,6 +702,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-030',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和7年4月1日施行の改正建築基準法における「新2号建築物」の建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -696,6 +726,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-031',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和7年4月1日施行の改正建築物のエネルギー消費性能の向上に関する法律（建築物省エネ法）による省エネ基準適合義務化に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -719,6 +750,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-032',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '令和7年4月施行の省エネ基準適合義務化における住宅の省エネ適合性判定の例外に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -742,6 +774,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-033',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '令和7年4月施行の改正建築基準法における「新3号建築物」の取扱いに関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -769,6 +802,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-034',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '国土利用計画法の事後届出制に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -792,6 +826,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-035',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -815,6 +850,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-036',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '土地区画整理法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -838,6 +874,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-037',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -861,6 +898,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-038',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '建築基準法の道路に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -884,6 +922,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-039',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '都市計画法の地域地区に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -907,6 +946,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-040',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '建築基準法の建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -930,6 +970,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-041',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '建築基準法の防火地域・準防火地域に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -957,6 +998,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-042',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '都市計画法の開発許可に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -980,6 +1022,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-043',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '建築基準法の高さ制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1003,6 +1046,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-044',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '国土利用計画法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1026,6 +1070,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-045',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '建築基準法の単体規定に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1049,6 +1094,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-046',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1072,6 +1118,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-047',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '建築基準法のセットバックに関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1095,6 +1142,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-048',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '都市計画法の地区計画に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1118,6 +1166,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-049',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '建築基準法の容積率の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1141,6 +1190,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-050',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '都市計画法の都市計画の決定手続に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1164,6 +1214,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-051',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '都市計画法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1187,6 +1238,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-052',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '都市計画法の用途地域に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1210,6 +1262,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-053',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '都市計画法の地区計画に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1233,6 +1286,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-054',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '都市計画法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1256,6 +1310,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-055',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '都市計画法の都市施設に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1279,6 +1334,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-056',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '都市計画法の市街地開発事業に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1302,6 +1358,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-057',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 1,
     text: '都市計画法に定める用途地域のうち、住居系の用途地域に該当しないものはどれか。',
     choices: [
@@ -1325,6 +1382,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-058',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '都市計画法の特別用途地区に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1348,6 +1406,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-059',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '都市計画法の高度地区と高度利用地区に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1371,6 +1430,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-060',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '都市計画法の地区計画に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1394,6 +1454,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-061',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 1,
     text: '都市計画法の開発許可に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1417,6 +1478,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-062',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '都市計画法の開発許可の基準に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1440,6 +1502,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-063',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '都市計画法の開発許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1463,6 +1526,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-064',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '都市計画法の開発許可後の手続に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1486,6 +1550,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-065',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 1,
     text: '都市計画法の開発許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1509,6 +1574,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-066',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '都市計画法の開発許可に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1532,6 +1598,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-067',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '都市計画法の開発許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1555,6 +1622,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-068',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 1,
     text: '都市計画法の開発許可が不要となる開発行為に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1578,6 +1646,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-069',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '都市計画法の開発許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1601,6 +1670,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-070',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 1,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1624,6 +1694,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-071',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '建築基準法の建ぺい率に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1647,6 +1718,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-072',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '建築基準法の容積率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1670,6 +1742,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-073',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 1,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1693,6 +1766,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-074',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '建築基準法の容積率に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1716,6 +1790,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-075',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '建築基準法の建ぺい率と容積率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1739,6 +1814,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-076',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 1,
     text: '建築基準法の道路に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1762,6 +1838,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-077',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '建築基準法の道路に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1785,6 +1862,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-078',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '建築基準法の防火地域及び準防火地域に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1808,6 +1886,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-079',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 1,
     text: '建築基準法の高さ制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1831,6 +1910,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-080',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '建築基準法の斜線制限に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1854,6 +1934,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-081',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '建築基準法の日影規制に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1877,6 +1958,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-082',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '建築基準法の防火壁に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1900,6 +1982,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-083',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 1,
     text: '建築基準法の接道義務に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1923,6 +2006,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-084',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '建築基準法の道路内の建築制限に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1946,6 +2030,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-085',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '建築基準法の防火地域・準防火地域に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1969,6 +2054,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-086',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 1,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1992,6 +2078,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-087',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2015,6 +2102,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-088',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。（2025年4月施行の建築基準法改正を踏まえて回答すること。）',
     choices: [
@@ -2038,6 +2126,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-089',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2061,6 +2150,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-090',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正における新2号建築物に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2084,6 +2174,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-091',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 1,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2107,6 +2198,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-092',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '建築確認に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2130,6 +2222,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-093',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2153,6 +2246,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-094',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 1,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2176,6 +2270,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-095',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 1,
     text: '国土利用計画法の事後届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2199,6 +2294,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-096',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '国土利用計画法の事後届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2222,6 +2318,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-097',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '国土利用計画法の事後届出に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2245,6 +2342,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-098',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '国土利用計画法の事後届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2268,6 +2366,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-099',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '国土利用計画法の事後届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2291,6 +2390,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-100',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '国土利用計画法の事後届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2314,6 +2414,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-101',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2337,6 +2438,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-102',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2360,6 +2462,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-103',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2383,6 +2486,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-104',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2406,6 +2510,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-105',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2429,6 +2534,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-106',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2452,6 +2558,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-107',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2475,6 +2582,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-108',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '農地法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2498,6 +2606,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-109',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2521,6 +2630,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-110',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2544,6 +2654,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-111',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '土地区画整理法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2567,6 +2678,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-112',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '土地区画整理法の換地処分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2590,6 +2702,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-113',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '土地区画整理法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2613,6 +2726,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-114',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '土地区画整理法の減歩に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2636,6 +2750,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-115',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '土地区画整理法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2659,6 +2774,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-116',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '土地区画整理法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2682,6 +2798,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-117',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '土地区画整理法の施行地区内における建築行為等の制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2705,6 +2822,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-118',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '土地区画整理法の清算金に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2728,6 +2846,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-119',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2751,6 +2870,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-120',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2774,6 +2894,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-121',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2797,6 +2918,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-122',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2820,6 +2942,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-123',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2843,6 +2966,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-124',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '景観法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2866,6 +2990,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-125',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '自然公園法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2889,6 +3014,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-126',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '建築基準法の用途制限に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2912,6 +3038,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-127',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2935,6 +3062,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-128',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '建築基準法の容積率の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2958,6 +3086,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-129',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '建築基準法の単体規定に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2981,6 +3110,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-130',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の建築協定に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3004,6 +3134,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-131',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3027,6 +3158,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-132',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '建築基準法の道路に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3050,6 +3182,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-133',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '建築基準法の防火地域に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3073,6 +3206,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-134',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の高さ制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3096,6 +3230,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-135',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3119,6 +3254,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-136',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3142,6 +3278,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-137',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '国土利用計画法の事後届出に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3165,6 +3302,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-138',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '国土利用計画法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3188,6 +3326,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-139',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3211,6 +3350,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-140',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3234,6 +3374,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-141',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3257,6 +3398,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-142',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の建ぺい率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3280,6 +3422,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-143',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正における4号特例廃止に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3303,6 +3446,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-144',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3326,6 +3470,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-145',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3349,6 +3494,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-146',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3372,6 +3518,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-147',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3395,6 +3542,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-148',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3418,6 +3566,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-149',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '次の法律に関する記述のうち、正しいものはどれか。',
     choices: [
@@ -3441,6 +3590,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-150',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: 'その他の法令に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3464,6 +3614,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-151',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '都市計画法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3487,6 +3638,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-152',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '都市計画法の都市計画の提案制度に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3510,6 +3662,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-153',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '都市計画法の区域区分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3533,6 +3686,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-154',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '都市計画法の開発許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3556,6 +3710,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-155',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3579,6 +3734,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-156',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '建築基準法の用途制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3602,6 +3758,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-157',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の容積率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3625,6 +3782,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-158',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '建築基準法の道路に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3648,6 +3806,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-159',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3671,6 +3830,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-160',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3694,6 +3854,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-161',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '国土利用計画法の事後届出が不要な場合に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3717,6 +3878,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-162',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '国土利用計画法の事後届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3740,6 +3902,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-163',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '建築基準法の建ぺい率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3763,6 +3926,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-164',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '建築基準法の斜線制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3786,6 +3950,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-165',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の高さ制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3809,6 +3974,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-166',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '建築確認に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3832,6 +3998,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-167',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3855,6 +4022,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-168',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '土地区画整理法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3878,6 +4046,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-169',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3901,6 +4070,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-170',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: 'その他の法令に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3924,6 +4094,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-171',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建築基準法の防火地域に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3947,6 +4118,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-172',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3970,6 +4142,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-173',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3993,6 +4166,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-174',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正における経過措置に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4016,6 +4190,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-175',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: 'その他の法令に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4039,6 +4214,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-176',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正により廃止された旧4号特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4062,6 +4238,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-177',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正で新設された新2号建築物に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -4085,6 +4262,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-178',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正後の建築物の分類に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4108,6 +4286,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-179',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正における大規模修繕・大規模模様替えに関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4131,6 +4310,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-180',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2025年4月施行の建築基準法改正後、建築確認申請が必要となる場合に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -4154,6 +4334,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-181',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正後の建築確認の審査期間に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4177,6 +4358,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-182',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '2025年4月施行の建築基準法改正における新3号建築物に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4200,6 +4382,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-183',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '2025年4月施行の建築基準法改正により、確認申請時に提出が必要となった図書に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4223,6 +4406,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-184',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '農地法第3条の許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4246,6 +4430,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-185',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法第4条の許可に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -4269,6 +4454,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-186',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '農地法第5条の許可に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4292,6 +4478,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-187',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '農地法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4315,6 +4502,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-188',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '農地法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -4338,6 +4526,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-189',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '土地区画整理法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4361,6 +4550,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-190',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '土地区画整理法における仮換地の指定に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -4384,6 +4574,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-191',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '土地区画整理法における換地処分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4407,6 +4598,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-192',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '土地区画整理法第76条の建築等の制限に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4430,6 +4622,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-193',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '宅地造成及び特定盛土等規制法（盛土規制法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4453,6 +4646,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-194',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '盛土規制法における宅地造成等工事規制区域内の規制に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -4476,6 +4670,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-195',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '盛土規制法における特定盛土等規制区域に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4499,6 +4694,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-196',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '盛土規制法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4522,6 +4718,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-197',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '国土利用計画法に基づく事後届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4545,6 +4742,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-198',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '国土利用計画法に基づく事後届出が必要となる土地の面積要件に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4568,6 +4766,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-199',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '国土利用計画法に基づく事後届出に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -4591,6 +4790,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-200',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '国土利用計画法に基づく届出に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4615,6 +4815,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-201',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '建築基準法に関する次の記述のうち、正しいものはいくつあるか。',
@@ -4646,6 +4847,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-202',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: '建築確認に関する次の記述のうち、建築基準法の規定によれば、正しいものの組合せはどれか。',
@@ -4677,6 +4879,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-203',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '農地法に関する次の記述のうち、正しいものはいくつあるか。',
@@ -4708,6 +4911,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-204',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: '都市計画法の開発許可に関する次の記述のうち、正しいものの組合せはどれか。',
@@ -4739,6 +4943,7 @@ export const horeiSeigenQuestions: Question[] = [
     id: 'horei_seigen-205',
     moduleId: 'takken',
     category: 'horei_seigen',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '盛土規制法（宅地造成及び特定盛土等規制法）に関する次の記述のうち、正しいものはいくつあるか。',

@@ -5,6 +5,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-001',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: 'Aが、Bの詐欺により、A所有の甲土地をBに売却する契約を締結した場合に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -28,6 +29,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-002',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: 'AがBに対して甲建物を売却し、その後AがCにも甲建物を売却した場合（二重譲渡）に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -51,6 +53,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-003',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -74,6 +77,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-004',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: 'Aが所有する甲土地につき、BがAに無断で占有を開始した場合の取得時効に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -97,6 +101,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-005',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: 'Aは、Bから3,000万円を借り入れ、その担保として、A所有の甲土地（時価4,000万円）に抵当権を設定し、その旨の登記をした。この場合に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -120,6 +125,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-006',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: 'AがBに対して甲建物を売却したところ、甲建物の屋根に雨漏りがあることが判明した場合の契約不適合責任に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -143,6 +149,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-007',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: 'AがBに対して金銭債務を負っている場合の債務不履行に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -166,6 +173,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-008',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: 'Aが所有する甲建物をBに賃貸している場合に関する次の記述のうち、民法及び借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -189,6 +197,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-009',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '借地権に関する次の記述のうち、借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -212,6 +221,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-010',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '不法行為に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -235,6 +245,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-011',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: 'Aが死亡し、配偶者B、子C及びDが相続人である場合に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -258,6 +269,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-012',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 3,
     text: '区分所有法（令和8年4月1日施行の改正法）に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、正しいものはどれか。',
     choices: [
@@ -281,6 +293,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-013',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 3,
     text: 'A、B及びCが、Dに対して900万円の連帯債務を負っている（負担部分は各300万円）場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -304,6 +317,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-014',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '強迫による意思表示に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -327,6 +341,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-015',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: 'AがBに対して有する貸金債権の消滅時効に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -350,6 +365,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-016',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 1,
     text: '未成年者Aが、法定代理人Bの同意を得ずにC所有の甲土地を購入する契約を締結した場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -373,6 +389,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-017',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '成年被後見人A及び被保佐人Bに関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -396,6 +413,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-018',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: 'AがBに対し、本心ではA所有の甲土地を売る意思がないにもかかわらず、売却する旨の意思表示をした場合（心裡留保）に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -419,6 +437,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-019',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: 'AがBと通謀して、A所有の甲土地をBに売却したように仮装する契約を締結した場合（虚偽表示）に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -442,6 +461,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-020',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: 'Aが、A所有の甲土地を時価3,000万円であると誤信してBに1,000万円で売却した場合の錯誤に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -465,6 +485,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-021',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: 'AがBの代理人と称して、Bに無断でB所有の甲土地をCに売却する契約を締結した場合（無権代理）に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -488,6 +509,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-022',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -511,6 +533,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-023',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: 'Aが所有する甲土地について、AがBに売却して所有権移転登記を経た後、AがCにも甲土地を売却した場合の物権変動と対抗要件に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -534,6 +557,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-024',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: 'A、B及びCが甲土地を持分各3分の1で共有している場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -557,6 +581,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-025',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '地役権及び地上権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -580,6 +605,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-026',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '担保物権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -603,6 +629,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-027',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: 'Aは、Bから1,000万円を借り入れ、その担保としてA所有の甲建物に抵当権を設定し登記した。その後Aが甲建物をCに賃貸している場合に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -626,6 +653,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-028',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: 'Aが所有する甲土地について、Bが極度額3,000万円の根抵当権の設定を受け登記した場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -649,6 +677,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-029',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: 'AがBに対して有する貸金債権をAがCに譲渡した場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -672,6 +701,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-030',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '債務不履行による契約の解除に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -695,6 +725,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-031',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 1,
     text: '弁済及び相殺に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -718,6 +749,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-032',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: 'AがBに対して負う1,000万円の債務について、CがBとの間で連帯保証契約を締結した場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -741,6 +773,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-033',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: 'AがBに対して、A所有の甲建物の管理を委任した場合に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -764,6 +797,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-034',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: 'AがBに対して、A所有の土地上に建物を建築する工事を請け負わせた場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -787,6 +821,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-035',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: 'AがBに対して無償でA所有の甲建物を貸し渡す使用貸借契約を締結した場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -810,6 +845,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-036',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 1,
     text: 'AがBに対しA所有の甲建物を賃貸する際、Bから敷金として家賃3か月分を受け取った場合に関する次の記述のうち、民法及び判例によれば、正しいものはどれか。',
     choices: [
@@ -833,6 +869,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-037',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: 'Aが所有する甲建物をBに賃貸し、賃貸借期間を3年と定めた場合の建物賃貸借の更新及び正当事由に関する次の記述のうち、借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -856,6 +893,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-038',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '定期建物賃貸借及び定期借地権に関する次の記述のうち、借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -879,6 +917,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-039',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '不法行為に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -902,6 +941,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-040',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: 'Aが死亡し、配偶者B、嫡出子C及びAがDに遺贈する旨の遺言を残していた場合の遺言・遺留分・配偶者居住権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -925,6 +965,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-041',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '区分所有建物の規約及び管理組合に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、正しいものはどれか。',
     choices: [
@@ -948,6 +989,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-042',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '区分所有建物の集会に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、正しいものはどれか。',
     choices: [
@@ -971,6 +1013,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-043',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '時効の援用及び更新に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -994,6 +1037,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-044',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: 'Aが所有する甲土地に、Bのために1番抵当権、Cのために2番抵当権が設定され、それぞれ登記されている場合の法定地上権に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -1017,6 +1061,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-045',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: 'AがBから甲建物を賃借して居住していたところ、Aが死亡した場合に関する次の記述のうち、民法及び借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1040,6 +1085,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-046',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: 'AがBから甲土地を借り受けて建物を所有している借地権に関する次の記述のうち、借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1063,6 +1109,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-047',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: 'Aが、A所有の甲土地をBに売却したが、Aは未だ所有権移転登記をBに移していない。Aは、その後Cにも甲土地を売却しCに登記を移転した場合、AがBに対して負う債務及びBの救済に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1086,6 +1133,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-048',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: 'Aが、Bの代理人と称してCとの間でB所有の甲土地の売買契約を締結したが、Aには代理権がなかった場合の表見代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1109,6 +1157,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-049',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: 'Aが甲建物を所有しているところ、その壁が崩落しBに怪我を負わせた場合に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -1132,6 +1181,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-050',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: 'AがBに対して負う100万円の貸金債務について、Cが連帯保証した。その後、AがBに対して70万円の売掛代金債権を取得した場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1155,6 +1205,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-051',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: 'A、B及びCがDに対して300万円の連帯債務を負っている（負担部分は平等）場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1178,6 +1229,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-052',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: 'AがBから甲土地を買い受け、所有権移転登記を備えたが、後に甲土地について第三者Cが時効により取得していた場合に関する次の記述のうち、民法及び判例によれば、正しいものはどれか。',
     choices: [
@@ -1201,6 +1253,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-053',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: 'AがBに対し金銭を貸し付けるに際し、Cが連帯保証人となり、さらにDがAB間の貸付金債務についてA所有の甲土地に抵当権を設定した（物上保証）場合に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1224,6 +1277,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-054',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 3,
     text: '区分所有建物の共用部分の重大変更及び復旧に関する次の記述のうち、令和8年4月1日施行の改正区分所有法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1247,6 +1301,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-055',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: 'AがBに対して有する債権の消滅時効の援用に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -1271,6 +1326,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-056',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和8年4月1日施行の改正区分所有法における集会の議事に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1294,6 +1350,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-057',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '令和8年4月1日施行の改正区分所有法に新設された「建物取壊し敷地売却決議」（第64条の7）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1317,6 +1374,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-058',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '令和8年4月1日施行の改正区分所有法における所在等不明区分所有者の取扱いに関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1340,6 +1398,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-059',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '令和8年4月1日施行の改正区分所有法で新設された「国内管理人制度」（第6条の2）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1363,6 +1422,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-060',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '令和8年4月1日施行の改正区分所有法の「所有者不明専有部分管理制度」に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1386,6 +1446,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-061',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '令和8年4月1日施行の改正不動産登記法における住所等変更登記の義務化に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1409,6 +1470,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-062',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '令和8年4月1日施行の改正不動産登記法における登記官の職権による変更登記に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1432,6 +1494,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-063',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '令和7年10月1日施行の改正民法における公正証書遺言の作成方法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1455,6 +1518,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-064',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '心裡留保に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1478,6 +1542,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-065',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '虚偽表示（通謀虚偽表示）に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -1501,6 +1566,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-066',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '錯誤に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1524,6 +1590,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-067',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '強迫による意思表示に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1547,6 +1614,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-068',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '詐欺による意思表示の取消しと第三者の保護に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -1570,6 +1638,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-069',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '意思表示の効力発生時期に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1593,6 +1662,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-070',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '虚偽表示の規定（民法第94条第2項）の類推適用に関する次の記述のうち、判例によれば、誤っているものはどれか。',
     choices: [
@@ -1616,6 +1686,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-071',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '錯誤と第三者の保護に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1639,6 +1710,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-072',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '詐欺と強迫の比較に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -1662,6 +1734,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-073',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '意思表示の瑕疵に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -1685,6 +1758,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-074',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '動機の錯誤に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -1708,6 +1782,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-075',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '詐欺における「第三者」の範囲に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -1731,6 +1806,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-076',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '無権代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1754,6 +1830,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-077',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '表見代理に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -1777,6 +1854,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-078',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '復代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1800,6 +1878,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-079',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '無権代理と相続に関する次の記述のうち、判例によれば、正しいものはどれか。',
     choices: [
@@ -1823,6 +1902,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-080',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '代理権の消滅事由に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -1846,6 +1926,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-081',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '自己契約及び双方代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1869,6 +1950,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-082',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '無権代理人の責任に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1892,6 +1974,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-083',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '代理人の行為能力に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1915,6 +1998,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-084',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '不動産物権変動の対抗要件に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -1938,6 +2022,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-085',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '民法第177条の「第三者」に関する次の記述のうち、判例によれば、「第三者」に該当しないものはどれか。',
     choices: [
@@ -1961,6 +2046,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-086',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '背信的悪意者に関する次の記述のうち、判例によれば、正しいものはどれか。',
     choices: [
@@ -1984,6 +2070,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-087',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '取消しと登記に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2007,6 +2094,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-088',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '時効取得と登記に関する次の記述のうち、判例によれば、正しいものはどれか。',
     choices: [
@@ -2030,6 +2118,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-089',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '即時取得に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2053,6 +2142,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-090',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '登記がなくても対抗できる物権変動に関する次の記述のうち、判例によれば、誤っているものはどれか。',
     choices: [
@@ -2076,6 +2166,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-091',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '動産の物権変動の対抗要件に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2099,6 +2190,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-092',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '解除と登記に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2122,6 +2214,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-093',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '抵当権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2145,6 +2238,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-094',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '抵当権の効力が及ぶ範囲に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2168,6 +2262,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-095',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '法定地上権に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2191,6 +2286,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-096',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '根抵当権に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2214,6 +2310,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-097',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '留置権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2237,6 +2334,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-098',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '質権に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2260,6 +2358,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-099',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '先取特権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2283,6 +2382,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-100',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '抵当権の物上代位に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2306,6 +2406,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-101',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 1,
     text: '意思表示に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2329,6 +2430,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-102',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '錯誤に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2352,6 +2454,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-103',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: 'AとBが通謀して、A所有の甲土地をBに仮装売買した場合に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2375,6 +2478,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-104',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '第三者による詐欺に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2398,6 +2502,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-105',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '強迫による意思表示に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2421,6 +2526,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-106',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '錯誤に基づく意思表示の取消しに関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2444,6 +2550,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-107',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 1,
     text: '心裡留保に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2467,6 +2574,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-108',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '意思表示の効力発生時期に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2490,6 +2598,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-109',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '虚偽表示における第三者に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2513,6 +2622,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-110',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '詐欺又は強迫に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2536,6 +2646,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-111',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '代理に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2559,6 +2670,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-112',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '無権代理に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2582,6 +2694,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-113',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '表見代理に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2605,6 +2718,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-114',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '自己契約及び双方代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2628,6 +2742,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-115',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '無権代理と相続に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2651,6 +2766,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-116',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '代理権の濫用に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2674,6 +2790,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-117',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '代理に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -2697,6 +2814,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-118',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '無権代理人の責任に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2720,6 +2838,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-119',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '不動産の物権変動に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2743,6 +2862,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-120',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '民法第177条の「第三者」に関する次の記述のうち、民法の規定及び判例によれば、「第三者」に該当しないものはどれか。',
     choices: [
@@ -2766,6 +2886,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-121',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '物権変動と登記に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2789,6 +2910,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-122',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '物権変動と登記に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2812,6 +2934,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-123',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '物権変動に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2835,6 +2958,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-124',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '即時取得に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2858,6 +2982,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-125',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '物権変動の対抗要件に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2881,6 +3006,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-126',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '抵当権に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2904,6 +3030,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-127',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '抵当権の順位に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2927,6 +3054,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-128',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '法定地上権に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -2950,6 +3078,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-129',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '根抵当権に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -2973,6 +3102,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-130',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '抵当権の効力が及ぶ範囲に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -2996,6 +3126,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-131',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '抵当権の侵害に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -3019,6 +3150,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-132',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '抵当権と賃借権の関係に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -3042,6 +3174,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-133',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '抵当権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3065,6 +3198,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-134',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '根抵当権の元本確定に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3088,6 +3222,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-135',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '抵当権の実行に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3111,6 +3246,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-136',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '法定地上権に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -3134,6 +3270,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-137',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '根抵当権に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3157,6 +3294,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-138',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '取得時効に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -3180,6 +3318,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-139',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '消滅時効に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3203,6 +3342,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-140',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '時効の更新及び完成猶予に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3226,6 +3366,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-141',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '時効に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3249,6 +3390,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-142',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '時効の完成猶予に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3272,6 +3414,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-143',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '取得時効と登記に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -3295,6 +3438,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-144',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '時効に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -3318,6 +3462,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-145',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '時効の援用に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -3341,6 +3486,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-146',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '債務不履行に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3364,6 +3510,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-147',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '契約の解除に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3387,6 +3534,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-148',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '弁済に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3410,6 +3558,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-149',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '相殺に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3433,6 +3582,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-150',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '債権譲渡に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3456,6 +3606,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-151',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '損害賠償額の予定に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3479,6 +3630,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-152',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '契約の解除に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3502,6 +3654,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-153',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '弁済に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3525,6 +3678,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-154',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '債権者代位権に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3548,6 +3702,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-155',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '詐害行為取消権に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3571,6 +3726,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-156',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '同時履行の抗弁権に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -3594,6 +3750,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-157',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '危険負担に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3617,6 +3774,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-158',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '保証に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3640,6 +3798,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-159',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '連帯債務に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3663,6 +3822,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-160',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '保証人の保護に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3686,6 +3846,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-161',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '連帯債務に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3709,6 +3870,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-162',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '保証債務に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3732,6 +3894,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-163',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '個人根保証契約に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3755,6 +3918,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-164',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '連帯保証に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3778,6 +3942,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-165',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '保証に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3801,6 +3966,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-166',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '賃貸借に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3824,6 +3990,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-167',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '敷金に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3847,6 +4014,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-168',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '普通借地権に関する次の記述のうち、借地借家法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3870,6 +4038,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-169',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '定期借地権に関する次の記述のうち、借地借家法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3893,6 +4062,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-170',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建物の賃貸借に関する次の記述のうち、借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3916,6 +4086,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-171',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '定期建物賃貸借（定期借家）に関する次の記述のうち、借地借家法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -3939,6 +4110,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-172',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '借地借家法における賃借人の保護に関する次の記述のうち、借地借家法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3962,6 +4134,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-173',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '借地借家法に関する次の記述のうち、同法の規定によれば、正しいものはどれか。',
     choices: [
@@ -3985,6 +4158,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-174',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建物賃貸借における賃貸人の地位の移転に関する次の記述のうち、民法及び借地借家法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4008,6 +4182,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-175',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '借地借家法における建物買取請求権に関する次の記述のうち、借地借家法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -4031,6 +4206,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-176',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '借地借家法の適用範囲に関する次の記述のうち、同法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4054,6 +4230,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-177',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '借地条件の変更等に関する次の記述のうち、借地借家法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4077,6 +4254,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-178',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不法行為に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4100,6 +4278,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-179',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '使用者責任に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -4123,6 +4302,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-180',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '工作物責任に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4146,6 +4326,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-181',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不法行為に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4169,6 +4350,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-182',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不法行為に関する次の記述のうち、民法の規定及び判例によれば、正しいものはどれか。',
     choices: [
@@ -4192,6 +4374,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-183',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不法行為に関する次の記述のうち、民法の規定及び判例によれば、誤っているものはどれか。',
     choices: [
@@ -4215,6 +4398,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-184',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '法定相続分に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4238,6 +4422,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-185',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '遺留分に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4261,6 +4446,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-186',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '相続の承認及び放棄に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4284,6 +4470,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-187',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '遺言に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4307,6 +4494,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-188',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '配偶者居住権に関する次の記述のうち、民法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4330,6 +4518,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-189',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '相続に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4353,6 +4542,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-190',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '遺言及び遺産分割に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4376,6 +4566,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-191',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '遺言に関する次の記述のうち、民法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4399,6 +4590,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-192',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '区分所有法に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、正しいものはどれか。',
     choices: [
@@ -4422,6 +4614,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-193',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '区分所有法における集会の決議に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4445,6 +4638,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-194',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '区分所有法の2026年改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4468,6 +4662,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-195',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '区分所有法における管理に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、正しいものはどれか。',
     choices: [
@@ -4491,6 +4686,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-196',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '区分所有法に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4514,6 +4710,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-197',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産登記法に関する次の記述のうち、不動産登記法の規定によれば、正しいものはどれか。',
     choices: [
@@ -4537,6 +4734,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-198',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '2026年施行の不動産登記法改正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4560,6 +4758,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-199',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産登記に関する次の記述のうち、不動産登記法の規定によれば、誤っているものはどれか。',
     choices: [
@@ -4583,6 +4782,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-200',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産登記法の2026年改正（住所変更登記の義務化等）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -4607,6 +4807,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-201',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '代理に関する次の記述のうち、民法の規定及び判例によれば、正しいものはいくつあるか。',
@@ -4638,6 +4839,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-202',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: '抵当権に関する次の記述のうち、民法の規定及び判例によれば、正しいものの組合せはどれか。',
@@ -4669,6 +4871,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-203',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '借地借家法に関する次の記述のうち、正しいものはいくつあるか。',
@@ -4700,6 +4903,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-204',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: '相続に関する次の記述のうち、民法の規定によれば、正しいものの組合せはどれか。',
@@ -4731,6 +4935,7 @@ export const kenriQuestions: Question[] = [
     id: 'kenri-205',
     moduleId: 'takken',
     category: 'kenri',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '区分所有法に関する次の記述のうち、建物の区分所有等に関する法律の規定によれば、正しいものはいくつあるか。',

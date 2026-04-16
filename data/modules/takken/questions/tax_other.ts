@@ -5,6 +5,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-001',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '不動産取得税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -28,6 +29,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-002',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '固定資産税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -51,6 +53,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-003',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '登録免許税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -74,6 +77,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-004',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -97,6 +101,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-005',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '所得税の譲渡所得に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -120,6 +125,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-006',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 2,
     text: '不動産鑑定評価基準に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -143,6 +149,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-007',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '地価公示法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -166,6 +173,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-008',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2024,
     difficulty: 1,
     text: '独立行政法人住宅金融支援機構（以下「機構」という。）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -189,6 +197,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-009',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '不当景品類及び不当表示防止法（景品表示法）に基づく不動産の表示に関する公正競争規約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -212,6 +221,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-010',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 1,
     text: '土地に関する次の記述のうち、最も不適当なものはどれか。',
     choices: [
@@ -235,6 +245,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-011',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '所得税の住宅借入金等特別控除（住宅ローン控除）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -258,6 +269,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-012',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 3,
     text: '居住用財産の譲渡に係る所得税の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -281,6 +293,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-013',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '直系尊属から住宅取得等資金の贈与を受けた場合の贈与税の非課税の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -304,6 +317,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-014',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '不動産取得税の課税標準の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -327,6 +341,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-015',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '固定資産税の特例に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -350,6 +365,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-016',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2023,
     difficulty: 2,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -373,6 +389,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-017',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '地価公示法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -396,6 +413,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-018',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 3,
     text: '不動産鑑定評価基準における取引事例比較法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -419,6 +437,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-019',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '独立行政法人住宅金融支援機構に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -442,6 +461,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-020',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '不動産の表示に関する公正競争規約（景品表示法に基づく）における不当な二重価格表示等に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -465,6 +485,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-021',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 1,
     text: '建物の構造及び材料に関する次の記述のうち、最も不適当なものはどれか。',
     choices: [
@@ -488,6 +509,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-022',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '令和6年地価公示及び建築着工統計等に関する次の記述のうち、正しいものはどれか（出題時点の最新統計に基づく）。',
     choices: [
@@ -512,6 +534,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-023',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '令和8年12月31日まで延長された「住宅取得等資金の贈与税の非課税措置」に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -535,6 +558,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-024',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2022,
     difficulty: 2,
     text: '住宅取得等資金の贈与税非課税措置における受贈者の年齢要件（令和4年4月1日以後の贈与）として、正しいものはどれか。',
     choices: [
@@ -558,6 +582,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-025',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和8年1月1日以降の住宅ローン控除制度における子育て世帯・若者夫婦世帯に対する特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -581,6 +606,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-026',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '令和8年1月1日以降の住宅ローン控除制度における既存住宅（中古住宅）に対する優遇に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -608,6 +634,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-027',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '贈与税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -631,6 +658,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-028',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '不動産鑑定評価基準に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -654,6 +682,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-029',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '地価公示法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -677,6 +706,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-030',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '住宅金融支援機構に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -700,6 +730,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-031',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 1,
     text: '景品表示法（不当景品類及び不当表示防止法）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -727,6 +758,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-032',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2021,
     difficulty: 2,
     text: '所得税の居住用財産の譲渡に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -750,6 +782,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-033',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '固定資産税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -773,6 +806,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-034',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '相続税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -796,6 +830,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-035',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '不動産取得税の課税標準の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -819,6 +854,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-036',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '不動産の表示に関する公正競争規約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -842,6 +878,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-037',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 3,
     text: '所得税の譲渡所得の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -865,6 +902,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-038',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '土地・建物の税金に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -888,6 +926,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-039',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 1,
     text: '不動産取得税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -911,6 +950,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-040',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2020,
     difficulty: 2,
     text: '不動産取得税の課税標準の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -934,6 +974,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-041',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '不動産取得税の免税点に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -957,6 +998,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-042',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '不動産取得税における住宅及び住宅用土地の特例に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -980,6 +1022,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-043',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '不動産取得税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1003,6 +1046,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-044',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 3,
     text: '不動産取得税の徴収猶予及び還付に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1026,6 +1070,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-045',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '固定資産税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1049,6 +1094,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-046',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '固定資産税の住宅用地の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1072,6 +1118,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-047',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 2,
     text: '固定資産税の新築住宅に対する減額措置に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1095,6 +1142,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-048',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2019,
     difficulty: 1,
     text: '固定資産税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1118,6 +1166,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-049',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '固定資産税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1141,6 +1190,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-050',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '登録免許税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1164,6 +1214,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-051',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '登録免許税の税率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1187,6 +1238,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-052',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '登録免許税の住宅用家屋の軽減税率の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1210,6 +1262,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-053',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 3,
     text: '登録免許税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1233,6 +1286,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-054',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 1,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1256,6 +1310,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-055',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '印紙税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1279,6 +1334,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-056',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2018,
     difficulty: 2,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1302,6 +1358,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-057',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1325,6 +1382,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-058',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 1,
     text: '印紙税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1348,6 +1406,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-059',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 1,
     text: '所得税における譲渡所得に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1371,6 +1430,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-060',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '居住用財産の3,000万円特別控除に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1394,6 +1454,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-061',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '居住用財産の譲渡所得の軽減税率の特例（10年超所有の場合）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1417,6 +1478,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-062',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 3,
     text: '居住用財産の買換え特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1440,6 +1502,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-063',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 1,
     text: '譲渡所得の税率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1463,6 +1526,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-064',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2017,
     difficulty: 2,
     text: '譲渡所得の計算に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1486,6 +1550,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-065',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '被相続人の居住用財産（空き家）に係る譲渡所得の特別控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1509,6 +1574,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-066',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '譲渡損失の繰越控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1532,6 +1598,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-067',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '収用等に伴う課税の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1555,6 +1622,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-068',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 1,
     text: '贈与税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1578,6 +1646,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-069',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '相続時精算課税制度に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1601,6 +1670,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-070',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 2,
     text: '贈与税の配偶者控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1624,6 +1694,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-071',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 3,
     text: '相続税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1647,6 +1718,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-072',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2016,
     difficulty: 1,
     text: '相続税の計算に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1670,6 +1742,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-073',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 1,
     text: '住宅ローン控除（住宅借入金等特別控除）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1693,6 +1766,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-074',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '住宅ローン控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1716,6 +1790,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-075',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '住宅ローン控除における借入限度額に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1739,6 +1814,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-076',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '住宅ローン控除の適用要件に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1762,6 +1838,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-077',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '住宅ローン控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1785,6 +1862,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-078',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 3,
     text: '住宅ローン控除の子育て世帯・若者夫婦世帯の優遇措置に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1808,6 +1886,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-079',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 1,
     text: '不動産取得税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1831,6 +1910,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-080',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2015,
     difficulty: 2,
     text: '不動産取得税の免税点に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1854,6 +1934,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-081',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '不動産取得税の宅地評価土地の課税標準の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1877,6 +1958,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-082',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '不動産取得税の住宅に係る課税標準の特例（新築住宅）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1900,6 +1982,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-083',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 2,
     text: '不動産取得税の住宅用土地に係る税額軽減に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -1923,6 +2006,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-084',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '不動産取得税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1946,6 +2030,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-085',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '不動産取得税の中古住宅に係る課税標準の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1969,6 +2054,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-086',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 3,
     text: '不動産取得税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -1992,6 +2078,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-087',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 1,
     text: '固定資産税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2015,6 +2102,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-088',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2014,
     difficulty: 1,
     text: '固定資産税の住宅用地に対する課税標準の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2038,6 +2126,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-089',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '固定資産税の新築住宅に対する税額の減額措置に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2061,6 +2150,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-090',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '固定資産税の免税点に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2084,6 +2174,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-091',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '固定資産税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2107,6 +2198,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-092',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '固定資産税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2130,6 +2222,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-093',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '固定資産税の新築住宅に対する減額措置の特例延長に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2153,6 +2246,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-094',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 3,
     text: '固定資産税の都市計画税との関係に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2176,6 +2270,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-095',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 1,
     text: '登録免許税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2199,6 +2294,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-096',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2013,
     difficulty: 2,
     text: '登録免許税の税率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2222,6 +2318,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-097',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '登録免許税の住宅用家屋の軽減税率に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2245,6 +2342,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-098',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '登録免許税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2268,6 +2366,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-099',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '登録免許税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2291,6 +2390,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-100',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '登録免許税の住宅用家屋の軽減措置の延長に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2314,6 +2414,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-101',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2337,6 +2438,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-102',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2360,6 +2462,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-103',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '印紙税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2383,6 +2486,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-104',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '印紙税に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2406,6 +2510,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-105',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '印紙税に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2429,6 +2534,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-106',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '所得税における譲渡所得に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2452,6 +2558,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-107',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '所得税における譲渡所得の長期・短期の区分に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2475,6 +2582,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-108',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '居住用財産を譲渡した場合の3,000万円の特別控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2498,6 +2606,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-109',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '居住用財産の譲渡所得の特例に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2521,6 +2630,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-110',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '所得税における10年超所有の居住用財産を譲渡した場合の軽減税率の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2544,6 +2654,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-111',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '所得税における特定の居住用財産の買換えの特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2567,6 +2678,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-112',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '所得税における居住用財産の譲渡損失の損益通算及び繰越控除の特例に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2590,6 +2702,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-113',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '所得税における譲渡所得の計算に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2613,6 +2726,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-114',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '住宅ローン控除（住宅借入金等特別控除）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2636,6 +2750,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-115',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '住宅ローン控除の適用期限の延長に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2659,6 +2774,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-116',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '住宅ローン控除の適用要件に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2682,6 +2798,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-117',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '住宅ローン控除における中古住宅の要件に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2705,6 +2822,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-118',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '住宅ローン控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2728,6 +2846,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-119',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '住宅ローン控除に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2751,6 +2870,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-120',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '不動産の鑑定評価に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2774,6 +2894,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-121',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産の鑑定評価における原価法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2797,6 +2918,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-122',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産の鑑定評価における取引事例比較法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2820,6 +2942,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-123',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産の鑑定評価における収益還元法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2843,6 +2966,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-124',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産の鑑定評価に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -2866,6 +2990,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-125',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産の鑑定評価における収益還元法のDCF法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2889,6 +3014,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-126',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産の鑑定評価における事情補正及び時点修正に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2912,6 +3038,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-127',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産の鑑定評価に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2935,6 +3062,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-128',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産の鑑定評価における原価法の再調達原価に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2958,6 +3086,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-129',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '地価公示法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -2981,6 +3110,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-130',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '地価公示法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3004,6 +3134,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-131',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '地価公示法に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3027,6 +3158,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-132',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '地価公示法に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3050,6 +3182,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-133',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '地価公示法と都道府県地価調査に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3073,6 +3206,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-134',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '住宅金融支援機構（フラット35）に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3096,6 +3230,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-135',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '住宅金融支援機構に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3119,6 +3254,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-136',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: 'フラット35の融資要件に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3142,6 +3278,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-137',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '住宅金融支援機構に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3165,6 +3302,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-138',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '住宅金融支援機構に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3188,6 +3326,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-139',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '住宅金融支援機構に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3211,6 +3350,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-140',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '不当景品類及び不当表示防止法（景品表示法）に基づく不動産の表示に関する公正競争規約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3234,6 +3374,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-141',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産の表示に関する公正競争規約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3257,6 +3398,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-142',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産の表示に関する公正競争規約に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3280,6 +3422,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-143',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '不動産の表示に関する公正競争規約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3303,6 +3446,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-144',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産の表示に関する公正競争規約に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3326,6 +3470,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-145',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産の表示に関する公正競争規約に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3349,6 +3494,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-146',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 1,
     text: '土地に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3372,6 +3518,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-147',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建物の構造に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3395,6 +3542,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-148',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '土地に関する次の記述のうち、誤っているものはどれか。',
     choices: [
@@ -3418,6 +3566,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-149',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 2,
     text: '建物に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3441,6 +3590,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-150',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     text: '不動産に関する統計に関する次の記述のうち、正しいものはどれか。',
     choices: [
@@ -3465,6 +3615,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-151',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '不動産の鑑定評価に関する次の記述のうち、不動産鑑定評価基準によれば、正しいものはいくつあるか。',
@@ -3496,6 +3647,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-152',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: '住宅ローン控除（住宅借入金等特別控除）に関する次の記述のうち、正しいものの組合せはどれか。',
@@ -3527,6 +3679,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-153',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '不動産取得税に関する次の記述のうち、正しいものはいくつあるか。',
@@ -3558,6 +3711,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-154',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'combination',
     text: '景品表示法（不動産の表示に関する公正競争規約）に関する次の記述のうち、正しいものの組合せはどれか。',
@@ -3589,6 +3743,7 @@ export const taxOtherQuestions: Question[] = [
     id: 'tax_other-155',
     moduleId: 'takken',
     category: 'tax_other',
+    sourceExamYear: 2012,
     difficulty: 3,
     questionFormat: 'count',
     text: '固定資産税に関する次の記述のうち、正しいものはいくつあるか。',

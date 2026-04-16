@@ -27,7 +27,7 @@ import { canAccess } from '../../services/accessControl';
 import { askAI } from '../../services/claude';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
-// LawAmendmentBadge は運営側の内部管理用（ユーザーには非表示）
+import { LawAmendmentBadge } from '../../components/LawAmendmentBadge';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const STMT_LABELS = ['ア', 'イ', 'ウ', 'エ'] as const;
@@ -356,6 +356,9 @@ export default function QuestionDetailScreen() {
           }}
         />
       </View>
+
+      {/* Law Amendment Badge */}
+      <LawAmendmentBadge tags={q.tags} />
 
       {/* Statements（個数問題・組み合わせ問題のア〜エ記述） */}
       {q.statements && q.statements.length > 0 && (

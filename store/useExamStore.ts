@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Question, Category, ExamResult } from '../types';
-import { ALL_QUESTIONS } from '../data';
+import { ALL_QUESTIONS, getExamByYear } from '../data';
 import { logError } from '../services/errorLogger';
 import { EXAM_ALLOCATION, PASS_LINE } from '../constants/exam';
 
@@ -33,6 +33,7 @@ interface ExamState {
   examHistory: ExamResult[];
 
   startExam(): ExamSession;
+  startYearExam(year: number): ExamSession;
   answerQuestion(qid: string, choiceIndex: number): void;
   toggleFlag(qid: string): void;
   tickTimer(deltaSec: number): void;
@@ -77,6 +78,22 @@ export const useExamStore = create<ExamState>((set, get) => ({
       id: `exam_${Date.now()}`,
       startedAt: new Date().toISOString(),
       questionIds: pickExamQuestions(),
+      answers: {},
+      flagged: [],
+      remainingSec: EXAM_DURATION_SEC,
+      submitted: false,
+    };
+    set({ current: session });
+    get().saveSession();
+    return session;
+  },
+
+  startYearExam(year: number) {
+    const questions = getExamByYear(year);
+    const session: ExamSession = {
+      id: `exam_${year}_${Date.now()}`,
+      startedAt: new Date().toISOString(),
+      questionIds: questions.map((q) => q.id),
       answers: {},
       flagged: [],
       remainingSec: EXAM_DURATION_SEC,

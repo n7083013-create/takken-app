@@ -3,11 +3,13 @@ import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { confirmAlert } from '../../services/alert';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Shadow } from '../../constants/theme';
+import { Shadow, FontSize, Spacing, BorderRadius } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamStore, EXAM_COMPOSITION, scoreExam } from '../../store/useExamStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { CATEGORY_LABELS, Category } from '../../types';
+import { getAvailableExamYears, toWareki, getExamByYear } from '../../data';
+import { PASS_LINE } from '../../constants/exam';
 
 export default function ExamHomeScreen() {
   const router = useRouter();
@@ -57,7 +59,7 @@ export default function ExamHomeScreen() {
         <View style={s.hero}>
           <Text style={s.heroIcon}>📝</Text>
           <Text style={s.heroTitle}>本試験形式 模擬試験</Text>
-          <Text style={s.heroSub}>50問 / 120分 / 35点で合格</Text>
+          <Text style={s.heroSub}>50問 / 120分 / {PASS_LINE}点で合格</Text>
         </View>
 
         <View style={[s.card, Shadow.sm]}>
@@ -122,6 +124,49 @@ export default function ExamHomeScreen() {
           </Text>
         </Pressable>
 
+        {/* ─── 年度別過去問 ─── */}
+        <View style={[s.card, Shadow.sm, { marginTop: 8 }]}>
+          <Text style={s.cardTitle}>📋 年度別 過去問チャレンジ</Text>
+          <Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 14, lineHeight: 18 }}>
+            本試験と同じ出題比率で年度別に挑戦できます
+          </Text>
+          {getAvailableExamYears().slice(0, 12).map((year) => {
+            const count = getExamByYear(year).length;
+            return (
+              <Pressable
+                key={year}
+                style={s.yearRow}
+                accessibilityRole="button"
+                accessibilityLabel={`${toWareki(year)}の過去問を解く`}
+                onPress={() => {
+                  if (hasActive) {
+                    confirmAlert(
+                      '新しい試験を開始',
+                      '進行中の試験は破棄されます。よろしいですか？',
+                      () => {
+                        abandonExam();
+                        const startYearExam = useExamStore.getState().startYearExam;
+                        startYearExam(year);
+                        router.push('/exam/session');
+                      },
+                    );
+                  } else {
+                    const startYearExam = useExamStore.getState().startYearExam;
+                    startYearExam(year);
+                    router.push('/exam/session');
+                  }
+                }}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={s.yearLabel}>{toWareki(year)}</Text>
+                  <Text style={s.yearSub}>{count}問 / 120分</Text>
+                </View>
+                <Text style={s.yearArrow}>{'>'}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
         <View style={s.notes}>
           <Text style={s.notesTitle}>💡 受験のコツ</Text>
           <Text style={s.noteItem}>• 本番と同じ120分の時間配分を体で覚える</Text>
@@ -175,5 +220,16 @@ function makeStyles(C: ThemeColors) {
     },
     notesTitle: { fontSize: 14, fontWeight: '700', marginBottom: 8, color: C.text },
     noteItem: { fontSize: 13, color: C.textSecondary, marginBottom: 4 },
+    yearRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 14,
+      paddingHorizontal: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: C.borderLight,
+    },
+    yearLabel: { fontSize: 15, fontWeight: '700', color: C.text },
+    yearSub: { fontSize: 12, color: C.textSecondary, marginTop: 2 },
+    yearArrow: { fontSize: 18, color: C.textTertiary, fontWeight: '600' },
   });
 }

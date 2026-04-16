@@ -8,6 +8,7 @@ import { takkengyohoQuickQuizzes } from './modules/takken/quick-quiz/takkengyoho
 import { horeiSeigenQuickQuizzes } from './modules/takken/quick-quiz/horei_seigen';
 import { taxOtherQuickQuizzes } from './modules/takken/quick-quiz/tax_other';
 import { Question, GlossaryTerm, QuickQuiz, ExamModuleId, Category } from '../types';
+import { EXAM_ALLOCATION } from '../constants/exam';
 
 export const ALL_QUICK_QUIZZES: QuickQuiz[] = [
   ...kenriQuickQuizzes,
@@ -59,6 +60,16 @@ const FREE_QUICK_QUIZ_ID_SET = new Set(
 // 後方互換
 export const FREE_QUESTION_IDS = [...FREE_QUESTION_ID_SET];
 
+// 年度別に問題をグルーピング
+const QUESTIONS_BY_YEAR = new Map<number, Question[]>();
+ALL_QUESTIONS.forEach((q) => {
+  if (q.sourceExamYear) {
+    const arr = QUESTIONS_BY_YEAR.get(q.sourceExamYear);
+    if (arr) arr.push(q);
+    else QUESTIONS_BY_YEAR.set(q.sourceExamYear, [q]);
+  }
+});
+
 // ===== Helper functions（全てO(1) or キャッシュ済み）=====
 
 export function getQuestionById(id: string): Question | undefined {
@@ -105,4 +116,28 @@ export function isQuestionFree(questionId: string): boolean {
 
 export function isQuickQuizFree(quizId: string): boolean {
   return FREE_QUICK_QUIZ_ID_SET.has(quizId);
+}
+
+/** 利用可能な年度一覧（新しい順） */
+export function getAvailableExamYears(): number[] {
+  return [...QUESTIONS_BY_YEAR.keys()].sort((a, b) => b - a);
+}
+
+/** 指定年度の問題を本試験と同じ配分で取得（50問） */
+export function getExamByYear(year: number): Question[] {
+  const yearQuestions = QUESTIONS_BY_YEAR.get(year) ?? [];
+  // 本試験と同じ科目配分で出題順にソート
+  const result: Question[] = [];
+  const categories: Category[] = ['kenri', 'horei_seigen', 'takkengyoho', 'tax_other'];
+  for (const cat of categories) {
+    const catQuestions = yearQuestions.filter(q => q.category === cat);
+    result.push(...catQuestions);
+  }
+  return result.slice(0, 50);
+}
+
+/** 年度を和暦表示に変換 */
+export function toWareki(year: number): string {
+  if (year >= 2019) return `令和${year - 2018}年度`;
+  return `平成${year - 1988}年度`;
 }

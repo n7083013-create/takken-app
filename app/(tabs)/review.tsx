@@ -32,6 +32,7 @@ import { useProgressStore } from '../../store/useProgressStore';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
 import { EmptyState } from '../../components/EmptyState';
+import { LawAmendmentBadge } from '../../components/LawAmendmentBadge';
 
 type ReviewMode = 'menu' | 'session';
 type ReviewType = 'due' | 'weak' | 'bookmarked';
@@ -227,6 +228,9 @@ export default function ReviewScreen() {
           <View style={[s.questionBox, Shadow.sm]}>
             <Text style={s.questionText}>{currentQuestion.text}</Text>
           </View>
+
+          {/* Law Amendment Badge */}
+          <LawAmendmentBadge tags={currentQuestion.tags} />
 
           {/* Choices */}
           <View style={s.choiceList}>
