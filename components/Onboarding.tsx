@@ -25,9 +25,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ONBOARDING_KEY = '@takken_onboarding_done';
 const TOTAL_STEPS = 4;
 
-// 2026年10月第3日曜日 = 2026-10-18
-const DEFAULT_EXAM_DATE = '2026-10-18T00:00:00.000Z';
-
 interface OnboardingProps {
   onComplete: () => void;
 }
@@ -39,14 +36,19 @@ const GOAL_PRESETS = [
   { value: 30, label: '30問/日', desc: 'がっつり', icon: '🔥' },
 ] as const;
 
-// ── Year options ──
-const YEAR_OPTIONS = [2025, 2026] as const;
-
 /** 指定年の10月第3日曜日を計算 */
 function calcThirdSunday(year: number): Date {
   const oct1 = new Date(year, 9, 1);
   const firstSunday = ((7 - oct1.getDay()) % 7) + 1;
   return new Date(year, 9, firstSunday + 14);
+}
+
+/** 直近の宅建試験日を自動計算（過ぎていたら翌年） */
+function getNextExamDate(): Date {
+  const now = new Date();
+  const thisYear = calcThirdSunday(now.getFullYear());
+  if (thisYear.getTime() > now.getTime()) return thisYear;
+  return calcThirdSunday(now.getFullYear() + 1);
 }
 
 export default function Onboarding({ onComplete }: OnboardingProps) {
@@ -55,9 +57,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const scrollRef = useRef<ScrollView>(null);
   const [currentStep, setCurrentStep] = useState(0);
 
-  // ── Step 2: Exam date ──
-  const [selectedYear, setSelectedYear] = useState(2026);
-  const examDate = useMemo(() => calcThirdSunday(selectedYear), [selectedYear]);
+  // ── Step 2: Exam date (自動計算) ──
+  const examDate = useMemo(() => getNextExamDate(), []);
   const examDateStr = useMemo(
     () =>
       `${examDate.getFullYear()}年${examDate.getMonth() + 1}月${examDate.getDate()}日（日）`,
@@ -182,38 +183,12 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           <View style={s.page}>
             <View style={s.pageContent}>
               <Text style={s.stepIcon}>📅</Text>
-              <Text style={s.pageTitle}>試験日を設定</Text>
+              <Text style={s.pageTitle}>次の試験日まで</Text>
               <Text style={s.pageSubtitle}>
-                カウントダウンで学習ペースを管理
+                試験日を自動検出しました{'\n'}カウントダウンで学習ペースを管理
               </Text>
 
-              {/* Year selector */}
-              <View style={s.yearSelector}>
-                {YEAR_OPTIONS.map((year) => (
-                  <Pressable
-                    key={year}
-                    style={[
-                      s.yearBtn,
-                      selectedYear === year && s.yearBtnActive,
-                    ]}
-                    onPress={() => setSelectedYear(year)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${year}年を選択`}
-                    accessibilityState={{ selected: selectedYear === year }}
-                  >
-                    <Text
-                      style={[
-                        s.yearBtnText,
-                        selectedYear === year && s.yearBtnTextActive,
-                      ]}
-                    >
-                      {year}年
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-
-              {/* Computed exam date display */}
+              {/* Auto-detected exam date display */}
               <View style={s.examDateCard}>
                 <Text style={s.examDateLabel}>試験日</Text>
                 <Text style={s.examDateValue}>{examDateStr}</Text>
@@ -517,33 +492,8 @@ function makeStyles(C: ThemeColors) {
     },
 
     // ─── Step 2: Exam date ───
-    yearSelector: {
-      flexDirection: 'row',
-      gap: 12,
-      marginTop: 32,
-    },
-    yearBtn: {
-      paddingHorizontal: 28,
-      paddingVertical: 14,
-      borderRadius: BorderRadius.lg,
-      borderWidth: 2,
-      borderColor: C.border,
-      backgroundColor: C.card,
-    },
-    yearBtnActive: {
-      borderColor: C.primary,
-      backgroundColor: C.primarySurface,
-    },
-    yearBtnText: {
-      fontSize: FontSize.callout,
-      fontWeight: '700',
-      color: C.textSecondary,
-    },
-    yearBtnTextActive: {
-      color: C.primary,
-    },
     examDateCard: {
-      marginTop: 24,
+      marginTop: 32,
       backgroundColor: C.card,
       borderRadius: BorderRadius.xl,
       padding: Spacing.xl,
