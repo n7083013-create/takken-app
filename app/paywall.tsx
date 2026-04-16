@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   Platform,
+  Linking,
   ActivityIndicator,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
@@ -54,6 +55,7 @@ export default function PaywallScreen() {
   const [loading, setLoading] = useState(false);
   const [showCardForm, setShowCardForm] = useState(false);
   const [cardError, setCardError] = useState('');
+  const [restoring, setRestoring] = useState(false);
   const cardElRef = useRef<any>(null);
   const payjpRef = useRef<any>(null);
 
@@ -84,11 +86,11 @@ export default function PaywallScreen() {
       const card = elements.create('card', {
         style: {
           base: {
-            color: '#fff',
+            color: colors.text,
             fontSize: '16px',
-            '::placeholder': { color: '#999' },
+            '::placeholder': { color: colors.textTertiary },
           },
-          invalid: { color: '#ff6b6b' },
+          invalid: { color: colors.error },
         },
       });
       // カードフォームをマウント
@@ -158,6 +160,28 @@ export default function PaywallScreen() {
     }
   }, [session, router, verifySubscription]);
 
+  const handleRestore = useCallback(async () => {
+    if (!session?.access_token) {
+      infoAlert('ログインが必要です', '購入を復元するにはログインしてください。');
+      return;
+    }
+    setRestoring(true);
+    try {
+      await verifySubscription(session.access_token);
+      const nowPro = useSettingsStore.getState().isPro();
+      if (nowPro) {
+        infoAlert('復元完了', 'サブスクリプションが復元されました。');
+        router.replace('/(tabs)');
+      } else {
+        infoAlert('復元結果', '有効なサブスクリプションが見つかりませんでした。');
+      }
+    } catch {
+      infoAlert('エラー', '復元に失敗しました。通信環境を確認して再度お試しください。');
+    } finally {
+      setRestoring(false);
+    }
+  }, [session, router, verifySubscription]);
+
   // 試験までの日数でメッセージだけ変える
   const heroSub = daysUntilExam !== null && daysUntilExam > 0
     ? `試験まであと${daysUntilExam}日 — 今すぐ始めよう`
@@ -217,8 +241,8 @@ export default function PaywallScreen() {
                 style={{
                   padding: '14px',
                   borderRadius: '10px',
-                  border: '1px solid #444',
-                  backgroundColor: '#1a1a2e',
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: colors.card,
                   minHeight: '44px',
                 }}
               />
@@ -244,8 +268,24 @@ export default function PaywallScreen() {
           </View>
         )}
 
-        {/* CTA（カードフォーム非表示時） */}
-        {!showCardForm && (
+        {/* ネイティブアプリ向け IAP セクション（準備中） */}
+        {Platform.OS !== 'web' && (
+          <View style={s.nativeIAPSection}>
+            <Text style={s.iapComingSoon}>
+              アプリ内課金は準備中です。{'\n'}
+              Web版からお申し込みいただけます。
+            </Text>
+            <Pressable
+              style={s.webLinkBtn}
+              onPress={() => Linking.openURL('https://takken-app-olive.vercel.app/paywall')}
+            >
+              <Text style={s.webLinkText}>Web版を開く</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* CTA（カードフォーム非表示時・Webのみ） */}
+        {!showCardForm && Platform.OS === 'web' && (
           <>
             <Pressable
               style={[s.ctaBtn, Shadow.lg]}
@@ -293,6 +333,19 @@ export default function PaywallScreen() {
             <Text style={s.linkText}>特商法表記</Text>
           </Pressable>
         </View>
+
+        {/* 購入を復元 */}
+        <Pressable
+          style={s.restoreBtn}
+          onPress={handleRestore}
+          disabled={restoring}
+        >
+          {restoring ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <Text style={s.restoreText}>購入を復元</Text>
+          )}
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -439,7 +492,7 @@ function makeStyles(C: ThemeColors) {
       marginBottom: 12,
     },
     cardErrorText: {
-      color: '#ff6b6b',
+      color: C.error,
       fontSize: 13,
       marginBottom: 8,
       textAlign: 'center',
@@ -458,6 +511,36 @@ function makeStyles(C: ThemeColors) {
     cancelBtnText: {
       color: C.textSecondary,
       fontSize: 14,
+    },
+
+    // Native IAP section
+    nativeIAPSection: {
+      backgroundColor: C.card,
+      borderRadius: 16,
+      padding: 24,
+      marginBottom: 20,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: C.border,
+    },
+    iapComingSoon: {
+      fontSize: 14,
+      color: C.textSecondary,
+      textAlign: 'center',
+      lineHeight: 22,
+      marginBottom: 16,
+    },
+    webLinkBtn: {
+      backgroundColor: C.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      paddingHorizontal: 32,
+      alignItems: 'center',
+    },
+    webLinkText: {
+      color: C.white,
+      fontSize: 15,
+      fontWeight: '700',
     },
 
     // CTA
@@ -503,5 +586,18 @@ function makeStyles(C: ThemeColors) {
     },
     linkText: { fontSize: 12, color: C.primary, fontWeight: '600' },
     linkSep: { color: C.textTertiary },
+
+    // Restore purchases
+    restoreBtn: {
+      alignItems: 'center',
+      paddingVertical: 16,
+      marginTop: 8,
+    },
+    restoreText: {
+      fontSize: 13,
+      color: C.textSecondary,
+      fontWeight: '500',
+      textDecorationLine: 'underline' as const,
+    },
   });
 }

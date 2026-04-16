@@ -9,14 +9,17 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { infoAlert } from '../../services/alert';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shadow } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useAuthStore } from '../../store/useAuthStore';
-import { isSupabaseConfigured } from '../../services/supabase';
+import { supabase, isSupabaseConfigured } from '../../services/supabase';
 
 type Mode = 'signin' | 'signup';
 
@@ -36,8 +39,46 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
 
   const configured = isSupabaseConfigured();
+
+  // ── Apple Sign In ──
+  const handleAppleSignIn = async () => {
+    try {
+      setAppleLoading(true);
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (credential.identityToken) {
+        const { error } = await supabase.auth.signInWithIdToken({
+          provider: 'apple',
+          token: credential.identityToken,
+        });
+        if (error) throw error;
+        // Navigation will be handled by auth state listener
+        const safeReturn =
+          returnTo &&
+          typeof returnTo === 'string' &&
+          returnTo.startsWith('/') &&
+          !returnTo.startsWith('//')
+            ? returnTo
+            : '/(tabs)';
+        router.replace(safeReturn as any);
+      }
+    } catch (e: unknown) {
+      const err = e as { code?: string; message?: string };
+      if (err.code !== 'ERR_REQUEST_CANCELED') {
+        Alert.alert('エラー', 'Appleサインインに失敗しました');
+      }
+    } finally {
+      setAppleLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!email || !password) {
@@ -60,9 +101,13 @@ export default function LoginScreen() {
   };
 
   const handleGoogle = async () => {
-    // OAuth後の戻り先をlocalStorageに保存（リダイレクトで状態が消えるため）
-    if (returnTo && typeof window !== 'undefined') {
-      localStorage.setItem('auth_returnTo', returnTo);
+    // OAuth後の戻り先を保存（リダイレクトで状態が消えるため）
+    if (returnTo) {
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') localStorage?.setItem('auth_returnTo', returnTo);
+      } else {
+        await AsyncStorage.setItem('auth_returnTo', returnTo);
+      }
     }
     setGoogleLoading(true);
     const { error } = await signInWithGoogle();
@@ -112,6 +157,17 @@ export default function LoginScreen() {
               </>
             )}
           </Pressable>
+
+          {/* Appleサインインボタン（iOSのみ） */}
+          {Platform.OS === 'ios' && (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+              cornerRadius={12}
+              style={s.appleBtn}
+              onPress={handleAppleSignIn}
+            />
+          )}
 
           {/* 区切り線 */}
           <View style={s.divider}>
@@ -254,6 +310,13 @@ function makeStyles(C: ThemeColors) {
       fontSize: 15,
       fontWeight: '700',
       color: '#333',
+    },
+
+    // Apple button
+    appleBtn: {
+      width: '100%',
+      height: 50,
+      marginTop: 12,
     },
 
     // Divider

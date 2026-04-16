@@ -44,6 +44,7 @@ export const supabase = new Proxy({} as SupabaseClient, {
           onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
           signInWithPassword: async () => ({ error: { message: '認証サーバーが未設定です' } }),
           signInWithOAuth: async () => ({ error: { message: '認証サーバーが未設定です' } }),
+          signInWithIdToken: async () => ({ error: { message: '認証サーバーが未設定です' } }),
           signUp: async () => ({ error: { message: '認証サーバーが未設定です' } }),
           signOut: async () => ({}),
         };

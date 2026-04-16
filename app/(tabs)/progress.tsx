@@ -4,6 +4,9 @@ import {
   ScrollView,
   Pressable,
   StyleSheet,
+  Platform,
+  Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { confirmAlert, infoAlert } from '../../services/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,12 +16,13 @@ import { CATEGORIES, EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, AI_QUERY_LIMITS } from '../../types';
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievementStore';
 import { useExamStore } from '../../store/useExamStore';
+import { APP_VERSION } from '../../constants/config';
 import {
   requestNotificationPermission,
   scheduleDailyReminder,
@@ -223,6 +227,213 @@ function makeSettingsStyles(C: ThemeColors) {
     timeBtnActive: { backgroundColor: C.primary, borderColor: C.primary },
     timeText: { fontSize: FontSize.footnote, color: C.textSecondary, fontWeight: '600' },
     timeTextActive: { color: C.white },
+  });
+}
+
+function SubscriptionSection() {
+  const colors = useThemeColors();
+  const ss = useMemo(() => makeSubStyles(colors), [colors]);
+  const isPro = useSettingsStore((s) => s.isPro);
+  const subscription = useSettingsStore((s) => s.subscription);
+  const isTrialActive = useSettingsStore((s) => s.isTrialActive);
+  const trialDaysLeft = useSettingsStore((s) => s.trialDaysLeft);
+  const verifySubscription = useSettingsStore((s) => s.verifySubscription);
+  const session = useAuthStore((s) => s.session);
+  const [restoring, setRestoring] = useState(false);
+
+  const handleRestore = useCallback(async () => {
+    if (!session?.access_token) {
+      infoAlert('ログインが必要です', '購入を復元するにはログインしてください。');
+      return;
+    }
+    setRestoring(true);
+    try {
+      await verifySubscription(session.access_token);
+      const nowPro = useSettingsStore.getState().isPro();
+      if (nowPro) {
+        infoAlert('復元完了', 'サブスクリプションが復元されました。');
+      } else {
+        infoAlert('復元結果', '有効なサブスクリプションが見つかりませんでした。');
+      }
+    } catch {
+      infoAlert('エラー', '復元に失敗しました。通信環境を確認して再度お試しください。');
+    } finally {
+      setRestoring(false);
+    }
+  }, [session, verifySubscription]);
+
+  const handleManageSubscription = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Linking.openURL('https://apps.apple.com/account/subscriptions');
+    } else {
+      // Web / Android: show info
+      infoAlert(
+        'サブスクリプション管理',
+        'サブスクリプションの解約・変更はお問い合わせください。\n\nメール: taira@2023kakeru.com\n\n次回更新日の24時間前までに解約すれば、それ以降の課金は発生しません。',
+      );
+    }
+  }, []);
+
+  const pro = isPro();
+  const trial = isTrialActive();
+  const daysLeft = trialDaysLeft();
+
+  const planLabel = trial
+    ? `無料トライアル（残り${daysLeft}日）`
+    : subscription.plan === 'standard'
+      ? 'スタンダードプラン'
+      : subscription.plan === 'unlimited'
+        ? 'アンリミテッドプラン'
+        : '無料プラン';
+
+  return (
+    <View style={ss.box}>
+      <Text style={ss.title}>サブスクリプション管理</Text>
+
+      {/* Current plan display */}
+      <View style={ss.planRow}>
+        <Text style={ss.planLabel}>現在のプラン</Text>
+        <View style={[ss.planBadge, pro && ss.planBadgePro]}>
+          <Text style={[ss.planBadgeText, pro && ss.planBadgeTextPro]}>
+            {planLabel}
+          </Text>
+        </View>
+      </View>
+
+      {pro && (
+        <>
+          {/* Manage subscription button */}
+          <Pressable style={ss.manageBtn} onPress={handleManageSubscription}>
+            <Text style={ss.manageBtnText}>サブスクリプションを管理</Text>
+            <Text style={ss.manageArrow}>{'\u203A'}</Text>
+          </Pressable>
+
+          {/* Cancellation instructions */}
+          <View style={ss.cancelInfo}>
+            <Text style={ss.cancelInfoTitle}>解約について</Text>
+            <Text style={ss.cancelInfoText}>
+              {Platform.OS === 'ios'
+                ? '上の「サブスクリプションを管理」から Apple の設定画面で解約できます。次回更新日の24時間前までに手続きしてください。'
+                : '次回更新日の24時間前までに、こちらの管理ボタンまたはメール（taira@2023kakeru.com）からお手続きください。'}
+            </Text>
+            <Text style={ss.cancelInfoSub}>
+              解約後も、当月の残り期間は引き続きご利用いただけます。
+            </Text>
+          </View>
+        </>
+      )}
+
+      {/* Restore purchases button */}
+      <Pressable
+        style={ss.restoreBtn}
+        onPress={handleRestore}
+        disabled={restoring}
+      >
+        {restoring ? (
+          <ActivityIndicator size="small" color={colors.primary} />
+        ) : (
+          <Text style={ss.restoreBtnText}>購入を復元</Text>
+        )}
+      </Pressable>
+    </View>
+  );
+}
+
+function makeSubStyles(C: ThemeColors) {
+  return StyleSheet.create({
+    box: {
+      marginTop: Spacing.xxl,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+    },
+    title: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.textTertiary,
+      marginBottom: 10,
+      letterSpacing: LetterSpacing.wide,
+    },
+    planRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: C.borderLight,
+    },
+    planLabel: {
+      fontSize: FontSize.footnote,
+      color: C.textSecondary,
+    },
+    planBadge: {
+      backgroundColor: C.background,
+      borderRadius: BorderRadius.sm,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderWidth: 1,
+      borderColor: C.border,
+    },
+    planBadgePro: {
+      backgroundColor: C.primarySurface,
+      borderColor: C.primary,
+    },
+    planBadgeText: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.textSecondary,
+    },
+    planBadgeTextPro: {
+      color: C.primary,
+    },
+    manageBtn: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: C.borderLight,
+    },
+    manageBtnText: {
+      fontSize: FontSize.subhead,
+      color: C.text,
+      fontWeight: '600',
+    },
+    manageArrow: {
+      fontSize: 20,
+      color: C.textTertiary,
+    },
+    cancelInfo: {
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: C.borderLight,
+    },
+    cancelInfoTitle: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.textSecondary,
+      marginBottom: 6,
+    },
+    cancelInfoText: {
+      fontSize: FontSize.caption,
+      color: C.textSecondary,
+      lineHeight: LineHeight.caption * 1.3,
+    },
+    cancelInfoSub: {
+      fontSize: FontSize.caption2,
+      color: C.textTertiary,
+      marginTop: 6,
+      lineHeight: LineHeight.caption * 1.2,
+    },
+    restoreBtn: {
+      paddingVertical: 14,
+      alignItems: 'center',
+    },
+    restoreBtnText: {
+      fontSize: FontSize.subhead,
+      color: C.primary,
+      fontWeight: '600',
+    },
   });
 }
 
@@ -597,6 +808,9 @@ export default function ProgressScreen() {
         {/* 設定 */}
         <SettingsSection />
 
+        {/* サブスクリプション管理 */}
+        <SubscriptionSection />
+
         {/* アカウント */}
         <AccountSection />
 
@@ -621,6 +835,8 @@ export default function ProgressScreen() {
         <Pressable style={s.resetBtn} onPress={handleReset}>
           <Text style={s.resetBtnText}>学習データをリセット</Text>
         </Pressable>
+
+        <Text style={s.versionText}>バージョン {APP_VERSION}</Text>
 
         <View style={{ height: 60 }} />
       </ScrollView>
@@ -826,19 +1042,19 @@ function makeStyles(C: ThemeColors) {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      backgroundColor: '#FFFBEB',
+      backgroundColor: C.warningSurface,
       borderRadius: BorderRadius.lg,
       padding: Spacing.lg,
       marginBottom: Spacing.xxl,
       borderWidth: 1,
-      borderColor: '#FDE68A',
+      borderColor: C.accent + '50',
     },
     upgradeLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     upgradeIcon: { fontSize: 24 },
-    upgradeTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: '#92400E' },
-    upgradeDesc: { fontSize: FontSize.caption, color: '#B45309', marginTop: 2 },
+    upgradeTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: C.accent },
+    upgradeDesc: { fontSize: FontSize.caption, color: C.accent, marginTop: 2, opacity: 0.85 },
     upgradeBtn: {
-      backgroundColor: '#E8860C',
+      backgroundColor: C.accent,
       paddingHorizontal: 14,
       paddingVertical: 7,
       borderRadius: BorderRadius.sm,
@@ -1041,5 +1257,14 @@ function makeStyles(C: ThemeColors) {
     },
     legalRowText: { fontSize: FontSize.subhead, color: C.text },
     legalArrow: { fontSize: 20, color: C.textTertiary },
+
+    // ─── Version ───
+    versionText: {
+      fontSize: FontSize.caption,
+      color: C.textTertiary,
+      textAlign: 'center',
+      marginTop: Spacing.lg,
+      marginBottom: Spacing.xl,
+    },
   });
 }

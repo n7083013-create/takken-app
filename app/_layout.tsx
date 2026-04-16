@@ -2,7 +2,8 @@ import '../global.css';
 import { useEffect, useRef } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useProgressStore } from '../store/useProgressStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -70,13 +71,21 @@ export default function RootLayout() {
 
     // OAuth後のリダイレクト
     if (didRedirect.current) return;
-    if (typeof window === 'undefined') return;
-    const returnTo = localStorage.getItem('auth_returnTo');
-    if (returnTo) {
-      localStorage.removeItem('auth_returnTo');
-      didRedirect.current = true;
-      router.replace(returnTo as any);
-    }
+    (async () => {
+      let returnTo: string | null = null;
+      if (Platform.OS === 'web') {
+        if (typeof window === 'undefined') return;
+        returnTo = localStorage?.getItem('auth_returnTo') ?? null;
+        if (returnTo) localStorage?.removeItem('auth_returnTo');
+      } else {
+        returnTo = await AsyncStorage.getItem('auth_returnTo');
+        if (returnTo) await AsyncStorage.removeItem('auth_returnTo');
+      }
+      if (returnTo) {
+        didRedirect.current = true;
+        router.replace(returnTo as any);
+      }
+    })();
   }, [user, initialized]);
 
   const stats = useProgressStore((s) => s.stats);

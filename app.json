@@ -9,11 +9,14 @@
     "newArchEnabled": true,
     "scheme": "takken-app",
     "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
       "backgroundColor": "#1B5E20"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.takken.app",
+      "usesAppleSignIn": true,
       "infoPlist": {
         "CFBundleDisplayName": "宅建士 完全対策",
         "NSAppTransportSecurity": {
@@ -47,7 +50,8 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-apple-authentication"
     ],
     "extra": {
       "router": {},
