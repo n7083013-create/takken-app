@@ -54,7 +54,9 @@ export default function LoginScreen() {
       infoAlert(mode === 'signin' ? 'ログイン失敗' : '登録失敗', error);
       return;
     }
-    router.replace(returnTo ? (returnTo as any) : '/(tabs)');
+    const safeReturn = returnTo && typeof returnTo === 'string' && returnTo.startsWith('/') && !returnTo.startsWith('//')
+      ? returnTo : '/(tabs)';
+    router.replace(safeReturn as any);
   };
 
   const handleGoogle = async () => {

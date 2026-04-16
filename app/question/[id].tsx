@@ -25,6 +25,7 @@ import { ReportModal } from '../../components/ReportModal';
 import { HighlightedText } from '../../components/HighlightedText';
 import { canAccess } from '../../services/accessControl';
 import { askAI } from '../../services/claude';
+import { sanitizeAIQuery } from '../../services/validation';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
 import { LawAmendmentBadge } from '../../components/LawAmendmentBadge';
@@ -171,7 +172,7 @@ export default function QuestionDetailScreen() {
   const sendAIMessage = useCallback(async () => {
     if (!q || !aiInput.trim() || aiLoading || !canAI) return;
 
-    const userMsg = aiInput.trim();
+    const userMsg = sanitizeAIQuery(aiInput.trim());
     setAiInput('');
     setAiMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setAiLoading(true);

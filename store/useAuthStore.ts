@@ -47,12 +47,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       supabase.auth.onAuthStateChange((_event, session) => {
         set({ session, user: session?.user ?? null });
         if (session?.user) {
-          useProgressStore.getState().syncWithCloud(session.user.id);
+          // Add jitter to prevent thundering herd
+          const jitter = Math.random() * 5000;
+          setTimeout(() => useProgressStore.getState().syncWithCloud(session.user.id), jitter);
         }
       });
       // 既存セッションがあれば起動時に同期
       if (data.session?.user) {
-        useProgressStore.getState().syncWithCloud(data.session.user.id);
+        // Add jitter to prevent thundering herd
+        const jitter = Math.random() * 5000;
+        setTimeout(() => useProgressStore.getState().syncWithCloud(data.session!.user.id), jitter);
       }
     } catch (e) {
       logError(e, { context: 'auth.init' });

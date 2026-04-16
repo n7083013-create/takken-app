@@ -13,6 +13,9 @@ import { EXAM_ALLOCATION, PASS_LINE } from '../constants/exam';
 const STORAGE_KEY = '@takken_exam_session';
 const HISTORY_KEY = '@takken_exam_history';
 
+// O(1) lookup map — avoids repeated ALL_QUESTIONS.find() in hot paths
+const questionMap = new Map(ALL_QUESTIONS.map((q) => [q.id, q]));
+
 export const EXAM_DURATION_SEC = 120 * 60; // 120分
 /** @deprecated EXAM_ALLOCATION from constants/exam を使用してください */
 export const EXAM_COMPOSITION = EXAM_ALLOCATION;
@@ -249,7 +252,7 @@ export function scoreExam(session: ExamSession): {
   };
   let correct = 0;
   session.questionIds.forEach((qid) => {
-    const q = ALL_QUESTIONS.find((x) => x.id === qid);
+    const q = questionMap.get(qid);
     if (!q) return;
     byCategory[q.category].total += 1;
     if (session.answers[qid] === q.correctIndex) {
@@ -262,6 +265,6 @@ export function scoreExam(session: ExamSession): {
 
 export function getExamQuestions(session: ExamSession): Question[] {
   return session.questionIds
-    .map((id) => ALL_QUESTIONS.find((q) => q.id === id))
+    .map((id) => questionMap.get(id))
     .filter((q): q is Question => !!q);
 }

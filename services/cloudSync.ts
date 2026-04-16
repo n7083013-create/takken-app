@@ -8,6 +8,17 @@ import { supabase, isSupabaseConfigured } from './supabase';
 import { logError } from './errorLogger';
 import type { QuestionProgress, StudyStats } from '../types';
 
+// ── Delta sync: track which records changed since last sync ──
+let lastSyncTimestamp: string | null = null;
+const dirtyIds = new Set<string>();
+
+/** Mark a question as modified so it will be included in the next push */
+export function markDirty(questionId: string): void {
+  dirtyIds.add(questionId);
+}
+
+const UPSERT_CHUNK_SIZE = 200;
+
 interface PullResult {
   progress: Record<string, QuestionProgress>;
   stats: StudyStats | null;
@@ -19,16 +30,33 @@ interface PullResult {
 export async function pullFromCloud(userId: string): Promise<PullResult | null> {
   if (!isSupabaseConfigured()) return null;
   try {
-    const [progRes, statsRes] = await Promise.all([
-      supabase.from('question_progress').select('*').eq('user_id', userId),
-      supabase.from('study_stats').select('*').eq('user_id', userId).maybeSingle(),
-    ]);
+    // ── Paginated fetch for question_progress ──
+    const PAGE_SIZE = 1000;
+    let allProgressRows: any[] = [];
+    let page = 0;
+    while (true) {
+      const { data, error } = await supabase
+        .from('question_progress')
+        .select('*')
+        .eq('user_id', userId)
+        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      allProgressRows = allProgressRows.concat(data);
+      if (data.length < PAGE_SIZE) break;
+      page++;
+    }
 
-    if (progRes.error) throw progRes.error;
+    // ── study_stats (single row, no pagination needed) ──
+    const statsRes = await supabase
+      .from('study_stats')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
     if (statsRes.error) throw statsRes.error;
 
     const progress: Record<string, QuestionProgress> = {};
-    (progRes.data ?? []).forEach((row: any) => {
+    allProgressRows.forEach((row: any) => {
       progress[row.question_id] = {
         questionId: row.question_id,
         attempts: row.attempts,
@@ -55,6 +83,9 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
         }
       : null;
 
+    // Update sync timestamp after successful pull
+    lastSyncTimestamp = new Date().toISOString();
+
     return { progress, stats };
   } catch (e) {
     logError(e, { context: 'cloudSync.pull' });
@@ -71,7 +102,14 @@ export async function pushProgressToCloud(
 ): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
   try {
-    const rows = Object.values(progress).map((p) => ({
+    // Delta sync: only push dirty records (or all on first sync)
+    const values = dirtyIds.size > 0
+      ? Object.values(progress).filter((p) => dirtyIds.has(p.questionId))
+      : lastSyncTimestamp === null
+        ? Object.values(progress)  // First sync: push everything
+        : [];                       // Nothing dirty, nothing to push
+
+    const rows = values.map((p) => ({
       user_id: userId,
       question_id: p.questionId,
       attempts: p.attempts,
@@ -85,8 +123,17 @@ export async function pushProgressToCloud(
       updated_at: new Date().toISOString(),
     }));
     if (rows.length === 0) return true;
-    const { error } = await supabase.from('question_progress').upsert(rows);
-    if (error) throw error;
+
+    // Batch upsert in chunks of UPSERT_CHUNK_SIZE to avoid oversized requests
+    for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
+      const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
+      const { error } = await supabase.from('question_progress').upsert(chunk);
+      if (error) throw error;
+    }
+
+    // Successful push: clear dirty set and update timestamp
+    dirtyIds.clear();
+    lastSyncTimestamp = new Date().toISOString();
     return true;
   } catch (e) {
     logError(e, { context: 'cloudSync.pushProgress' });

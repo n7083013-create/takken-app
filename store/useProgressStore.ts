@@ -11,6 +11,7 @@ import {
   pushProgressToCloud,
   pushStatsToCloud,
   mergeProgress,
+  markDirty,
 } from '../services/cloudSync';
 import { logError } from '../services/errorLogger';
 
@@ -318,6 +319,9 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       stats: updatedStats,
     });
 
+    // Mark as dirty for delta sync
+    markDirty(questionId);
+
     // 非同期で保存
     get().saveProgress();
   },
@@ -350,6 +354,9 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         progress: { ...state.progress, [questionId]: newProgress },
       });
     }
+
+    // Mark as dirty for delta sync
+    markDirty(questionId);
 
     get().saveProgress();
   },

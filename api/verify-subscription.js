@@ -93,6 +93,9 @@ module.exports = async (req, res) => {
       isPro = false;
     }
 
+    // キャッシュヘッダー: 60秒キャッシュ + 5分間 stale-while-revalidate
+    res.setHeader('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
+
     return res.status(200).json({
       plan: isPro ? 'standard' : 'free',
       isPro,

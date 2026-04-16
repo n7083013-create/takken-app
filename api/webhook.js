@@ -18,18 +18,18 @@ const supabaseAdmin = createClient(
 );
 
 /**
- * PAY.JP customer ID から Supabase ユーザーを探して profile を更新
+ * PAY.JP customer ID から Supabase ユーザーを探して profile を取得
  * customer ID ベースの検索（メールベースより安全）
  * エラー時は throw して呼び出し元で処理
  */
-async function updateProfileByCustomerId(customerId, updates) {
+async function getProfileByCustomerId(customerId) {
   if (!customerId) {
     throw new Error('Customer ID is required');
   }
 
   const { data: profiles, error } = await supabaseAdmin
     .from('profiles')
-    .select('id')
+    .select('id, plan, subscription_status, payjp_subscription_id, trial_ends_at, subscription_ends_at')
     .eq('payjp_customer_id', customerId)
     .limit(1);
 
@@ -40,10 +40,33 @@ async function updateProfileByCustomerId(customerId, updates) {
     throw new Error(`Profile not found for customer: ${customerId}`);
   }
 
+  return profiles[0];
+}
+
+/**
+ * 冪等性チェック付きプロフィール更新
+ * 既にウェブフックが適用済み（同じ状態）の場合はスキップ
+ */
+async function updateProfileIdempotent(profile, updates) {
+  // 冪等性チェック: 全ての更新値が既に一致しているならスキップ
+  const alreadyApplied = Object.keys(updates).every((key) => {
+    const current = profile[key];
+    const incoming = updates[key];
+    // null 同士の比較も考慮
+    if (current === null && incoming === null) return true;
+    if (current === null || incoming === null) return false;
+    return String(current) === String(incoming);
+  });
+
+  if (alreadyApplied) {
+    console.log(`[Webhook] Idempotent skip: profile ${profile.id} already has expected state`);
+    return;
+  }
+
   const { error: updateError } = await supabaseAdmin
     .from('profiles')
     .update(updates)
-    .eq('id', profiles[0].id);
+    .eq('id', profile.id);
 
   if (updateError) {
     throw new Error(`Profile update failed: ${updateError.message}`);
@@ -97,7 +120,8 @@ module.exports = async (req, res) => {
     switch (event.type) {
       // --- サブスクリプション作成 ---
       case 'subscription.created': {
-        await updateProfileByCustomerId(obj.customer, {
+        const profile = await getProfileByCustomerId(obj.customer);
+        await updateProfileIdempotent(profile, {
           plan: 'standard',
           payjp_subscription_id: obj.id,
           subscription_status: obj.status === 'trial' ? 'trialing' : 'active',
@@ -121,7 +145,8 @@ module.exports = async (req, res) => {
           : obj.status === 'canceled' ? 'canceled'
           : 'active';
 
-        await updateProfileByCustomerId(obj.customer, {
+        const profile = await getProfileByCustomerId(obj.customer);
+        await updateProfileIdempotent(profile, {
           plan: obj.status === 'canceled' ? 'free' : 'standard',
           subscription_status: status,
           trial_ends_at: obj.trial_end
@@ -136,7 +161,8 @@ module.exports = async (req, res) => {
 
       // --- サブスクリプション削除 ---
       case 'subscription.deleted': {
-        await updateProfileByCustomerId(obj.customer, {
+        const profile = await getProfileByCustomerId(obj.customer);
+        await updateProfileIdempotent(profile, {
           plan: 'free',
           subscription_status: 'canceled',
           payjp_subscription_id: null,
@@ -147,7 +173,8 @@ module.exports = async (req, res) => {
       // --- 課金失敗 ---
       case 'charge.failed': {
         if (obj.customer) {
-          await updateProfileByCustomerId(obj.customer, {
+          const profile = await getProfileByCustomerId(obj.customer);
+          await updateProfileIdempotent(profile, {
             subscription_status: 'past_due',
           });
         }
