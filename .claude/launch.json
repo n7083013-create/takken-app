@@ -4,8 +4,9 @@
     {
       "name": "takken-web",
       "runtimeExecutable": "/bin/bash",
-      "runtimeArgs": ["-c", "cd /Users/tairanaoya/Desktop/takken-app && PATH=/usr/local/bin:/opt/homebrew/bin:$PATH npx expo start --web --port 8085"],
-      "port": 8085
+      "runtimeArgs": ["-c", "cd /Users/tairanaoya/Desktop/takken-app && PATH=/usr/local/bin:/opt/homebrew/bin:$PATH npx serve dist -l $PORT -s"],
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }

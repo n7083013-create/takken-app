@@ -24,6 +24,7 @@ import {
 } from '../../types';
 import { ALL_QUESTIONS } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
+import { EmptyState } from '../../components/EmptyState';
 
 /** タグベースでサブカテゴリに振り分け */
 function matchSubcategory(q: Question, subcats: Subcategory[]): string {
@@ -307,10 +308,21 @@ export default function QuestionsScreen() {
           return <View style={s.sectionSpacer} />;
         }}
         ListEmptyComponent={
-          <View style={s.empty}>
-            <Text style={s.emptyIcon}>📭</Text>
-            <Text style={s.emptyText}>該当する問題がありません</Text>
-          </View>
+          isSearching ? (
+            <EmptyState
+              icon="🔍"
+              title="該当する問題がありません"
+              subtitle={`「${searchText.trim()}」に一致する問題が見つかりませんでした`}
+              actionLabel="検索をクリア"
+              onAction={() => setSearchText('')}
+            />
+          ) : (
+            <EmptyState
+              icon="📚"
+              title="まだ問題がありません"
+              subtitle="このカテゴリの問題を解いてみましょう！最初の一歩が大切です"
+            />
+          )
         }
       />
     </SafeAreaView>

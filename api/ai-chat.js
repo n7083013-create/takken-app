@@ -75,25 +75,42 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { context, messages } = req.body;
+    const { message, context, messages } = req.body || {};
 
     // --- 入力バリデーション ---
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    // 単一メッセージ形式 (message) と配列形式 (messages) の両方をサポート
+    let validatedMessages;
+    if (message !== undefined) {
+      // 単一メッセージ形式
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'メッセージが必要です' });
+      }
+      if (message.length > 2000) {
+        return res.status(400).json({ error: 'メッセージは2000文字以内にしてください' });
+      }
+      validatedMessages = [{ role: 'user', content: message }];
+    } else if (messages !== undefined) {
+      // 配列形式
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: 'メッセージが必要です' });
+      }
+      if (messages.length > 20) {
+        return res.status(400).json({ error: 'メッセージ数が上限を超えています' });
+      }
+      // 各メッセージのバリデーション
+      for (const m of messages) {
+        if (!m.role || !['user', 'assistant'].includes(m.role)) {
+          return res.status(400).json({ error: '不正なメッセージ形式です' });
+        }
+        if (!m.content || typeof m.content !== 'string' || m.content.length > 2000) {
+          return res.status(400).json({ error: 'メッセージは2000文字以内にしてください' });
+        }
+      }
+      validatedMessages = messages;
+    } else {
       return res.status(400).json({ error: 'メッセージが必要です' });
     }
-    if (messages.length > 20) {
-      return res.status(400).json({ error: 'メッセージ数が上限を超えています' });
-    }
-    // 各メッセージのバリデーション
-    for (const m of messages) {
-      if (!m.role || !['user', 'assistant'].includes(m.role)) {
-        return res.status(400).json({ error: '不正なメッセージ形式です' });
-      }
-      if (!m.content || typeof m.content !== 'string' || m.content.length > 5000) {
-        return res.status(400).json({ error: 'メッセージが長すぎます' });
-      }
-    }
-    if (context && (typeof context !== 'string' || context.length > 10000)) {
+    if (context !== undefined && (typeof context !== 'string' || context.length > 10000)) {
       return res.status(400).json({ error: 'コンテキストが長すぎます' });
     }
 
@@ -123,7 +140,7 @@ module.exports = async (req, res) => {
         model: MODEL,
         max_tokens: 1024,
         system: systemPrompt,
-        messages: messages.map((m) => ({
+        messages: validatedMessages.map((m) => ({
           role: m.role,
           content: m.content,
         })),

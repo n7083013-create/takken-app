@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
 import { EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
@@ -24,6 +25,7 @@ import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
 import { LoadingSkeleton } from '../../components/LoadingSkeleton';
 import LandingPage from '../../components/LandingPage';
+import Onboarding from '../../components/Onboarding';
 import type { Question, QuestionProgress } from '../../types';
 
 /**
@@ -80,10 +82,19 @@ function matchSubcat(tags: string[], matchTags: string[]): boolean {
   return tags.some((t) => matchTags.includes(t));
 }
 
-/** 認証状態に応じてLP or ダッシュボードを切り替えるラッパー */
+/** 認証状態に応じてLP or オンボーディング or ダッシュボードを切り替えるラッパー */
 export default function HomeScreenWrapper() {
   const user = useAuthStore((s) => s.user);
   const initialized = useAuthStore((s) => s.initialized);
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      AsyncStorage.getItem('@takken_onboarding_done').then((val) => {
+        setOnboardingDone(val === 'true');
+      });
+    }
+  }, [user]);
 
   // ストア初期化完了前はスケルトンを表示
   if (!initialized) {
@@ -92,6 +103,16 @@ export default function HomeScreenWrapper() {
 
   if (!user) {
     return <LandingPage />;
+  }
+
+  // オンボーディング状態を読み込み中
+  if (onboardingDone === null) {
+    return <LoadingSkeleton />;
+  }
+
+  // 初回起動時: オンボーディングを表示
+  if (!onboardingDone) {
+    return <Onboarding onComplete={() => setOnboardingDone(true)} />;
   }
 
   return <HomeScreen />;

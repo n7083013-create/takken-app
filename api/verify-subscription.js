@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
 
     if (profileError) {
       console.error('[VerifySub] Profile fetch error:', profileError.message);
-      return res.status(500).json({ error: 'Internal error' });
+      return res.status(500).json({ error: 'サーバーエラーが発生しました' });
     }
 
     if (!profile) {
@@ -102,6 +102,6 @@ module.exports = async (req, res) => {
     });
   } catch (err) {
     console.error('[VerifySub] Error:', err.message);
-    return res.status(500).json({ error: 'Internal error' });
+    return res.status(500).json({ error: 'サーバーエラーが発生しました' });
   }
 };

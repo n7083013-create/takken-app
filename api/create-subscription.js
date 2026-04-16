@@ -44,9 +44,15 @@ module.exports = async (req, res) => {
     userId = user.id;
 
     // --- 入力バリデーション ---
-    const { cardToken } = req.body;
-    if (!cardToken || typeof cardToken !== 'string' || cardToken.length > 200) {
-      return res.status(400).json({ error: 'カードトークンが無効です' });
+    const { cardToken, planId } = req.body || {};
+    if (!cardToken || typeof cardToken !== 'string') {
+      return res.status(400).json({ error: 'Invalid token' });
+    }
+    if (cardToken.length > 200) {
+      return res.status(400).json({ error: 'Invalid token' });
+    }
+    if (planId !== undefined && typeof planId !== 'string') {
+      return res.status(400).json({ error: 'Invalid planId' });
     }
 
     // --- [FIX H1] 既存サブスクリプションチェック + 二重作成防止 ---

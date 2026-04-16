@@ -31,6 +31,7 @@ import { getQuestionById } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
+import { EmptyState } from '../../components/EmptyState';
 
 type ReviewMode = 'menu' | 'session';
 type ReviewType = 'due' | 'weak' | 'bookmarked';
@@ -368,85 +369,106 @@ export default function ReviewScreen() {
         <Text style={s.sectionTitle}>復習キュー</Text>
 
         {/* Due for Review */}
-        <Pressable
-          style={[s.queueCard, Shadow.sm, dueIds.length === 0 && s.queueCardDisabled]}
-          onPress={() => dueIds.length > 0 && startSession('due')}
-          disabled={dueIds.length === 0}
-          accessibilityRole="button"
-          accessibilityLabel={`今日の復習 ${dueIds.length}問`}
-        >
-          <View style={[s.queueIcon, { backgroundColor: colors.accent + '14' }]}>
-            <Text style={s.queueIconText}>⏰</Text>
+        {dueIds.length > 0 ? (
+          <Pressable
+            style={[s.queueCard, Shadow.sm]}
+            onPress={() => startSession('due')}
+            accessibilityRole="button"
+            accessibilityLabel={`今日の復習 ${dueIds.length}問`}
+          >
+            <View style={[s.queueIcon, { backgroundColor: colors.accent + '14' }]}>
+              <Text style={s.queueIconText}>⏰</Text>
+            </View>
+            <View style={s.queueBody}>
+              <Text style={s.queueTitle}>今日の復習</Text>
+              <Text style={s.queueDesc}>
+                忘却曲線に基づいて選ばれた{dueIds.length}問
+              </Text>
+            </View>
+            <View style={s.queueRight}>
+              <Text style={[s.queueCount, { color: colors.accent }]}>
+                {dueIds.length}
+              </Text>
+              <Text style={s.queueArrow}>›</Text>
+            </View>
+          </Pressable>
+        ) : (
+          <View style={[s.emptyQueueCard, Shadow.sm]}>
+            <EmptyState
+              icon="✅"
+              title="復習する問題はありません"
+              subtitle="問題を解くとスケジュールが自動で作成されます"
+            />
           </View>
-          <View style={s.queueBody}>
-            <Text style={s.queueTitle}>今日の復習</Text>
-            <Text style={s.queueDesc}>
-              {dueIds.length > 0
-                ? `忘却曲線に基づいて選ばれた${dueIds.length}問`
-                : '今日復習すべき問題はありません'}
-            </Text>
-          </View>
-          <View style={s.queueRight}>
-            <Text style={[s.queueCount, { color: dueIds.length > 0 ? colors.accent : colors.textDisabled }]}>
-              {dueIds.length}
-            </Text>
-            {dueIds.length > 0 && <Text style={s.queueArrow}>›</Text>}
-          </View>
-        </Pressable>
+        )}
 
         {/* Weak Questions */}
-        <Pressable
-          style={[s.queueCard, Shadow.sm, weakIds.length === 0 && s.queueCardDisabled]}
-          onPress={() => weakIds.length > 0 && startSession('weak')}
-          disabled={weakIds.length === 0}
-          accessibilityRole="button"
-          accessibilityLabel={`苦手克服 ${weakIds.length}問`}
-        >
-          <View style={[s.queueIcon, { backgroundColor: colors.error + '14' }]}>
-            <Text style={s.queueIconText}>💪</Text>
+        {weakIds.length > 0 ? (
+          <Pressable
+            style={[s.queueCard, Shadow.sm]}
+            onPress={() => startSession('weak')}
+            accessibilityRole="button"
+            accessibilityLabel={`苦手克服 ${weakIds.length}問`}
+          >
+            <View style={[s.queueIcon, { backgroundColor: colors.error + '14' }]}>
+              <Text style={s.queueIconText}>💪</Text>
+            </View>
+            <View style={s.queueBody}>
+              <Text style={s.queueTitle}>苦手克服</Text>
+              <Text style={s.queueDesc}>
+                正答率50%未満の{weakIds.length}問を集中攻略
+              </Text>
+            </View>
+            <View style={s.queueRight}>
+              <Text style={[s.queueCount, { color: colors.error }]}>
+                {weakIds.length}
+              </Text>
+              <Text style={s.queueArrow}>›</Text>
+            </View>
+          </Pressable>
+        ) : (
+          <View style={[s.emptyQueueCard, Shadow.sm]}>
+            <EmptyState
+              icon="💪"
+              title="苦手な問題はありません"
+              subtitle="すべての問題で高い正答率です"
+            />
           </View>
-          <View style={s.queueBody}>
-            <Text style={s.queueTitle}>苦手克服</Text>
-            <Text style={s.queueDesc}>
-              {weakIds.length > 0
-                ? `正答率50%未満の${weakIds.length}問を集中攻略`
-                : '苦手問題はありません。この調子！'}
-            </Text>
-          </View>
-          <View style={s.queueRight}>
-            <Text style={[s.queueCount, { color: weakIds.length > 0 ? colors.error : colors.textDisabled }]}>
-              {weakIds.length}
-            </Text>
-            {weakIds.length > 0 && <Text style={s.queueArrow}>›</Text>}
-          </View>
-        </Pressable>
+        )}
 
         {/* Bookmarked */}
-        <Pressable
-          style={[s.queueCard, Shadow.sm, bookmarkedIds.length === 0 && s.queueCardDisabled]}
-          onPress={() => bookmarkedIds.length > 0 && startSession('bookmarked')}
-          disabled={bookmarkedIds.length === 0}
-          accessibilityRole="button"
-          accessibilityLabel={`ブックマーク ${bookmarkedIds.length}問`}
-        >
-          <View style={[s.queueIcon, { backgroundColor: colors.primary + '14' }]}>
-            <Text style={s.queueIconText}>🔖</Text>
+        {bookmarkedIds.length > 0 ? (
+          <Pressable
+            style={[s.queueCard, Shadow.sm]}
+            onPress={() => startSession('bookmarked')}
+            accessibilityRole="button"
+            accessibilityLabel={`ブックマーク ${bookmarkedIds.length}問`}
+          >
+            <View style={[s.queueIcon, { backgroundColor: colors.primary + '14' }]}>
+              <Text style={s.queueIconText}>🔖</Text>
+            </View>
+            <View style={s.queueBody}>
+              <Text style={s.queueTitle}>ブックマーク</Text>
+              <Text style={s.queueDesc}>
+                保存した{bookmarkedIds.length}問を復習
+              </Text>
+            </View>
+            <View style={s.queueRight}>
+              <Text style={[s.queueCount, { color: colors.primary }]}>
+                {bookmarkedIds.length}
+              </Text>
+              <Text style={s.queueArrow}>›</Text>
+            </View>
+          </Pressable>
+        ) : (
+          <View style={[s.emptyQueueCard, Shadow.sm]}>
+            <EmptyState
+              icon="🔖"
+              title="ブックマークはありません"
+              subtitle="問題画面でブックマークを追加できます"
+            />
           </View>
-          <View style={s.queueBody}>
-            <Text style={s.queueTitle}>ブックマーク</Text>
-            <Text style={s.queueDesc}>
-              {bookmarkedIds.length > 0
-                ? `保存した${bookmarkedIds.length}問を復習`
-                : '問題をブックマークすると、ここに表示されます'}
-            </Text>
-          </View>
-          <View style={s.queueRight}>
-            <Text style={[s.queueCount, { color: bookmarkedIds.length > 0 ? colors.primary : colors.textDisabled }]}>
-              {bookmarkedIds.length}
-            </Text>
-            {bookmarkedIds.length > 0 && <Text style={s.queueArrow}>›</Text>}
-          </View>
-        </Pressable>
+        )}
 
         {/* Science Note */}
         <View style={[s.scienceCard, Shadow.sm]}>
@@ -553,6 +575,13 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   },
 
   // ─── Queue Cards ───
+  emptyQueueCard: {
+    backgroundColor: C.card,
+    borderRadius: BorderRadius.lg,
+    marginHorizontal: Spacing.xl,
+    marginBottom: 10,
+    paddingVertical: Spacing.sm,
+  },
   queueCard: {
     flexDirection: 'row',
     alignItems: 'center',
