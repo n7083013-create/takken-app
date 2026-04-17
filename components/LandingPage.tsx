@@ -3,11 +3,20 @@ import { useRouter } from 'expo-router';
 import { Shadow, FontSize, Spacing, BorderRadius, LetterSpacing } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 import { ALL_QUESTIONS, ALL_QUICK_QUIZZES } from '../data';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 
 const TOTAL_Q = ALL_QUESTIONS.length;
 const TOTAL_QQ = ALL_QUICK_QUIZZES.length;
 
+// ─── 試験日までの日数を計算 ───
+const EXAM_DATE = new Date('2026-10-18');
+function getDaysUntilExam(): number {
+  const now = new Date();
+  const diff = EXAM_DATE.getTime() - now.getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+// ─── 定数データ ───
 const FEATURES = [
   { icon: '📚', title: `過去問 ${TOTAL_Q}問`, desc: '分野別・年度別に網羅した問題集' },
   { icon: '⚡', title: `一問一答 ${TOTAL_QQ}問`, desc: 'スキマ時間にサクサク解ける' },
@@ -32,12 +41,118 @@ const STEPS = [
   { num: '3', title: '月額980円', desc: '続けるなら。いつでも解約OK' },
 ];
 
+const PAIN_POINTS = [
+  { icon: '📖', text: 'テキストが分厚すぎて挫折した...' },
+  { icon: '🤔', text: '独学だと正しい勉強法がわからない...' },
+  { icon: '⏰', text: '仕事が忙しくてまとまった時間がない...' },
+  { icon: '📋', text: '模擬試験を受ける機会が少ない...' },
+];
+
+const APP_MOCKUPS = [
+  {
+    icon: '📚',
+    title: '問題演習',
+    desc: '分野別・年度別の過去問を\nスワイプで快適に解答',
+    details: ['4択問題をタップで回答', '即座に正誤判定', '解説をその場で確認'],
+  },
+  {
+    icon: '🤖',
+    title: 'AI解説',
+    desc: 'わからない問題は\nAIがわかるまで解説',
+    details: ['チャット形式で質問', '図解つきの丁寧な解説', '関連論点も自動提示'],
+  },
+  {
+    icon: '📝',
+    title: '模擬試験',
+    desc: '本番と同じ50問×2時間で\n実力を正確に測定',
+    details: ['本試験と同じ出題形式', 'リアルタイムで残り時間表示', '終了後に詳細な成績分析'],
+  },
+];
+
+const REASONS = [
+  {
+    num: '1',
+    title: 'スキマ時間で効率学習',
+    desc: '通勤中・休憩中・寝る前。一問一答なら1問30秒で解けるから、忙しい毎日でもムリなく続けられます。分厚いテキストを持ち歩く必要はありません。',
+  },
+  {
+    num: '2',
+    title: 'AIがわかるまで解説',
+    desc: '解説を読んでもわからない問題は、AIに何度でも質問OK。自分の理解度に合わせた説明で、独学の「わからないまま放置」をゼロにします。',
+  },
+  {
+    num: '3',
+    title: '本番に強くなる模擬試験',
+    desc: '本試験と同じ50問×2時間の形式で、時間配分の感覚を身につけられます。何度でも受験でき、回を重ねるごとに実力が伸びるのを実感できます。',
+  },
+];
+
+const TARGET_AUDIENCE = [
+  '初めて宅建を受ける方',
+  '独学で勉強している方',
+  '忙しくてスキマ時間で勉強したい方',
+  '過去に不合格で再挑戦する方',
+];
+
+const FAQ_DATA = [
+  {
+    q: '無料プランだけでも合格できますか？',
+    a: '無料プランでも基礎的な学習は可能ですが、全問演習・模擬試験・AI解説といった合格に直結する機能はPremiumプランに含まれています。7日間の無料トライアルで、まずはすべての機能をお試しください。',
+  },
+  {
+    q: '7日間無料トライアルに料金はかかりますか？',
+    a: '一切かかりません。7日間はすべての機能を完全無料でご利用いただけます。トライアル期間中に解約すれば、料金は0円です。',
+  },
+  {
+    q: 'スマホとPCで同期できますか？',
+    a: 'はい、同じアカウントでログインするだけで、学習進捗・成績データがすべて自動同期されます。通勤中はスマホ、自宅ではPCなど、シーンに合わせてご利用ください。',
+  },
+  {
+    q: '2026年度の法改正に対応していますか？',
+    a: 'はい、2026年度の最新法改正に完全対応しています。法改正があった場合も速やかに問題・解説を更新しますので、安心してご利用ください。',
+  },
+  {
+    q: '解約は簡単ですか？',
+    a: 'はい、マイページからワンタップで即時解約できます。違約金や解約手数料は一切かかりません。解約後も無料プランとしてご利用を続けられます。',
+  },
+];
+
+const TRUST_ITEMS = [
+  { icon: '🔒', title: '安全な決済', desc: 'PAY.JPによるPCI DSS準拠の決済処理' },
+  { icon: '✋', title: 'いつでも解約', desc: 'マイページから即時解約。違約金なし' },
+  { icon: '🎁', title: '7日間無料', desc: 'トライアル中に解約すれば完全無料' },
+  { icon: '⚖️', title: '法改正対応', desc: '2026年度の最新法改正に完全対応' },
+];
+
+// ─── CTA pulse animation CSS (web only) ───
+const PULSE_KEYFRAMES = `
+@keyframes ctaPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+@keyframes ctaPulseFinal {
+  0% { box-shadow: 0 0 0 0 rgba(27,122,61,0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(27,122,61,0); }
+  100% { box-shadow: 0 0 0 0 rgba(27,122,61,0); }
+}
+.cta-pulse { animation: ctaPulse 2s infinite; }
+.cta-pulse-final { animation: ctaPulseFinal 2s infinite; }
+`;
+
 export default function LandingPage() {
   const router = useRouter();
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
+  const daysLeft = useMemo(() => getDaysUntilExam(), []);
 
-  // Web: OGPメタタグ設定
+  // FAQ state
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const toggleFaq = useCallback((idx: number) => {
+    setOpenFaq((prev) => (prev === idx ? null : idx));
+  }, []);
+
+  // Web: OGP meta + CSS animations
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof document === 'undefined') return;
     const meta = (name: string, content: string, prop = 'property') => {
@@ -56,32 +171,72 @@ export default function LandingPage() {
     meta('twitter:card', 'summary_large_image', 'name');
     meta('twitter:title', '宅建士 完全対策 - AI搭載の宅建試験対策アプリ', 'name');
     meta('twitter:description', `過去問${TOTAL_Q}問+AI解説で宅建合格を目指す。7日間無料。`, 'name');
+
+    // Inject CSS animations
+    const styleId = 'lp-pulse-style';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = PULSE_KEYFRAMES;
+      document.head.appendChild(style);
+    }
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) el.remove();
+    };
   }, []);
+
+  // Web-only: assign CSS class for pulse animation
+  const heroCTARef = useCallback((node: View | null) => {
+    if (Platform.OS === 'web' && node) {
+      const el = node as unknown as HTMLElement;
+      if (el.classList) el.classList.add('cta-pulse');
+    }
+  }, []);
+  const finalCTARef = useCallback((node: View | null) => {
+    if (Platform.OS === 'web' && node) {
+      const el = node as unknown as HTMLElement;
+      if (el.classList) el.classList.add('cta-pulse-final');
+    }
+  }, []);
+
+  const goLogin = useCallback(() => router.push('/auth/login'), [router]);
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content}>
-      {/* ─── ヘッダー ─── */}
+      {/* ─── 1. ヘッダー ─── */}
       <View style={s.header} accessibilityRole="header">
         <Text style={s.headerLogo} accessibilityRole="text">宅建士 完全対策</Text>
         <View style={s.headerButtons}>
-          <Pressable onPress={() => router.push('/auth/login')} style={s.loginBtn} accessibilityRole="button" accessibilityLabel="ログイン">
+          <Pressable onPress={goLogin} style={s.loginBtn} accessibilityRole="button" accessibilityLabel="ログイン">
             <Text style={s.loginBtnText}>ログイン</Text>
           </Pressable>
         </View>
       </View>
 
-      {/* ─── ヒーロー ─── */}
+      {/* ─── 2. ヒーロー ─── */}
       <View style={[s.hero, Shadow.lg]}>
+        {/* Countdown */}
+        <View style={s.countdownBadge}>
+          <Text style={s.countdownText}>
+            2026年10月試験まであと{' '}
+          </Text>
+          <Text style={s.countdownDays}>{daysLeft}日</Text>
+        </View>
+
         <View style={s.heroBadge}>
           <Text style={s.heroBadgeText}>2026年度試験対応</Text>
         </View>
+
         <Text style={s.heroTitle}>
-          宅建試験{'\n'}合格への最短ルート
+          もう分厚いテキストは{'\n'}いらない
         </Text>
         <Text style={s.heroSub}>
-          全{TOTAL_Q}問の過去問 × AI解説で{'\n'}
-          効率的に合格力を身につける
+          全{TOTAL_Q}問の過去問 × AI解説{'\n'}
+          スマホ1つで、合格へ最短ルート
         </Text>
+
+        {/* Stats row */}
         <View style={s.heroStats}>
           <View style={s.heroStat}>
             <Text style={s.heroStatNum}>{TOTAL_Q}+</Text>
@@ -98,19 +253,69 @@ export default function LandingPage() {
             <Text style={s.heroStatLabel}>解説搭載</Text>
           </View>
         </View>
+
+        {/* CTA */}
         <Pressable
+          ref={heroCTARef}
           style={[s.heroCTA, Shadow.md]}
-          onPress={() => router.push('/auth/login')}
+          onPress={goLogin}
           accessibilityRole="button"
           accessibilityLabel="無料で始める - 7日間無料トライアル"
         >
           <Text style={s.heroCTAText}>無料で始める</Text>
         </Pressable>
         <Text style={s.heroCTASub}>7日間無料 → 月額¥980 ・ いつでも解約OK</Text>
+        <Text style={s.heroCTATrust}>
+          {'✓ クレジットカード不要　✓ 30秒で登録'}
+        </Text>
       </View>
 
-      {/* ─── 機能紹介 ─── */}
+      {/* ─── 3. 悩みセクション ─── */}
+      <View style={[s.section, s.sectionAlt]}>
+        <Text style={s.sectionLabel}>PAIN POINTS</Text>
+        <Text style={s.sectionTitle}>こんな悩み{'\n'}ありませんか？</Text>
+        <View style={s.painGrid}>
+          {PAIN_POINTS.map((p) => (
+            <View key={p.text} style={[s.painCard, Shadow.sm]}>
+              <Text style={s.painIcon}>{p.icon}</Text>
+              <Text style={s.painText}>{p.text}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={s.painTransition}>
+          <View style={s.painArrow}>
+            <Text style={s.painArrowText}>▼</Text>
+          </View>
+          <Text style={s.painSolution}>
+            宅建士 完全対策なら、すべて解決
+          </Text>
+        </View>
+      </View>
+
+      {/* ─── 4. アプリスクリーンショットモック ─── */}
       <View style={s.section}>
+        <Text style={s.sectionLabel}>APP PREVIEW</Text>
+        <Text style={s.sectionTitle}>アプリの中身をチェック</Text>
+        <View style={s.mockupRow}>
+          {APP_MOCKUPS.map((m) => (
+            <View key={m.title} style={[s.mockupCard, Shadow.md]}>
+              <View style={s.mockupNotch} />
+              <View style={s.mockupScreen}>
+                <Text style={s.mockupIcon}>{m.icon}</Text>
+                <Text style={s.mockupTitle}>{m.title}</Text>
+                <Text style={s.mockupDesc}>{m.desc}</Text>
+                <View style={s.mockupDivider} />
+                {m.details.map((d) => (
+                  <Text key={d} style={s.mockupDetail}>{'・' + d}</Text>
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* ─── 5. 機能紹介 ─── */}
+      <View style={[s.section, s.sectionAlt]}>
         <Text style={s.sectionLabel}>FEATURES</Text>
         <Text style={s.sectionTitle}>合格に必要な機能を{'\n'}すべて搭載</Text>
         <View style={s.featureGrid}>
@@ -124,8 +329,8 @@ export default function LandingPage() {
         </View>
       </View>
 
-      {/* ─── 科目カバー ─── */}
-      <View style={[s.section, s.sectionAlt]}>
+      {/* ─── 6. 科目カバー ─── */}
+      <View style={s.section}>
         <Text style={s.sectionLabel}>COVERAGE</Text>
         <Text style={s.sectionTitle}>全4科目を完全網羅</Text>
         <View style={s.subjectList}>
@@ -147,8 +352,41 @@ export default function LandingPage() {
         </View>
       </View>
 
-      {/* ─── 料金プラン ─── */}
+      {/* ─── 7. 選ばれる理由 ─── */}
+      <View style={[s.section, s.sectionAlt]}>
+        <Text style={s.sectionLabel}>WHY CHOOSE US</Text>
+        <Text style={s.sectionTitle}>選ばれる3つの理由</Text>
+        <View style={s.reasonGrid}>
+          {REASONS.map((r) => (
+            <View key={r.title} style={[s.reasonCard, Shadow.sm]}>
+              <View style={s.reasonNumBadge}>
+                <Text style={s.reasonNum}>{r.num}</Text>
+              </View>
+              <Text style={s.reasonTitle}>{r.title}</Text>
+              <Text style={s.reasonDesc}>{r.desc}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* ─── 8. こんな方におすすめ ─── */}
       <View style={s.section}>
+        <Text style={s.sectionLabel}>TARGET</Text>
+        <Text style={s.sectionTitle}>こんな方におすすめ</Text>
+        <View style={s.targetList}>
+          {TARGET_AUDIENCE.map((t) => (
+            <View key={t} style={[s.targetItem, Shadow.sm]}>
+              <View style={s.targetCheck}>
+                <Text style={s.targetCheckText}>✓</Text>
+              </View>
+              <Text style={s.targetText}>{t}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* ─── 9. 料金プラン ─── */}
+      <View style={[s.section, s.sectionAlt]}>
         <Text style={s.sectionLabel}>PRICING</Text>
         <Text style={s.sectionTitle}>シンプルな料金プラン</Text>
 
@@ -184,7 +422,7 @@ export default function LandingPage() {
             <Text style={s.planFeaturePremium}>✓ 法改正完全対応</Text>
             <Pressable
               style={[s.planCTA, Shadow.sm]}
-              onPress={() => router.push('/auth/login')}
+              onPress={goLogin}
               accessibilityRole="button"
               accessibilityLabel="PREMIUMプラン 7日間無料で試す"
             >
@@ -194,8 +432,8 @@ export default function LandingPage() {
         </View>
       </View>
 
-      {/* ─── 機能比較テーブル ─── */}
-      <View style={[s.section, s.sectionAlt]}>
+      {/* ─── 10. 機能比較テーブル ─── */}
+      <View style={s.section}>
         <Text style={s.sectionLabel}>COMPARISON</Text>
         <Text style={s.sectionTitle}>プラン比較</Text>
         <View style={[s.comparisonTable, Shadow.sm]}>
@@ -216,7 +454,7 @@ export default function LandingPage() {
         </View>
       </View>
 
-      {/* ─── 始め方 ─── */}
+      {/* ─── 11. 始め方 ─── */}
       <View style={[s.section, s.sectionAlt]}>
         <Text style={s.sectionLabel}>HOW IT WORKS</Text>
         <Text style={s.sectionTitle}>3ステップで開始</Text>
@@ -234,15 +472,40 @@ export default function LandingPage() {
         </View>
       </View>
 
-      {/* ─── 安心ポイント ─── */}
+      {/* ─── 12. FAQ ─── */}
       <View style={s.section}>
+        <Text style={s.sectionLabel}>FAQ</Text>
+        <Text style={s.sectionTitle}>よくある質問</Text>
+        <View style={s.faqList}>
+          {FAQ_DATA.map((faq, idx) => (
+            <Pressable
+              key={faq.q}
+              style={[s.faqItem, Shadow.sm]}
+              onPress={() => toggleFaq(idx)}
+              accessibilityRole="button"
+              accessibilityLabel={`質問: ${faq.q}`}
+              accessibilityState={{ expanded: openFaq === idx }}
+            >
+              <View style={s.faqHeader}>
+                <Text style={s.faqQ}>Q. {faq.q}</Text>
+                <Text style={s.faqToggle}>{openFaq === idx ? '−' : '＋'}</Text>
+              </View>
+              {openFaq === idx && (
+                <View style={s.faqBody}>
+                  <Text style={s.faqA}>A. {faq.a}</Text>
+                </View>
+              )}
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      {/* ─── 13. 安心ポイント ─── */}
+      <View style={[s.section, s.sectionAlt]}>
+        <Text style={s.sectionLabel}>GUARANTEE</Text>
+        <Text style={s.sectionTitle}>安心の3つの保証</Text>
         <View style={s.trustGrid}>
-          {[
-            { icon: '🔒', title: '安全な決済', desc: 'PAY.JPによるPCI DSS準拠の決済処理' },
-            { icon: '✋', title: 'いつでも解約', desc: 'マイページから即時解約。違約金なし' },
-            { icon: '🎁', title: '7日間無料', desc: 'トライアル中に解約すれば完全無料' },
-            { icon: '⚖️', title: '法改正対応', desc: '2026年度の最新法改正に完全対応' },
-          ].map((t) => (
+          {TRUST_ITEMS.map((t) => (
             <View key={t.title} style={[s.trustCard, Shadow.sm]}>
               <Text style={s.trustIcon}>{t.icon}</Text>
               <Text style={s.trustTitle}>{t.title}</Text>
@@ -252,25 +515,36 @@ export default function LandingPage() {
         </View>
       </View>
 
-      {/* ─── 最終CTA ─── */}
+      {/* ─── 14. 最終CTA ─── */}
       <View style={[s.finalCTA, Shadow.lg]}>
-        <Text style={s.finalCTATitle}>今すぐ合格への{'\n'}第一歩を踏み出そう</Text>
+        <View style={s.finalCountdown}>
+          <Text style={s.finalCountdownLabel}>試験まで</Text>
+          <Text style={s.finalCountdownDays}>あと{daysLeft}日</Text>
+        </View>
+        <Text style={s.finalCTATitle}>
+          今日が、合格への{'\n'}最短スタート地点
+        </Text>
         <Text style={s.finalCTASub}>
           {TOTAL_Q}問の過去問とAI解説で{'\n'}
           効率的に宅建合格を目指せます
         </Text>
         <Pressable
+          ref={finalCTARef}
           style={[s.finalCTABtn, Shadow.md]}
-          onPress={() => router.push('/auth/login')}
+          onPress={goLogin}
           accessibilityRole="button"
           accessibilityLabel="7日間無料で始める"
         >
           <Text style={s.finalCTABtnText}>7日間 無料で始める</Text>
+          <Text style={s.finalCTABtnSub}>まずは無料で全機能を体験</Text>
         </Pressable>
         <Text style={s.finalCTANote}>無料期間終了後 ¥980/月 ・ いつでも解約OK</Text>
+        <Text style={s.finalCTATrust}>
+          {'✓ クレジットカード不要　✓ 30秒で登録　✓ いつでも解約'}
+        </Text>
       </View>
 
-      {/* ─── フッター ─── */}
+      {/* ─── 15. フッター ─── */}
       <View style={s.footer}>
         <Text style={s.footerBrand}>宅建士 完全対策</Text>
         <Text style={s.footerCompany}>合同会社カケル</Text>
@@ -293,6 +567,9 @@ export default function LandingPage() {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Styles
+// ═══════════════════════════════════════════════════════════════
 function makeStyles(C: ThemeColors) {
   const isWeb = Platform.OS === 'web';
   const maxW = isWeb ? 960 : undefined;
@@ -304,7 +581,7 @@ function makeStyles(C: ThemeColors) {
       paddingBottom: 0,
     },
 
-    // Header
+    // ─── Header ───
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -325,13 +602,34 @@ function makeStyles(C: ThemeColors) {
     },
     loginBtnText: { color: C.white, fontSize: FontSize.footnote, fontWeight: '700' },
 
-    // Hero
+    // ─── Hero ───
     hero: {
       backgroundColor: C.primary,
       margin: Spacing.xl,
       borderRadius: BorderRadius.xxl,
       padding: 32,
       alignItems: 'center',
+    },
+    countdownBadge: {
+      flexDirection: 'row',
+      alignItems: 'baseline',
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      paddingHorizontal: 18,
+      paddingVertical: 8,
+      borderRadius: BorderRadius.full,
+      marginBottom: 14,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.25)',
+    },
+    countdownText: {
+      color: 'rgba(255,255,255,0.9)',
+      fontSize: FontSize.caption,
+      fontWeight: '600',
+    },
+    countdownDays: {
+      color: C.white,
+      fontSize: FontSize.headline,
+      fontWeight: '900',
     },
     heroBadge: {
       backgroundColor: 'rgba(255,255,255,0.2)',
@@ -386,8 +684,14 @@ function makeStyles(C: ThemeColors) {
       color: 'rgba(255,255,255,0.7)',
       marginTop: 10,
     },
+    heroCTATrust: {
+      fontSize: FontSize.caption2,
+      color: 'rgba(255,255,255,0.6)',
+      marginTop: 8,
+      textAlign: 'center',
+    },
 
-    // Sections
+    // ─── Sections ───
     section: { paddingHorizontal: Spacing.xl, paddingVertical: 40 },
     sectionAlt: { backgroundColor: C.card },
     sectionLabel: {
@@ -408,7 +712,117 @@ function makeStyles(C: ThemeColors) {
       lineHeight: 36,
     },
 
-    // Features
+    // ─── Pain Points ───
+    painGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+      marginBottom: 28,
+    },
+    painCard: {
+      width: (isWeb ? '48%' : '100%') as DimensionValue,
+      backgroundColor: C.background,
+      borderRadius: BorderRadius.lg,
+      padding: 18,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 14,
+      flexGrow: 1,
+      minWidth: 260,
+      borderWidth: 1,
+      borderColor: C.borderLight,
+    },
+    painIcon: { fontSize: 28 },
+    painText: {
+      fontSize: FontSize.subhead,
+      color: C.text,
+      fontWeight: '600',
+      flex: 1,
+      lineHeight: 22,
+    },
+    painTransition: {
+      alignItems: 'center',
+      gap: 12,
+    },
+    painArrow: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: C.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    painArrowText: {
+      color: C.white,
+      fontSize: FontSize.subhead,
+      fontWeight: '700',
+    },
+    painSolution: {
+      fontSize: FontSize.title3,
+      fontWeight: '900',
+      color: C.primary,
+      textAlign: 'center',
+      letterSpacing: LetterSpacing.tight,
+    },
+
+    // ─── App Mockups ───
+    mockupRow: {
+      flexDirection: isWeb ? 'row' : 'column',
+      gap: 16,
+      alignItems: isWeb ? 'stretch' : 'center',
+    },
+    mockupCard: {
+      width: (isWeb ? '31%' : '100%') as DimensionValue,
+      maxWidth: 300,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.xxl,
+      overflow: 'hidden',
+      borderWidth: 2,
+      borderColor: C.borderLight,
+      flexGrow: 1,
+      minWidth: 240,
+    },
+    mockupNotch: {
+      width: 100,
+      height: 6,
+      backgroundColor: C.borderLight,
+      borderRadius: 3,
+      alignSelf: 'center',
+      marginTop: 10,
+    },
+    mockupScreen: {
+      padding: 20,
+      alignItems: 'center',
+    },
+    mockupIcon: { fontSize: 40, marginBottom: 10 },
+    mockupTitle: {
+      fontSize: FontSize.headline,
+      fontWeight: '800',
+      color: C.text,
+      marginBottom: 8,
+    },
+    mockupDesc: {
+      fontSize: FontSize.footnote,
+      color: C.textSecondary,
+      textAlign: 'center',
+      lineHeight: 20,
+      marginBottom: 12,
+    },
+    mockupDivider: {
+      width: '80%',
+      height: 1,
+      backgroundColor: C.borderLight,
+      marginBottom: 12,
+    },
+    mockupDetail: {
+      fontSize: FontSize.caption,
+      color: C.textSecondary,
+      lineHeight: 20,
+      alignSelf: 'flex-start',
+      paddingLeft: 8,
+    },
+
+    // ─── Features ───
     featureGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -416,7 +830,7 @@ function makeStyles(C: ThemeColors) {
     },
     featureCard: {
       width: (isWeb ? '31%' : '47%') as DimensionValue,
-      backgroundColor: C.card,
+      backgroundColor: C.background,
       borderRadius: BorderRadius.lg,
       padding: 18,
       minWidth: 150,
@@ -426,12 +840,12 @@ function makeStyles(C: ThemeColors) {
     featureTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: C.text, marginBottom: 4 },
     featureDesc: { fontSize: FontSize.caption, color: C.textSecondary, lineHeight: 18 },
 
-    // Subjects
+    // ─── Subjects ───
     subjectList: { gap: 10 },
     subjectCard: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: C.background,
+      backgroundColor: C.card,
       borderRadius: BorderRadius.lg,
       overflow: 'hidden',
     },
@@ -441,14 +855,93 @@ function makeStyles(C: ThemeColors) {
     subjectName: { fontSize: FontSize.subhead, fontWeight: '700', color: C.text },
     subjectDesc: { fontSize: FontSize.caption, color: C.textSecondary, marginTop: 3 },
 
-    // Plans
+    // ─── Reasons ───
+    reasonGrid: {
+      flexDirection: isWeb ? 'row' : 'column',
+      gap: 16,
+      alignItems: isWeb ? 'stretch' : 'center',
+    },
+    reasonCard: {
+      width: (isWeb ? '31%' : '100%') as DimensionValue,
+      maxWidth: 360,
+      backgroundColor: C.background,
+      borderRadius: BorderRadius.lg,
+      padding: 24,
+      alignItems: 'center',
+      flexGrow: 1,
+      minWidth: 260,
+    },
+    reasonNumBadge: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: C.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 14,
+    },
+    reasonNum: {
+      fontSize: FontSize.title2,
+      fontWeight: '900',
+      color: C.white,
+    },
+    reasonTitle: {
+      fontSize: FontSize.headline,
+      fontWeight: '800',
+      color: C.text,
+      marginBottom: 10,
+      textAlign: 'center',
+    },
+    reasonDesc: {
+      fontSize: FontSize.footnote,
+      color: C.textSecondary,
+      lineHeight: 22,
+      textAlign: 'center',
+    },
+
+    // ─── Target Audience ───
+    targetList: {
+      gap: 10,
+      maxWidth: 480,
+      alignSelf: 'center',
+      width: '100%',
+    },
+    targetItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      padding: 16,
+      gap: 14,
+    },
+    targetCheck: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: C.primarySurface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    targetCheckText: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.primary,
+    },
+    targetText: {
+      fontSize: FontSize.subhead,
+      fontWeight: '600',
+      color: C.text,
+      flex: 1,
+    },
+
+    // ─── Plans ───
     planRow: {
       flexDirection: isWeb ? 'row' : 'column',
       gap: 16,
       alignItems: isWeb ? 'stretch' : 'center',
     },
     planCard: {
-      backgroundColor: C.card,
+      backgroundColor: C.background,
       borderRadius: BorderRadius.xl,
       padding: 24,
       borderWidth: 1,
@@ -491,7 +984,7 @@ function makeStyles(C: ThemeColors) {
     },
     planCTAText: { fontSize: FontSize.subhead, fontWeight: '800', color: C.primary },
 
-    // Comparison Table
+    // ─── Comparison Table ───
     comparisonTable: {
       backgroundColor: C.card,
       borderRadius: BorderRadius.lg,
@@ -547,7 +1040,7 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '700',
     },
 
-    // Steps
+    // ─── Steps ───
     stepsRow: {
       flexDirection: isWeb ? 'row' : 'column',
       gap: 20,
@@ -581,7 +1074,53 @@ function makeStyles(C: ThemeColors) {
       top: isWeb ? 24 : undefined,
     },
 
-    // Trust
+    // ─── FAQ ───
+    faqList: {
+      gap: 10,
+      maxWidth: 640,
+      alignSelf: 'center',
+      width: '100%',
+    },
+    faqItem: {
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: C.borderLight,
+    },
+    faqHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 18,
+      gap: 12,
+    },
+    faqQ: {
+      fontSize: FontSize.subhead,
+      fontWeight: '700',
+      color: C.text,
+      flex: 1,
+      lineHeight: 22,
+    },
+    faqToggle: {
+      fontSize: FontSize.title3,
+      fontWeight: '700',
+      color: C.primary,
+      width: 28,
+      textAlign: 'center',
+    },
+    faqBody: {
+      paddingHorizontal: 18,
+      paddingBottom: 18,
+      paddingTop: 0,
+    },
+    faqA: {
+      fontSize: FontSize.footnote,
+      color: C.textSecondary,
+      lineHeight: 22,
+    },
+
+    // ─── Trust ───
     trustGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -589,7 +1128,7 @@ function makeStyles(C: ThemeColors) {
     },
     trustCard: {
       width: (isWeb ? '23%' : '47%') as DimensionValue,
-      backgroundColor: C.card,
+      backgroundColor: C.background,
       borderRadius: BorderRadius.lg,
       padding: 18,
       alignItems: 'center',
@@ -600,13 +1139,35 @@ function makeStyles(C: ThemeColors) {
     trustTitle: { fontSize: FontSize.footnote, fontWeight: '700', color: C.text, marginBottom: 4 },
     trustDesc: { fontSize: FontSize.caption2, color: C.textSecondary, textAlign: 'center', lineHeight: 16 },
 
-    // Final CTA
+    // ─── Final CTA ───
     finalCTA: {
       backgroundColor: C.primary,
       margin: Spacing.xl,
       borderRadius: BorderRadius.xxl,
       padding: 36,
       alignItems: 'center',
+    },
+    finalCountdown: {
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      borderRadius: BorderRadius.full,
+      paddingHorizontal: 22,
+      paddingVertical: 10,
+      marginBottom: 20,
+      flexDirection: 'row',
+      alignItems: 'baseline',
+      gap: 6,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.25)',
+    },
+    finalCountdownLabel: {
+      fontSize: FontSize.footnote,
+      color: 'rgba(255,255,255,0.85)',
+      fontWeight: '600',
+    },
+    finalCountdownDays: {
+      fontSize: FontSize.title2,
+      fontWeight: '900',
+      color: C.white,
     },
     finalCTATitle: {
       fontSize: FontSize.title1,
@@ -627,16 +1188,32 @@ function makeStyles(C: ThemeColors) {
     finalCTABtn: {
       backgroundColor: C.white,
       borderRadius: BorderRadius.lg,
-      paddingVertical: 18,
+      paddingVertical: 20,
       paddingHorizontal: 48,
       width: '100%',
       alignItems: 'center',
       marginBottom: 10,
     },
-    finalCTABtnText: { fontSize: FontSize.headline, fontWeight: '800', color: C.primary },
+    finalCTABtnText: {
+      fontSize: FontSize.title3,
+      fontWeight: '900',
+      color: C.primary,
+    },
+    finalCTABtnSub: {
+      fontSize: FontSize.caption,
+      color: C.primaryLight,
+      marginTop: 4,
+      fontWeight: '500',
+    },
     finalCTANote: { fontSize: FontSize.caption, color: 'rgba(255,255,255,0.6)' },
+    finalCTATrust: {
+      fontSize: FontSize.caption2,
+      color: 'rgba(255,255,255,0.5)',
+      marginTop: 8,
+      textAlign: 'center',
+    },
 
-    // Footer
+    // ─── Footer ───
     footer: {
       backgroundColor: '#1a1a1a',
       padding: 32,

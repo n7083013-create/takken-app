@@ -16,6 +16,8 @@ import { CATEGORIES, EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, AI_QUERY_LIMITS } from '../../types';
+import { getCategoryStats } from '../../data';
+import type { HabitStack } from '../../types';
 import { useMemo, useState, useCallback } from 'react';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -23,6 +25,8 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievementStore';
 import { useExamStore } from '../../store/useExamStore';
 import { APP_VERSION } from '../../constants/config';
+import { HABIT_PRESETS } from '../../constants/habitPresets';
+import HabitStackingSetup from '../../components/HabitStackingSetup';
 import {
   requestNotificationPermission,
   scheduleDailyReminder,
@@ -227,6 +231,69 @@ function makeSettingsStyles(C: ThemeColors) {
     timeBtnActive: { backgroundColor: C.primary, borderColor: C.primary },
     timeText: { fontSize: FontSize.footnote, color: C.textSecondary, fontWeight: '600' },
     timeTextActive: { color: C.white },
+  });
+}
+
+function HabitStackingSection() {
+  const colors = useThemeColors();
+  const hs = useMemo(() => makeHabitStyles(colors), [colors]);
+  const settings = useSettingsStore((s) => s.settings);
+  const updateSettings = useSettingsStore((s) => s.updateSettings);
+
+  // Initialize from store or fall back to presets
+  const currentHabits: HabitStack[] = useMemo(() => {
+    if (settings.habitStacks && settings.habitStacks.length > 0) {
+      // Merge stored habits with presets (in case new presets were added)
+      return HABIT_PRESETS.map((preset) => {
+        const stored = settings.habitStacks?.find((h) => h.id === preset.id);
+        return stored ?? preset;
+      });
+    }
+    return HABIT_PRESETS;
+  }, [settings.habitStacks]);
+
+  const handleUpdate = useCallback(
+    (newHabits: HabitStack[]) => {
+      const enabledHabits = newHabits.filter((h) => h.enabled);
+      updateSettings({ habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined });
+    },
+    [updateSettings],
+  );
+
+  return (
+    <View style={hs.box}>
+      <Text style={hs.sectionHeader}>⚡ 習慣スタッキング</Text>
+      <HabitStackingSetup
+        selectedHabits={currentHabits}
+        onUpdate={handleUpdate}
+        compact
+      />
+      <Text style={hs.desc}>習慣にくっつけて学習を続けやすく</Text>
+    </View>
+  );
+}
+
+function makeHabitStyles(C: ThemeColors) {
+  return StyleSheet.create({
+    box: {
+      marginTop: Spacing.xxl,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+    },
+    sectionHeader: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.textTertiary,
+      marginBottom: 6,
+      letterSpacing: LetterSpacing.wide,
+    },
+    desc: {
+      fontSize: FontSize.caption,
+      color: C.textTertiary,
+      marginTop: 10,
+      textAlign: 'center',
+    },
   });
 }
 
@@ -705,7 +772,8 @@ export default function ProgressScreen() {
         {CATEGORIES.map((cat) => {
           const accuracy = getCategoryAccuracy(cat);
           const cs = stats.categoryStats[cat];
-          const pct = cs.total > 0 ? Math.round(accuracy * 100) : 0;
+          const catTotal = getCategoryStats('takken').find((c) => c.category === cat)?.total ?? 0;
+          const pct = catTotal > 0 ? Math.round(accuracy * 100) : 0;
           const color = CATEGORY_COLORS[cat];
 
           return (
@@ -717,7 +785,7 @@ export default function ProgressScreen() {
                   </View>
                   <View>
                     <Text style={s.catName}>{CATEGORY_LABELS[cat]}</Text>
-                    <Text style={s.catSub}>{cs.total}問解答 / {cs.correct}問正解</Text>
+                    <Text style={s.catSub}>{cs.correct}問正解 / 全{catTotal}問</Text>
                   </View>
                 </View>
                 <Text style={[s.catPct, { color }]}>{pct}%</Text>
@@ -807,6 +875,9 @@ export default function ProgressScreen() {
 
         {/* 設定 */}
         <SettingsSection />
+
+        {/* 習慣スタッキング */}
+        <HabitStackingSection />
 
         {/* サブスクリプション管理 */}
         <SubscriptionSection />

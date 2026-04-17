@@ -134,6 +134,12 @@ export function StudyHeatmap({ dailyLog }: StudyHeatmapProps) {
 
   return (
     <View style={s.container}>
+      {/* Header */}
+      <View style={s.headerRow}>
+        <Text style={s.headerTitle}>学習カレンダー</Text>
+        <Text style={s.headerSub}>日ごとの学習量を色の濃さで表示</Text>
+      </View>
+
       {/* Month labels */}
       <View style={[s.monthRow, { marginLeft: dayLabelWidth }]}>
         {monthLabels.map((m, i) => (
@@ -241,6 +247,19 @@ function makeStyles(C: ThemeColors) {
   return StyleSheet.create({
     container: {
       paddingVertical: Spacing.md,
+    },
+    headerRow: {
+      marginBottom: Spacing.sm,
+    },
+    headerTitle: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.text,
+    },
+    headerSub: {
+      fontSize: FontSize.caption2,
+      color: C.textTertiary,
+      marginTop: 2,
     },
     monthRow: {
       height: 16,

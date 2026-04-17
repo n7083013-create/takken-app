@@ -24,9 +24,10 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
 import { LoadingSkeleton } from '../../components/LoadingSkeleton';
+import { AnnouncementBanner } from '../../components/AnnouncementBanner';
 import LandingPage from '../../components/LandingPage';
 import Onboarding from '../../components/Onboarding';
-import type { Question, QuestionProgress } from '../../types';
+import type { Question, QuestionProgress, HabitStack } from '../../types';
 
 /**
  * スマート問題選択: 復習期限切れ → 苦手 → 未解答 → ランダム
@@ -127,6 +128,7 @@ function HomeScreen() {
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
   const isPro = useSettingsStore((s) => s.isPro());
   const getDaysUntilExam = useSettingsStore((s) => s.getDaysUntilExam);
+  const habitStacks = useSettingsStore((s) => s.settings.habitStacks);
   const isTrialActive = useSettingsStore((s) => s.isTrialActive);
   const trialDaysLeft = useSettingsStore((s) => s.trialDaysLeft);
   const startTrial = useSettingsStore((s) => s.startTrial);
@@ -166,6 +168,10 @@ function HomeScreen() {
   const unlockedCount = useMemo(() => Object.keys(achievementUnlocked).length, [achievementUnlocked]);
   const latestExamScore = useMemo(() => getLatestScore(), [examHistory]);
   const bestExamScore = useMemo(() => getBestScore(), [examHistory]);
+  const enabledHabits = useMemo(
+    () => (habitStacks ?? []).filter((h) => h.enabled),
+    [habitStacks],
+  );
 
   /** スマート問題選択で即スタート */
   const startSmartQuestion = useCallback(() => {
@@ -192,6 +198,8 @@ function HomeScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      {/* お知らせバナー（ScrollView外で画面上部に固定表示） */}
+      <AnnouncementBanner />
       {/* ストリークマイルストーン祝福 */}
       <StreakCelebration
         streak={stats.streak}
@@ -297,6 +305,31 @@ function HomeScreen() {
             <View style={[s.dashProgressFill, { width: `${dailyGoalPct}%` }]} />
           </View>
         </View>
+
+        {/* ── 今日の習慣（習慣スタッキング） ── */}
+        {enabledHabits.length > 0 && (
+          <View style={s.habitRow}>
+            <Text style={s.habitRowTitle}>今日の習慣</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={s.habitScroll}
+            >
+              {enabledHabits.map((habit) => (
+                <Pressable
+                  key={habit.id}
+                  style={[s.habitChip, Shadow.sm]}
+                  onPress={() => router.push('/(tabs)/quick-quiz')}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${habit.trigger} ${habit.action}`}
+                >
+                  <Text style={s.habitChipIcon}>{habit.icon}</Text>
+                  <Text style={s.habitChipText} numberOfLines={1}>{habit.trigger}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         {/* ── メインCTA: 状況に応じて最適なアクションを1つ提示 ── */}
         <Pressable
@@ -488,7 +521,7 @@ function HomeScreen() {
         {CATEGORY_STATS.map(({ category, total }) => {
           const cs = stats.categoryStats[category];
           const catColor = CATEGORY_COLORS[category];
-          const pct = cs.total > 0 ? Math.round((cs.correct / cs.total) * 100) : 0;
+          const pct = total > 0 ? Math.round((cs.correct / total) * 100) : 0;
           const expanded = expandedCat === category;
           const subcats = SUBCATEGORIES[category];
 
@@ -763,6 +796,41 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     height: '100%',
     backgroundColor: C.accent,
     borderRadius: 3,
+  },
+
+  // ─── Habit Row ───
+  habitRow: {
+    marginTop: Spacing.md,
+    paddingLeft: Spacing.xl,
+  },
+  habitRowTitle: {
+    fontSize: FontSize.caption,
+    fontWeight: '700',
+    color: C.textSecondary,
+    marginBottom: 8,
+    letterSpacing: LetterSpacing.wide,
+  },
+  habitScroll: {
+    gap: 8,
+    paddingRight: Spacing.xl,
+  },
+  habitChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.card,
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    gap: 6,
+  },
+  habitChipIcon: {
+    fontSize: 16,
+  },
+  habitChipText: {
+    fontSize: FontSize.caption,
+    fontWeight: '600',
+    color: C.text,
+    maxWidth: 120,
   },
 
   // ─── Main CTA ───

@@ -285,6 +285,16 @@ export interface UserSettings {
   fontSize: 'small' | 'medium' | 'large';
   themeMode: 'system' | 'light' | 'dark';
   examDate?: string; // ISO string — 試験日
+  habitStacks?: HabitStack[];
+}
+
+// 習慣スタッキング
+export interface HabitStack {
+  id: string;
+  trigger: string;     // "朝コーヒーを淹れたら"
+  action: string;      // "一問一答を5問解く"
+  icon: string;        // emoji
+  enabled: boolean;
 }
 
 // 一問一答（○✗クイズ）

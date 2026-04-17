@@ -20,10 +20,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow, FontSize, Spacing, BorderRadius, LetterSpacing } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 import { useSettingsStore } from '../store/useSettingsStore';
+import HabitStackingSetup from './HabitStackingSetup';
+import { HABIT_PRESETS } from '../constants/habitPresets';
+import type { HabitStack } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ONBOARDING_KEY = '@takken_onboarding_done';
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -68,6 +71,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   // ── Step 3: Daily goal ──
   const [selectedGoal, setSelectedGoal] = useState(20);
 
+  // ── Step 4: Habit stacking ──
+  const [selectedHabits, setSelectedHabits] = useState<HabitStack[]>(HABIT_PRESETS);
+
   const updateSettings = useSettingsStore((s) => s.updateSettings);
 
   // ── Navigation ──
@@ -88,20 +94,27 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       // Save daily goal
       updateSettings({ dailyGoal: selectedGoal });
     }
+    if (currentStep === 3) {
+      // Save habit stacks
+      const enabledHabits = selectedHabits.filter((h) => h.enabled);
+      updateSettings({ habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined });
+    }
     if (currentStep < TOTAL_STEPS - 1) {
       goToStep(currentStep + 1);
     }
-  }, [currentStep, examDate, selectedGoal, updateSettings, goToStep]);
+  }, [currentStep, examDate, selectedGoal, selectedHabits, updateSettings, goToStep]);
 
   const handleComplete = useCallback(async () => {
     // Save all settings one more time
+    const enabledHabits = selectedHabits.filter((h) => h.enabled);
     updateSettings({
       examDate: examDate.toISOString(),
       dailyGoal: selectedGoal,
+      habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined,
     });
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     onComplete();
-  }, [examDate, selectedGoal, updateSettings, onComplete]);
+  }, [examDate, selectedGoal, selectedHabits, updateSettings, onComplete]);
 
   const handleSkip = useCallback(async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
@@ -112,17 +125,21 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const page = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
       if (page !== currentStep && page >= 0 && page < TOTAL_STEPS) {
-        // Save settings when swiping away from step 2 or 3
+        // Save settings when swiping away from step 2, 3, or 4
         if (currentStep === 1) {
           updateSettings({ examDate: examDate.toISOString() });
         }
         if (currentStep === 2) {
           updateSettings({ dailyGoal: selectedGoal });
         }
+        if (currentStep === 3) {
+          const enabledHabits = selectedHabits.filter((h) => h.enabled);
+          updateSettings({ habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined });
+        }
         setCurrentStep(page);
       }
     },
-    [currentStep, examDate, selectedGoal, updateSettings],
+    [currentStep, examDate, selectedGoal, selectedHabits, updateSettings],
   );
 
   return (
@@ -297,7 +314,34 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             </View>
           </View>
 
-          {/* ── Step 4: Ready ── */}
+          {/* ── Step 4: Habit Stacking ── */}
+          <View style={s.page}>
+            <View style={s.pageContent}>
+              <Text style={s.stepIcon}>⚡</Text>
+              <Text style={s.pageTitle}>習慣にくっつけて学習</Text>
+              <Text style={s.pageSubtitle}>
+                いつもの習慣に学習をプラス{'\n'}続けやすくなります
+              </Text>
+              <View style={s.habitSetupWrap}>
+                <HabitStackingSetup
+                  selectedHabits={selectedHabits}
+                  onUpdate={setSelectedHabits}
+                />
+              </View>
+            </View>
+            <View style={s.pageFooter}>
+              <Pressable
+                style={s.nextBtn}
+                onPress={handleNext}
+                accessibilityRole="button"
+                accessibilityLabel="次へ"
+              >
+                <Text style={s.nextBtnText}>次へ</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* ── Step 5: Ready ── */}
           <View style={s.page}>
             <View style={s.pageContent}>
               <View style={s.readyVisual}>
@@ -321,6 +365,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Text style={s.summaryLabel}>日目標</Text>
                   <Text style={s.summaryValue}>{selectedGoal}問/日</Text>
                 </View>
+                {selectedHabits.filter((h) => h.enabled).length > 0 && (
+                  <>
+                    <View style={s.summaryDivider} />
+                    <View style={s.summaryRow}>
+                      <Text style={s.summaryIcon}>⚡</Text>
+                      <Text style={s.summaryLabel}>習慣</Text>
+                      <Text style={s.summaryValue}>
+                        {selectedHabits.filter((h) => h.enabled).length}つ設定
+                      </Text>
+                    </View>
+                  </>
+                )}
               </View>
             </View>
             <View style={s.pageFooter}>
@@ -612,7 +668,13 @@ function makeStyles(C: ThemeColors) {
       color: C.primary,
     },
 
-    // ─── Step 4: Ready ───
+    // ─── Step 4: Habit stacking ───
+    habitSetupWrap: {
+      width: '100%',
+      marginTop: Spacing.md,
+    },
+
+    // ─── Step 5: Ready ───
     readyVisual: {
       marginBottom: Spacing.md,
     },

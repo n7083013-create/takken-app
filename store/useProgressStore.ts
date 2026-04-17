@@ -389,8 +389,10 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   getCategoryAccuracy(category: Category): number {
     const catStats = get().stats.categoryStats[category];
-    if (catStats.total === 0) return 0;
-    return catStats.correct / catStats.total;
+    // 分母は「掲載問題数」（解いた数ではなく全問数）
+    const totalInCategory = ALL_QUESTIONS.filter((q) => q.category === category).length;
+    if (totalInCategory === 0) return 0;
+    return catStats.correct / totalInCategory;
   },
 
   getTodayAnswered(): number {
