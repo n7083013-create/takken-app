@@ -5,8 +5,10 @@
 // ============================================================
 
 import { create } from 'zustand';
+import { Platform } from 'react-native';
 import type { Session, User } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from 'expo-web-browser';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { logError } from '../services/errorLogger';
 import { isValidEmail, validatePassword } from '../services/validation';
@@ -133,19 +135,67 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (!isSupabaseConfigured()) return { error: '認証サーバーが未設定です' };
     set({ loading: true });
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      if (Platform.OS === 'web') {
+        // Web: 通常のOAuthリダイレクト
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: typeof window !== 'undefined'
+              ? `${window.location.origin}`
+              : undefined,
+          },
+        });
+        set({ loading: false });
+        if (error) {
+          logError(error, { context: 'auth.signInWithGoogle' });
+          return { error: 'Googleログインに失敗しました' };
+        }
+        return { error: null };
+      }
+
+      // Native: システムブラウザ（Safari/Chrome）で開く
+      // GoogleはWebViewからのOAuthをブロックするため
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: typeof window !== 'undefined'
-            ? `${window.location.origin}`
-            : undefined,
+          skipBrowserRedirect: true,
         },
       });
-      set({ loading: false });
-      if (error) {
-        logError(error, { context: 'auth.signInWithGoogle' });
+      if (error || !data.url) {
+        set({ loading: false });
+        logError(error, { context: 'auth.signInWithGoogle.native' });
         return { error: 'Googleログインに失敗しました' };
       }
+
+      // システムブラウザで認証URLを開く
+      const result = await WebBrowser.openAuthSessionAsync(
+        data.url,
+        'takken-app://auth/callback',
+      );
+
+      if (result.type === 'success' && result.url) {
+        // コールバックURLからトークンを抽出
+        const url = new URL(result.url);
+        const params = new URLSearchParams(
+          url.hash ? url.hash.substring(1) : url.search.substring(1),
+        );
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (sessionError) {
+            logError(sessionError, { context: 'auth.signInWithGoogle.setSession' });
+            set({ loading: false });
+            return { error: 'セッションの設定に失敗しました' };
+          }
+        }
+      }
+
+      set({ loading: false });
       return { error: null };
     } catch (e) {
       set({ loading: false });
