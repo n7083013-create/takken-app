@@ -1,243 +1,170 @@
 // ============================================================
-// 学習ヒートマップ（GitHub風カレンダー）
-// 日別学習アクティビティを15週間分表示
+// 直近7日間バーチャート（学習アクティビティ）
+// ローリング表示で継続感を演出。目標ライン・ベストデイ・平均表示付き。
 // ============================================================
 
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { FontSize, Spacing, BorderRadius } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 
 interface StudyHeatmapProps {
   dailyLog: Record<string, number>;
+  streak?: number;
+  dailyGoal?: number;
 }
 
-const CELL_SIZE = 12;
-const CELL_GAP = 2;
-const WEEKS = 15;
-const DAYS_IN_WEEK = 7;
+const DAYS = 7;
+const BAR_MAX_HEIGHT = 100;
 
-const DAY_LABELS: Record<number, string> = {
-  1: '月',
-  3: '水',
-  5: '金',
-};
-
-const MONTH_LABELS = [
-  '1月', '2月', '3月', '4月', '5月', '6月',
-  '7月', '8月', '9月', '10月', '11月', '12月',
-];
+const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
 
 function getDateKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-function getIntensity(count: number): 0 | 1 | 2 | 3 | 4 {
-  if (count <= 0) return 0;
-  if (count <= 5) return 1;
-  if (count <= 15) return 2;
-  if (count <= 30) return 3;
-  return 4;
+function formatDateLabel(date: Date): string {
+  return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
-function getColorForIntensity(intensity: 0 | 1 | 2 | 3 | 4, primary: string, borderLight: string): string {
-  switch (intensity) {
-    case 0: return borderLight;
-    case 1: return `${primary}15`;
-    case 2: return `${primary}40`;
-    case 3: return `${primary}80`;
-    case 4: return primary;
-  }
-}
-
-export function StudyHeatmap({ dailyLog }: StudyHeatmapProps) {
+export function StudyHeatmap({ dailyLog, streak = 0, dailyGoal = 20 }: StudyHeatmapProps) {
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
 
-  // Build grid: 7 rows × 15 columns, right-aligned to today
-  const { grid, monthLabels, todayCount, totalStudyDays, currentMonthCount } = useMemo(() => {
+  const { bars, average, bestIdx, todayCount } = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Find the start date: go back (WEEKS * 7 - 1) days from today,
-    // then align to the start of that week (Sunday = column start)
-    const todayDow = today.getDay(); // 0=Sun
-    const totalDays = WEEKS * DAYS_IN_WEEK;
-    const endOffset = DAYS_IN_WEEK - 1 - todayDow; // days until end of this week (Saturday)
-    // We want the grid to end on Saturday of the current week
-    const startDate = new Date(today);
-    startDate.setDate(startDate.getDate() - (totalDays - 1) + endOffset);
+    const result: { date: Date; count: number; label: string; dayName: string; isToday: boolean }[] = [];
 
-    // Actually, let's right-align to today more simply:
-    // The last column's last filled cell is today.
-    // Column = week index, Row = day of week (0=Sun..6=Sat)
-    // Last cell that is today: col = WEEKS-1, row = todayDow
-    // Start date = today - ((WEEKS - 1) * 7 + todayDow)
-    const start = new Date(today);
-    start.setDate(start.getDate() - ((WEEKS - 1) * 7 + todayDow));
-
-    const cells: { date: Date; count: number; key: string }[][] = [];
-    const months: { label: string; col: number }[] = [];
-    let lastMonth = -1;
-    let studyDays = 0;
-    let monthCount = 0;
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    let todayVal = 0;
-    const todayKey = getDateKey(today);
-
-    for (let week = 0; week < WEEKS; week++) {
-      const col: { date: Date; count: number; key: string }[] = [];
-      for (let day = 0; day < DAYS_IN_WEEK; day++) {
-        const d = new Date(start);
-        d.setDate(d.getDate() + week * 7 + day);
-        const key = getDateKey(d);
-        const count = dailyLog[key] ?? 0;
-
-        // Track if this is a future date
-        const isFuture = d.getTime() > today.getTime();
-
-        col.push({ date: d, count: isFuture ? -1 : count, key });
-
-        if (!isFuture && count > 0) {
-          studyDays++;
-        }
-
-        if (!isFuture && d.getMonth() === currentMonth && d.getFullYear() === currentYear && count > 0) {
-          monthCount += count;
-        }
-
-        if (key === todayKey) {
-          todayVal = count;
-        }
-
-        // Month label at the first day of each new month in the grid
-        if (day === 0 && d.getMonth() !== lastMonth) {
-          lastMonth = d.getMonth();
-          months.push({ label: MONTH_LABELS[d.getMonth()], col: week });
-        }
-      }
-      cells.push(col);
+    for (let i = DAYS - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = getDateKey(d);
+      const count = dailyLog[key] ?? 0;
+      result.push({
+        date: d,
+        count,
+        label: formatDateLabel(d),
+        dayName: DAY_NAMES[d.getDay()],
+        isToday: i === 0,
+      });
     }
 
+    const counts = result.map((b) => b.count);
+    const total = counts.reduce((a, b) => a + b, 0);
+    const avg = Math.round(total / DAYS);
+    const maxCount = Math.max(...counts);
+    const bestIndex = maxCount > 0 ? counts.indexOf(maxCount) : -1;
+
     return {
-      grid: cells,
-      monthLabels: months,
-      todayCount: todayVal,
-      totalStudyDays: studyDays,
-      currentMonthCount: monthCount,
+      bars: result,
+      average: avg,
+      bestIdx: bestIndex,
+      todayCount: result[result.length - 1].count,
     };
   }, [dailyLog]);
 
-  const gridWidth = WEEKS * (CELL_SIZE + CELL_GAP);
-  const dayLabelWidth = 20;
+  // Calculate max value for scaling (at least dailyGoal so goal line is visible)
+  const maxVal = useMemo(() => {
+    const maxCount = Math.max(...bars.map((b) => b.count));
+    return Math.max(maxCount, dailyGoal, 1);
+  }, [bars, dailyGoal]);
+
+  const goalLineBottom = Math.min((dailyGoal / maxVal) * BAR_MAX_HEIGHT, BAR_MAX_HEIGHT);
 
   return (
     <View style={s.container}>
       {/* Header */}
       <View style={s.headerRow}>
-        <Text style={s.headerTitle}>学習カレンダー</Text>
-        <Text style={s.headerSub}>日ごとの学習量を色の濃さで表示</Text>
+        <Text style={s.headerTitle}>直近7日間の学習</Text>
+        {streak > 0 && (
+          <View style={s.streakBadge}>
+            <Text style={s.streakText}>🔥 {streak}日連続</Text>
+          </View>
+        )}
       </View>
 
-      {/* Month labels */}
-      <View style={[s.monthRow, { marginLeft: dayLabelWidth }]}>
-        {monthLabels.map((m, i) => (
-          <Text
-            key={`${m.label}-${m.col}-${i}`}
-            style={[
-              s.monthLabel,
-              { left: m.col * (CELL_SIZE + CELL_GAP) },
-            ]}
-          >
-            {m.label}
-          </Text>
-        ))}
-      </View>
+      {/* Chart area */}
+      <View style={s.chartArea}>
+        {/* Goal line */}
+        {dailyGoal > 0 && (
+          <View style={[s.goalLine, { bottom: goalLineBottom }]}>
+            <View style={s.goalDash} />
+            <Text style={s.goalLabel}>目標 {dailyGoal}問</Text>
+          </View>
+        )}
 
-      {/* Grid area: day labels + cells */}
-      <View style={s.gridArea}>
-        {/* Day labels */}
-        <View style={[s.dayLabels, { width: dayLabelWidth }]}>
-          {Array.from({ length: 7 }).map((_, dayIdx) => (
-            <View
-              key={dayIdx}
-              style={{
-                height: CELL_SIZE,
-                marginBottom: CELL_GAP,
-                justifyContent: 'center',
-              }}
-            >
-              {DAY_LABELS[dayIdx] ? (
-                <Text style={s.dayLabel}>{DAY_LABELS[dayIdx]}</Text>
-              ) : null}
-            </View>
-          ))}
-        </View>
+        {/* Bars */}
+        <View style={s.barsRow}>
+          {bars.map((bar, idx) => {
+            const barHeight = maxVal > 0
+              ? Math.max(bar.count > 0 ? 4 : 0, (bar.count / maxVal) * BAR_MAX_HEIGHT)
+              : 0;
+            const isBest = idx === bestIdx && bar.count > 0;
+            const metGoal = bar.count >= dailyGoal;
 
-        {/* Heatmap grid */}
-        <View style={s.gridContainer}>
-          {grid.map((weekCols, weekIdx) => (
-            <View key={weekIdx} style={s.weekColumn}>
-              {weekCols.map((cell, dayIdx) => {
-                const isFuture = cell.count === -1;
-                const intensity = isFuture ? 0 : getIntensity(cell.count);
-                const bgColor = isFuture
-                  ? 'transparent'
-                  : getColorForIntensity(intensity, colors.primary, colors.borderLight);
-                return (
+            return (
+              <View key={bar.label} style={s.barColumn}>
+                {/* Count label above bar */}
+                {bar.count > 0 && (
+                  <Text style={[s.barCount, isBest && s.barCountBest]}>
+                    {bar.count}
+                  </Text>
+                )}
+                {/* Best day crown */}
+                {isBest && bars.filter((b) => b.count > 0).length > 1 && (
+                  <Text style={s.crown}>👑</Text>
+                )}
+                {/* Bar */}
+                <View style={s.barTrack}>
                   <View
-                    key={cell.key}
                     style={[
-                      s.cell,
+                      s.barFill,
                       {
-                        backgroundColor: bgColor,
-                        opacity: isFuture ? 0.3 : 1,
+                        height: barHeight,
+                        backgroundColor: metGoal
+                          ? colors.primary
+                          : bar.count > 0
+                            ? colors.primary + 'AA'
+                            : colors.borderLight,
                       },
+                      bar.isToday && s.barToday,
                     ]}
                   />
-                );
-              })}
-            </View>
-          ))}
+                </View>
+                {/* Day label */}
+                <Text style={[s.dayLabel, bar.isToday && s.dayLabelToday]}>
+                  {bar.isToday ? '今日' : bar.dayName}
+                </Text>
+                <Text style={[s.dateLabel, bar.isToday && s.dateLabelToday]}>
+                  {bar.label}
+                </Text>
+              </View>
+            );
+          })}
         </View>
       </View>
 
       {/* Stats row */}
       <View style={s.statsRow}>
         <View style={s.statItem}>
-          <Text style={s.statValue}>{totalStudyDays}</Text>
-          <Text style={s.statLabel}>学習日数</Text>
+          <Text style={s.statEmoji}>🔥</Text>
+          <Text style={s.statValue}>{streak}日</Text>
+          <Text style={s.statLabel}>連続</Text>
         </View>
+        <View style={s.statDivider} />
         <View style={s.statItem}>
-          <Text style={s.statValue}>{currentMonthCount}</Text>
-          <Text style={s.statLabel}>今月の問題数</Text>
+          <Text style={s.statEmoji}>📊</Text>
+          <Text style={s.statValue}>{average}問</Text>
+          <Text style={s.statLabel}>7日平均</Text>
         </View>
+        <View style={s.statDivider} />
         <View style={s.statItem}>
-          <Text style={s.statValue}>{todayCount}</Text>
+          <Text style={s.statEmoji}>📝</Text>
+          <Text style={s.statValue}>{todayCount}問</Text>
           <Text style={s.statLabel}>今日</Text>
         </View>
-      </View>
-
-      {/* Legend */}
-      <View style={s.legendRow}>
-        <Text style={s.legendLabel}>少</Text>
-        {([0, 1, 2, 3, 4] as const).map((intensity) => (
-          <View
-            key={intensity}
-            style={[
-              s.legendCell,
-              {
-                backgroundColor: getColorForIntensity(
-                  intensity,
-                  colors.primary,
-                  colors.borderLight,
-                ),
-              },
-            ]}
-          />
-        ))}
-        <Text style={s.legendLabel}>多</Text>
       </View>
     </View>
   );
@@ -248,63 +175,141 @@ function makeStyles(C: ThemeColors) {
     container: {
       paddingVertical: Spacing.md,
     },
+
+    // Header
     headerRow: {
-      marginBottom: Spacing.sm,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: Spacing.md,
     },
     headerTitle: {
-      fontSize: FontSize.footnote,
+      fontSize: FontSize.subhead,
       fontWeight: '700',
       color: C.text,
     },
-    headerSub: {
-      fontSize: FontSize.caption2,
-      color: C.textTertiary,
-      marginTop: 2,
+    streakBadge: {
+      backgroundColor: C.primarySurface,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: BorderRadius.full,
     },
-    monthRow: {
-      height: 16,
+    streakText: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.primary,
+    },
+
+    // Chart
+    chartArea: {
+      height: BAR_MAX_HEIGHT + 40,
+      justifyContent: 'flex-end',
       position: 'relative',
-      marginBottom: 4,
     },
-    monthLabel: {
+    goalLine: {
       position: 'absolute',
-      fontSize: 10,
-      color: C.textTertiary,
-      fontWeight: '500',
-    },
-    gridArea: {
+      left: 0,
+      right: 0,
       flexDirection: 'row',
+      alignItems: 'center',
+      zIndex: 1,
     },
-    dayLabels: {
-      justifyContent: 'flex-start',
+    goalDash: {
+      flex: 1,
+      height: 1,
+      borderStyle: 'dashed',
+      borderWidth: 1,
+      borderColor: C.textTertiary + '60',
     },
-    dayLabel: {
+    goalLabel: {
       fontSize: 9,
       color: C.textTertiary,
-      fontWeight: '500',
+      fontWeight: '600',
+      marginLeft: 6,
     },
-    gridContainer: {
+
+    // Bars
+    barsRow: {
       flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+      paddingHorizontal: 4,
     },
-    weekColumn: {
-      marginRight: CELL_GAP,
+    barColumn: {
+      flex: 1,
+      alignItems: 'center',
+      maxWidth: 48,
     },
-    cell: {
-      width: CELL_SIZE,
-      height: CELL_SIZE,
-      borderRadius: 2,
-      marginBottom: CELL_GAP,
+    barCount: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: C.textSecondary,
+      marginBottom: 2,
     },
+    barCountBest: {
+      color: C.primary,
+      fontWeight: '800',
+    },
+    crown: {
+      fontSize: 12,
+      marginBottom: 2,
+    },
+    barTrack: {
+      width: 28,
+      height: BAR_MAX_HEIGHT,
+      justifyContent: 'flex-end',
+      borderRadius: BorderRadius.sm,
+      overflow: 'hidden',
+    },
+    barFill: {
+      width: '100%',
+      borderRadius: BorderRadius.sm,
+    },
+    barToday: {
+      borderWidth: 2,
+      borderColor: C.primary,
+    },
+    dayLabel: {
+      fontSize: 11,
+      fontWeight: '600',
+      color: C.textSecondary,
+      marginTop: 6,
+    },
+    dayLabelToday: {
+      color: C.primary,
+      fontWeight: '800',
+    },
+    dateLabel: {
+      fontSize: 9,
+      color: C.textTertiary,
+      marginTop: 1,
+    },
+    dateLabelToday: {
+      color: C.primary,
+    },
+
+    // Stats
     statsRow: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      marginTop: Spacing.md,
-      paddingTop: Spacing.sm,
+      alignItems: 'center',
+      marginTop: Spacing.lg,
+      paddingTop: Spacing.md,
       borderTopWidth: 0.5,
       borderTopColor: C.borderLight,
     },
     statItem: {
       alignItems: 'center',
+      flex: 1,
+    },
+    statDivider: {
+      width: 1,
+      height: 30,
+      backgroundColor: C.borderLight,
+    },
+    statEmoji: {
+      fontSize: 16,
+      marginBottom: 4,
     },
     statValue: {
       fontSize: FontSize.headline,
@@ -316,23 +321,6 @@ function makeStyles(C: ThemeColors) {
       color: C.textTertiary,
       fontWeight: '500',
       marginTop: 2,
-    },
-    legendRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 4,
-      marginTop: Spacing.sm,
-    },
-    legendLabel: {
-      fontSize: 10,
-      color: C.textTertiary,
-      fontWeight: '500',
-    },
-    legendCell: {
-      width: CELL_SIZE,
-      height: CELL_SIZE,
-      borderRadius: 2,
     },
   });
 }

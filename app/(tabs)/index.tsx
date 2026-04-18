@@ -416,10 +416,10 @@ function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* ── 学習カレンダーヒートマップ（実績あるとき） ── */}
+        {/* ── 直近7日間の学習バーチャート ── */}
         {stats.totalQuestions > 0 && (
           <View style={[s.heatmapCard, Shadow.sm]}>
-            <StudyHeatmap dailyLog={dailyLog} />
+            <StudyHeatmap dailyLog={dailyLog} streak={stats.streak} dailyGoal={dailyGoal} />
           </View>
         )}
 
