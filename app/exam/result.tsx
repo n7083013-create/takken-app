@@ -14,24 +14,29 @@ export default function ExamResultScreen() {
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
   const current = useExamStore((s) => s.current);
+  const markRecordedToProgress = useExamStore((s) => s.markRecordedToProgress);
   const recordAnswer = useProgressStore((s) => s.recordAnswer);
   const checkAchievements = useAchievementChecker();
 
-  // Auto-record answers into SM-2 progress on result display
+  // 採点結果表示時に「実際に回答した問題のみ」SM-2 進捗へ反映する。
+  // 未回答（answers が undefined）はカウントしない。
+  // recordedToProgress フラグで再表示時の二重記録を防ぐ。
   useEffect(() => {
-    if (!current || !current.submitted) return;
+    if (!current || !current.submitted || current.recordedToProgress) return;
     const questions = getExamQuestions(current);
     let correctCount = 0;
     questions.forEach((q) => {
       const ans = current.answers[q.id];
+      if (ans === undefined) return; // 未回答はスキップ
       const correct = ans === q.correctIndex;
       if (correct) correctCount++;
       recordAnswer(q.id, q.category, correct);
     });
+    markRecordedToProgress();
     // 実績チェック（模試スコア付き）
     setTimeout(() => checkAchievements({ examScore: correctCount }), 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.id]);
+  }, [current?.id, current?.submitted, current?.recordedToProgress]);
 
   if (!current || !current.submitted) {
     return (

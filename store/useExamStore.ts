@@ -29,6 +29,8 @@ export interface ExamSession {
   flagged: string[];               // marked for review
   remainingSec: number;
   submitted: boolean;
+  /** SM-2 進捗に解答を記録済みか（result 画面の再表示で重複加算しないためのガード） */
+  recordedToProgress?: boolean;
 }
 
 interface ExamState {
@@ -41,6 +43,7 @@ interface ExamState {
   toggleFlag(qid: string): void;
   tickTimer(deltaSec: number): void;
   submitExam(): ExamSession;
+  markRecordedToProgress(): void;
   resumeExam(): Promise<ExamSession | null>;
   abandonExam(): void;
   saveSession(): Promise<void>;
@@ -167,6 +170,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
     get().saveHistory();
 
     return submitted;
+  },
+
+  markRecordedToProgress() {
+    const cur = get().current;
+    if (!cur || cur.recordedToProgress) return;
+    set({ current: { ...cur, recordedToProgress: true } });
+    get().saveSession();
   },
 
   async resumeExam() {
