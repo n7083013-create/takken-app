@@ -334,7 +334,9 @@ export default function ReviewScreen() {
   // ============================================================
   // Menu Mode
   // ============================================================
-  const totalReview = dueIds.length + weakIds.length;
+  // 「今日の復習」は SM-2 で期限到来した問題のみ。
+  // 苦手問題は累積正答率ベースでゼロにならない指標のため別枠で表示する。
+  const dueCount = dueIds.length;
 
   return (
     <SafeAreaView style={s.safe}>
@@ -349,20 +351,20 @@ export default function ReviewScreen() {
         <View style={[s.summaryCard, Shadow.lg]}>
           <View style={s.summaryTop}>
             <Text style={s.summaryEmoji}>
-              {totalReview === 0 ? '✅' : '📖'}
+              {dueCount === 0 ? '✅' : '📖'}
             </Text>
             <Text style={s.summaryTitle}>
-              {totalReview === 0
-                ? '復習は完了しています'
-                : `${totalReview}問の復習があります`}
+              {dueCount === 0
+                ? '今日の復習は完了しています'
+                : `${dueCount}問の復習があります`}
             </Text>
             <Text style={s.summaryDesc}>
-              {totalReview === 0
+              {dueCount === 0
                 ? '素晴らしい！明日またチェックしましょう'
                 : '忘れる前に解くと記憶定着率が大幅にアップします'}
             </Text>
           </View>
-          {totalReview > 0 && (
+          {(dueCount > 0 || weakIds.length > 0 || bookmarkedIds.length > 0) && (
             <View style={s.summaryStats}>
               <View style={s.summaryStatItem}>
                 <Text style={[s.summaryStatValue, { color: colors.accent }]}>{dueIds.length}</Text>
