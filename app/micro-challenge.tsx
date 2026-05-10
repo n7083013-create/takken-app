@@ -297,7 +297,17 @@ export default function MicroChallengeScreen() {
           <Text style={s.backText}>‹ 戻る</Text>
         </Pressable>
         <Text style={s.headerTitle}>⚡ 1分チャレンジ</Text>
-        <View style={{ width: 60 }} />
+        <Pressable
+          onPress={() => {
+            if (router.canDismiss()) router.dismissAll();
+            else router.replace('/');
+          }}
+          style={s.backBtn}
+          accessibilityRole="button"
+          accessibilityLabel="ホームに戻る"
+        >
+          <Text style={s.backText}>🏠</Text>
+        </Pressable>
       </View>
 
       {/* Timer bar */}

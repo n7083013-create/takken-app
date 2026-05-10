@@ -267,7 +267,17 @@ export default function WeakDrillScreen() {
             <Text style={s.headerBackArrow}>←</Text>
           </Pressable>
           <Text style={s.headerTitle}>💪 弱点ドリル</Text>
-          <View style={{ width: 32 }} />
+          <Pressable
+            onPress={() => {
+              if (router.canDismiss()) router.dismissAll();
+              else router.replace('/');
+            }}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="ホームに戻る"
+          >
+            <Text style={s.headerBackArrow}>🏠</Text>
+          </Pressable>
         </View>
 
         {/* Progress */}

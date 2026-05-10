@@ -54,7 +54,22 @@ export default function ExamHomeScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
-      <Stack.Screen options={{ title: '模擬試験', headerBackTitle: '戻る' }} />
+      <Stack.Screen
+        options={{
+          title: '模擬試験',
+          headerBackTitle: '戻る',
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.replace('/(tabs)')}
+              accessibilityRole="button"
+              accessibilityLabel="ホームに戻る"
+              style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+            >
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.primary }}>🏠 ホーム</Text>
+            </Pressable>
+          ),
+        }}
+      />
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.hero}>
           <Text style={s.heroIcon}>📝</Text>

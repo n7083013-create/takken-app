@@ -104,6 +104,14 @@ export default function ExamResultScreen() {
         >
           <Text style={s.primaryBtnText}>模擬試験ホームに戻る</Text>
         </Pressable>
+        <Pressable
+          style={[s.secondaryBtn, Shadow.sm]}
+          onPress={() => router.replace('/(tabs)')}
+          accessibilityRole="button"
+          accessibilityLabel="ホーム画面に戻る"
+        >
+          <Text style={s.secondaryBtnText}>🏠 ホーム画面に戻る</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -164,5 +172,15 @@ function makeStyles(C: ThemeColors) {
       marginTop: 12,
     },
     primaryBtnText: { color: C.white, fontSize: 15, fontWeight: '800' },
+    secondaryBtn: {
+      backgroundColor: C.card,
+      borderRadius: 14,
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 10,
+      borderWidth: 1,
+      borderColor: C.border,
+    },
+    secondaryBtnText: { color: C.text, fontSize: 14, fontWeight: '700' },
   });
 }

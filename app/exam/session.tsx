@@ -73,8 +73,21 @@ export default function ExamSessionScreen() {
 
       {/* Timer header */}
       <View style={[s.timerBar, current.remainingSec < 600 && s.timerBarWarn]}>
+        <Pressable
+          onPress={() => {
+            confirmAlert(
+              '試験を中断',
+              '進行状況は保存されます。後で再開できます。\nホーム画面に戻りますか？',
+              () => router.replace('/(tabs)'),
+            );
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="試験を中断してホームに戻る"
+        >
+          <Text style={s.homeBtn}>🏠 ホーム</Text>
+        </Pressable>
         <Text style={s.timerText}>⏱ {formatTime(current.remainingSec)}</Text>
-        <Text style={s.answeredText}>回答 {answeredCount}/50</Text>
+        <Text style={s.answeredText}>{answeredCount}/50</Text>
         <Pressable onPress={() => setShowNav(!showNav)} accessibilityRole="button" accessibilityLabel={showNav ? '問題一覧を閉じる' : '問題一覧を表示'}>
           <Text style={s.navBtn}>{showNav ? '閉じる' : '一覧'}</Text>
         </Pressable>
@@ -193,6 +206,16 @@ function makeStyles(C: ThemeColors) {
     timerText: { color: C.white, fontSize: 16, fontWeight: '800' },
     answeredText: { color: 'rgba(255,255,255,0.9)', fontSize: 13 },
     navBtn: {
+      color: C.white,
+      fontSize: 13,
+      fontWeight: '700',
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderWidth: 1,
+      borderColor: C.white,
+      borderRadius: 6,
+    },
+    homeBtn: {
       color: C.white,
       fontSize: 13,
       fontWeight: '700',
