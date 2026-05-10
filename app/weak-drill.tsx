@@ -390,36 +390,48 @@ export default function WeakDrillScreen() {
             <Text style={s.explainLabel}>解説</Text>
             <Text style={s.explainText}>{q.explanation}</Text>
 
-            {/* Confidence Selector */}
+            {/* 不正解は自動で「難しい」記録、正解時のみ難易度セレクターを表示 */}
             {!confidence && (
-              <View style={s.confidenceSection}>
-                <View style={s.confidenceRow}>
-                  <Pressable
-                    style={[s.confidenceBtn, s.confidenceNone]}
-                    onPress={() => handleConfidenceAndNext('none')}
-                    accessibilityRole="button"
-                    accessibilityLabel="難しいと評価"
-                  >
-                    <Text style={s.confidenceNoneText}>難しい</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[s.confidenceBtn, s.confidenceDefault]}
-                    onPress={() => handleConfidenceAndNext('low')}
-                    accessibilityRole="button"
-                    accessibilityLabel="普通と評価"
-                  >
-                    <Text style={s.confidenceDefaultText}>普通 →</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[s.confidenceBtn, s.confidenceHigh]}
-                    onPress={() => handleConfidenceAndNext('high')}
-                    accessibilityRole="button"
-                    accessibilityLabel="簡単と評価"
-                  >
-                    <Text style={s.confidenceHighText}>簡単</Text>
-                  </Pressable>
+              isCorrect ? (
+                <View style={s.confidenceSection}>
+                  <View style={s.confidenceRow}>
+                    <Pressable
+                      style={[s.confidenceBtn, s.confidenceNone]}
+                      onPress={() => handleConfidenceAndNext('none')}
+                      accessibilityRole="button"
+                      accessibilityLabel="難しいと評価"
+                    >
+                      <Text style={s.confidenceNoneText}>難しい</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[s.confidenceBtn, s.confidenceDefault]}
+                      onPress={() => handleConfidenceAndNext('low')}
+                      accessibilityRole="button"
+                      accessibilityLabel="普通と評価"
+                    >
+                      <Text style={s.confidenceDefaultText}>普通 →</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[s.confidenceBtn, s.confidenceHigh]}
+                      onPress={() => handleConfidenceAndNext('high')}
+                      accessibilityRole="button"
+                      accessibilityLabel="簡単と評価"
+                    >
+                      <Text style={s.confidenceHighText}>簡単</Text>
+                    </Pressable>
+                  </View>
                 </View>
-              </View>
+              ) : (
+                <Pressable
+                  style={[s.nextBtn, Shadow.md]}
+                  onPress={() => handleConfidenceAndNext('none')}
+                  accessibilityRole="button"
+                  accessibilityLabel="次の問題へ"
+                >
+                  <Text style={s.nextBtnText}>次へ</Text>
+                  <Text style={s.nextBtnArrow}>→</Text>
+                </Pressable>
+              )
             )}
           </Animated.View>
         )}

@@ -326,8 +326,8 @@ export default function PreSleepReviewScreen() {
             <Text style={s.explainLabel}>解説</Text>
             <Text style={s.explainText}>{q.explanation}</Text>
 
-            {/* Difficulty Selector（選択で次へ進む） */}
-            {!confidence && (
+            {/* 不正解は自動で「難しい」記録、正解時のみ難易度セレクターを表示 */}
+            {!confidence && isCorrect && (
               <View style={s.confidenceSection}>
                 <View style={s.confidenceRow}>
                   <Pressable
@@ -358,9 +358,17 @@ export default function PreSleepReviewScreen() {
               </View>
             )}
 
-            {/* Show "次へ" only after confidence selected */}
-            {confidence && (
-              <Pressable style={[s.nextBtn, Shadow.md]} onPress={handleNext} accessibilityRole="button" accessibilityLabel={currentIndex + 1 >= questionIds.length ? '結果を見る' : '次の問題へ'}>
+            {/* 正解後は確信度選択後、不正解時はその場で「難しい」記録して次へ */}
+            {(confidence || !isCorrect) && (
+              <Pressable
+                style={[s.nextBtn, Shadow.md]}
+                onPress={() => {
+                  if (!confidence) handleConfidence('none');
+                  handleNext();
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={currentIndex + 1 >= questionIds.length ? '結果を見る' : '次の問題へ'}
+              >
                 <Text style={s.nextBtnText}>
                   {currentIndex + 1 >= questionIds.length ? '結果を見る' : '次へ'}
                 </Text>
