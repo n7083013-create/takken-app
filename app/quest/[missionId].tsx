@@ -38,6 +38,11 @@ import { useSettingsStore } from '../../store/useSettingsStore';
 import { useQuestStore } from '../../store/useQuestStore';
 import { askAI } from '../../services/claude';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
+import { WebBackButton } from '../../components/WebBackButton';
+// [機能追加] 消去法（打ち消し線）を quest にも追加
+import { useStrikethrough } from '../../hooks/useStrikethrough';
+import { StrikeHint } from '../../components/StrikeHint';
+import { hapticLight } from '../../services/haptics';
 
 type AIChatMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -70,7 +75,7 @@ export default function QuestSessionScreen() {
   const checkAchievements = useAchievementChecker();
   const canAI = useSettingsStore((st) => st.canUseAI());
   const isPro = useSettingsStore((st) => st.isPro());
-  const incrementAIQuery = useSettingsStore((st) => st.incrementAIQuery);
+  const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
 
   const mission = useMemo(() => getQuestMission(missionId), [missionId]);
   const questionIds = useMemo(() => getQuestQuestions(missionId), [missionId]);
@@ -95,6 +100,9 @@ export default function QuestSessionScreen() {
     () => (questionIds[currentIndex] ? getQuestionById(questionIds[currentIndex]) : null),
     [questionIds, currentIndex],
   );
+
+  // [機能追加] 消去法（打ち消し線）: 選択肢を長押しで打ち消し
+  const { toggleStrike, isStruck } = useStrikethrough(currentQuestion?.id);
 
   // 問題が変わったらシャッフル（個数・組み合わせ問題はシャッフルしない）
   useEffect(() => {
@@ -141,12 +149,14 @@ export default function QuestSessionScreen() {
     setAiInput('');
     setAiMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setAiLoading(true);
-    incrementAIQuery();
     try {
       const context = buildQuestAIContext(currentQuestion, selected, answerState);
       const history = [...aiMessages, { role: 'user' as const, content: userMsg }];
-      const reply = await askAI(context, history);
-      setAiMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      const result = await askAI(context, history);
+      if (result.remaining !== null) {
+        setAIRemainingFromServer(result.remaining);
+      }
+      setAiMessages((prev) => [...prev, { role: 'assistant', content: result.text }]);
     } catch (e: any) {
       setAiMessages((prev) => [
         ...prev,
@@ -177,6 +187,7 @@ export default function QuestSessionScreen() {
     return (
       <SafeAreaView style={s.safe}>
         <Stack.Screen options={{ title: 'クエスト' }} />
+        <WebBackButton />
         <View style={s.emptyWrap}>
           <Text style={s.emptyIcon}>❓</Text>
           <Text style={s.emptyText}>ミッションが見つかりません</Text>
@@ -190,6 +201,7 @@ export default function QuestSessionScreen() {
     return (
       <SafeAreaView style={s.safe}>
         <Stack.Screen options={{ title: mission.title, headerTintColor: colors.primary }} />
+        <WebBackButton />
         <View style={s.emptyWrap}>
           <Text style={s.emptyIcon}>📭</Text>
           <Text style={s.emptyText}>この分野の問題がまだありません</Text>
@@ -209,6 +221,7 @@ export default function QuestSessionScreen() {
     return (
       <SafeAreaView style={s.safe}>
         <Stack.Screen options={{ title: mission.title, headerTintColor: colors.primary }} />
+        <WebBackButton />
         <ScrollView contentContainerStyle={s.resultScroll}>
           <View style={[s.resultCard, Shadow.lg]}>
             <Text style={s.resultEmoji}>{passed ? '🎉' : '💪'}</Text>
@@ -450,6 +463,9 @@ export default function QuestSessionScreen() {
           </View>
         )}
 
+        {/* [機能追加] 消去法ヒント (未回答時のみ) */}
+        {answerState === 'idle' && <StrikeHint />}
+
         {/* 選択肢 */}
         <View style={s.choicesWrap}>
           {shuffledMap.map((origIdx, displayIdx) => {
@@ -460,6 +476,8 @@ export default function QuestSessionScreen() {
 
             const isCorrectAnswer = answered && isCorrectChoice;
             const isWrongAnswer = answered && isSelected && !isCorrectChoice;
+            // [機能追加] 打ち消し状態 (未回答時のみ有効)
+            const struck = !answered && isStruck(origIdx);
 
             return (
               <View key={`${displayIdx}-${origIdx}`}>
@@ -468,19 +486,30 @@ export default function QuestSessionScreen() {
                     s.choiceCard,
                     isCorrectAnswer && s.choiceCorrect,
                     isWrongAnswer && s.choiceWrong,
+                    struck && s.choiceCardStruck,
                     Shadow.sm,
                   ]}
                   onPress={() => handleSelect(origIdx)}
+                  onLongPress={() => {
+                    if (answered) return;
+                    hapticLight();
+                    toggleStrike(origIdx);
+                  }}
+                  delayLongPress={350}
                   disabled={answered}
+                  accessibilityRole="button"
+                  accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}${struck ? '（消去済み）' : ''}`}
+                  accessibilityHint={!answered ? '長押しで打ち消し線の切り替え' : undefined}
                 >
                   <View style={[s.choiceLabelWrap, answered && isCorrectChoice && s.choiceLabelWrapCorrect, answered && isSelected && !isCorrectChoice && s.choiceLabelWrapWrong]}>
                     <Text style={[s.choiceLabelText, answered && isCorrectChoice && s.choiceLabelTextCorrect, answered && isSelected && !isCorrectChoice && s.choiceLabelTextWrong]}>
                       {LABELS[displayIdx]}
                     </Text>
                   </View>
-                  <Text style={[s.choiceText, answered && isCorrectChoice && { color: colors.success, fontWeight: '700' }, answered && isSelected && !isCorrectChoice && { color: colors.error }]}>
+                  <Text style={[s.choiceText, answered && isCorrectChoice && { color: colors.success, fontWeight: '700' }, answered && isSelected && !isCorrectChoice && { color: colors.error }, struck && s.choiceTextStruck]}>
                     {choice}
                   </Text>
+                  {struck && !answered && <Text style={s.strikeMark}>✕</Text>}
                 </Pressable>
                 {/* 選択肢別解説 */}
                 {answered && currentQuestion.choiceExplanations?.[origIdx] && (
@@ -710,6 +739,22 @@ function makeStyles(C: ThemeColors, isWide = false) {
       fontSize: FontSize.subhead,
       color: C.text,
       lineHeight: LineHeight.subhead,
+    },
+
+    // [機能追加] 消去法（打ち消し線）
+    choiceCardStruck: {
+      backgroundColor: C.background,
+      opacity: 0.55,
+    },
+    choiceTextStruck: {
+      textDecorationLine: 'line-through',
+      color: C.textTertiary,
+    },
+    strikeMark: {
+      fontSize: 16,
+      color: C.textTertiary,
+      fontWeight: '800',
+      marginLeft: 8,
     },
 
     // ─── Per-choice Explanation ───
