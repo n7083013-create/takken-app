@@ -206,25 +206,32 @@ export default function MicroChallengeScreen() {
       const updated = [...answers, newAnswer];
       setAnswers(updated);
 
-      // Auto-advance after feedback（AIを開かなかった場合）
-      feedbackTimerRef.current = setTimeout(() => {
-        if (aiVisible) return; // AI開いてたらスキップ
-        setShowFeedback(false);
-        setSelectedIndex(null);
-
-        if (currentIdx + 1 >= TOTAL_QUESTIONS) {
-          // All answered
-          if (timerRef.current) clearInterval(timerRef.current);
-          timerAnim.stopAnimation();
-          setPhase('result');
-          checkAchievement();
-        } else {
-          setCurrentIdx((prev) => prev + 1);
-        }
-      }, FEEDBACK_DELAY_MS + 500); // AI開く余裕を少し追加
+      // [UX改善] 回答後はタイマー停止 + 解説表示 + 「次へ」ボタンで明示的に進む
+      // 旧: 1.5秒後に自動で次へ (解説が読めなかった)
+      // 新: ユーザーが「次へ」を押すまで停止、その間に解説を読める
+      setTimerPaused(true);
+      timerAnim.stopAnimation();
+      if (timerRef.current) clearInterval(timerRef.current);
     },
-    [showFeedback, phase, currentIdx, questions, answers, recordAnswer, checkAchievement, timerAnim, aiVisible],
+    [showFeedback, phase, currentIdx, questions, answers, recordAnswer, triggerCorrect, triggerWrong, timerAnim],
   );
+
+  // [UX改善] 「次へ」ボタン: タイマー再開して次の問題、最終問題なら結果画面へ
+  const handleNext = useCallback(() => {
+    setShowFeedback(false);
+    setSelectedIndex(null);
+    setTimerPaused(false); // タイマー再開
+
+    if (currentIdx + 1 >= TOTAL_QUESTIONS) {
+      // All answered
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerAnim.stopAnimation();
+      setPhase('result');
+      checkAchievement();
+    } else {
+      setCurrentIdx((prev) => prev + 1);
+    }
+  }, [currentIdx, timerAnim, checkAchievement]);
 
   const handleRetry = useCallback(() => {
     // Reload the screen by replacing
@@ -559,13 +566,37 @@ export default function MicroChallengeScreen() {
           );
         })}
 
-        {/* AI質問ボタン（フィードバック表示中のみ） */}
-        {showFeedback && isPro && (
-          <Pressable style={s.aiQuickBtn} onPress={openAI} accessibilityRole="button" accessibilityLabel="AIに質問する（タイマー停止）">
-            <Text style={s.aiQuickIcon}>🤖</Text>
-            <Text style={s.aiQuickText}>AIに聞く</Text>
-            <Text style={s.aiQuickSub}>⏸ タイマー停止</Text>
-          </Pressable>
+        {/* [UX改善] フィードバック中: 解説 + AIに聞く + 次へボタン */}
+        {showFeedback && (
+          <>
+            {/* 解説 (q.explanation がある場合) */}
+            {currentQuestion.explanation && (
+              <View style={s.inlineExplanationBox}>
+                <Text style={s.inlineExplanationHeader}>💡 解説</Text>
+                <Text style={s.inlineExplanationText}>{currentQuestion.explanation}</Text>
+              </View>
+            )}
+
+            {/* AIに聞く (Premium のみ) */}
+            {isPro && (
+              <Pressable style={s.aiQuickBtn} onPress={openAI} accessibilityRole="button" accessibilityLabel="AIに質問する（タイマー停止中）">
+                <Text style={s.aiQuickIcon}>🤖</Text>
+                <Text style={s.aiQuickText}>AIに聞く</Text>
+              </Pressable>
+            )}
+
+            {/* 次へボタン */}
+            <Pressable
+              style={s.nextBtn}
+              onPress={handleNext}
+              accessibilityRole="button"
+              accessibilityLabel={currentIdx + 1 >= TOTAL_QUESTIONS ? '結果を見る' : '次の問題へ'}
+            >
+              <Text style={s.nextBtnText}>
+                {currentIdx + 1 >= TOTAL_QUESTIONS ? '結果を見る ›' : '次の問題へ ›'}
+              </Text>
+            </Pressable>
+          </>
         )}
         </View>
       </ScrollView>
@@ -984,7 +1015,7 @@ function makeStyles(C: ThemeColors) {
       justifyContent: 'center',
       gap: 8,
       marginHorizontal: Spacing.lg,
-      marginTop: Spacing.sm,
+      marginTop: Spacing.md,
       paddingVertical: 12,
       backgroundColor: C.primarySurface,
       borderRadius: BorderRadius.lg,
@@ -994,6 +1025,43 @@ function makeStyles(C: ThemeColors) {
     aiQuickIcon: { fontSize: 18 },
     aiQuickText: { fontSize: FontSize.subhead, fontWeight: '700', color: C.primary },
     aiQuickSub: { fontSize: FontSize.caption2, color: C.textTertiary, fontWeight: '500' },
+
+    // [UX改善] 回答後の解説表示
+    inlineExplanationBox: {
+      marginHorizontal: Spacing.lg,
+      marginTop: Spacing.md,
+      backgroundColor: C.primarySurface,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      borderLeftWidth: 4,
+      borderLeftColor: C.primary,
+    },
+    inlineExplanationHeader: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.primary,
+      marginBottom: Spacing.sm,
+    },
+    inlineExplanationText: {
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.body,
+    },
+
+    // [UX改善] 次の問題へ進むボタン
+    nextBtn: {
+      marginHorizontal: Spacing.lg,
+      marginTop: Spacing.md,
+      backgroundColor: C.primary,
+      borderRadius: BorderRadius.full,
+      paddingVertical: 16,
+      alignItems: 'center',
+    },
+    nextBtnText: {
+      color: C.white,
+      fontSize: FontSize.body,
+      fontWeight: '800',
+    },
 
     // Timer Paused Banner
     pausedBanner: {
