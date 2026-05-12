@@ -601,8 +601,9 @@ export default function MicroChallengeScreen() {
         </View>
       </ScrollView>
 
-      {/* タイマー一時停止表示 */}
-      {timerPaused && !aiVisible && (
+      {/* [UX改善] タイマー一時停止表示 - フィードバック中(showFeedback)はバナー非表示
+          (回答後は当然停止しており、バナーが邪魔になるため) */}
+      {timerPaused && !aiVisible && !showFeedback && (
         <View style={s.pausedBanner}>
           <Text style={s.pausedText}>⏸ 一時停止中</Text>
         </View>
