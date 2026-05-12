@@ -5,14 +5,21 @@ import {
   ScrollView,
   Pressable,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
 import { EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
+import { usePredictionHistory } from '../../hooks/usePredictionHistory';
+import { PredictionCard } from '../../components/PredictionCard';
+import { PaywallPromptBanner } from '../../components/PaywallPromptBanner';
+import { WeaknessCoachingCard } from '../../components/WeaknessCoachingCard';
+import { FinalSprintCard } from '../../components/FinalSprintCard';
+import { useFinalSprintMode } from '../../hooks/useFinalSprintMode';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, SUBCATEGORIES } from '../../types';
 import { ALL_QUESTIONS, getCategoryStats } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
@@ -23,8 +30,13 @@ import { useExamStore } from '../../store/useExamStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
+import { DailyGoalCelebration } from '../../components/DailyGoalCelebration';
+import { useSessionStore } from '../../store/useSessionStore';
 import { LoadingSkeleton } from '../../components/LoadingSkeleton';
 import { AnnouncementBanner } from '../../components/AnnouncementBanner';
+import { EmailConfirmBanner } from '../../components/EmailConfirmBanner';
+import { StreakPulse } from '../../components/StreakPulse';
+import { AnimatedNumber } from '../../components/AnimatedNumber';
 import LandingPage from '../../components/LandingPage';
 import Onboarding from '../../components/Onboarding';
 import type { Question, QuestionProgress, HabitStack } from '../../types';
@@ -85,17 +97,64 @@ function matchSubcat(tags: string[], matchTags: string[]): boolean {
 
 /** 認証状態に応じてLP or オンボーディング or ダッシュボードを切り替えるラッパー */
 export default function HomeScreenWrapper() {
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const initialized = useAuthStore((s) => s.initialized);
   const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
 
+  // クラウド進捗 (別デバイスでログインした時の判定用)
+  const progressMap = useProgressStore((s) => s.progress);
+  const hasAnyProgress = Object.keys(progressMap || {}).length > 0;
+
   useEffect(() => {
-    if (user) {
-      AsyncStorage.getItem('@takken_onboarding_done').then((val) => {
-        setOnboardingDone(val === 'true');
-      });
-    }
+    if (!user) return;
+    // [Bugfix v2] ユーザー固有キーに変更 (Web/Native 共通: 別ユーザー切替時の干渉防止)
+    // 旧キー @takken_onboarding_done もマイグレーションして引継ぎ
+    const userKey = `@takken_onboarding_done_${user.id}`;
+
+    (async () => {
+      // 1) ユーザー固有キーをチェック
+      const val = await AsyncStorage.getItem(userKey);
+      if (val === 'true') {
+        setOnboardingDone(true);
+        return;
+      }
+
+      // 2) 旧グローバルキーをチェック (マイグレーション)
+      const legacy = await AsyncStorage.getItem('@takken_onboarding_done');
+      if (legacy === 'true') {
+        // 旧キーが立っている = 同一デバイスでオンボーディング済み
+        await AsyncStorage.setItem(userKey, 'true').catch(() => {});
+        setOnboardingDone(true);
+        return;
+      }
+
+      // 3) クラウド同期を明示的に待つ (race condition 回避)
+      // ローカルにフラグが無い場合、クラウド同期完了前は判定しない
+      // → 同期完了で hasAnyProgress が true になったらスキップされる
+      try {
+        await useProgressStore.getState().syncWithCloud(user.id);
+      } catch {
+        // 同期失敗時はオフライン扱い → 既存進捗のみで判定
+      }
+      const updatedProgress = useProgressStore.getState().progress;
+      const hasProgressNow = Object.keys(updatedProgress || {}).length > 0;
+      if (hasProgressNow) {
+        await AsyncStorage.setItem(userKey, 'true').catch(() => {});
+        setOnboardingDone(true);
+      } else {
+        setOnboardingDone(false);
+      }
+    })();
   }, [user]);
+
+  // [Native] 未ログイン時はログイン画面に直接遷移（ストアアプリの標準動線）
+  // Web では LP 表示（広告・SEO 経由の新規ユーザー獲得用）
+  useEffect(() => {
+    if (initialized && !user && Platform.OS !== 'web') {
+      router.replace('/auth/login');
+    }
+  }, [initialized, user, router]);
 
   // ストア初期化完了前はスケルトンを表示
   if (!initialized) {
@@ -103,6 +162,8 @@ export default function HomeScreenWrapper() {
   }
 
   if (!user) {
+    // Native はログイン画面遷移中、表示は一瞬のスケルトン
+    if (Platform.OS !== 'web') return <LoadingSkeleton />;
     return <LandingPage />;
   }
 
@@ -113,7 +174,17 @@ export default function HomeScreenWrapper() {
 
   // 初回起動時: オンボーディングを表示
   if (!onboardingDone) {
-    return <Onboarding onComplete={() => setOnboardingDone(true)} />;
+    return (
+      <Onboarding
+        onComplete={async () => {
+          // [Bugfix v2] ユーザー固有キーで完了マーク (Onboarding.tsx 側の旧キーは互換性のため残す)
+          if (user) {
+            await AsyncStorage.setItem(`@takken_onboarding_done_${user.id}`, 'true').catch(() => {});
+          }
+          setOnboardingDone(true);
+        }}
+      />
+    );
   }
 
   return <HomeScreen />;
@@ -122,6 +193,8 @@ export default function HomeScreenWrapper() {
 function HomeScreen() {
   const router = useRouter();
   const colors = useThemeColors();
+  // iOS Safari の URL バー重なり / SPA 遷移時の inset 計算ズレ対策
+  const insets = useSafeAreaInsets();
   const stats = useProgressStore((s) => s.stats);
   const progress = useProgressStore((s) => s.progress);
   const getDueForReview = useProgressStore((s) => s.getDueForReview);
@@ -156,6 +229,11 @@ function HomeScreen() {
     const milestones = [3, 5, 7, 10, 14, 21, 30, 50, 100];
     return milestones.includes(stats.streak);
   });
+
+  // 日目標達成祝福
+  const [goalCelebVisible, setGoalCelebVisible] = useState(false);
+  const markCelebrated = useSessionStore((st) => st.markCelebrated);
+  const isCelebrated = useSessionStore((st) => st.isCelebrated);
   const s = useMemo(() => makeStyles(colors), [colors]);
   const dailyLog = useMemo(() => getDailyLog(), [stats]);
   const freezeCount = useMemo(() => getStreakFreezeCount(), [stats]);
@@ -165,6 +243,18 @@ function HomeScreen() {
     () => dailyGoal > 0 ? Math.min(100, Math.round((todayAnswered / dailyGoal) * 100)) : 0,
     [todayAnswered, dailyGoal],
   );
+
+  // 日目標達成を検知 → 1日1回だけ祝福演出を発火
+  useEffect(() => {
+    if (dailyGoal > 0 && todayAnswered >= dailyGoal) {
+      const today = new Date().toISOString().slice(0, 10);
+      const key = `daily_goal_${today}`;
+      if (!isCelebrated(key)) {
+        setGoalCelebVisible(true);
+        markCelebrated(key);
+      }
+    }
+  }, [dailyGoal, todayAnswered, isCelebrated, markCelebrated]);
   const unlockedCount = useMemo(() => Object.keys(achievementUnlocked).length, [achievementUnlocked]);
   const latestExamScore = useMemo(() => getLatestScore(), [examHistory]);
   const bestExamScore = useMemo(() => getBestScore(), [examHistory]);
@@ -179,9 +269,14 @@ function HomeScreen() {
     router.push(`/question/${q.id}`);
   }, [progress, router]);
 
+  // [UX改善 v2] 「達成率」を「真の習得度」に変更:
+  //   - 3回連続正解で「習得」とみなす（間違えると0にリセット）
+  //   - 単なる totalCorrect では「まぐれ正解」もカウントされてしまう
+  //   - 連続3回正解 = 偶然ではなく本当に理解しているという指標
+  const masteredCount = useProgressStore((s) => s.getMasteredCount)();
   const rate = useMemo(
-    () => stats.totalQuestions > 0 ? Math.round((stats.totalCorrect / stats.totalQuestions) * 100) : 0,
-    [stats.totalCorrect, stats.totalQuestions],
+    () => TOTAL_Q > 0 ? Math.round((Math.min(masteredCount, TOTAL_Q) / TOTAL_Q) * 100) : 0,
+    [masteredCount],
   );
   const progressPct = useMemo(
     () => TOTAL_Q > 0 ? Math.round((Math.min(stats.totalQuestions, TOTAL_Q) / TOTAL_Q) * 100) : 0,
@@ -191,6 +286,12 @@ function HomeScreen() {
   const weakCount = useMemo(() => getWeakQuestions().length, [getWeakQuestions]);
 
   const examPrediction = useExamPrediction();
+  const sprintMode = useFinalSprintMode();
+  const predictionHistory = usePredictionHistory(
+    examPrediction.totalPredicted,
+    examPrediction.passProbability,
+    examPrediction.hasData,
+  );
 
   // 時間帯に応じた最適アクションのサジェスト
   const hourNow = new Date().getHours();
@@ -200,22 +301,33 @@ function HomeScreen() {
     <SafeAreaView style={s.safe}>
       {/* お知らせバナー（ScrollView外で画面上部に固定表示） */}
       <AnnouncementBanner />
+      {/* メール確認バナー */}
+      <EmailConfirmBanner />
       {/* ストリークマイルストーン祝福 */}
       <StreakCelebration
         streak={stats.streak}
         visible={streakCelebVisible}
         onDismiss={() => setStreakCelebVisible(false)}
       />
+      {/* 日目標達成祝福（その日1回のみ） */}
+      <DailyGoalCelebration
+        visible={goalCelebVisible}
+        dailyGoal={dailyGoal}
+        answered={todayAnswered}
+        onDismiss={() => setGoalCelebVisible(false)}
+      />
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* ── Hero（コンパクト） ── */}
-        <View style={s.hero}>
+        {/* Native: SafeAreaView が insets.top を padding 済 → 小さい固定値で十分
+           Web: iOS Safari URL バー対策で insets.top を加算 */}
+        <View style={[s.hero, { paddingTop: Platform.OS === 'web' ? Math.max(10, insets.top + 4) : 10 }]}>
           <View style={s.heroTop}>
             {examDays !== null ? (
               <View>
                 <Text style={s.examCountdownLabel}>試験まであと</Text>
                 <View style={s.examCountdownRow}>
-                  <Text style={s.examCountdownNum}>{examDays}</Text>
+                  <AnimatedNumber value={examDays} style={s.examCountdownNum} duration={500} />
                   <Text style={s.examCountdownUnit}>日</Text>
                 </View>
               </View>
@@ -225,16 +337,13 @@ function HomeScreen() {
               </View>
             )}
             {stats.streak > 0 && (
-              <View style={s.streakBadge}>
+              <StreakPulse streak={stats.streak} style={s.streakBadge}>
                 <Text style={s.streakBadgeNum}>{stats.streak}</Text>
                 <Text style={s.streakBadgeLabel}>日連続</Text>
                 {freezeCount > 0 && <Text style={s.streakFreeze}>🛡️×{freezeCount}</Text>}
-              </View>
+              </StreakPulse>
             )}
           </View>
-          {examDays !== null && (
-            <Text style={s.heroAppName}>宅建士 完全対策</Text>
-          )}
         </View>
 
         {/* ── トライアルバナー ── */}
@@ -278,7 +387,7 @@ function HomeScreen() {
           <View style={s.dashTop}>
             <View style={s.dashGoal}>
               <View style={s.dashGoalRing}>
-                <Text style={s.dashGoalNum}>{todayAnswered}</Text>
+                <AnimatedNumber value={todayAnswered} style={s.dashGoalNum} duration={500} />
                 <Text style={s.dashGoalDenom}>/{dailyGoal}</Text>
               </View>
               <Text style={s.dashGoalLabel}>
@@ -287,15 +396,15 @@ function HomeScreen() {
             </View>
             <View style={s.dashStats}>
               <View style={s.dashStatItem}>
-                <Text style={s.dashStatNum}>{rate}%</Text>
-                <Text style={s.dashStatLabel}>正答率</Text>
+                <AnimatedNumber value={rate} style={s.dashStatNum} suffix="%" duration={600} />
+                <Text style={s.dashStatLabel}>達成率</Text>
               </View>
               <View style={s.dashStatItem}>
-                <Text style={s.dashStatNum}>{stats.totalQuestions}</Text>
+                <AnimatedNumber value={stats.totalQuestions} style={s.dashStatNum} duration={600} />
                 <Text style={s.dashStatLabel}>累計解答</Text>
               </View>
               <View style={s.dashStatItem}>
-                <Text style={[s.dashStatNum, { color: colors.primary }]}>{progressPct}%</Text>
+                <AnimatedNumber value={progressPct} style={[s.dashStatNum, { color: colors.primary }]} suffix="%" duration={600} />
                 <Text style={s.dashStatLabel}>進捗</Text>
               </View>
             </View>
@@ -423,51 +532,19 @@ function HomeScreen() {
           </View>
         )}
 
-        {/* ── 予測スコア（コンパクト版） ── */}
+        {/* ── 直前モード（試験30日前から自動表示） ── */}
+        {sprintMode.isActive && <FinalSprintCard state={sprintMode} />}
+
+        {/* ── ペイウォールプロンプト（スマート訴求） ── */}
+        <PaywallPromptBanner />
+
+        {/* ── 予測スコア・合格確率 ── */}
         {examPrediction.hasData && (
-          <View style={[s.scoreCard, Shadow.sm]}>
-            <View style={s.scoreHeader}>
-              <Text style={s.scoreHeaderTitle}>予測スコア</Text>
-              <View style={[
-                s.scoreTotal,
-                { backgroundColor: examPrediction.totalPredicted >= PASS_LINE ? colors.primarySurface : colors.errorSurface },
-              ]}>
-                <Text style={[
-                  s.scoreTotalNum,
-                  { color: examPrediction.totalPredicted >= PASS_LINE ? colors.primary : colors.error },
-                ]}>
-                  {examPrediction.totalPredicted}
-                </Text>
-                <Text style={s.scoreTotalDenom}>/{EXAM_TOTAL}</Text>
-              </View>
-            </View>
-            <View style={s.scoreGrid}>
-              {examPrediction.perCategory.map((item) => {
-                const catColor = CATEGORY_COLORS[item.category];
-                return (
-                  <View key={item.category} style={s.scoreRow}>
-                    <View style={[s.scoreRowDot, { backgroundColor: catColor }]} />
-                    <Text style={s.scoreRowLabel} numberOfLines={1}>
-                      {CATEGORY_LABELS[item.category]}
-                    </Text>
-                    <View style={s.scoreRowBar}>
-                      <View style={s.scoreRowTrack}>
-                        <View style={[s.scoreRowFill, {
-                          width: `${(item.predicted / item.allocation) * 100}%`,
-                          backgroundColor: catColor,
-                        }]} />
-                      </View>
-                    </View>
-                    <Text style={[s.scoreRowValue, { color: catColor }]}>
-                      {item.predicted.toFixed(1)}
-                    </Text>
-                    <Text style={s.scoreRowMax}>/{item.allocation}</Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+          <PredictionCard prediction={examPrediction} history={predictionHistory} />
         )}
+
+        {/* ── 弱点コーチング（予測スコアから最弱科目を推薦） ── */}
+        <WeaknessCoachingCard prediction={examPrediction} />
 
         {/* ── その他の学習モード ── */}
         <Text style={s.sectionTitle}>学習モード</Text>
@@ -514,6 +591,30 @@ function HomeScreen() {
               <Text style={s.bannerArrow}>›</Text>
             </Pressable>
           )}
+        </View>
+
+        {/* ── 詳細ダッシュボードへの導線（C1/B4） ── */}
+        <View style={s.utilityRow}>
+          <Pressable
+            style={[s.utilityCard, Shadow.sm]}
+            onPress={() => router.push('/heatmap')}
+            accessibilityRole="button"
+            accessibilityLabel="弱点ヒートマップを開く"
+          >
+            <Text style={s.utilityIcon}>🗺️</Text>
+            <Text style={s.utilityTitle}>弱点ヒートマップ</Text>
+            <Text style={s.utilitySub}>サブカテゴリ別の正答率</Text>
+          </Pressable>
+          <Pressable
+            style={[s.utilityCard, Shadow.sm]}
+            onPress={() => router.push('/achievements')}
+            accessibilityRole="button"
+            accessibilityLabel="実績バッジを開く"
+          >
+            <Text style={s.utilityIcon}>🏆</Text>
+            <Text style={s.utilityTitle}>実績バッジ</Text>
+            <Text style={s.utilitySub}>達成記録を確認</Text>
+          </Pressable>
         </View>
 
         {/* ── Category Breakdown ── */}
@@ -612,11 +713,11 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.background },
   scroll: { paddingBottom: 20 },
 
-  // ─── Hero（コンパクト）───
+  // ─── Hero（コンパクト）— SafeAreaView が insets.top を padding 済のため小さく ───
   hero: {
     paddingHorizontal: Spacing.xl,
-    paddingTop: 24,
-    paddingBottom: 28,
+    paddingTop: 10,
+    paddingBottom: 10,
     backgroundColor: C.primary,
     borderBottomLeftRadius: BorderRadius.xxl,
     borderBottomRightRadius: BorderRadius.xxl,
@@ -644,13 +745,13 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     marginTop: 2,
   },
   examCountdownNum: {
-    fontSize: 48,
+    fontSize: 36,
     fontWeight: '900',
     color: C.white,
-    letterSpacing: -1,
+    letterSpacing: -0.5,
   },
   examCountdownUnit: {
-    fontSize: FontSize.title1,
+    fontSize: FontSize.title3,
     fontWeight: '800',
     color: 'rgba(255,255,255,0.9)',
     marginLeft: 4,
@@ -729,7 +830,9 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     marginTop: Spacing.lg,
     backgroundColor: C.card,
     borderRadius: BorderRadius.xl,
-    padding: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: C.borderLight,
   },
   dashTop: {
     flexDirection: 'row',
@@ -985,6 +1088,23 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     color: C.textSecondary,
     marginTop: 3,
   },
+  // C1/B4 ユーティリティカード
+  utilityRow: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: Spacing.xl,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.md,
+  },
+  utilityCard: {
+    flex: 1,
+    backgroundColor: C.card,
+    borderRadius: BorderRadius.lg,
+    padding: 14,
+  },
+  utilityIcon: { fontSize: 24, marginBottom: 6 },
+  utilityTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: C.text },
+  utilitySub: { fontSize: FontSize.caption, color: C.textSecondary, marginTop: 2 },
 
   // ─── バナー群 ───
   bannerSection: { paddingHorizontal: Spacing.xl, marginTop: Spacing.xl, gap: 10 },
