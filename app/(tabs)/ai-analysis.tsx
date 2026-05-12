@@ -1,19 +1,19 @@
 import { useMemo } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Shadow } from '../constants/theme';
-import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
-import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category } from '../types';
-import { useProgressStore } from '../store/useProgressStore';
-import { useSettingsStore } from '../store/useSettingsStore';
+import { Shadow } from '../../constants/theme';
+import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
+import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category } from '../../types';
+import { useProgressStore } from '../../store/useProgressStore';
+import { useSettingsStore } from '../../store/useSettingsStore';
 import {
   analyzeOverall,
   getRecommendedQuestions,
   buildStudyPlan,
   TARGET_SCORES,
-} from '../services/aiAnalysis';
-import { getQuestionById } from '../data';
+} from '../../services/aiAnalysis';
+import { getQuestionById } from '../../data';
 
 export default function AIAnalysisScreen() {
   const router = useRouter();
@@ -26,7 +26,6 @@ export default function AIAnalysisScreen() {
   if (!isPro) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-        <Stack.Screen options={{ title: 'AI学習分析' }} />
         <View style={{ flex: 1, padding: 24, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ fontSize: 56, marginBottom: 16 }}>🤖</Text>
           <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text, marginBottom: 8 }}>
@@ -57,7 +56,6 @@ export default function AIAnalysisScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'AI学習分析', headerShown: true }} />
       <SafeAreaView style={s.safe} edges={['bottom']}>
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 

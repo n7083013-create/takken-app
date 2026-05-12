@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { GlobalAIButton } from '../../components/GlobalAIButton';
+import { useAuthStore } from '../../store/useAuthStore';
 
 function TabIcon({ icon, label, focused, colors }: { icon: string; label: string; focused: boolean; colors: ThemeColors }) {
   return (
@@ -16,19 +17,28 @@ function TabIcon({ icon, label, focused, colors }: { icon: string; label: string
 
 export default function TabLayout() {
   const colors = useThemeColors();
-  const tabBarStyle = useMemo(() => ({
-    height: 84,
-    paddingTop: 6,
-    paddingBottom: 20,
-    backgroundColor: colors.card,
-    borderTopWidth: 0.5,
-    borderTopColor: colors.borderLight,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 4,
-  }), [colors]);
+  const user = useAuthStore((s) => s.user);
+  const isLoggedIn = !!user;
+
+  const tabBarStyle = useMemo(() => {
+    // 未ログイン時はタブバー非表示（LP専用ビュー）
+    if (!isLoggedIn) {
+      return { display: 'none' as const };
+    }
+    return {
+      height: 84,
+      paddingTop: 6,
+      paddingBottom: 20,
+      backgroundColor: colors.card,
+      borderTopWidth: 0.5,
+      borderTopColor: colors.borderLight,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: -1 },
+      shadowOpacity: 0.04,
+      shadowRadius: 8,
+      elevation: 4,
+    };
+  }, [colors, isLoggedIn]);
 
   return (
     <>
@@ -62,13 +72,22 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="questions"
+        name="ai-analysis"
         options={{
-          title: '問題集',
+          title: 'AI分析',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon icon="📝" label="問題集" focused={focused} colors={colors} />
+            <TabIcon icon="🤖" label="AI分析" focused={focused} colors={colors} />
           ),
+        }}
+      />
+      {/* [UX改善] 問題集タブを非表示化 (使用頻度低のため AI分析と入替)
+          ファイル自体は残し、直接 URL アクセス可能 */}
+      <Tabs.Screen
+        name="questions"
+        options={{
+          href: null,
+          headerShown: false,
         }}
       />
       <Tabs.Screen

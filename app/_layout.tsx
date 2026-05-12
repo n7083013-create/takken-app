@@ -1,8 +1,12 @@
+// [Sentry] 起動時の最初に Sentry を初期化（他の import より先に呼びたいので冒頭で行う）
+import { initSentry, setSentryUser } from '../services/sentry';
+initSentry();
+
 import '../global.css';
 import { useEffect, useRef } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, ActivityIndicator, StyleSheet, Platform } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, Platform, AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useProgressStore } from '../store/useProgressStore';
@@ -13,6 +17,7 @@ import { useQuestStore } from '../store/useQuestStore';
 import { useAchievementStore } from '../store/useAchievementStore';
 import { useExamStore } from '../store/useExamStore';
 import { installGlobalErrorHandler } from '../services/errorLogger';
+import { initializeIAP, retryPendingPurchases } from '../services/iap';
 import { useThemeColors, useIsDark } from '../hooks/useThemeColors';
 import {
   requestNotificationPermission,
@@ -22,6 +27,7 @@ import {
 import ErrorBoundary from '../components/ErrorBoundary';
 import { OfflineBanner } from '../components/OfflineBanner';
 import { SyncErrorBanner } from '../components/SyncErrorBanner';
+import { AchievementToast } from '../components/AchievementToast';
 
 export default function RootLayout() {
   const loadProgress = useProgressStore((s) => s.loadProgress);
@@ -52,6 +58,13 @@ export default function RootLayout() {
       ]);
       // Auth は他ストアの後に初期化（セッション復元後にsync等が走るため）
       await initAuth();
+      // IAP（Native のみ）— 起動後に非ブロッキングで購入リスナーを起動
+      if (Platform.OS !== 'web') {
+        initializeIAP().catch(() => {});
+        // Issue #7: 前回起動時に verify 失敗したまま残っている購入を再検証
+        // (起動後 5秒待ってネット安定 + ログイン復元を待つ)
+        setTimeout(() => { retryPendingPurchases().catch(() => {}); }, 5000);
+      }
     })();
   }, []);
 
@@ -60,6 +73,12 @@ export default function RootLayout() {
   const session = useAuthStore((s) => s.session);
   const initialized = useAuthStore((s) => s.initialized);
   const verifySubscription = useSettingsStore((s) => s.verifySubscription);
+
+  // [Sentry] ユーザー変更時に Sentry のユーザーコンテキストを更新
+  // email は送らず id のみ。ログアウト時は null。
+  useEffect(() => {
+    setSentryUser(user?.id ?? null);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!initialized || !user) return;
@@ -91,6 +110,20 @@ export default function RootLayout() {
   const stats = useProgressStore((s) => s.stats);
   const getDaysUntilExam = useSettingsStore((s) => s.getDaysUntilExam);
 
+  // フォアグラウンド復帰時にクラウド同期を自動実行
+  // バックグラウンド → アクティブ になったタイミングで進捗をクラウドと同期
+  useEffect(() => {
+    if (!user) return;
+    const appState = { current: AppState.currentState };
+    const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
+      if (appState.current.match(/inactive|background/) && next === 'active') {
+        useProgressStore.getState().syncWithCloud(user.id).catch(() => {});
+      }
+      appState.current = next;
+    });
+    return () => sub.remove();
+  }, [user?.id]);
+
   // 通知スケジュールの自動更新
   useEffect(() => {
     if (!settings.notificationsEnabled) return;
@@ -121,46 +154,40 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: colors.background },
         }}
       >
+        {/*
+         * [Bugfix] 戻るボタン二重表示防止戦略:
+         * 全ての全画面 (tab以外) で Stack ヘッダを非表示にし、
+         * 各画面の WebBackButton or 独自ヘッダで戻る導線を提供する。
+         * これで Web/Native とも単一の戻るボタンに統一される。
+         */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="question/[id]"
-          options={{
-            title: '問題',
-            headerBackTitle: '戻る',
-            headerTintColor: colors.primary,
-          }}
-        />
-        <Stack.Screen name="auth/login" options={{ title: 'ログイン', headerTintColor: '#2E7D32' }} />
-        <Stack.Screen name="auth/reset-password" options={{ title: 'パスワードリセット', headerTintColor: '#2E7D32' }} />
-        <Stack.Screen
-          name="paywall"
-          options={{
-            title: 'PREMIUMプラン',
-            presentation: 'modal',
-            headerTintColor: colors.primary,
-          }}
-        />
-        <Stack.Screen
-          name="quest/index"
-          options={{
-            title: 'クエスト学習',
-            headerTintColor: colors.primary,
-          }}
-        />
-        <Stack.Screen
-          name="quest/[missionId]"
-          options={{
-            title: 'クエスト',
-            headerBackTitle: '戻る',
-            headerTintColor: colors.primary,
-          }}
-        />
-        <Stack.Screen name="legal/privacy" options={{ title: 'プライバシーポリシー', headerTintColor: '#2E7D32' }} />
-        <Stack.Screen name="legal/terms" options={{ title: '利用規約', headerTintColor: '#2E7D32' }} />
-        <Stack.Screen name="legal/tokushoho" options={{ title: '特定商取引法表記', headerTintColor: '#2E7D32' }} />
+        <Stack.Screen name="question/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+        <Stack.Screen name="auth/reset-password" options={{ headerShown: false }} />
+        <Stack.Screen name="paywall" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="quest/index" options={{ headerShown: false }} />
+        <Stack.Screen name="quest/[missionId]" options={{ headerShown: false }} />
+        <Stack.Screen name="heatmap" options={{ headerShown: false }} />
+        <Stack.Screen name="feedback" options={{ headerShown: false }} />
+        <Stack.Screen name="achievements" options={{ headerShown: false }} />
+        <Stack.Screen name="study-timer" options={{ headerShown: false }} />
+        {/* [Refactor] ai-analysis は (tabs)/ai-analysis.tsx に移動 (タブから直接アクセス可能) */}
+        <Stack.Screen name="micro-challenge" options={{ headerShown: false }} />
+        <Stack.Screen name="pre-sleep-review" options={{ headerShown: false }} />
+        <Stack.Screen name="weak-drill" options={{ headerShown: false }} />
+        <Stack.Screen name="exam/index" options={{ headerShown: false }} />
+        <Stack.Screen name="exam/session" options={{ headerShown: false }} />
+        <Stack.Screen name="exam/result" options={{ headerShown: false }} />
+        <Stack.Screen name="admin/stats" options={{ headerShown: false }} />
+        <Stack.Screen name="admin/review" options={{ headerShown: false }} />
+        <Stack.Screen name="legal/privacy" options={{ headerShown: false }} />
+        <Stack.Screen name="legal/terms" options={{ headerShown: false }} />
+        <Stack.Screen name="legal/tokushoho" options={{ headerShown: false }} />
+        <Stack.Screen name="legal/delete-account" options={{ headerShown: false }} />
       </Stack>
       <OfflineBanner />
       <SyncErrorBanner />
+      <AchievementToast />
     </GestureHandlerRootView>
     </ErrorBoundary>
   );
