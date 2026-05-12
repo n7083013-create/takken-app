@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -41,6 +41,7 @@ export default function QuickQuizScreen() {
 
   const quickQuizStats = useProgressStore((s) => s.quickQuizStats);
   const recordQuickQuizAnswer = useProgressStore((s) => s.recordQuickQuizAnswer);
+  const getTodayQuickQuizCount = useProgressStore((s) => s.getTodayQuickQuizCount);
   const checkAchievements = useAchievementChecker();
   const { triggerCorrect, triggerWrong, FeedbackOverlay } = useAnswerFeedback();
 
@@ -53,7 +54,7 @@ export default function QuickQuizScreen() {
   // AI Chat state (fullscreen)
   const isPro = useSettingsStore((st) => st.isPro());
   const canAI = useSettingsStore((st) => st.canUseAI());
-  const incrementAIQuery = useSettingsStore((st) => st.incrementAIQuery);
+  const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
   const [aiVisible, setAiVisible] = useState(false);
   const [aiMessages, setAiMessages] = useState<AIChatMessage[]>([]);
   const [aiInput, setAiInput] = useState('');
@@ -64,10 +65,51 @@ export default function QuickQuizScreen() {
   const [glossaryVisible, setGlossaryVisible] = useState(false);
   const [glossaryTerm, setGlossaryTerm] = useState<{ term: string; definition: string; relatedTerms: string[] } | null>(null);
 
-  const filteredQuizzes = useMemo(
-    () => selectedCategory ? ALL_QUICK_QUIZZES.filter((q) => q.category === selectedCategory) : ALL_QUICK_QUIZZES,
-    [selectedCategory],
-  );
+  // [UX改善] スマートスタート: 初回マウント時に「苦手カテゴリ」を自動選択
+  // 各カテゴリで 3問以上回答済みのうち、正答率が最も低いカテゴリを推奨
+  // データが少ない場合は null = 「すべて」モードでシャッフル出題
+  const recommendedCategory = useMemo<Category | null>(() => {
+    const cs = quickQuizStats.categoryStats;
+    if (!cs) return null;
+    let weakest: Category | null = null;
+    let weakestRate = 1.01; // 100% より大きい初期値
+    for (const cat of CATEGORIES) {
+      const stat = cs[cat];
+      if (!stat || stat.total < 3) continue; // データ少なすぎは除外
+      const rate = stat.correct / stat.total;
+      if (rate < weakestRate) {
+        weakestRate = rate;
+        weakest = cat;
+      }
+    }
+    return weakest;
+  }, [quickQuizStats]);
+
+  // [UX改善] 初回マウント時に苦手カテゴリを自動選択（ユーザーが手動変更したら再上書きしない）
+  const [hasAutoSelected, setHasAutoSelected] = useState(false);
+  useEffect(() => {
+    if (!hasAutoSelected && recommendedCategory) {
+      setSelectedCategory(recommendedCategory);
+      setHasAutoSelected(true);
+    } else if (!hasAutoSelected) {
+      // データなしでもフラグだけ立てる（再判定を防ぐ）
+      setHasAutoSelected(true);
+    }
+  }, [recommendedCategory, hasAutoSelected]);
+
+  // [UX改善] 同じ順序での出題を避けるため、カテゴリ変更時に問題リストをシャッフル
+  // (Fisher-Yates アルゴリズム、毎回違う順序で出題される)
+  const filteredQuizzes = useMemo(() => {
+    const base = selectedCategory
+      ? ALL_QUICK_QUIZZES.filter((q) => q.category === selectedCategory)
+      : ALL_QUICK_QUIZZES;
+    const shuffled = [...base];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, [selectedCategory]);
 
   const currentQuiz: QuickQuiz | undefined = filteredQuizzes[currentIndex];
 
@@ -83,6 +125,15 @@ export default function QuickQuizScreen() {
 
   const handleAnswer = useCallback((userAnswer: boolean) => {
     if (!currentQuiz || answerState !== 'unanswered') return;
+
+    // フリーミアム制限: 1日20問まで（未課金ユーザー）
+    if (!isPro) {
+      const todayCount = getTodayQuickQuizCount();
+      if (todayCount >= 20) {
+        router.push('/paywall');
+        return;
+      }
+    }
 
     const isCorrect = userAnswer === currentQuiz.isCorrect;
     if (isCorrect) {
@@ -126,7 +177,6 @@ export default function QuickQuizScreen() {
     setAiInput('');
     setAiMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setAiLoading(true);
-    incrementAIQuery();
 
     try {
       const context = [
@@ -137,8 +187,11 @@ export default function QuickQuizScreen() {
         `解説: ${currentQuiz.explanation}`,
       ].join('\n');
       const history = [...aiMessages, { role: 'user' as const, content: userMsg }];
-      const reply = await askAI(context, history);
-      setAiMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      const result = await askAI(context, history);
+      if (result.remaining !== null) {
+        setAIRemainingFromServer(result.remaining);
+      }
+      setAiMessages((prev) => [...prev, { role: 'assistant', content: result.text }]);
     } catch (e: any) {
       setAiMessages((prev) => [
         ...prev,
