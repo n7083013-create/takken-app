@@ -9,8 +9,10 @@ import {
   Pressable,
   StyleSheet,
   Animated,
+  ScrollView,
+  Modal,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSize, LineHeight, Spacing, BorderRadius, Shadow } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
@@ -20,12 +22,23 @@ import { useAchievementChecker } from '../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../components/AnswerFeedback';
 import { AIChatModal } from '../components/AIChatModal';
 import { ALL_QUESTIONS, getQuestionById } from '../data';
+import { WebBackButton } from '../components/WebBackButton';
 import type { Question, Category } from '../types';
 
 const TOTAL_QUESTIONS = 3;
 const TIME_LIMIT_SEC = 60;
 const CHOICE_LABELS = ['A', 'B', 'C', 'D'] as const;
 const FEEDBACK_DELAY_MS = 1000;
+
+/** Fisher-Yates シャッフル（選択肢位置の暗記化防止） */
+function shuffleIndices(length: number): number[] {
+  const arr = Array.from({ length }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 type Phase = 'playing' | 'result';
 
@@ -67,9 +80,16 @@ export default function MicroChallengeScreen() {
   const [remainingSec, setRemainingSec] = useState(TIME_LIMIT_SEC);
   const [answers, setAnswers] = useState<AnswerRecord[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  // [UX] 選択肢の位置暗記を防ぐため、問題ごとにシャッフルマップを保持
+  // shuffledMap[displayIdx] = originalIdx
+  const [shuffledMap, setShuffledMap] = useState<number[]>([0, 1, 2, 3]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [aiVisible, setAiVisible] = useState(false);
   const [timerPaused, setTimerPaused] = useState(false);
+  // [機能追加] 結果画面で問題タップ時に表示する詳細モーダル用の state
+  const [reviewQuestion, setReviewQuestion] = useState<{ q: Question; answer: AnswerRecord } | null>(null);
+  // [機能追加] 結果画面の AI チャットモーダル (Premium 機能)
+  const [reviewAiVisible, setReviewAiVisible] = useState(false);
   const pausedAtRef = useRef<number | null>(null);
   const startTimeRef = useRef(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -77,6 +97,15 @@ export default function MicroChallengeScreen() {
 
   // Animated timer bar
   const timerAnim = useRef(new Animated.Value(1)).current;
+
+  // [UX] 問題が変わるたびに選択肢をシャッフル (位置暗記化防止)
+  // 個数問題・組み合わせ問題は除外 (ア・イ・ウ・エの順序が論理的に固定)
+  useEffect(() => {
+    const q = questions[currentIdx];
+    if (!q) return;
+    const isSpecial = q.questionFormat === 'count' || q.questionFormat === 'combination';
+    setShuffledMap(isSpecial ? [0, 1, 2, 3] : shuffleIndices(q.choices.length));
+  }, [currentIdx, questions]);
 
   // Start countdown
   useEffect(() => {
@@ -203,7 +232,8 @@ export default function MicroChallengeScreen() {
   }, [router]);
 
   const handleGoBack = useCallback(() => {
-    router.back();
+    if (router.canGoBack()) router.back();
+    else router.replace('/(tabs)');
   }, [router]);
 
   // Result stats
@@ -216,6 +246,7 @@ export default function MicroChallengeScreen() {
   if (phase === 'result') {
     return (
       <SafeAreaView style={s.safe}>
+        <Stack.Screen options={{ headerShown: false }} />
         <FeedbackOverlay />
         <View style={s.header}>
           <Pressable onPress={handleGoBack} style={s.backBtn} accessibilityRole="button" accessibilityLabel="戻る">
@@ -225,7 +256,11 @@ export default function MicroChallengeScreen() {
           <View style={{ width: 60 }} />
         </View>
 
-        <View style={s.resultContainer}>
+        <ScrollView
+          contentContainerStyle={s.resultScrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={s.resultContainer}>
           <Text style={s.resultEmoji}>
             {correctCount === TOTAL_QUESTIONS ? '🎉' : correctCount >= 2 ? '👏' : '💪'}
           </Text>
@@ -253,19 +288,30 @@ export default function MicroChallengeScreen() {
             </View>
           </View>
 
-          {/* Answer details */}
+          {/* [機能追加] Answer details - 各問題をタップで解説モーダル表示 */}
+          <Text style={s.answersDetailHeader}>タップで解説を見る</Text>
           <View style={s.answersDetail}>
             {answers.map((a, idx) => {
               const q = getQuestionById(a.questionId);
+              if (!q) return null;
               return (
-                <View key={a.questionId} style={s.answerItem}>
+                <Pressable
+                  key={a.questionId}
+                  style={[s.answerItem, Shadow.sm]}
+                  onPress={() => setReviewQuestion({ q, answer: a })}
+                  accessibilityRole="button"
+                  accessibilityLabel={`問題${idx + 1}の${a.isCorrect ? '正解' : '不正解'}の解説を見る`}
+                >
                   <Text style={s.answerIcon}>
                     {a.isCorrect ? '✅' : '❌'}
                   </Text>
-                  <Text style={s.answerText} numberOfLines={1}>
-                    Q{idx + 1}. {q?.text ?? ''}
-                  </Text>
-                </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.answerText}>
+                      Q{idx + 1}. {q.text}
+                    </Text>
+                  </View>
+                  <Text style={s.answerArrow}>›</Text>
+                </Pressable>
               );
             })}
           </View>
@@ -283,13 +329,111 @@ export default function MicroChallengeScreen() {
               <Text style={s.goBackBtnText}>戻る</Text>
             </Pressable>
           </View>
-        </View>
+          </View>
+        </ScrollView>
+
+        {/* [機能追加] 問題詳細・解説モーダル */}
+        <Modal
+          visible={reviewQuestion !== null}
+          animationType="slide"
+          onRequestClose={() => setReviewQuestion(null)}
+          transparent={false}
+        >
+          {reviewQuestion && (
+            <SafeAreaView style={s.safe}>
+              <View style={s.header}>
+                <Pressable
+                  onPress={() => setReviewQuestion(null)}
+                  style={s.backBtn}
+                  accessibilityRole="button"
+                  accessibilityLabel="閉じる"
+                >
+                  <Text style={s.backText}>‹ 閉じる</Text>
+                </Pressable>
+                <Text style={s.headerTitle}>
+                  {reviewQuestion.answer.isCorrect ? '✅ 正解' : '❌ 不正解'}
+                </Text>
+                <View style={{ width: 60 }} />
+              </View>
+              <ScrollView contentContainerStyle={s.reviewScroll}>
+                {/* 問題文 */}
+                <Text style={s.reviewQuestionText}>{reviewQuestion.q.text}</Text>
+
+                {/* statements (個数・組み合わせ問題) */}
+                {reviewQuestion.q.statements && reviewQuestion.q.statements.length > 0 && (
+                  <View style={s.statementsBox}>
+                    {reviewQuestion.q.statements.map((stmt, si) => (
+                      <View key={si} style={s.statementRow}>
+                        <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
+                        <Text style={s.statementText}>{stmt}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                {/* 選択肢 */}
+                {reviewQuestion.q.choices.map((c, i) => {
+                  const isUserSelection = i === reviewQuestion.answer.selectedIndex;
+                  const isCorrectChoice = i === reviewQuestion.q.correctIndex;
+                  return (
+                    <View
+                      key={i}
+                      style={[
+                        s.reviewChoice,
+                        isCorrectChoice && s.reviewChoiceCorrect,
+                        isUserSelection && !isCorrectChoice && s.reviewChoiceWrong,
+                      ]}
+                    >
+                      <Text style={s.reviewChoiceLabel}>{i + 1}</Text>
+                      <Text style={s.reviewChoiceText}>{c}</Text>
+                      {isCorrectChoice && <Text style={s.reviewBadge}>正解</Text>}
+                      {isUserSelection && !isCorrectChoice && <Text style={s.reviewBadgeWrong}>あなたの選択</Text>}
+                    </View>
+                  );
+                })}
+
+                {/* 解説 */}
+                {reviewQuestion.q.explanation && (
+                  <View style={s.explanationBox}>
+                    <Text style={s.explanationHeader}>💡 解説</Text>
+                    <Text style={s.explanationText}>{reviewQuestion.q.explanation}</Text>
+                  </View>
+                )}
+
+                {/* AI に聞くボタン (Premium) */}
+                {isPro && (
+                  <Pressable
+                    style={s.aiAskBtn}
+                    onPress={() => setReviewAiVisible(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel="AIに質問する"
+                  >
+                    <Text style={s.aiAskBtnText}>🤖 さらにAIに聞く</Text>
+                  </Pressable>
+                )}
+              </ScrollView>
+              {/* 解説モーダル内の AIChatModal */}
+              <AIChatModal
+                visible={reviewAiVisible}
+                onClose={() => setReviewAiVisible(false)}
+                questionText={reviewQuestion.q.text}
+                choices={reviewQuestion.q.choices}
+                correctIndex={reviewQuestion.q.correctIndex}
+                selectedIndex={reviewQuestion.answer.selectedIndex}
+                category={reviewQuestion.q.category}
+                explanation={reviewQuestion.q.explanation}
+                isCorrect={reviewQuestion.answer.isCorrect}
+              />
+            </SafeAreaView>
+          )}
+        </Modal>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={s.safe}>
+      <Stack.Screen options={{ headerShown: false }} />
       <FeedbackOverlay />
       {/* Header */}
       <View style={s.header}>
@@ -349,18 +493,36 @@ export default function MicroChallengeScreen() {
         </Text>
       </View>
 
-      {/* Question */}
-      <View style={s.questionArea}>
-        <Text style={s.questionText} numberOfLines={6}>
-          {currentQuestion.text}
-        </Text>
-      </View>
+      {/* 本文エリア（タイマー/ヘッダーは上に固定。長文時は問題文＋選択肢ごと自然スクロール） */}
+      <ScrollView
+        style={s.bodyScroll}
+        contentContainerStyle={s.bodyScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Question */}
+        <View style={s.questionArea}>
+          <Text style={s.questionText}>{currentQuestion.text}</Text>
+        </View>
 
-      {/* Choices */}
-      <View style={s.choicesContainer}>
-        {currentQuestion.choices.map((choice, idx) => {
-          const isSelected = selectedIndex === idx;
-          const isCorrectChoice = idx === currentQuestion.correctIndex;
+        {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ の本文 (statements) を表示
+            これがないと「ア〜エの記述のうち正しいものはいくつあるか」が読めない */}
+        {currentQuestion.statements && currentQuestion.statements.length > 0 && (
+          <View style={s.statementsBox}>
+            {currentQuestion.statements.map((stmt, si) => (
+              <View key={si} style={s.statementRow}>
+                <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
+                <Text style={s.statementText}>{stmt}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Choices */}
+        <View style={s.choicesContainer}>
+        {shuffledMap.map((origIdx, displayIdx) => {
+          const choice = currentQuestion.choices[origIdx];
+          const isSelected = selectedIndex === origIdx;
+          const isCorrectChoice = origIdx === currentQuestion.correctIndex;
           let choiceStyle = s.choiceDefault;
           let choiceTextStyle = s.choiceTextDefault;
 
@@ -378,19 +540,18 @@ export default function MicroChallengeScreen() {
 
           return (
             <Pressable
-              key={idx}
+              key={origIdx}
               style={[s.choiceBtn, choiceStyle]}
-              onPress={() => handleSelectAnswer(idx)}
+              onPress={() => handleSelectAnswer(origIdx)}
               disabled={showFeedback}
               accessibilityRole="button"
-              accessibilityLabel={`選択肢${CHOICE_LABELS[idx]}: ${choice}`}
+              accessibilityLabel={`選択肢${CHOICE_LABELS[displayIdx]}: ${choice}`}
             >
               <Text style={[s.choiceLabel, showFeedback && isCorrectChoice && s.choiceLabelCorrect]}>
-                {CHOICE_LABELS[idx]}
+                {CHOICE_LABELS[displayIdx]}
               </Text>
               <Text
                 style={[s.choiceText, choiceTextStyle]}
-                numberOfLines={2}
               >
                 {choice}
               </Text>
@@ -406,7 +567,8 @@ export default function MicroChallengeScreen() {
             <Text style={s.aiQuickSub}>⏸ タイマー停止</Text>
           </Pressable>
         )}
-      </View>
+        </View>
+      </ScrollView>
 
       {/* タイマー一時停止表示 */}
       {timerPaused && !aiVisible && (
@@ -505,12 +667,19 @@ function makeStyles(C: ThemeColors) {
       textAlign: 'right',
     },
 
+    // 本文スクロール（ヘッダー/タイマーは固定）
+    bodyScroll: {
+      flex: 1,
+    },
+    bodyScrollContent: {
+      paddingBottom: Spacing.xl,
+    },
+
     // Question
     questionArea: {
       paddingHorizontal: Spacing.xl,
       paddingVertical: Spacing.lg,
       minHeight: 100,
-      justifyContent: 'center',
     },
     questionText: {
       fontSize: FontSize.body,
@@ -519,9 +688,36 @@ function makeStyles(C: ThemeColors) {
       lineHeight: LineHeight.body,
     },
 
+    // [Bugfix] Statements (個数問題・組み合わせ問題の ア〜エ 本文)
+    statementsBox: {
+      marginHorizontal: Spacing.lg,
+      marginBottom: Spacing.md,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.md,
+      gap: Spacing.sm,
+      borderWidth: 1,
+      borderColor: C.borderLight,
+    },
+    statementRow: {
+      flexDirection: 'row',
+      paddingVertical: 4,
+    },
+    statementLabel: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.primary,
+      width: 28,
+    },
+    statementText: {
+      flex: 1,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.subhead,
+    },
+
     // Choices
     choicesContainer: {
-      flex: 1,
       paddingHorizontal: Spacing.lg,
       gap: Spacing.sm,
     },
@@ -621,23 +817,139 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '700',
       color: C.text,
     },
+    // [機能追加] 結果画面: スクロール対応 + タップ可能アイテム
+    resultScrollContent: {
+      paddingBottom: Spacing.xxxl,
+    },
+    answersDetailHeader: {
+      width: '100%',
+      marginTop: Spacing.xl,
+      marginBottom: Spacing.sm,
+      fontSize: FontSize.footnote,
+      color: C.textTertiary,
+      textAlign: 'center',
+      fontWeight: '600',
+    },
     answersDetail: {
       width: '100%',
-      marginTop: Spacing.lg,
       gap: Spacing.sm,
     },
     answerItem: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: Spacing.sm,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.md,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.md,
     },
     answerIcon: {
-      fontSize: 16,
+      fontSize: 20,
     },
     answerText: {
-      flex: 1,
-      fontSize: FontSize.footnote,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.subhead,
+    },
+    answerArrow: {
+      fontSize: 24,
+      color: C.textTertiary,
+      fontWeight: '300',
+    },
+
+    // [機能追加] 解説モーダル用スタイル
+    reviewScroll: {
+      paddingHorizontal: Spacing.xl,
+      paddingVertical: Spacing.lg,
+      paddingBottom: Spacing.xxxl,
+    },
+    reviewQuestionText: {
+      fontSize: FontSize.body,
+      lineHeight: LineHeight.body,
+      color: C.text,
+      marginBottom: Spacing.lg,
+      fontWeight: '600',
+    },
+    reviewChoice: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.md,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+      marginBottom: Spacing.sm,
+      borderWidth: 2,
+      borderColor: C.border,
+    },
+    reviewChoiceCorrect: {
+      borderColor: C.success,
+      backgroundColor: C.successSurface,
+    },
+    reviewChoiceWrong: {
+      borderColor: C.error,
+      backgroundColor: C.errorSurface,
+    },
+    reviewChoiceLabel: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
       color: C.textSecondary,
+      width: 24,
+    },
+    reviewChoiceText: {
+      flex: 1,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.subhead,
+    },
+    reviewBadge: {
+      fontSize: FontSize.caption,
+      color: C.success,
+      fontWeight: '800',
+      backgroundColor: C.successSurface,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: BorderRadius.sm,
+    },
+    reviewBadgeWrong: {
+      fontSize: FontSize.caption,
+      color: C.error,
+      fontWeight: '800',
+      backgroundColor: C.errorSurface,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: BorderRadius.sm,
+    },
+    explanationBox: {
+      backgroundColor: C.primarySurface,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      marginTop: Spacing.lg,
+      borderLeftWidth: 4,
+      borderLeftColor: C.primary,
+    },
+    explanationHeader: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.primary,
+      marginBottom: Spacing.sm,
+    },
+    explanationText: {
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.body,
+    },
+    aiAskBtn: {
+      marginTop: Spacing.xl,
+      backgroundColor: C.primary,
+      borderRadius: BorderRadius.full,
+      paddingVertical: Spacing.md,
+      alignItems: 'center',
+    },
+    aiAskBtnText: {
+      color: C.white,
+      fontSize: FontSize.body,
+      fontWeight: '700',
     },
     resultButtons: {
       marginTop: Spacing.xxxl,

@@ -2,12 +2,26 @@ import { useEffect, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+  Easing,
+} from 'react-native-reanimated';
 import { Shadow } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamStore, scoreExam, getExamQuestions } from '../../store/useExamStore';
 import { useProgressStore } from '../../store/useProgressStore';
-import { CATEGORY_LABELS, Category } from '../../types';
+import { CATEGORY_LABELS, Category, SUBCATEGORIES } from '../../types';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
+import { judgeGrade, GRADE_THRESHOLDS, PASS_LINE } from '../../constants/exam';
+import { useAnimationEnabled } from '../../hooks/useReducedMotion';
+import { StaggeredFadeIn } from '../../components/StaggeredFadeIn';
+import { AnimatedNumber } from '../../components/AnimatedNumber';
+import { PressableScale } from '../../components/PressableScale';
+import { WebBackButton } from '../../components/WebBackButton';
 
 export default function ExamResultScreen() {
   const router = useRouter();
@@ -43,18 +57,83 @@ export default function ExamResultScreen() {
 
   const result = scoreExam(current);
   const questions = getExamQuestions(current);
+  const grade = judgeGrade(result.correct);
+  const gradeInfo = GRADE_THRESHOLDS[grade];
+
+  // ── grade badge スプリング演出 ──
+  const animationEnabled = useAnimationEnabled();
+  const gradeScale = useSharedValue(animationEnabled ? 0.4 : 1);
+  const gradeRotate = useSharedValue(animationEnabled ? -12 : 0);
+
+  useEffect(() => {
+    if (!animationEnabled) {
+      gradeScale.value = 1;
+      gradeRotate.value = 0;
+      return;
+    }
+    gradeScale.value = withSequence(
+      withTiming(0.4, { duration: 0 }),
+      withSpring(1, { stiffness: 180, damping: 9, mass: 0.7 }),
+    );
+    gradeRotate.value = withSequence(
+      withTiming(-12, { duration: 0 }),
+      withSpring(0, { stiffness: 160, damping: 12 }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current?.id, animationEnabled]);
+
+  const gradeBadgeAnimStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: gradeScale.value },
+      { rotate: `${gradeRotate.value}deg` },
+    ],
+  }));
+
+  // 弱点 top 3 サブカテゴリを抽出
+  // この模試で出題された問題を、サブカテゴリ単位に正答率で集計
+  const weakSubcats = useMemo(() => {
+    type Bucket = { cat: Category; key: string; label: string; icon: string; total: number; correct: number };
+    const buckets = new Map<string, Bucket>();
+    for (const q of questions) {
+      const subs = SUBCATEGORIES[q.category] ?? [];
+      const sub = subs.find((sc) => q.tags.some((t) => sc.matchTags.includes(t)));
+      if (!sub) continue;
+      const key = `${q.category}:${sub.key}`;
+      let b = buckets.get(key);
+      if (!b) {
+        b = { cat: q.category, key: sub.key, label: sub.label, icon: sub.icon, total: 0, correct: 0 };
+        buckets.set(key, b);
+      }
+      b.total += 1;
+      if (current.answers[q.id] === q.correctIndex) b.correct += 1;
+    }
+    return Array.from(buckets.values())
+      .filter((b) => b.total > 0)
+      .map((b) => ({ ...b, accuracy: b.correct / b.total }))
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 3);
+  }, [questions, current]);
 
   return (
     <SafeAreaView style={s.safe}>
       <Stack.Screen options={{ title: '試験結果', headerBackTitle: '戻る' }} />
+      <WebBackButton />
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={[s.hero, result.passed ? s.heroPass : s.heroFail, Shadow.lg]}>
           <Text style={s.heroLabel}>{result.passed ? '🎉 合格ライン突破' : '📚 もう一歩'}</Text>
-          <Text style={s.heroScore}>
-            {result.correct}
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center' }}>
+            <AnimatedNumber
+              value={result.correct}
+              style={s.heroScore as any}
+              duration={700}
+            />
             <Text style={s.heroTotal}> / {result.total}</Text>
-          </Text>
-          <Text style={s.heroBorder}>合格目安: 35点</Text>
+          </View>
+          <Text style={s.heroBorder}>合格ライン: {PASS_LINE}点</Text>
+          <Animated.View style={[s.gradeBadge, gradeBadgeAnimStyle]}>
+            <Text style={s.gradeLabel}>{gradeInfo.label}</Text>
+          </Animated.View>
+          <Text style={s.gradeDesc}>{gradeInfo.description}</Text>
         </View>
 
         <View style={[s.card, Shadow.sm]}>
@@ -76,6 +155,32 @@ export default function ExamResultScreen() {
           })}
         </View>
 
+        {weakSubcats.length > 0 && (
+          <View style={[s.card, Shadow.sm]}>
+            <Text style={s.cardTitle}>📉 弱点サブカテゴリ Top {weakSubcats.length}</Text>
+            {weakSubcats.map((b, i) => (
+              <StaggeredFadeIn key={`${b.cat}-${b.key}`} index={i} style={s.weakRow}>
+                <Text style={s.weakRank}>#{i + 1}</Text>
+                <Text style={s.weakIcon}>{b.icon}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.weakLabel}>{b.label}</Text>
+                  <Text style={s.weakSub}>
+                    {CATEGORY_LABELS[b.cat]} ・ {b.correct}/{b.total}問 ({Math.round(b.accuracy * 100)}%)
+                  </Text>
+                </View>
+              </StaggeredFadeIn>
+            ))}
+            <PressableScale
+              style={s.nextStudyBtn}
+              onPress={() => router.push('/(tabs)/study')}
+              accessibilityRole="button"
+              accessibilityLabel="弱点を集中学習する"
+            >
+              <Text style={s.nextStudyText}>→ 弱点を集中学習する</Text>
+            </PressableScale>
+          </View>
+        )}
+
         <View style={[s.card, Shadow.sm]}>
           <Text style={s.cardTitle}>問題別 結果</Text>
           {questions.map((q, i) => {
@@ -90,7 +195,7 @@ export default function ExamResultScreen() {
                 <Text style={[s.qIdx, correct ? s.qOk : s.qNg]}>
                   {correct ? '○' : '✗'} {i + 1}
                 </Text>
-                <Text style={s.qText} numberOfLines={2}>
+                <Text style={s.qText} numberOfLines={3}>
                   {q.text}
                 </Text>
               </Pressable>
@@ -164,5 +269,40 @@ function makeStyles(C: ThemeColors) {
       marginTop: 12,
     },
     primaryBtnText: { color: C.white, fontSize: 15, fontWeight: '800' },
+
+    // B3: 合格判定バッジ
+    gradeBadge: {
+      paddingHorizontal: 18,
+      paddingVertical: 10,
+      borderRadius: 24,
+      backgroundColor: C.successSurface,
+      marginTop: 12,
+      marginBottom: 8,
+    },
+    gradeLabel: { fontSize: 16, fontWeight: '900', color: C.success, textAlign: 'center', letterSpacing: 0.5 },
+    gradeDesc: { fontSize: 13, color: C.textSecondary, textAlign: 'center', marginTop: 4 },
+
+    // B3: 弱点 Top N
+    weakRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: C.borderLight,
+    },
+    weakRank: { fontSize: 14, fontWeight: '800', color: C.error, width: 28 },
+    weakIcon: { fontSize: 22, marginRight: 10 },
+    weakLabel: { fontSize: 15, fontWeight: '700', color: C.text },
+    weakSub: { fontSize: 12, color: C.textSecondary, marginTop: 2 },
+
+    // B3: 次の学習 CTA
+    nextStudyBtn: {
+      backgroundColor: C.accent,
+      borderRadius: 14,
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 12,
+    },
+    nextStudyText: { color: C.white, fontSize: 15, fontWeight: '800' },
   });
 }

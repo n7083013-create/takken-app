@@ -15,6 +15,7 @@ import { useProgressStore } from '../store/useProgressStore';
 import { CATEGORY_LABELS, CATEGORY_COLORS, type Category, type ConfidenceLevel } from '../types';
 import { getQuestionById } from '../data';
 import { useAchievementChecker } from '../hooks/useAchievementChecker';
+import { WebBackButton } from '../components/WebBackButton';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const QUESTION_COUNT = 5;
@@ -127,7 +128,8 @@ export default function PreSleepReviewScreen() {
   if (questionIds.length === 0) {
     return (
       <SafeAreaView style={s.safe}>
-        <Stack.Screen options={{ title: '就寝前復習', headerBackTitle: '戻る' }} />
+        <Stack.Screen options={{ headerShown: false }} />
+        <WebBackButton />
         <View style={s.emptyContainer}>
           <Text style={s.emptyEmoji}>🌙</Text>
           <Text style={s.emptyTitle}>復習する問題がありません</Text>
@@ -168,7 +170,7 @@ export default function PreSleepReviewScreen() {
                 return (
                   <View key={a.questionId} style={s.lowConfRow}>
                     <View style={[s.lowConfDot, { backgroundColor: CATEGORY_COLORS[a.category] }]} />
-                    <Text style={s.lowConfText} numberOfLines={1}>
+                    <Text style={s.lowConfText} numberOfLines={2}>
                       {q ? q.text : a.questionId}
                     </Text>
                     <Text style={s.lowConfResult}>{a.isCorrect ? '○' : '✗'}</Text>
@@ -201,7 +203,15 @@ export default function PreSleepReviewScreen() {
       <ScrollView ref={scrollRef} contentContainerStyle={s.scroll}>
         {/* Header */}
         <View style={s.header}>
-          <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="戻る">
+          <Pressable
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace('/(tabs)');
+            }}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="戻る"
+          >
             <Text style={s.backArrow}>←</Text>
           </Pressable>
           <View style={s.headerCenter}>
@@ -241,6 +251,18 @@ export default function PreSleepReviewScreen() {
         <View style={[s.questionBox, Shadow.sm]}>
           <Text style={s.questionText}>{q.text}</Text>
         </View>
+
+        {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ 本文 (statements) を表示 */}
+        {q.statements && q.statements.length > 0 && (
+          <View style={[s.statementsBox, Shadow.sm]}>
+            {q.statements.map((stmt, si) => (
+              <View key={si} style={s.statementRow}>
+                <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
+                <Text style={s.statementText}>{stmt}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* Choices */}
         <View style={s.choiceList}>
@@ -474,6 +496,33 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '600',
       color: C.text,
       lineHeight: LineHeight.callout,
+    },
+
+    // [Bugfix] Statements (個数問題・組み合わせ問題の ア〜エ 本文)
+    statementsBox: {
+      backgroundColor: C.background,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      marginBottom: Spacing.xl,
+      gap: Spacing.sm,
+      borderLeftWidth: 4,
+      borderLeftColor: C.accent,
+    },
+    statementRow: {
+      flexDirection: 'row',
+      paddingVertical: 4,
+    },
+    statementLabel: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.primary,
+      width: 28,
+    },
+    statementText: {
+      flex: 1,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.subhead,
     },
 
     // ─── Choices ───

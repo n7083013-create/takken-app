@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useLocalSearchParams } from 'expo-router';
 import { FontSize, LineHeight, Spacing, BorderRadius, Shadow } from '../constants/theme';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import { useProgressStore } from '../store/useProgressStore';
@@ -22,6 +22,10 @@ import {
 } from '../types';
 import { ALL_QUESTIONS, getQuestionById } from '../data';
 import { useAchievementChecker } from '../hooks/useAchievementChecker';
+import { useStrikethrough } from '../hooks/useStrikethrough';
+import { hapticLight } from '../services/haptics';
+import { StrikeHint } from '../components/StrikeHint';
+import { WebBackButton } from '../components/WebBackButton';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const DRILL_COUNT = 10;
@@ -58,6 +62,8 @@ interface AnswerRecord {
 
 export default function WeakDrillScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ category?: string }>();
+  const filterCategory = params.category as Category | undefined;
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
   const recordAnswer = useProgressStore((st) => st.recordAnswer);
@@ -76,7 +82,7 @@ export default function WeakDrillScreen() {
   const scrollRef = useRef<ScrollView>(null);
 
   const loadQuestions = useCallback(() => {
-    const ids = useProgressStore.getState().getWeakAreaDrill(DRILL_COUNT);
+    const ids = useProgressStore.getState().getWeakAreaDrill(DRILL_COUNT, filterCategory);
     setQuestionIds(ids);
     setCurrentIndex(0);
     setSelected(null);
@@ -92,7 +98,7 @@ export default function WeakDrillScreen() {
         setShuffledMap(isSpecial ? [0, 1, 2, 3] : shuffleIndices(q.choices.length));
       }
     }
-  }, []);
+  }, [filterCategory]);
 
   useEffect(() => {
     loadQuestions();
@@ -101,6 +107,9 @@ export default function WeakDrillScreen() {
   const currentQuestion = questionIds.length > 0 && currentIndex < questionIds.length
     ? getQuestionById(questionIds[currentIndex])
     : undefined;
+
+  // 消去法: 選択肢打ち消し線
+  const { toggleStrike, isStruck } = useStrikethrough(currentQuestion?.id);
 
   const handleSelect = useCallback((origIdx: number) => {
     if (answered || !currentQuestion) return;
@@ -156,7 +165,8 @@ export default function WeakDrillScreen() {
   if (questionIds.length === 0 && !showSummary) {
     return (
       <SafeAreaView style={s.safe}>
-        <Stack.Screen options={{ title: '弱点ドリル', headerBackTitle: '戻る' }} />
+        <Stack.Screen options={{ headerShown: false }} />
+        <WebBackButton />
         <View style={s.emptyContainer}>
           <Text style={s.emptyEmoji}>💪</Text>
           <Text style={s.emptyTitle}>弱点が見つかりません</Text>
@@ -263,7 +273,15 @@ export default function WeakDrillScreen() {
       <ScrollView ref={scrollRef} contentContainerStyle={s.scroll}>
         {/* Header */}
         <View style={s.header}>
-          <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="戻る">
+          <Pressable
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace('/(tabs)');
+            }}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="戻る"
+          >
             <Text style={s.headerBackArrow}>←</Text>
           </Pressable>
           <Text style={s.headerTitle}>💪 弱点ドリル</Text>
@@ -306,6 +324,21 @@ export default function WeakDrillScreen() {
           <Text style={s.questionText}>{q.text}</Text>
         </View>
 
+        {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ 本文 (statements) を表示 */}
+        {q.statements && q.statements.length > 0 && (
+          <View style={[s.statementsBox, Shadow.sm]}>
+            {q.statements.map((stmt, si) => (
+              <View key={si} style={s.statementRow}>
+                <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
+                <Text style={s.statementText}>{stmt}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* 消去法ヒント（未回答時のみ） */}
+        {!answered && <StrikeHint />}
+
         {/* Choices */}
         <View style={s.choiceList}>
           {shuffledMap.map((origIdx, displayIdx) => {
@@ -327,23 +360,33 @@ export default function WeakDrillScreen() {
                 : colors.borderLight;
             const labelColor = isCorrectAnswer || isWrongAnswer ? colors.white : colors.textSecondary;
 
+            const struck = !answered && isStruck(origIdx);
+
             return (
               <Pressable
                 key={origIdx}
-                style={[s.choiceCard, cardExtra, Shadow.sm]}
+                style={[s.choiceCard, cardExtra, Shadow.sm, struck && s.choiceCardStruck]}
                 onPress={() => handleSelect(origIdx)}
+                onLongPress={() => {
+                  if (answered) return;
+                  hapticLight();
+                  toggleStrike(origIdx);
+                }}
+                delayLongPress={350}
                 disabled={answered}
                 accessibilityRole="button"
-                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}`}
+                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}${struck ? '（消去済み）' : ''}`}
+                accessibilityHint={!answered ? '長押しで打ち消し線の切り替え' : undefined}
               >
                 <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
                   <Text style={[s.choiceLabelText, { color: labelColor }]}>
                     {LABELS[displayIdx]}
                   </Text>
                 </View>
-                <Text style={s.choiceText}>{choice}</Text>
+                <Text style={[s.choiceText, struck && s.choiceTextStruck]}>{choice}</Text>
                 {answered && isCorrectChoice && <Text style={s.checkMark}>✓</Text>}
                 {isWrongAnswer && <Text style={s.crossMark}>✗</Text>}
+                {struck && !answered && <Text style={s.strikeMark}>✕</Text>}
               </Pressable>
             );
           })}
@@ -526,6 +569,33 @@ function makeStyles(C: ThemeColors) {
       lineHeight: LineHeight.callout,
     },
 
+    // [Bugfix] Statements (個数問題・組み合わせ問題の ア〜エ 本文)
+    statementsBox: {
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      marginBottom: Spacing.xl,
+      gap: Spacing.sm,
+      borderLeftWidth: 4,
+      borderLeftColor: C.accent,
+    },
+    statementRow: {
+      flexDirection: 'row',
+      paddingVertical: 4,
+    },
+    statementLabel: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.primary,
+      width: 28,
+    },
+    statementText: {
+      flex: 1,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.subhead,
+    },
+
     // ─── Choices ───
     choiceList: { gap: 4 },
     choiceCard: {
@@ -554,6 +624,21 @@ function makeStyles(C: ThemeColors) {
     },
     checkMark: { fontSize: 20, color: C.success, fontWeight: '800', marginLeft: 8 },
     crossMark: { fontSize: 20, color: C.error, fontWeight: '800', marginLeft: 8 },
+    // 消去法
+    choiceCardStruck: {
+      backgroundColor: C.background,
+      opacity: 0.55,
+    },
+    choiceTextStruck: {
+      textDecorationLine: 'line-through',
+      color: C.textTertiary,
+    },
+    strikeMark: {
+      fontSize: 16,
+      color: C.textTertiary,
+      fontWeight: '800',
+      marginLeft: 8,
+    },
 
     // ─── Explanation ───
     explainCard: {
