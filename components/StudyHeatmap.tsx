@@ -3,10 +3,83 @@
 // ローリング表示で継続感を演出。目標ライン・ベストデイ・平均表示付き。
 // ============================================================
 
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  Easing,
+  cancelAnimation,
+} from 'react-native-reanimated';
 import { FontSize, Spacing, BorderRadius } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
+import { useAnimationEnabled } from '../hooks/useReducedMotion';
+
+/** 単一バーのアニメ用コンポーネント */
+function AnimatedBar({
+  targetHeight,
+  isToday,
+  baseStyle,
+  todayBorderColor,
+}: {
+  targetHeight: number;
+  isToday: boolean;
+  baseStyle: ViewStyle;
+  todayBorderColor: string;
+}) {
+  const animationEnabled = useAnimationEnabled();
+  const height = useSharedValue(animationEnabled ? 0 : targetHeight);
+  const todayPulse = useSharedValue(1);
+
+  useEffect(() => {
+    if (!animationEnabled) {
+      height.value = targetHeight;
+      return;
+    }
+    height.value = withTiming(targetHeight, {
+      duration: 300,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [targetHeight, animationEnabled, height]);
+
+  useEffect(() => {
+    if (!animationEnabled || !isToday) {
+      cancelAnimation(todayPulse);
+      todayPulse.value = 1;
+      return;
+    }
+    todayPulse.value = withRepeat(
+      withSequence(
+        withTiming(1.06, { duration: 900, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1, { duration: 900, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      false,
+    );
+    return () => cancelAnimation(todayPulse);
+  }, [isToday, animationEnabled, todayPulse]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: height.value,
+    transform: [{ scaleY: todayPulse.value }],
+  }));
+
+  return (
+    <Animated.View
+      style={[
+        baseStyle,
+        animatedStyle,
+        isToday && {
+          borderWidth: 2,
+          borderColor: todayBorderColor,
+        },
+      ]}
+    />
+  );
+}
 
 interface StudyHeatmapProps {
   dailyLog: Record<string, number>;
@@ -108,7 +181,7 @@ export function StudyHeatmap({ dailyLog, streak = 0, dailyGoal = 20 }: StudyHeat
               <View key={bar.label} style={s.barColumn}>
                 {/* Count label above bar */}
                 {bar.count > 0 && (
-                  <Text style={[s.barCount, isBest && s.barCountBest]}>
+                  <Text style={[s.barCount, isBest && s.barCountBest]} numberOfLines={1}>
                     {bar.count}
                   </Text>
                 )}
@@ -118,26 +191,26 @@ export function StudyHeatmap({ dailyLog, streak = 0, dailyGoal = 20 }: StudyHeat
                 )}
                 {/* Bar */}
                 <View style={s.barTrack}>
-                  <View
-                    style={[
-                      s.barFill,
-                      {
-                        height: barHeight,
-                        backgroundColor: metGoal
-                          ? colors.primary
-                          : bar.count > 0
-                            ? colors.primary + 'AA'
-                            : colors.borderLight,
-                      },
-                      bar.isToday && s.barToday,
-                    ]}
+                  <AnimatedBar
+                    targetHeight={barHeight}
+                    isToday={bar.isToday}
+                    todayBorderColor={colors.primary}
+                    baseStyle={{
+                      width: '100%',
+                      borderRadius: BorderRadius.sm,
+                      backgroundColor: metGoal
+                        ? colors.primary
+                        : bar.count > 0
+                          ? colors.primary + 'AA'
+                          : colors.borderLight,
+                    }}
                   />
                 </View>
                 {/* Day label */}
-                <Text style={[s.dayLabel, bar.isToday && s.dayLabelToday]}>
+                <Text style={[s.dayLabel, bar.isToday && s.dayLabelToday]} numberOfLines={1}>
                   {bar.isToday ? '今日' : bar.dayName}
                 </Text>
-                <Text style={[s.dateLabel, bar.isToday && s.dateLabelToday]}>
+                <Text style={[s.dateLabel, bar.isToday && s.dateLabelToday]} numberOfLines={1}>
                   {bar.label}
                 </Text>
               </View>
@@ -238,13 +311,16 @@ function makeStyles(C: ThemeColors) {
     barColumn: {
       flex: 1,
       alignItems: 'center',
-      maxWidth: 48,
+      // [Bugfix] 横方向の余裕を確保: 曜日「今日」+日付「12/31」など長めのテキストが
+      // 隣の列と接近して被って見えるのを防止 (48 → 56)
+      maxWidth: 56,
     },
     barCount: {
       fontSize: 11,
       fontWeight: '700',
       color: C.textSecondary,
-      marginBottom: 2,
+      // [Bugfix] 棒と数字の距離を確保 (2px → 4px) 数字が棒に密着して被って見える問題を解消
+      marginBottom: 4,
     },
     barCountBest: {
       color: C.primary,
@@ -274,6 +350,8 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '600',
       color: C.textSecondary,
       marginTop: 6,
+      // [Bugfix] 「今日」「日」など長さの違うラベルが折り返さないように
+      lineHeight: 14,
     },
     dayLabelToday: {
       color: C.primary,
@@ -282,7 +360,9 @@ function makeStyles(C: ThemeColors) {
     dateLabel: {
       fontSize: 9,
       color: C.textTertiary,
-      marginTop: 1,
+      // [Bugfix] 曜日ラベルと日付ラベルが密着して被って見える問題を解消 (1px → 3px)
+      marginTop: 3,
+      lineHeight: 12,
     },
     dateLabelToday: {
       color: C.primary,
