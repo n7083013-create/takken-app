@@ -15,8 +15,8 @@ import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } fr
 import { CATEGORIES, EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
-import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, AI_QUERY_LIMITS } from '../../types';
-import { getCategoryStats } from '../../data';
+import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, AI_QUERY_LIMITS, AI_DAILY_LIMITS, TRIAL_AI_DAILY_LIMIT } from '../../types';
+import { getCategoryStats, ALL_QUESTIONS } from '../../data';
 import type { HabitStack } from '../../types';
 import { useMemo, useState, useCallback } from 'react';
 import { useProgressStore } from '../../store/useProgressStore';
@@ -24,13 +24,15 @@ import { useSettingsStore } from '../../store/useSettingsStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievementStore';
 import { useExamStore } from '../../store/useExamStore';
-import { APP_VERSION } from '../../constants/config';
+import { APP_VERSION, API_BASE_URL } from '../../constants/config';
 import { HABIT_PRESETS } from '../../constants/habitPresets';
 import HabitStackingSetup from '../../components/HabitStackingSetup';
+import { WeeklyEmailToggle } from '../../components/WeeklyEmailToggle';
 import {
   requestNotificationPermission,
   scheduleDailyReminder,
   cancelDailyReminder,
+  scheduleHabitNotifications,
 } from '../../services/notifications';
 
 function SettingsSection() {
@@ -156,6 +158,78 @@ function SettingsSection() {
           </View>
         </>
       )}
+
+      {/* ── 学習中の演出 ── */}
+      <View style={sset.divider} />
+      <Text style={sset.sectionLabel}>🎯 学習中の演出</Text>
+      <Text style={sset.labelDesc}>
+        集中しやすい設定に調整できます
+      </Text>
+
+      {/* バイブレーション */}
+      <View style={sset.toggleRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={sset.toggleLabel}>📳 バイブレーション</Text>
+          <Text style={sset.toggleDesc}>正解時の軽い振動</Text>
+        </View>
+        <Pressable
+          style={[sset.toggle, settings.vibrationEnabled && sset.toggleOn]}
+          onPress={() => updateSettings({ vibrationEnabled: !settings.vibrationEnabled })}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: !!settings.vibrationEnabled }}
+          accessibilityLabel="バイブレーション"
+        >
+          <View style={[sset.toggleKnob, settings.vibrationEnabled && sset.toggleKnobOn]} />
+        </Pressable>
+      </View>
+
+      {/* 効果音 */}
+      <View style={sset.toggleRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={sset.toggleLabel}>🔊 効果音</Text>
+          <Text style={sset.toggleDesc}>正解・不正解時の音（デフォOFF）</Text>
+        </View>
+        <Pressable
+          style={[sset.toggle, settings.soundEnabled && sset.toggleOn]}
+          onPress={() => updateSettings({ soundEnabled: !settings.soundEnabled })}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: !!settings.soundEnabled }}
+          accessibilityLabel="効果音"
+        >
+          <View style={[sset.toggleKnob, settings.soundEnabled && sset.toggleKnobOn]} />
+        </Pressable>
+      </View>
+
+      {/* アニメーションレベル */}
+      <Text style={sset.label}>🎬 アニメーション</Text>
+      <Text style={sset.labelDesc}>
+        コンボや祝福演出のレベル
+      </Text>
+      <View style={sset.segRow}>
+        {[
+          { key: 'full', label: '通常', icon: '🎉' },
+          { key: 'subtle', label: '控えめ', icon: '✨' },
+          { key: 'off', label: 'OFF', icon: '🔇' },
+        ].map((m) => (
+          <Pressable
+            key={m.key}
+            style={[sset.segBtn, (settings.animationLevel ?? 'full') === m.key && sset.segBtnActive]}
+            onPress={() => updateSettings({ animationLevel: m.key as 'full' | 'subtle' | 'off' })}
+            accessibilityRole="button"
+            accessibilityState={{ selected: (settings.animationLevel ?? 'full') === m.key }}
+          >
+            <Text style={sset.segIcon}>{m.icon}</Text>
+            <Text
+              style={[
+                sset.segText,
+                (settings.animationLevel ?? 'full') === m.key && sset.segTextActive,
+              ]}
+            >
+              {m.label}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
     </View>
   );
 }
@@ -182,6 +256,28 @@ function makeSettingsStyles(C: ThemeColors) {
       marginTop: 14,
       marginBottom: 8,
     },
+    labelDesc: {
+      fontSize: FontSize.caption2,
+      color: C.textTertiary,
+      marginBottom: 8,
+    },
+    sectionLabel: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.text,
+      marginTop: 8,
+      marginBottom: 4,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: C.borderLight,
+      marginVertical: Spacing.lg,
+    },
+    toggleDesc: {
+      fontSize: FontSize.caption2,
+      color: C.textTertiary,
+      marginTop: 2,
+    },
     segRow: { flexDirection: 'row', gap: 8 },
     segBtn: {
       flex: 1,
@@ -201,7 +297,12 @@ function makeSettingsStyles(C: ThemeColors) {
       fontWeight: '600',
     },
     segTextActive: { color: C.white },
-    toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    toggleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 10,
+    },
     toggleLabel: { fontSize: FontSize.footnote, color: C.textSecondary },
     toggle: {
       width: 50,
@@ -241,21 +342,34 @@ function HabitStackingSection() {
   const updateSettings = useSettingsStore((s) => s.updateSettings);
 
   // Initialize from store or fall back to presets
+  // プリセット + カスタム習慣の両方を保持
   const currentHabits: HabitStack[] = useMemo(() => {
     if (settings.habitStacks && settings.habitStacks.length > 0) {
       // Merge stored habits with presets (in case new presets were added)
-      return HABIT_PRESETS.map((preset) => {
+      const merged = HABIT_PRESETS.map((preset) => {
         const stored = settings.habitStacks?.find((h) => h.id === preset.id);
         return stored ?? preset;
       });
+      // カスタム習慣も追加（プリセットIDに一致しないもの）
+      const presetIds = new Set(HABIT_PRESETS.map((p) => p.id));
+      const customHabits = settings.habitStacks.filter((h) => !presetIds.has(h.id));
+      return [...merged, ...customHabits];
     }
     return HABIT_PRESETS;
   }, [settings.habitStacks]);
 
   const handleUpdate = useCallback(
-    (newHabits: HabitStack[]) => {
-      const enabledHabits = newHabits.filter((h) => h.enabled);
-      updateSettings({ habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined });
+    async (newHabits: HabitStack[]) => {
+      // 全習慣を保存（テキスト編集・カスタム習慣を保持するため）
+      updateSettings({ habitStacks: newHabits });
+      // 通知を再スケジュール
+      const hasNotify = newHabits.some((h) => h.enabled && h.notifyAt);
+      if (hasNotify) {
+        const granted = await requestNotificationPermission();
+        if (granted) {
+          await scheduleHabitNotifications(newHabits);
+        }
+      }
     },
     [updateSettings],
   );
@@ -307,6 +421,7 @@ function SubscriptionSection() {
   const verifySubscription = useSettingsStore((s) => s.verifySubscription);
   const session = useAuthStore((s) => s.session);
   const [restoring, setRestoring] = useState(false);
+  const [canceling, setCanceling] = useState(false);
 
   const handleRestore = useCallback(async () => {
     if (!session?.access_token) {
@@ -329,14 +444,58 @@ function SubscriptionSection() {
     }
   }, [session, verifySubscription]);
 
+  /** ワンタップ解約処理（Web/Android） */
+  const handleCancelSubscription = useCallback(async () => {
+    if (!session?.access_token) {
+      infoAlert('ログインが必要です', '解約するにはログインしてください。');
+      return;
+    }
+
+    const confirmed = await confirmAlert(
+      'サブスクリプションを解約しますか？',
+      '✓ 次回更新日まで引き続き全機能をご利用いただけます\n✓ 違約金・解約手数料は一切かかりません\n✓ 学習データは保持されます\n\n解約を完了しますか？',
+      { okText: '解約する', cancelText: 'やめる', destructive: true },
+    );
+    if (!confirmed) return;
+
+    setCanceling(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/paypal/cancel-subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        await infoAlert(
+          '解約に失敗しました',
+          data.error || '時間をおいて再度お試しください。問題が続く場合はお問い合わせください。',
+        );
+        return;
+      }
+      // 解約完了 → サーバーから最新状態を取得
+      await verifySubscription(session.access_token);
+      await infoAlert(
+        '解約が完了しました',
+        data.message || '次回更新日まで引き続きご利用いただけます。ご利用ありがとうございました。',
+      );
+    } catch {
+      await infoAlert('エラー', '通信エラーが発生しました。時間をおいて再度お試しください。');
+    } finally {
+      setCanceling(false);
+    }
+  }, [session, verifySubscription]);
+
   const handleManageSubscription = useCallback(() => {
     if (Platform.OS === 'ios') {
       Linking.openURL('https://apps.apple.com/account/subscriptions');
     } else {
-      // Web / Android: show info
+      // Web / Android: 直接解約ボタンを使ってもらう
       infoAlert(
         'サブスクリプション管理',
-        'サブスクリプションの解約・変更はお問い合わせください。\n\nメール: taira@2023kakeru.com\n\n次回更新日の24時間前までに解約すれば、それ以降の課金は発生しません。',
+        '下の「解約する」ボタンから、いつでも解約手続きができます。\n\n次回更新日の24時間前までに解約すれば、それ以降の課金は発生しません。',
       );
     }
   }, []);
@@ -375,13 +534,45 @@ function SubscriptionSection() {
             <Text style={ss.manageArrow}>{'\u203A'}</Text>
           </Pressable>
 
+          {/* Web/Android: 直接解約ボタン */}
+          {Platform.OS !== 'ios' && subscription.subscriptionStatus !== 'canceled' && (
+            <Pressable
+              style={[ss.cancelBtn, canceling && ss.cancelBtnDisabled]}
+              onPress={handleCancelSubscription}
+              disabled={canceling}
+              accessibilityRole="button"
+              accessibilityLabel="サブスクリプションを解約"
+            >
+              {canceling ? (
+                <ActivityIndicator size="small" color={colors.error} />
+              ) : (
+                <Text style={ss.cancelBtnText}>解約する</Text>
+              )}
+            </Pressable>
+          )}
+
+          {/* Web/Android: 解約予定の表示 */}
+          {Platform.OS !== 'ios' && subscription.subscriptionStatus === 'canceled' && (
+            <View style={ss.canceledInfo}>
+              <Text style={ss.canceledInfoIcon}>✓</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={ss.canceledInfoTitle}>解約済み</Text>
+                <Text style={ss.canceledInfoText}>
+                  {subscription.expiresAt
+                    ? `${new Date(subscription.expiresAt).toLocaleDateString('ja-JP')} まで引き続きご利用いただけます`
+                    : '次回更新日まで引き続きご利用いただけます'}
+                </Text>
+              </View>
+            </View>
+          )}
+
           {/* Cancellation instructions */}
           <View style={ss.cancelInfo}>
             <Text style={ss.cancelInfoTitle}>解約について</Text>
             <Text style={ss.cancelInfoText}>
               {Platform.OS === 'ios'
                 ? '上の「サブスクリプションを管理」から Apple の設定画面で解約できます。次回更新日の24時間前までに手続きしてください。'
-                : '次回更新日の24時間前までに、こちらの管理ボタンまたはメール（taira@2023kakeru.com）からお手続きください。'}
+                : 'いつでも「解約する」ボタンからワンタップで解約できます。次回更新日の24時間前までに手続きすれば、それ以降の課金は発生しません。'}
             </Text>
             <Text style={ss.cancelInfoSub}>
               解約後も、当月の残り期間は引き続きご利用いただけます。
@@ -470,6 +661,50 @@ function makeSubStyles(C: ThemeColors) {
       fontSize: 20,
       color: C.textTertiary,
     },
+    // ── Web/Android ワンタップ解約ボタン ──
+    cancelBtn: {
+      marginTop: 8,
+      marginBottom: 8,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      alignItems: 'center',
+      borderRadius: BorderRadius.md,
+      borderWidth: 1.5,
+      borderColor: C.error,
+      backgroundColor: C.card,
+    },
+    cancelBtnDisabled: { opacity: 0.5 },
+    cancelBtnText: {
+      fontSize: FontSize.subhead,
+      color: C.error,
+      fontWeight: '700',
+    },
+    // 解約予定表示
+    canceledInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+      marginBottom: 8,
+      padding: 12,
+      borderRadius: BorderRadius.md,
+      backgroundColor: C.primarySurface,
+      gap: 10,
+    },
+    canceledInfoIcon: {
+      fontSize: 20,
+      color: C.primary,
+      fontWeight: '800',
+    },
+    canceledInfoTitle: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.primaryDark,
+    },
+    canceledInfoText: {
+      fontSize: FontSize.caption2,
+      color: C.textSecondary,
+      marginTop: 2,
+    },
     cancelInfo: {
       paddingVertical: 12,
       borderBottomWidth: 1,
@@ -511,7 +746,6 @@ function AccountSection() {
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const deleteAccount = useAuthStore((s) => s.deleteAccount);
-  const syncWithCloud = useProgressStore((s) => s.syncWithCloud);
 
   const handleSignOut = () => {
     confirmAlert('ログアウト', 'ログアウトしますか？', () => signOut());
@@ -525,12 +759,6 @@ function AccountSection() {
     });
   };
 
-  const handleSync = async () => {
-    if (!user) return;
-    await syncWithCloud(user.id);
-    infoAlert('同期完了', 'クラウドと同期しました');
-  };
-
   return (
     <View style={acct.box}>
       <Text style={acct.title}>アカウント</Text>
@@ -540,9 +768,7 @@ function AccountSection() {
             <Text style={acct.label}>メール</Text>
             <Text style={acct.value} numberOfLines={1}>{user.email}</Text>
           </View>
-          <Pressable style={acct.rowBtn} onPress={handleSync}>
-            <Text style={acct.rowBtnText}>☁️ クラウド同期</Text>
-          </Pressable>
+          <WeeklyEmailToggle />
           <Pressable style={acct.rowBtn} onPress={handleSignOut}>
             <Text style={acct.rowBtnText}>ログアウト</Text>
           </Pressable>
@@ -610,13 +836,38 @@ export default function ProgressScreen() {
   const subscription = useSettingsStore((s) => s.subscription);
   const achievementUnlocked = useAchievementStore((s) => s.unlocked);
   const examHistory = useExamStore((s) => s.examHistory);
+  const authUser = useAuthStore((s) => s.user);
 
-  const rate = stats.totalQuestions > 0
-    ? Math.round((stats.totalCorrect / stats.totalQuestions) * 100) : 0;
+  // 管理者判定（クライアント側はあくまで UI 表示用。サーバ側 ADMIN_EMAILS が真の認可）
+  const isAdmin = useMemo(() => {
+    const list = (process.env.EXPO_PUBLIC_ADMIN_EMAILS || '')
+      .split(',')
+      .map((e: string) => e.trim().toLowerCase())
+      .filter(Boolean);
+    const email = (authUser?.email || '').toLowerCase().trim();
+    return !!email && list.includes(email);
+  }, [authUser?.email]);
+
+  // [UX改善 v2] 達成率 = 3回連続正解の問題数 / 全問題数
+  // 単なる正解数ではなく「習得」(連続正解で証明)を要求してまぐれ正解を排除
+  const TOTAL_Q = ALL_QUESTIONS.length;
+  const masteredCount = useProgressStore((st) => st.getMasteredCount)();
+  const rate = TOTAL_Q > 0
+    ? Math.round((Math.min(masteredCount, TOTAL_Q) / TOTAL_Q) * 100) : 0;
   const bookmarks = getBookmarkedQuestions().length;
   const weak = getWeakQuestions().length;
-  const aiLimit = AI_QUERY_LIMITS[subscription.plan];
-  const aiUsed = subscription.aiQueriesUsed;
+  // [Bugfix] 旧: 月間累計 (subscription.aiQueriesUsed) を表示していたが、
+  // ローカル加算でずれが蓄積し「使ってないのに100回超え」と表示される問題があった。
+  // 新: サーバー認定の日次残数から逆算した「今日の使用数 / 今日の上限」を表示。
+  // - サーバー側は日次のみ管理 (profiles.ai_used_today)、月間累計は信頼性なし
+  // - 今日の上限を超えるとサーバーが弾く設計なので、ユーザーに最も実用的な値。
+  const getAIDailyRemaining = useSettingsStore((s) => s.getAIDailyRemaining);
+  const isTrialActive = useSettingsStore((s) => s.isTrialActive());
+  const aiDailyRemaining = getAIDailyRemaining();
+  const aiDailyLimit = isTrialActive
+    ? TRIAL_AI_DAILY_LIMIT
+    : AI_DAILY_LIMITS[subscription.plan];
+  const aiUsedToday = Math.max(0, aiDailyLimit - aiDailyRemaining);
 
   const examPrediction = useExamPrediction();
 
@@ -639,7 +890,7 @@ export default function ProgressScreen() {
             <View style={s.heroDivider} />
             <View style={s.heroItem}>
               <Text style={[s.heroValue, { color: colors.primary }]}>{rate}%</Text>
-              <Text style={s.heroLabel}>正答率</Text>
+              <Text style={s.heroLabel}>達成率</Text>
             </View>
             <View style={s.heroDivider} />
             <View style={s.heroItem}>
@@ -669,9 +920,9 @@ export default function ProgressScreen() {
           <View style={[s.metricCard, Shadow.sm]}>
             <Text style={s.metricIcon}>🤖</Text>
             <Text style={s.metricValue}>
-              {aiLimit === Infinity ? '∞' : `${aiUsed}/${aiLimit}`}
+              {`${aiUsedToday}/${aiDailyLimit}`}
             </Text>
-            <Text style={s.metricLabel}>AI解説</Text>
+            <Text style={s.metricLabel}>AI解説 (今日)</Text>
           </View>
         </View>
 
@@ -885,9 +1136,28 @@ export default function ProgressScreen() {
         {/* アカウント */}
         <AccountSection />
 
-        {/* 法的情報 */}
+        {/* 管理者専用セクション */}
+        {isAdmin && (
+          <View style={s.legalBox}>
+            <Text style={s.legalTitle}>🛠 管理者ツール</Text>
+            <Pressable style={s.legalRow} onPress={() => router.push('/admin/stats')}>
+              <Text style={s.legalRowText}>📊 管理ダッシュボード</Text>
+              <Text style={s.legalArrow}>›</Text>
+            </Pressable>
+            <Pressable style={s.legalRow} onPress={() => router.push('/admin/review')}>
+              <Text style={s.legalRowText}>🔎 問題レビュー（needsReview 精査）</Text>
+              <Text style={s.legalArrow}>›</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* 法的情報・サポート */}
         <View style={s.legalBox}>
-          <Text style={s.legalTitle}>アプリ情報</Text>
+          <Text style={s.legalTitle}>アプリ情報・サポート</Text>
+          <Pressable style={s.legalRow} onPress={() => router.push('/feedback')}>
+            <Text style={s.legalRowText}>💬 お問い合わせ・要望</Text>
+            <Text style={s.legalArrow}>›</Text>
+          </Pressable>
           <Pressable style={s.legalRow} onPress={() => router.push('/legal/privacy')}>
             <Text style={s.legalRowText}>プライバシーポリシー</Text>
             <Text style={s.legalArrow}>›</Text>
