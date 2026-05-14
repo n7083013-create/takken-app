@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getNextInAiQueue, clearAiQueue } from '../../utils/aiQueue';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius, DifficultyLabel, DifficultyColor } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { CATEGORY_LABELS, CATEGORY_COLORS, Category, ConfidenceLevel, AIChatMessage } from '../../types';
@@ -29,6 +31,13 @@ import { sanitizeAIQuery } from '../../services/validation';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
 import { LawAmendmentBadge } from '../../components/LawAmendmentBadge';
+import { CoreEssenceBox } from '../../components/CoreEssenceBox';
+import { StrikeHint } from '../../components/StrikeHint';
+import { useStrikethrough } from '../../hooks/useStrikethrough';
+import { hapticLight } from '../../services/haptics';
+import { AnimatedChoiceCard } from '../../components/AnimatedChoiceCard';
+import { PressableScale } from '../../components/PressableScale';
+import { WebBackButton } from '../../components/WebBackButton';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const STMT_LABELS = ['ア', 'イ', 'ウ', 'エ'] as const;
@@ -45,10 +54,13 @@ function shuffleIndices(length: number): number[] {
 }
 
 export default function QuestionDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  // [UX改善] AI分析「すべてスタート」から来た場合は source=ai。連続出題モードに入る。
+  const { id, source } = useLocalSearchParams<{ id: string; source?: string }>();
+  const isAiMode = source === 'ai';
   const router = useRouter();
   const nav = useNavigation();
   const recordAnswer = useProgressStore((s) => s.recordAnswer);
+  const getTodayAnswered = useProgressStore((s) => s.getTodayAnswered);
   const toggleBookmark = useProgressStore((s) => s.toggleBookmark);
   const getProgress = useProgressStore((s) => s.getProgress);
   const checkAchievements = useAchievementChecker();
@@ -57,18 +69,44 @@ export default function QuestionDetailScreen() {
   // ★ 現在の問題IDをReact stateで管理（router.replaceを使わない）
   const [currentId, setCurrentId] = useState(id);
 
+  // 消去法: 選択肢の打ち消し線（長押しで切替・問題が変わると自動リセット）
+  const { toggleStrike, isStruck } = useStrikethrough(currentId);
+
   const q = getQuestionById(currentId);
   const prog = q ? getProgress(q.id) : undefined;
   // 選択肢シャッフル: 表示位置→元のindex のマッピング
   // 個数問題・組み合わせ問題は選択肢をシャッフルしない
   const isSpecialFormat = q?.questionFormat === 'count' || q?.questionFormat === 'combination';
   const [shuffledMap, setShuffledMap] = useState(() => q ? (isSpecialFormat ? [0, 1, 2, 3] : shuffleIndices(q.choices.length)) : [0, 1, 2, 3]);
+
+  // Issue #17: 同じ問題を URL から再訪したり、ブラウザ「戻る」で戻ったときに
+  // 選択肢の位置が固定されたままだと暗記化リスク。currentId が変わるたびに再シャッフル。
+  useEffect(() => {
+    if (!q) return;
+    const special = q.questionFormat === 'count' || q.questionFormat === 'combination';
+    setShuffledMap(special ? [0, 1, 2, 3] : shuffleIndices(q.choices.length));
+    setSelected(null);
+    setState('idle');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentId]);
   const [selected, setSelected] = useState<number | null>(null); // 元のindex
   const [state, setState] = useState<State>('idle');
   const [showModal, setShowModal] = useState(false);
   const [modalTerm, setModalTerm] = useState<{ term: string; definition: string; relatedTerms: string[] } | null>(null);
   const explainAnimRef = useRef(new Animated.Value(0));
   const [reportVisible, setReportVisible] = useState(false);
+  const [bookmarkToast, setBookmarkToast] = useState<string | null>(null);
+  const bookmarkToastTimerRef = useRef<any>(null);
+
+  const handleToggleBookmark = useCallback(() => {
+    if (!q) return;
+    const wasBookmarked = !!prog?.bookmarked;
+    toggleBookmark(q.id);
+    hapticLight();
+    setBookmarkToast(wasBookmarked ? 'ブックマークを解除しました' : 'ブックマークに追加しました');
+    if (bookmarkToastTimerRef.current) clearTimeout(bookmarkToastTimerRef.current);
+    bookmarkToastTimerRef.current = setTimeout(() => setBookmarkToast(null), 1500);
+  }, [q, prog?.bookmarked, toggleBookmark]);
 
   // AI Chat state (fullscreen)
   const [aiVisible, setAiVisible] = useState(false);
@@ -81,7 +119,7 @@ export default function QuestionDetailScreen() {
 
   const canAI = useSettingsStore((st) => st.canUseAI());
   const isPro = useSettingsStore((st) => st.isPro());
-  const incrementAIQuery = useSettingsStore((st) => st.incrementAIQuery);
+  const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
 
   const colors = useThemeColors();
   const { width: screenWidth } = useWindowDimensions();
@@ -96,13 +134,13 @@ export default function QuestionDetailScreen() {
           <Pressable onPress={() => setReportVisible(true)} style={{ paddingHorizontal: 8 }} accessibilityRole="button" accessibilityLabel="問題を報告する">
             <Text style={{ fontSize: 20 }}>⚠️</Text>
           </Pressable>
-          <Pressable onPress={() => toggleBookmark(q.id)} style={{ paddingHorizontal: 16 }} accessibilityRole="button" accessibilityLabel={prog?.bookmarked ? 'ブックマークを解除' : 'ブックマークに追加'}>
-            <Text style={{ fontSize: 22 }}>{prog?.bookmarked ? '🔖' : '📑'}</Text>
+          <Pressable onPress={handleToggleBookmark} style={{ paddingHorizontal: 16 }} accessibilityRole="button" accessibilityLabel={prog?.bookmarked ? 'ブックマークを解除' : 'ブックマークに追加'}>
+            <Text style={{ fontSize: 22, opacity: prog?.bookmarked ? 1 : 0.45 }}>🔖</Text>
           </Pressable>
         </View>
       ),
     });
-  }, [nav, q, prog?.bookmarked]);
+  }, [nav, q, prog?.bookmarked, handleToggleBookmark]);
 
   // 確信度選択前の一時保存（recordAnswerは確信度選択後に呼ぶ）
   const [pendingAnswer, setPendingAnswer] = useState<{ questionId: string; category: Category; isCorrect: boolean } | null>(null);
@@ -127,11 +165,10 @@ export default function QuestionDetailScreen() {
     }
   }, []);
 
-  const nextQ = useCallback(() => {
-    if (!q) return;
-    const i = ALL_QUESTIONS.findIndex((x) => x.id === q.id);
-    const next = ALL_QUESTIONS[(i + 1) % ALL_QUESTIONS.length];
-    // ★ ナビゲーションではなくstateで問題を切り替え（戻るボタンを壊さない）
+  /** 共通: 指定IDの問題に切り替える (state ベース、ナビゲーション不要) */
+  const switchToQuestion = useCallback((nextId: string) => {
+    const next = getQuestionById(nextId);
+    if (!next) return;
     setCurrentId(next.id);
     setSelected(null);
     setState('idle');
@@ -142,9 +179,39 @@ export default function QuestionDetailScreen() {
     setAiMessages([]);
     setAiTargetChoice(null);
     setAiInput('');
-    // スクロールを先頭に戻す
     scrollViewRef.current?.scrollTo({ y: 0, animated: false });
-  }, [q]);
+  }, []);
+
+  const nextQ = useCallback(async () => {
+    if (!q) return;
+    // [UX改善] AI分析モードの場合: AIキューから次の問題を取得
+    if (isAiMode) {
+      const nextId = await getNextInAiQueue(
+        {
+          getItem: (k) => AsyncStorage.getItem(k),
+          setItem: (k, v) => AsyncStorage.setItem(k, v),
+          removeItem: (k) => AsyncStorage.removeItem(k),
+        },
+        q.id,
+      );
+      if (nextId) {
+        switchToQuestion(nextId);
+        return;
+      }
+      // キュー完了: AI分析画面に戻る
+      await clearAiQueue({
+        getItem: (k) => AsyncStorage.getItem(k),
+        setItem: (k, v) => AsyncStorage.setItem(k, v),
+        removeItem: (k) => AsyncStorage.removeItem(k),
+      });
+      router.replace('/(tabs)/ai-analysis' as any);
+      return;
+    }
+    // 通常モード: ALL_QUESTIONS の次へ
+    const i = ALL_QUESTIONS.findIndex((x) => x.id === q.id);
+    const next = ALL_QUESTIONS[(i + 1) % ALL_QUESTIONS.length];
+    switchToQuestion(next.id);
+  }, [q, isAiMode, router, switchToQuestion]);
 
   /** 確信度を選んで記録 → 次の問題へ進む */
   const handleConfidenceAndNext = useCallback((confidence: ConfidenceLevel) => {
@@ -176,13 +243,15 @@ export default function QuestionDetailScreen() {
     setAiInput('');
     setAiMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setAiLoading(true);
-    incrementAIQuery();
 
     try {
       const context = buildAIContext(q, selected, state);
       const history = [...aiMessages, { role: 'user' as const, content: userMsg }];
-      const reply = await askAI(context, history);
-      setAiMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      const result = await askAI(context, history);
+      if (result.remaining !== null) {
+        setAIRemainingFromServer(result.remaining);
+      }
+      setAiMessages((prev) => [...prev, { role: 'assistant', content: result.text }]);
     } catch (e: any) {
       setAiMessages((prev) => [
         ...prev,
@@ -196,25 +265,30 @@ export default function QuestionDetailScreen() {
 
   if (!q) {
     return (
-      <View style={s.safe}><Text style={s.errorText}>問題が見つかりません</Text></View>
+      <View style={s.safe}>
+        <WebBackButton />
+        <Text style={s.errorText}>問題が見つかりません</Text>
+      </View>
     );
   }
 
-  // フリーミアム制御
-  if (!canAccess(isPro, 'question', q.id)) {
+  // フリーミアム制御: 1日10問まで（未回答状態で上限に達していれば表示）
+  const todayAnswered = getTodayAnswered();
+  if (!canAccess(isPro, 'question', todayAnswered) && state === 'idle') {
     return (
       <View style={[s.safe, s.lockContainer]}>
-        <Text style={s.lockEmoji}>🔒</Text>
-        <Text style={s.lockTitle}>PREMIUM会員限定</Text>
+        <WebBackButton />
+        <Text style={s.lockEmoji}>⏰</Text>
+        <Text style={s.lockTitle}>本日の無料枠を使い切りました</Text>
         <Text style={s.lockDesc}>
-          この問題はPREMIUMプランでご利用いただけます。{'\n'}
-          無料プランでは最初の30問をご利用いただけます。
+          無料プランでは1日10問まで解けます。{'\n'}
+          明日また挑戦するか、PREMIUMで今すぐ続けましょう。
         </Text>
         <Pressable
           style={[s.lockBtn, Shadow.md]}
           onPress={() => router.push('/paywall')}
         >
-          <Text style={s.lockBtnText}>プランを見る</Text>
+          <Text style={s.lockBtnText}>7日間無料で全問解き放題</Text>
         </Pressable>
       </View>
     );
@@ -335,6 +409,13 @@ export default function QuestionDetailScreen() {
   return (
     <View style={s.splitContainer}>
     <FeedbackOverlay />
+    <WebBackButton />
+    {/* ブックマーク操作のフィードバックトースト（1.5秒表示してフェードアウト） */}
+    {bookmarkToast ? (
+      <View pointerEvents="none" style={s.bookmarkToast}>
+        <Text style={s.bookmarkToastText}>🔖 {bookmarkToast}</Text>
+      </View>
+    ) : null}
     <ScrollView ref={scrollViewRef} style={[s.safe, isWideScreen && s.splitMain]} contentContainerStyle={s.scroll}>
       {/* Meta */}
       <View style={s.metaRow}>
@@ -392,6 +473,9 @@ export default function QuestionDetailScreen() {
         </View>
       )}
 
+      {/* 消去法ヒント（未回答時のみ・ユーザー非表示設定可能） */}
+      {!answered && <StrikeHint />}
+
       {/* Choices (シャッフル済み) */}
       <View style={s.choiceList}>
         {shuffledMap.map((origIdx, displayIdx) => {
@@ -411,22 +495,39 @@ export default function QuestionDetailScreen() {
 
           const choiceExpl = answered && q.choiceExplanations ? q.choiceExplanations[origIdx] : null;
 
+          const struck = !answered && isStruck(origIdx);
+
+          // Per-choice feedback state for animated bounce/shake
+          const choiceFeedback: 'idle' | 'correct' | 'wrong' =
+            isCorrectAnswer ? 'correct' : isWrongAnswer ? 'wrong' : 'idle';
+
           return (
             <View key={origIdx}>
-              <Pressable
-                style={[s.choiceCard, cardExtra, Shadow.sm]}
+              <AnimatedChoiceCard
+                feedback={choiceFeedback}
+                correctColor={colors.success}
+                wrongColor={colors.error}
+                style={[s.choiceCard, cardExtra, Shadow.sm, struck && s.choiceCardStruck]}
                 onPress={() => handleSelect(origIdx)}
+                onLongPress={() => {
+                  if (answered) return;
+                  hapticLight();
+                  toggleStrike(origIdx);
+                }}
+                delayLongPress={350}
                 disabled={answered}
                 accessibilityRole="button"
-                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}`}
+                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}${struck ? '（消去済み）' : ''}`}
+                accessibilityHint={!answered ? '長押しで打ち消し線の切り替え' : undefined}
               >
-                <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
-                  <Text style={[s.choiceLabelText, { color: labelColor }]}>{LABELS[displayIdx]}</Text>
+                <View style={[s.choiceLabel, { backgroundColor: labelBg }, struck && s.choiceLabelStruck]}>
+                  <Text style={[s.choiceLabelText, { color: labelColor }, struck && s.choiceLabelTextStruck]}>{LABELS[displayIdx]}</Text>
                 </View>
-                <Text style={s.choiceText}>{choice}</Text>
+                <Text style={[s.choiceText, struck && s.choiceTextStruck]}>{choice}</Text>
                 {answered && isCorrect && <Text style={s.checkMark}>✓</Text>}
                 {isWrongAnswer && <Text style={s.crossMark}>✗</Text>}
-              </Pressable>
+                {struck && !answered && <Text style={s.strikeMark}>✕</Text>}
+              </AnimatedChoiceCard>
               {/* Per-choice explanation */}
               {choiceExpl && (
                 <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
@@ -455,6 +556,9 @@ export default function QuestionDetailScreen() {
             </View>
           </View>
 
+          {/* 1行エッセンス（論点の核心） */}
+          <CoreEssenceBox essence={q.coreEssence} />
+
           <Text style={s.explainLabel}>解説</Text>
           <Text style={s.explainText}>{q.explanation}</Text>
 
@@ -469,34 +573,50 @@ export default function QuestionDetailScreen() {
             </Pressable>
           )}
 
-          {/* 難易度セレクター（次の問題へ進むボタンを兼ねる） */}
+          {/* [UX改善] 難易度セレクター
+              - 不正解時: 自動的に「難しい」(confidence='none') として記録し、
+                「次の問題へ」ボタン1つだけを表示。ユーザーに難易度を選ばせない。
+                他モード (quick-quiz / micro-challenge) との挙動統一。
+              - 正解時: 「難しい / 普通 / 簡単」の3択で自己評価。SM-2 の精度向上に使う。
+          */}
           <View style={s.confidenceSection}>
-            <View style={s.confidenceRow}>
-              <Pressable
-                style={[s.confidenceBtn, s.confidenceNone]}
+            {state === 'wrong' ? (
+              <PressableScale
+                style={[s.confidenceBtn, s.confidenceDefault, { width: '100%' }]}
                 onPress={() => handleConfidenceAndNext('none')}
                 accessibilityRole="button"
-                accessibilityLabel="難しいと評価"
+                accessibilityLabel="次の問題に進む（復習リストに追加されました）"
               >
-                <Text style={s.confidenceNoneText}>難しい</Text>
-              </Pressable>
-              <Pressable
-                style={[s.confidenceBtn, s.confidenceDefault]}
-                onPress={() => handleConfidenceAndNext('low')}
-                accessibilityRole="button"
-                accessibilityLabel="普通と評価"
-              >
-                <Text style={s.confidenceDefaultText}>普通 →</Text>
-              </Pressable>
-              <Pressable
-                style={[s.confidenceBtn, s.confidenceHigh]}
-                onPress={() => handleConfidenceAndNext('high')}
-                accessibilityRole="button"
-                accessibilityLabel="簡単と評価"
-              >
-                <Text style={s.confidenceHighText}>簡単</Text>
-              </Pressable>
-            </View>
+                <Text style={s.confidenceDefaultText}>復習リストに追加 → 次の問題</Text>
+              </PressableScale>
+            ) : (
+              <View style={s.confidenceRow}>
+                <PressableScale
+                  style={[s.confidenceBtn, s.confidenceNone]}
+                  onPress={() => handleConfidenceAndNext('none')}
+                  accessibilityRole="button"
+                  accessibilityLabel="難しいと評価"
+                >
+                  <Text style={s.confidenceNoneText}>難しい</Text>
+                </PressableScale>
+                <PressableScale
+                  style={[s.confidenceBtn, s.confidenceDefault]}
+                  onPress={() => handleConfidenceAndNext('low')}
+                  accessibilityRole="button"
+                  accessibilityLabel="普通と評価"
+                >
+                  <Text style={s.confidenceDefaultText}>普通 →</Text>
+                </PressableScale>
+                <PressableScale
+                  style={[s.confidenceBtn, s.confidenceHigh]}
+                  onPress={() => handleConfidenceAndNext('high')}
+                  accessibilityRole="button"
+                  accessibilityLabel="簡単と評価"
+                >
+                  <Text style={s.confidenceHighText}>簡単</Text>
+                </PressableScale>
+              </View>
+            )}
           </View>
 
           <Pressable
@@ -609,6 +729,24 @@ function makeStyles(C: ThemeColors, isWide = false) {
 
     safe: { flex: 1, backgroundColor: C.background },
     scroll: { padding: Spacing.xl },
+
+    // ─── ブックマーク操作のフィードバックトースト ───
+    bookmarkToast: {
+      position: 'absolute',
+      top: 12,
+      alignSelf: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: BorderRadius.lg,
+      backgroundColor: C.text,
+      zIndex: 1000,
+      ...Shadow.md,
+    },
+    bookmarkToastText: {
+      fontSize: FontSize.subhead,
+      color: C.background,
+      fontWeight: '600',
+    },
     errorText: {
       fontSize: FontSize.body,
       color: C.textTertiary,
@@ -644,14 +782,67 @@ function makeStyles(C: ThemeColors, isWide = false) {
     statementResult: { fontSize: FontSize.caption, fontWeight: '700', marginTop: 4 },
     statementExpl: { fontSize: FontSize.caption, color: C.textSecondary, marginTop: 4, lineHeight: LineHeight.caption },
 
-    // ─── Choices ───
-    choiceList: { gap: 4 },
-    choiceCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.card, borderRadius: BorderRadius.lg, padding: Spacing.lg, borderWidth: 2, borderColor: 'transparent' },
-    choiceLabel: { width: 34, height: 34, borderRadius: BorderRadius.sm, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
-    choiceLabelText: { fontSize: FontSize.subhead, fontWeight: '800' },
-    choiceText: { flex: 1, fontSize: FontSize.subhead, color: C.text, lineHeight: LineHeight.subhead },
+    // ─── Choices (モダン化) ───
+    choiceList: { gap: 8 },
+    choiceCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.xl,
+      padding: Spacing.lg,
+      borderWidth: 1.5,
+      borderColor: C.borderLight,
+      // @ts-ignore
+      transition: 'all 0.15s ease',
+      // @ts-ignore
+      cursor: 'pointer',
+    },
+    choiceLabel: {
+      width: 36,
+      height: 36,
+      borderRadius: BorderRadius.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 14,
+      borderWidth: 1,
+      borderColor: 'transparent',
+    },
+    choiceLabelText: {
+      fontSize: FontSize.subhead,
+      fontWeight: '900',
+      letterSpacing: 0.5,
+    },
+    choiceText: {
+      flex: 1,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      lineHeight: LineHeight.subhead,
+      fontWeight: '500',
+    },
     checkMark: { fontSize: 20, color: C.success, fontWeight: '800', marginLeft: 8 },
     crossMark: { fontSize: 20, color: C.error, fontWeight: '800', marginLeft: 8 },
+
+    // ─── 消去法（打ち消し線） ───
+    choiceCardStruck: {
+      backgroundColor: C.background,
+      opacity: 0.55,
+    },
+    choiceLabelStruck: {
+      backgroundColor: C.textTertiary,
+    },
+    choiceLabelTextStruck: {
+      color: C.card,
+    },
+    choiceTextStruck: {
+      textDecorationLine: 'line-through',
+      color: C.textTertiary,
+    },
+    strikeMark: {
+      fontSize: 16,
+      color: C.textTertiary,
+      fontWeight: '800',
+      marginLeft: 8,
+    },
 
     // ─── Per-choice Explanation ───
     choiceExplBox: { marginLeft: 48, marginRight: 8, marginBottom: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: BorderRadius.md, borderLeftWidth: 3 },
@@ -663,26 +854,67 @@ function makeStyles(C: ThemeColors, isWide = false) {
     choiceAiBtnText: { fontSize: FontSize.caption2, fontWeight: '700', color: C.primary },
 
     // ─── Explanation ───
-    explainCard: { marginTop: Spacing.xxl, backgroundColor: C.card, borderRadius: BorderRadius.xl, padding: Spacing.xxl },
+    explainCard: {
+      marginTop: Spacing.xxl,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.xl,
+      padding: Spacing.xxl,
+      borderWidth: 1,
+      borderColor: C.borderLight,
+    },
     explainHeader: { marginBottom: 14 },
-    explainBadge: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 7, borderRadius: BorderRadius.md, gap: 6 },
+    explainBadge: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 7, borderRadius: BorderRadius.full, gap: 6 },
     explainBadgeIcon: { fontSize: 18 },
-    explainBadgeText: { fontSize: FontSize.body, fontWeight: '800' },
-    explainLabel: { fontSize: FontSize.footnote, fontWeight: '700', color: C.textTertiary, marginBottom: 6, letterSpacing: LetterSpacing.wide },
-    explainText: { fontSize: FontSize.subhead, color: C.textSecondary, lineHeight: LineHeight.body },
-    tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 18 },
-    tag: { backgroundColor: C.primarySurface, paddingHorizontal: 12, paddingVertical: 5, borderRadius: BorderRadius.full },
-    tagText: { fontSize: FontSize.footnote, color: C.primary, fontWeight: '600' },
+    explainBadgeText: { fontSize: FontSize.body, fontWeight: '800', letterSpacing: 0.3 },
+    explainLabel: { fontSize: FontSize.caption2, fontWeight: '800', color: C.textTertiary, marginBottom: 8, letterSpacing: 1.5, textTransform: 'uppercase' },
+    explainText: { fontSize: FontSize.subhead, color: C.textSecondary, lineHeight: LineHeight.body, fontWeight: '500' },
+    tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 },
+    tag: {
+      backgroundColor: C.primarySurface,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: BorderRadius.full,
+      borderWidth: 1,
+      borderColor: C.primary + '30',
+    },
+    tagText: { fontSize: FontSize.footnote, color: C.primary, fontWeight: '700' },
 
     // ─── AI Open Button ───
-    aiBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 20, backgroundColor: C.infoSurface, borderRadius: BorderRadius.lg, padding: 16, borderWidth: 1, borderColor: C.border },
+    aiBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 14,
+      marginTop: 20,
+      backgroundColor: C.infoSurface,
+      borderRadius: BorderRadius.xl,
+      padding: 18,
+      borderWidth: 1.5,
+      borderColor: C.primary + '30',
+      // @ts-ignore
+      transition: 'all 0.2s ease',
+      // @ts-ignore
+      cursor: 'pointer',
+    },
     aiBtnIcon: { fontSize: 28 },
-    aiBtnText: { fontSize: FontSize.subhead, fontWeight: '700', color: C.primary },
-    aiBtnSub: { fontSize: FontSize.caption2, color: C.textTertiary, marginTop: 2 },
+    aiBtnText: { fontSize: FontSize.subhead, fontWeight: '800', color: C.primary, letterSpacing: 0.2 },
+    aiBtnSub: { fontSize: FontSize.caption2, color: C.textSecondary, marginTop: 3, fontWeight: '500' },
 
-    nextBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: Spacing.xxl, backgroundColor: C.primary, paddingVertical: Spacing.lg, borderRadius: BorderRadius.lg, gap: 8 },
-    nextBtnText: { fontSize: FontSize.body, fontWeight: '700', color: C.white },
-    nextBtnArrow: { fontSize: FontSize.headline, fontWeight: '700', color: C.white },
+    nextBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: Spacing.xxl,
+      backgroundColor: C.primary,
+      paddingVertical: 18,
+      borderRadius: BorderRadius.full,
+      gap: 8,
+      // @ts-ignore
+      transition: 'all 0.2s ease',
+      // @ts-ignore
+      cursor: 'pointer',
+    },
+    nextBtnText: { fontSize: FontSize.callout, fontWeight: '800', color: C.white, letterSpacing: 0.3 },
+    nextBtnArrow: { fontSize: FontSize.headline, fontWeight: '900', color: C.white },
 
     // ─── Difficulty Selector（難しい / 普通 / 簡単）───
     confidenceSection: {

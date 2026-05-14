@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category } from '../../types';
@@ -14,6 +15,7 @@ import {
   TARGET_SCORES,
 } from '../../services/aiAnalysis';
 import { getQuestionById } from '../../data';
+import { setAiQueue } from '../../utils/aiQueue';
 
 export default function AIAnalysisScreen() {
   const router = useRouter();
@@ -46,8 +48,22 @@ export default function AIAnalysisScreen() {
   }
 
   const overall = analyzeOverall(stats, progress);
-  const recommended = getRecommendedQuestions(progress, 10);
   const plan = buildStudyPlan(undefined, progress);
+  // [UX改善] 1日のノルマと連動: 試験日までの日数+残問題から自動算出 (最低5問〜)
+  // 旧: 固定10問 → 新: plan.dailyQuestions (5〜数十問のレンジ)
+  const recommended = getRecommendedQuestions(progress, plan.dailyQuestions);
+
+  // [UX改善] 「すべて連続でスタート」CTA: 推奨問題をAIキューに保存し、最初の問題に飛ぶ
+  // question/[id].tsx は ?source=ai を見て、次の問題へ自動遷移する
+  const handleStartAll = useCallback(async () => {
+    if (recommended.length === 0) return;
+    const ids = recommended.map((r) => r.questionId);
+    await setAiQueue(
+      { setItem: (k, v) => AsyncStorage.setItem(k, v), removeItem: (k) => AsyncStorage.removeItem(k), getItem: (k) => AsyncStorage.getItem(k) },
+      ids,
+    );
+    router.push(`/question/${ids[0]}?source=ai` as any);
+  }, [recommended, router]);
 
   const probColor =
     overall.passProbability >= 80 ? colors.success
@@ -84,8 +100,26 @@ export default function AIAnalysisScreen() {
           </View>
 
           {/* ── 今日のおすすめ問題 ── */}
-          <Text style={s.sectionTitle}>🎯 今日のおすすめ10問</Text>
-          <Text style={s.sectionDesc}>AIが弱点を分析して厳選しました</Text>
+          <Text style={s.sectionTitle}>🎯 今日のおすすめ{recommended.length}問</Text>
+          <Text style={s.sectionDesc}>
+            試験日まで{plan.daysUntilExam}日 ・ AIが弱点を分析して厳選 ・ 所要 約{Math.round(recommended.length * 1.5)}分
+          </Text>
+
+          {/* [UX改善] ワンタップで連続出題スタート - 個別タップする手間を省く */}
+          <Pressable
+            style={[s.startAllBtn, Shadow.md]}
+            onPress={handleStartAll}
+            accessibilityRole="button"
+            accessibilityLabel={`今日のおすすめ${recommended.length}問を連続で始める`}
+          >
+            <Text style={s.startAllIcon}>▶</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={s.startAllText}>今日の{recommended.length}問をまとめて解く</Text>
+              <Text style={s.startAllSub}>1問ずつ自動で次に進みます</Text>
+            </View>
+            <Text style={s.startAllArrow}>→</Text>
+          </Pressable>
+
           <View style={[s.recoCard, Shadow.sm]}>
             {recommended.map((r, idx) => {
               const q = getQuestionById(r.questionId);
@@ -95,7 +129,7 @@ export default function AIAnalysisScreen() {
                 <Pressable
                   key={r.questionId}
                   style={[s.recoItem, idx < recommended.length - 1 && s.recoItemBorder]}
-                  onPress={() => router.push(`/question/${r.questionId}`)}
+                  onPress={() => router.push(`/question/${r.questionId}` as any)}
                 >
                   <View style={[s.recoNum, { backgroundColor: color + '18' }]}>
                     <Text style={[s.recoNumText, { color }]}>{idx + 1}</Text>
@@ -244,6 +278,22 @@ function makeStyles(C: ThemeColors) {
     // Section
     sectionTitle: { fontSize: 18, fontWeight: '800', color: C.text, marginBottom: 4, letterSpacing: -0.3 },
     sectionDesc: { fontSize: 12, color: C.textSecondary, marginBottom: 12 },
+
+    // [UX改善] スタートCTA
+    startAllBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: C.primary,
+      borderRadius: 16,
+      paddingVertical: 16,
+      paddingHorizontal: 18,
+      marginBottom: 12,
+      gap: 12,
+    },
+    startAllIcon: { fontSize: 22, color: C.white, fontWeight: '800' },
+    startAllText: { fontSize: 16, fontWeight: '800', color: C.white, marginBottom: 2 },
+    startAllSub: { fontSize: 11, color: C.white, opacity: 0.85 },
+    startAllArrow: { fontSize: 22, color: C.white, fontWeight: '800' },
 
     // Recommended
     recoCard: { backgroundColor: C.card, borderRadius: 16, marginBottom: 24 },
