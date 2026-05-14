@@ -28,6 +28,7 @@ import { useQuestStore } from '../../store/useQuestStore';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievementStore';
 import { useExamStore } from '../../store/useExamStore';
 import { useAuthStore } from '../../store/useAuthStore';
+import { decideOnboardingState, ONBOARDING_KEYS } from '../../utils/onboarding';
 import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
 import { DailyGoalCelebration } from '../../components/DailyGoalCelebration';
@@ -110,41 +111,16 @@ export default function HomeScreenWrapper() {
     if (!user) return;
     // [Bugfix v2] ユーザー固有キーに変更 (Web/Native 共通: 別ユーザー切替時の干渉防止)
     // 旧キー @takken_onboarding_done もマイグレーションして引継ぎ
-    const userKey = `@takken_onboarding_done_${user.id}`;
-
+    // ロジック本体は utils/onboarding.ts でユニットテスト済み (Race Condition 回避)
     (async () => {
-      // 1) ユーザー固有キーをチェック
-      const val = await AsyncStorage.getItem(userKey);
-      if (val === 'true') {
-        setOnboardingDone(true);
-        return;
-      }
-
-      // 2) 旧グローバルキーをチェック (マイグレーション)
-      const legacy = await AsyncStorage.getItem('@takken_onboarding_done');
-      if (legacy === 'true') {
-        // 旧キーが立っている = 同一デバイスでオンボーディング済み
-        await AsyncStorage.setItem(userKey, 'true').catch(() => {});
-        setOnboardingDone(true);
-        return;
-      }
-
-      // 3) クラウド同期を明示的に待つ (race condition 回避)
-      // ローカルにフラグが無い場合、クラウド同期完了前は判定しない
-      // → 同期完了で hasAnyProgress が true になったらスキップされる
-      try {
-        await useProgressStore.getState().syncWithCloud(user.id);
-      } catch {
-        // 同期失敗時はオフライン扱い → 既存進捗のみで判定
-      }
-      const updatedProgress = useProgressStore.getState().progress;
-      const hasProgressNow = Object.keys(updatedProgress || {}).length > 0;
-      if (hasProgressNow) {
-        await AsyncStorage.setItem(userKey, 'true').catch(() => {});
-        setOnboardingDone(true);
-      } else {
-        setOnboardingDone(false);
-      }
+      const decision = await decideOnboardingState({
+        userId: user.id,
+        storageGet: (k) => AsyncStorage.getItem(k),
+        storageSet: (k, v) => AsyncStorage.setItem(k, v),
+        syncWithCloud: () => useProgressStore.getState().syncWithCloud(user.id),
+        getProgress: () => useProgressStore.getState().progress,
+      });
+      setOnboardingDone(decision === 'done');
     })();
   }, [user]);
 
@@ -179,7 +155,7 @@ export default function HomeScreenWrapper() {
         onComplete={async () => {
           // [Bugfix v2] ユーザー固有キーで完了マーク (Onboarding.tsx 側の旧キーは互換性のため残す)
           if (user) {
-            await AsyncStorage.setItem(`@takken_onboarding_done_${user.id}`, 'true').catch(() => {});
+            await AsyncStorage.setItem(ONBOARDING_KEYS.forUser(user.id), 'true').catch(() => {});
           }
           setOnboardingDone(true);
         }}

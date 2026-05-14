@@ -27,6 +27,8 @@ import {
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { ALL_QUICK_QUIZZES, getGlossaryBySlug } from '../../data';
+import { findWeakestCategory } from '../../utils/categoryRecommender';
+import { shuffleArray } from '../../utils/shuffle';
 import { HighlightedText } from '../../components/HighlightedText';
 import { askAI } from '../../services/claude';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
@@ -68,22 +70,11 @@ export default function QuickQuizScreen() {
   // [UX改善] スマートスタート: 初回マウント時に「苦手カテゴリ」を自動選択
   // 各カテゴリで 3問以上回答済みのうち、正答率が最も低いカテゴリを推奨
   // データが少ない場合は null = 「すべて」モードでシャッフル出題
-  const recommendedCategory = useMemo<Category | null>(() => {
-    const cs = quickQuizStats.categoryStats;
-    if (!cs) return null;
-    let weakest: Category | null = null;
-    let weakestRate = 1.01; // 100% より大きい初期値
-    for (const cat of CATEGORIES) {
-      const stat = cs[cat];
-      if (!stat || stat.total < 3) continue; // データ少なすぎは除外
-      const rate = stat.correct / stat.total;
-      if (rate < weakestRate) {
-        weakestRate = rate;
-        weakest = cat;
-      }
-    }
-    return weakest;
-  }, [quickQuizStats]);
+  // (ロジック本体は utils/categoryRecommender.ts でテスト済み)
+  const recommendedCategory = useMemo<Category | null>(
+    () => findWeakestCategory(quickQuizStats.categoryStats, CATEGORIES),
+    [quickQuizStats],
+  );
 
   // [UX改善] 初回マウント時に苦手カテゴリを自動選択（ユーザーが手動変更したら再上書きしない）
   const [hasAutoSelected, setHasAutoSelected] = useState(false);
@@ -98,17 +89,12 @@ export default function QuickQuizScreen() {
   }, [recommendedCategory, hasAutoSelected]);
 
   // [UX改善] 同じ順序での出題を避けるため、カテゴリ変更時に問題リストをシャッフル
-  // (Fisher-Yates アルゴリズム、毎回違う順序で出題される)
+  // (Fisher-Yates アルゴリズム、ロジック本体は utils/shuffle.ts でテスト済み)
   const filteredQuizzes = useMemo(() => {
     const base = selectedCategory
       ? ALL_QUICK_QUIZZES.filter((q) => q.category === selectedCategory)
       : ALL_QUICK_QUIZZES;
-    const shuffled = [...base];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
+    return shuffleArray(base);
   }, [selectedCategory]);
 
   const currentQuiz: QuickQuiz | undefined = filteredQuizzes[currentIndex];

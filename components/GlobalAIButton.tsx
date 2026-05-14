@@ -1,9 +1,9 @@
 // ============================================================
 // グローバルAIフローティングボタン
-// どの画面からでもAIに質問できる
+// どの画面からでもAIに質問できる（音声入力対応）
 // ============================================================
 
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,21 +16,23 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import { FontSize, LineHeight, Spacing, BorderRadius } from '../constants/theme';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { AIChatMessage } from '../types';
 import { askAI } from '../services/claude';
 import { sanitizeAIQuery } from '../services/validation';
+import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 
 export function GlobalAIButton() {
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
+  const insets = useSafeAreaInsets();
 
   const canAI = useSettingsStore((st) => st.canUseAI());
   const isPro = useSettingsStore((st) => st.isPro());
-  const incrementAIQuery = useSettingsStore((st) => st.incrementAIQuery);
+  const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
 
   const [visible, setVisible] = useState(false);
   const [messages, setMessages] = useState<AIChatMessage[]>([]);
@@ -38,18 +40,38 @@ export function GlobalAIButton() {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
+  // 音声認識
+  const { isListening, transcript, startListening, stopListening, isAvailable: micAvailable, error: micError } =
+    useSpeechRecognition();
+
+  // 音声認識結果をテキスト入力に反映
+  useEffect(() => {
+    if (transcript) {
+      setInput(transcript);
+    }
+  }, [transcript]);
+
+  // モーダルを閉じたらマイクを停止
+  useEffect(() => {
+    if (!visible && isListening) {
+      stopListening();
+    }
+  }, [visible, isListening, stopListening]);
+
   const sendMessage = useCallback(async () => {
     if (!input.trim() || loading || !canAI) return;
     const userMsg = sanitizeAIQuery(input);
     setInput('');
     setMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
-    incrementAIQuery();
     try {
       const context = '宅建試験の学習に関する質問です。ユーザーの疑問に丁寧に答えてください。法律用語は具体例を交えて分かりやすく説明してください。';
       const history = [...messages, { role: 'user' as const, content: userMsg }];
-      const reply = await askAI(context, history);
-      setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      const result = await askAI(context, history);
+      if (result.remaining !== null) {
+        setAIRemainingFromServer(result.remaining);
+      }
+      setMessages((prev) => [...prev, { role: 'assistant', content: result.text }]);
     } catch (e: any) {
       setMessages((prev) => [
         ...prev,
@@ -60,6 +82,15 @@ export function GlobalAIButton() {
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
     }
   }, [input, loading, canAI, messages]);
+
+  /** マイクボタン押下 */
+  const handleMic = useCallback(() => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  }, [isListening, startListening, stopListening]);
 
   if (!isPro) return null;
 
@@ -75,8 +106,12 @@ export function GlobalAIButton() {
 
       {/* AIチャットモーダル */}
       <Modal visible={visible} animationType="slide" onRequestClose={() => setVisible(false)}>
-        <SafeAreaView style={s.safe}>
-          <View style={s.header}>
+        {/* [Bugfix] ヘッダーがステータスバーと重なる問題:
+            Modal 内では SafeAreaView の top inset が効かないことがあるため、
+            useSafeAreaInsets で取得した値を header の paddingTop に直接適用する。
+            SafeAreaView は bottom/left/right のみ担当（キーボードや横画面対応）。*/}
+        <SafeAreaView style={s.safe} edges={['bottom', 'left', 'right']}>
+          <View style={[s.header, { paddingTop: insets.top + 12 }]}>
             <Text style={s.headerTitle}>🤖 AI学習アシスタント</Text>
             <Pressable onPress={() => setVisible(false)} hitSlop={12}>
               <Text style={s.close}>✕</Text>
@@ -101,18 +136,22 @@ export function GlobalAIButton() {
                 <>
                   <View style={s.welcome}>
                     <Text style={s.welcomeEmoji}>🤖</Text>
-                    <Text style={s.welcomeTitle}>宅建AIアシスタント</Text>
+                    <Text style={s.welcomeTitle}>わからないことを聞こう</Text>
                     <Text style={s.welcomeDesc}>
-                      宅建試験に関する疑問を何でも聞いてください。{'\n'}
-                      法律用語の解説、条文の意味、学習のコツなど。
+                      問題の意味がわからない、イメージが湧かない...{'\n'}
+                      そんなときはAIに気軽に聞いてみてください。
                     </Text>
+                    {micAvailable && (
+                      <Text style={s.micHint}>🎤 音声でも質問できます</Text>
+                    )}
                   </View>
                   <View style={s.suggestions}>
                     {[
-                      '善意の第三者とは何ですか？',
-                      '重要事項説明と37条書面の違いは？',
-                      '建ぺい率と容積率を分かりやすく教えて',
-                      '今の勉強法で合格できるかアドバイスして',
+                      '「善意の第三者」って何？具体例で教えて',
+                      '抵当権をイメージしやすい例で説明して',
+                      '35条書面と37条書面、何が違うの？',
+                      '用途地域がごちゃごちゃで整理したい',
+                      '借地権と借家権の違いを簡単に教えて',
                     ].map((sug) => (
                       <Pressable key={sug} style={s.suggestionChip} onPress={() => setInput(sug)}>
                         <Text style={s.suggestionText}>{sug}</Text>
@@ -135,10 +174,28 @@ export function GlobalAIButton() {
               )}
             </ScrollView>
 
+            {/* 音声認識中インジケーター */}
+            {isListening && (
+              <View style={s.listeningBar}>
+                <Text style={s.listeningDot}>🔴</Text>
+                <Text style={s.listeningText}>音声入力中...</Text>
+                <Pressable onPress={stopListening} style={s.listeningStop}>
+                  <Text style={s.listeningStopText}>停止</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {/* マイクエラー */}
+            {micError && (
+              <View style={s.micErrorBar}>
+                <Text style={s.micErrorText}>{micError}</Text>
+              </View>
+            )}
+
             <View style={s.inputRow}>
               <TextInput
                 style={s.input}
-                placeholder="宅建について質問..."
+                placeholder={isListening ? '話してください...' : '宅建について質問...'}
                 placeholderTextColor={colors.textDisabled}
                 value={input}
                 onChangeText={setInput}
@@ -146,6 +203,19 @@ export function GlobalAIButton() {
                 maxLength={500}
                 editable={!loading}
               />
+              {/* マイクボタン */}
+              {micAvailable && (
+                <Pressable
+                  style={[s.micBtn, isListening && s.micBtnActive]}
+                  onPress={handleMic}
+                  disabled={loading}
+                  accessibilityRole="button"
+                  accessibilityLabel={isListening ? '音声入力を停止' : '音声入力を開始'}
+                >
+                  <Text style={s.micIcon}>{isListening ? '⏹' : '🎤'}</Text>
+                </Pressable>
+              )}
+              {/* 送信ボタン */}
               <Pressable
                 style={[s.sendBtn, (!input.trim() || loading || !canAI) && s.sendBtnDisabled]}
                 onPress={sendMessage}
@@ -191,39 +261,50 @@ function makeStyles(C: ThemeColors) {
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingHorizontal: 20,
-      paddingVertical: 12,
+      // paddingTop は JSX で insets.top + 12 を動的に適用（ステータスバー回避）
+      paddingBottom: 12,
       backgroundColor: C.card,
       borderBottomWidth: 1,
       borderBottomColor: C.border,
     },
-    headerTitle: { fontSize: FontSize.headline, fontWeight: '800', color: C.text },
-    close: { fontSize: 22, color: C.textTertiary, padding: 4 },
+    headerTitle: { fontSize: FontSize.subhead, fontWeight: '800', color: C.text },
+    close: { fontSize: 20, color: C.textTertiary, padding: 4 },
 
     chat: { flex: 1 },
-    chatContent: { padding: 16, paddingBottom: 10 },
+    chatContent: { padding: 14, paddingBottom: 10 },
 
-    welcome: { alignItems: 'center', paddingVertical: 30 },
-    welcomeEmoji: { fontSize: 48, marginBottom: 12 },
-    welcomeTitle: { fontSize: FontSize.title3, fontWeight: '800', color: C.text, marginBottom: 8 },
-    welcomeDesc: { fontSize: FontSize.subhead, color: C.textSecondary, textAlign: 'center', lineHeight: LineHeight.body },
+    welcome: { alignItems: 'center', paddingVertical: 20 },
+    welcomeEmoji: { fontSize: 36, marginBottom: 8 },
+    welcomeTitle: { fontSize: FontSize.headline, fontWeight: '800', color: C.text, marginBottom: 6 },
+    welcomeDesc: { fontSize: FontSize.caption, color: C.textSecondary, textAlign: 'center', lineHeight: 20 },
+    micHint: {
+      fontSize: FontSize.caption,
+      color: C.primary,
+      fontWeight: '600',
+      marginTop: 12,
+      backgroundColor: C.primarySurface,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+      borderRadius: BorderRadius.full,
+    },
 
-    suggestions: { gap: 10, marginBottom: 16 },
+    suggestions: { gap: 8, marginBottom: 12 },
     suggestionChip: {
       backgroundColor: C.card,
       borderRadius: BorderRadius.lg,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
       borderWidth: 1,
       borderColor: C.border,
     },
-    suggestionText: { fontSize: FontSize.subhead, color: C.primary, fontWeight: '600' },
+    suggestionText: { fontSize: FontSize.caption, color: C.primary, fontWeight: '600' },
 
     msg: {
       maxWidth: '85%',
       borderRadius: BorderRadius.lg,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      marginBottom: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      marginBottom: 10,
     },
     msgUser: { alignSelf: 'flex-end', backgroundColor: C.primary },
     msgAssistant: {
@@ -232,15 +313,43 @@ function makeStyles(C: ThemeColors) {
       borderWidth: 1,
       borderColor: C.border,
     },
-    msgText: { fontSize: FontSize.subhead, color: C.text, lineHeight: LineHeight.body },
+    msgText: { fontSize: FontSize.footnote, color: C.text, lineHeight: 21 },
     msgTextUser: { color: C.white },
+
+    // 音声認識中バー
+    listeningBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      backgroundColor: C.error + '15',
+      gap: 8,
+    },
+    listeningDot: { fontSize: 10 },
+    listeningText: { fontSize: FontSize.caption, fontWeight: '700', color: C.error },
+    listeningStop: {
+      backgroundColor: C.error + '20',
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: BorderRadius.sm,
+    },
+    listeningStopText: { fontSize: FontSize.caption2, fontWeight: '700', color: C.error },
+
+    // マイクエラー
+    micErrorBar: {
+      paddingVertical: 6,
+      paddingHorizontal: 16,
+      backgroundColor: C.warningSurface,
+    },
+    micErrorText: { fontSize: FontSize.caption2, color: C.accent, textAlign: 'center' },
 
     inputRow: {
       flexDirection: 'row',
       alignItems: 'flex-end',
       paddingHorizontal: 16,
       paddingVertical: 14,
-      gap: 12,
+      gap: 8,
       borderTopWidth: 1,
       borderTopColor: C.border,
       backgroundColor: C.card,
@@ -249,20 +358,35 @@ function makeStyles(C: ThemeColors) {
       flex: 1,
       backgroundColor: C.background,
       borderRadius: BorderRadius.lg,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-      fontSize: FontSize.body,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: FontSize.subhead,
       color: C.text,
-      minHeight: 52,
-      maxHeight: 140,
+      minHeight: 44,
+      maxHeight: 160,
       borderWidth: 1,
       borderColor: C.border,
-      lineHeight: LineHeight.body,
+      lineHeight: 22,
     },
+    micBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: C.card,
+      borderWidth: 2,
+      borderColor: C.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    micBtnActive: {
+      backgroundColor: C.error + '20',
+      borderColor: C.error,
+    },
+    micIcon: { fontSize: 22 },
     sendBtn: {
-      width: 48,
-      height: 48,
-      borderRadius: 24,
+      width: 40,
+      height: 40,
+      borderRadius: 20,
       backgroundColor: C.primary,
       alignItems: 'center',
       justifyContent: 'center',
