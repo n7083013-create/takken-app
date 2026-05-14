@@ -5,8 +5,15 @@
 // ============================================================
 // 注意: @react-native-community/netinfo や expo-network は未インストール
 // fetch ベースの定期チェックで接続状態を検知する
+//
+// [Bugfix] 旧実装は単発5秒タイムアウトで一瞬の遅延でも誤検知していた。
+// 新実装は utils/connectivity.ts の以下の組み合わせで誤検知を大幅削減:
+//   - 複数エンドポイント並列チェック (Google + Cloudflare)
+//   - タイムアウト 8秒 (旧5秒)
+//   - ヒステリシス: 2回連続失敗で初めて「オフライン」確定
+//   - 復旧は 1回成功で即座 (バナーをすぐ消す)
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -14,13 +21,20 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  probeAny,
+  applyHysteresis,
+  INITIAL_HYSTERESIS_STATE,
+  DEFAULT_PROBE_URLS,
+  DEFAULT_TIMEOUT_MS,
+  DEFAULT_CHECK_INTERVAL_MS,
+  type HysteresisState,
+} from '../utils/connectivity';
 
 // ------------------------------------------------------------
 // useNetworkStatus フック
-// 定期的に fetch して接続状態を判定する
+// 定期的に複数エンドポイントを並列チェック + ヒステリシスで誤検知を抑止
 // ------------------------------------------------------------
-
-const CHECK_INTERVAL_MS = 10_000; // 10秒ごと
 
 function useNetworkStatus(): boolean {
   const [isConnected, setIsConnected] = useState(true);
@@ -33,7 +47,7 @@ function useNetworkStatus(): boolean {
       const handleOnline = () => { if (mounted) setIsConnected(true); };
       const handleOffline = () => { if (mounted) setIsConnected(false); };
 
-      setIsConnected(navigator.onLine);
+      setIsConnected(typeof navigator !== 'undefined' ? navigator.onLine : true);
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
@@ -44,25 +58,18 @@ function useNetworkStatus(): boolean {
       };
     }
 
-    // ネイティブ版: fetch ベースの定期チェック
+    // ネイティブ版: 並列チェック + ヒステリシス
+    let state: HysteresisState = INITIAL_HYSTERESIS_STATE;
+
     const check = async () => {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 5_000);
-        await fetch('https://clients3.google.com/generate_204', {
-          method: 'HEAD',
-          cache: 'no-store',
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
-        if (mounted) setIsConnected(true);
-      } catch {
-        if (mounted) setIsConnected(false);
-      }
+      const success = await probeAny(DEFAULT_PROBE_URLS, DEFAULT_TIMEOUT_MS);
+      if (!mounted) return;
+      state = applyHysteresis(state, success);
+      setIsConnected(state.isOnline);
     };
 
     check();
-    const id = setInterval(check, CHECK_INTERVAL_MS);
+    const id = setInterval(check, DEFAULT_CHECK_INTERVAL_MS);
 
     return () => {
       mounted = false;
