@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>宅建士 完全対策 | AIが弱点を分析・最短合格を実現・2026年法改正対応</title>
-  <meta name="description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。全2,020問+Claude AI解説+忘れる前の自動復習で宅建合格を最短化。2026年法改正完全対応。7日間無料・月額¥980・いつでも解約OK。" />
+  <meta name="description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。全2,020問+AI解説+忘れる前の自動復習で宅建合格を最短化。2026年法改正完全対応。7日間無料・月額¥980・いつでも解約OK。" />
   <meta name="keywords" content="宅建,宅地建物取引士,宅建試験,2026年,法改正,過去問,一問一答,模擬試験,AI解説,合格率" />
   <meta name="theme-color" content="#1B7A3D" />
   <!-- OGP -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="宅建士 完全対策 | AIが弱点分析・最短合格・2026年法改正対応" />
-  <meta property="og:description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。Claude AI解説・忘れる前の自動復習・2026年法改正完全対応。7日間無料・¥980/月。" />
+  <meta property="og:description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。AI解説・忘れる前の自動復習・2026年法改正完全対応。7日間無料・¥980/月。" />
   <meta property="og:url" content="https://takkenkanzen.com/" />
   <meta property="og:image" content="https://takkenkanzen.com/ogp.png" />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:site_name" content="宅建士 完全対策" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="宅建士 完全対策 | AIが弱点分析・最短合格" />
-  <meta name="twitter:description" content="AIがあなたに必要な問題だけを出題・Claude AI解説・2026年法改正対応。7日間無料・¥980/月。" />
+  <meta name="twitter:description" content="AIがあなたに必要な問題だけを出題・AI解説・2026年法改正対応。7日間無料・¥980/月。" />
   <meta name="twitter:image" content="https://takkenkanzen.com/ogp.png" />
   <link rel="icon" href="/favicon.ico" />
   <link rel="canonical" href="https://takkenkanzen.com/" />
@@ -43,6 +43,7 @@
   <!-- LP の CTA クリックを Google Ads にイベント送信（ファネル可視化用） -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // CTA クリック計測
       var ctaSelectors = ['.hero-cta', '.header-cta', '.pricing-cta', '.section-cta', '.final-cta', '.footer-cta'];
       ctaSelectors.forEach(function(sel) {
         document.querySelectorAll(sel).forEach(function(el) {
@@ -56,6 +57,28 @@
           });
         });
       });
+
+      // 試験日までのカウントダウン (動的計算)
+      // 宅建試験は10月第3日曜日。今年が過ぎていれば翌年を計算
+      function getNextTakkenExamDate() {
+        var now = new Date();
+        var y = now.getFullYear();
+        var calc = function(year) {
+          var firstDay = new Date(year, 9, 1); // 10月1日
+          var dayOfWeek = firstDay.getDay();
+          // 第1日曜日の日付
+          var firstSundayDate = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+          // 第3日曜日の日付
+          var thirdSundayDate = firstSundayDate + 14;
+          return new Date(year, 9, thirdSundayDate);
+        };
+        var thisYearExam = calc(y);
+        return now > thisYearExam ? calc(y + 1) : thisYearExam;
+      }
+      var examDate = getNextTakkenExamDate();
+      var daysLeft = Math.max(0, Math.ceil((examDate - new Date()) / (1000 * 60 * 60 * 24)));
+      var elFinal = document.getElementById('finalCountdownDays');
+      if (elFinal) elFinal.textContent = daysLeft;
     });
   </script>
 
@@ -525,6 +548,24 @@
       text-align: center;
       padding: 70px 24px;
     }
+    .final-countdown {
+      display: inline-block;
+      background: rgba(255, 210, 74, 0.18);
+      border: 1.5px solid rgba(255, 210, 74, 0.55);
+      color: #FFD24A;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      margin-bottom: 18px;
+    }
+    .final-countdown strong {
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0 2px;
+      color: #FFD24A;
+    }
     .final-cta-section h2 {
       font-size: 28px;
       font-weight: 800;
@@ -605,6 +646,81 @@
     }
     .footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); }
 
+    /* ====== Before / After ====== */
+    .ba-section {
+      background: #fff;
+      padding: 70px 24px 60px;
+    }
+    .ba-section h2 {
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
+    }
+    .ba-section .section-lead {
+      text-align: center;
+      color: #666;
+      font-size: 15px;
+      margin-bottom: 40px;
+    }
+    .ba-grid {
+      display: grid;
+      gap: 16px;
+      max-width: 940px;
+      margin: 0 auto;
+    }
+    .ba-pair {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    .ba-before, .ba-after {
+      padding: 22px 20px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .ba-before {
+      background: #fff8e6;
+      border: 1.5px solid #FFE0A0;
+    }
+    .ba-after {
+      background: #e8f5ec;
+      border: 1.5px solid #B5DBC0;
+    }
+    .ba-icon {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+    .ba-before p, .ba-after p {
+      font-weight: 800;
+      font-size: 16px;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .ba-before p { color: #7a5a00; }
+    .ba-after p { color: #1B5C30; }
+    .ba-before small, .ba-after small {
+      font-size: 12px;
+      display: block;
+      line-height: 1.55;
+    }
+    .ba-before small { color: #8a6a1e; }
+    .ba-after small { color: #2E6B43; }
+    .ba-arrow {
+      font-size: 26px;
+      color: #1B7A3D;
+      font-weight: 800;
+      text-align: center;
+      align-self: center;
+    }
+
     /* ====== Responsive ====== */
     @media (max-width: 760px) {
       .stats-panel {
@@ -615,6 +731,17 @@
       }
       .stat-cell + .stat-cell { border-left: none; }
       .stat-cell:nth-child(n+4) { border-top: 1px solid #ececec; padding-top: 14px; }
+    }
+    @media (max-width: 720px) {
+      .ba-pair {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .ba-arrow {
+        transform: rotate(90deg);
+        font-size: 22px;
+      }
+      .ba-section h2 { font-size: 22px; }
     }
     @media (max-width: 600px) {
       .features { grid-template-columns: 1fr; }
@@ -666,12 +793,12 @@
   <section class="hero">
     <div class="hero-badge">2026年法改正完全対応</div>
     <h1>
-      <span class="accent">AI</span>があなたの弱点を見抜き、<br>
-      合格までの<span class="accent">最短ルート</span>を作る。
+      <span class="accent">今年こそ</span>、宅建に<br>
+      合格する。
     </h1>
     <p class="hero-lead">
-      全2,020問の中から、AIが「今のあなたに必要な問題だけ」を出題。<br>
-      わからないところはClaude AIが即解説。忘れる前に自動復習。
+      働きながらでも、独学でも。<br>
+      AIがあなたの弱点を見抜いて、合格点まで最短で連れていく。
     </p>
 
     <div class="hero-stats" aria-label="主要数値">
@@ -697,10 +824,10 @@
     <p class="hero-sub">無料期間終了後 ¥980/月 ・ いつでも解約OK</p>
 
     <div class="hero-trustbar">
-      <span>無料スタート</span>
-      <span>解約自由</span>
-      <span>安全な決済</span>
-      <span>2026年法改正対応</span>
+      <span>📱 1日10分から</span>
+      <span>🤖 AIが弱点を自動分析</span>
+      <span>⚖️ 2026年法改正対応</span>
+      <span>🎁 7日間¥0で解約自由</span>
     </div>
   </section>
 
@@ -716,7 +843,7 @@
     </div>
     <div class="stat-cell">
       <div class="stat-num">AI</div>
-      <div class="stat-label">Claude AI解説</div>
+      <div class="stat-label">AI解説</div>
     </div>
     <div class="stat-cell">
       <div class="stat-num">自動</div>
@@ -728,6 +855,69 @@
     </div>
   </div>
 
+  <!-- Before / After (AI導入の前後で何が変わるか) -->
+  <section class="ba-section" id="before-after" aria-labelledby="ba-title">
+    <h2 id="ba-title">独学のあなたが、AIと出会うと。</h2>
+    <p class="section-lead">こんなに変わります。</p>
+    <div class="ba-grid">
+      <div class="ba-pair">
+        <div class="ba-before">
+          <span class="ba-icon">😰</span>
+          <p>「何から始めればいい？」</p>
+          <small>分厚いテキストの前で、手が止まる。</small>
+        </div>
+        <div class="ba-arrow" aria-hidden="true">→</div>
+        <div class="ba-after">
+          <span class="ba-icon">📈</span>
+          <p>「今日はこの5問」</p>
+          <small>AIが、今のあなたに必要な問題を毎日提示。</small>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-before">
+          <span class="ba-icon">📚</span>
+          <p>全2,020問、全部やる？</p>
+          <small>時間が足りなくて、途中で挫折。</small>
+        </div>
+        <div class="ba-arrow" aria-hidden="true">→</div>
+        <div class="ba-after">
+          <span class="ba-icon">🎯</span>
+          <p>必要な問題だけ、集中。</p>
+          <small>AIが弱点を見抜き、合格点までを最短化。</small>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-before">
+          <span class="ba-icon">🤷</span>
+          <p>解説を読んでも、わからない。</p>
+          <small>独学だと、質問できる相手がいない。</small>
+        </div>
+        <div class="ba-arrow" aria-hidden="true">→</div>
+        <div class="ba-after">
+          <span class="ba-icon">🤖</span>
+          <p>AIが、何度でも解説。</p>
+          <small>理解できるまで、いつでも追加質問OK。</small>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-before">
+          <span class="ba-icon">😴</span>
+          <p>1週間後には、忘れている。</p>
+          <small>復習のタイミングがわからない。</small>
+        </div>
+        <div class="ba-arrow" aria-hidden="true">→</div>
+        <div class="ba-after">
+          <span class="ba-icon">🔔</span>
+          <p>忘れる前に、自動復習。</p>
+          <small>科学的根拠に基づく忘却曲線で、記憶に定着。</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Features (8 cards) -->
   <section class="section" id="features">
     <h2>主な機能</h2>
@@ -735,7 +925,7 @@
     <div class="features">
       <div class="feature">
         <div class="feature-icon">🤖</div>
-        <h3>Claude AI解説</h3>
+        <h3>AI解説</h3>
         <p>「なぜそうなる？」を即座に深掘り。納得するまで何度でも追加質問できます。</p>
       </div>
       <div class="feature">
@@ -791,7 +981,7 @@
         <li class="vs-item">
           <div class="vs-check">2</div>
           <div class="vs-body">
-            <h3>Claude AI解説 × 何度でも追加質問</h3>
+            <h3>AI解説 × 何度でも追加質問</h3>
             <p>「なぜそうなる？」が分からなければAIに納得するまで質問可能。市販書の使い回しではない、論点を深掘りできる解説を実現。</p>
           </div>
         </li>
@@ -859,7 +1049,7 @@
       <div class="pricing-note">トライアル中にキャンセルすれば料金は一切かかりません</div>
       <ul class="pricing-bullets">
         <li>4択820問 + 一問一答1,200問 = 計2,020問</li>
-        <li>Claude AI解説 + 何度でも追加質問</li>
+        <li>AI解説 + 何度でも追加質問</li>
         <li>本試験形式 模擬試験 何度でも</li>
         <li>忘れる前の自動復習・弱点自動克服</li>
         <li>2026年法改正完全対応</li>
@@ -920,7 +1110,7 @@
       <details>
         <summary>他の宅建アプリと何が違いますか？</summary>
         <div class="faq-body">
-          (1)計2,020問の圧倒的な演習量、(2)Claude AI解説で何度でも追加質問可能、(3)忘れる前の自動復習で記憶定着、(4)2026年法改正への即時対応、(5)月額¥980+7日間¥0という業界最安水準の価格、の5点で他アプリと差別化しています。
+          (1)計2,020問の圧倒的な演習量、(2)AI解説で何度でも追加質問可能、(3)忘れる前の自動復習で記憶定着、(4)2026年法改正への即時対応、(5)月額¥980+7日間¥0という業界最安水準の価格、の5点で他アプリと差別化しています。
         </div>
       </details>
       <details>
@@ -956,8 +1146,11 @@
 
   <!-- Final CTA -->
   <section class="final-cta-section">
-    <h2>あなたの宅建合格を、<br>最短ルートで。</h2>
-    <p>計2,020問・Claude AI解説・2026年法改正対応。<br>すべての機能を、まずは7日間 ¥0 でお試しください。</p>
+    <div class="final-countdown" id="finalCountdown" aria-live="polite">
+      試験日まで <strong id="finalCountdownDays">--</strong> 日
+    </div>
+    <h2>迷っている1分1秒も、<br>ライバルは勉強しています。</h2>
+    <p>あなたの宅建合格を、最短ルートで。<br>すべての機能を、まずは7日間 ¥0 でお試しください。</p>
     <a href="https://app.takkenkanzen.com/" class="final-cta">7日間 無料で始める</a>
     <span class="final-cta-note">クレカ登録のみ・トライアル中解約で課金ゼロ・いつでも解約OK</span>
   </section>
