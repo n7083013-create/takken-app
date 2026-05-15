@@ -70,6 +70,7 @@ interface AchievementState {
   getUnlockedCount(): number;
   loadAchievements(): Promise<void>;
   saveAchievements(): Promise<void>;
+  resetStore(): void;
 }
 
 export interface CheckParams {
@@ -86,6 +87,11 @@ export interface CheckParams {
 export const useAchievementStore = create<AchievementState>((set, get) => ({
   unlocked: {},
   newlyUnlocked: [],
+
+  resetStore() {
+    set({ unlocked: {}, newlyUnlocked: [] });
+    AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
+  },
 
   checkAndUnlock(params: CheckParams): AchievementId[] {
     const state = get();
@@ -175,6 +181,10 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
     set((state) => ({
       newlyUnlocked: state.newlyUnlocked.filter((x) => x !== id),
     }));
+    // [Bugfix] dismiss を AsyncStorage に永続化しないと、
+    // アプリ再起動時に loadAchievements が古い newlyUnlocked を復元して
+    // 同じトーストが何度も表示される
+    get().saveAchievements();
   },
 
   isUnlocked(id: AchievementId): boolean {
@@ -200,7 +210,12 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
         const data = JSON.parse(raw);
         set({
           unlocked: data.unlocked ?? {},
-          newlyUnlocked: data.newlyUnlocked ?? [],
+          // [Bugfix] newlyUnlocked は AsyncStorage から復元しない。
+          // ユーザー報告:「起動するたびに同じ実績バッジが何度も表示される」
+          //   → 旧実装は dismiss 後も保存→次回起動で復元→再表示というループ
+          //   → newlyUnlocked は「セッション中の未表示バッジ」だけを持つべきで
+          //     起動時は常に空配列にする (永続化すべきは unlocked のみ)
+          newlyUnlocked: [],
         });
       }
     } catch (e) {
@@ -210,8 +225,11 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
 
   async saveAchievements() {
     try {
-      const { unlocked, newlyUnlocked } = get();
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ unlocked, newlyUnlocked }));
+      const { unlocked } = get();
+      // [Bugfix] newlyUnlocked は保存しない。
+      // 起動時に常に空配列にするため、保存する意味がない。
+      // 旧実装は newlyUnlocked も保存 → 再起動時に復元 → 同じ実績が再表示されるバグの原因。
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ unlocked }));
     } catch (e) {
       logError(e, { context: 'achievement.save' });
     }
