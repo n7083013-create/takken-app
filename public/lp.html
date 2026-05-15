@@ -3,106 +3,299 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>宅建士 完全対策 - 合格への最短ルート</title>
-  <meta name="description" content="宅建試験の合格率を最大化する学習アプリ。AI解説・模擬試験・一問一答で効率的に学習。7日間無料トライアル。" />
+  <title>宅建士 完全対策 | AIが弱点を分析・最短合格を実現・2026年法改正対応</title>
+  <meta name="description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。全2,020問+Claude AI解説+忘れる前の自動復習で宅建合格を最短化。2026年法改正完全対応。7日間無料・月額¥980・いつでも解約OK。" />
+  <meta name="keywords" content="宅建,宅地建物取引士,宅建試験,2026年,法改正,過去問,一問一答,模擬試験,AI解説,合格率" />
+  <meta name="theme-color" content="#1B7A3D" />
   <!-- OGP -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="宅建士 完全対策 - 合格への最短ルート" />
-  <meta property="og:description" content="AI解説・模擬試験・一問一答で宅建合格を最短ルートで。7日間無料トライアル。" />
-  <meta property="og:url" content="https://takken-app-olive.vercel.app/lp" />
-  <meta property="og:image" content="https://takken-app-olive.vercel.app/ogp.png" />
+  <meta property="og:title" content="宅建士 完全対策 | AIが弱点分析・最短合格・2026年法改正対応" />
+  <meta property="og:description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。Claude AI解説・忘れる前の自動復習・2026年法改正完全対応。7日間無料・¥980/月。" />
+  <meta property="og:url" content="https://takkenkanzen.com/" />
+  <meta property="og:image" content="https://takkenkanzen.com/ogp.png" />
   <meta property="og:locale" content="ja_JP" />
+  <meta property="og:site_name" content="宅建士 完全対策" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="宅建士 完全対策 - 合格への最短ルート" />
-  <meta name="twitter:description" content="AI解説・模擬試験・一問一答で宅建合格を最短ルートで。7日間無料トライアル。" />
-  <meta name="twitter:image" content="https://takken-app-olive.vercel.app/ogp.png" />
+  <meta name="twitter:title" content="宅建士 完全対策 | AIが弱点分析・最短合格" />
+  <meta name="twitter:description" content="AIがあなたに必要な問題だけを出題・Claude AI解説・2026年法改正対応。7日間無料・¥980/月。" />
+  <meta name="twitter:image" content="https://takkenkanzen.com/ogp.png" />
   <link rel="icon" href="/favicon.ico" />
+  <link rel="canonical" href="https://takkenkanzen.com/" />
+
+  <!-- ====================================================== -->
+  <!-- アナリティクス & 広告タグ                                -->
+  <!-- ====================================================== -->
+
+  <!-- Google Ads (AW-18116818716) — LPからのコンバージョン計測 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18116818716"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    // cookie_domain を .takkenkanzen.com にして apex/www/app の subdomain 間で
+    // クリック計測を共有する（gclid と _gcl_aw を引き継ぐ）
+    gtag('config', 'AW-18116818716', {
+      'cookie_domain': 'takkenkanzen.com',
+      'cookie_flags': 'SameSite=None;Secure'
+    });
+  </script>
+
+  <!-- LP の CTA クリックを Google Ads にイベント送信（ファネル可視化用） -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var ctaSelectors = ['.hero-cta', '.header-cta', '.pricing-cta', '.section-cta', '.final-cta', '.footer-cta'];
+      ctaSelectors.forEach(function(sel) {
+        document.querySelectorAll(sel).forEach(function(el) {
+          el.addEventListener('click', function() {
+            if (typeof gtag === 'function') {
+              gtag('event', 'lp_cta_click', {
+                'event_category': 'engagement',
+                'event_label': sel.replace('.', ''),
+              });
+            }
+          });
+        });
+      });
+    });
+  </script>
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
       color: #1a1a1a;
       background: #f8f9fa;
       line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
     }
     a { color: #1B7A3D; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* Header */
+    /* Header (sticky) */
     .header {
-      background: #fff;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: saturate(180%) blur(8px);
+      -webkit-backdrop-filter: saturate(180%) blur(8px);
       border-bottom: 1px solid #e5e5e5;
-      padding: 16px 24px;
+      padding: 12px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     .logo { font-size: 18px; font-weight: 800; color: #1B7A3D; }
     .header-cta {
       background: #1B7A3D;
       color: #fff;
-      padding: 8px 20px;
+      padding: 8px 18px;
       border-radius: 8px;
       font-weight: 700;
       font-size: 14px;
+      white-space: nowrap;
     }
+    .header-cta:hover { text-decoration: none; background: #166530; }
 
     /* Hero */
     .hero {
-      background: linear-gradient(135deg, #1B7A3D 0%, #2ea050 50%, #1B7A3D 100%);
+      background: linear-gradient(135deg, #0f5d2c 0%, #1B7A3D 30%, #2ea050 60%, #1B7A3D 100%);
       color: #fff;
       text-align: center;
-      padding: 60px 24px 50px;
+      padding: 70px 20px 60px;
+      position: relative;
+      overflow: hidden;
     }
     .hero-badge {
       display: inline-block;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
       padding: 6px 16px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: 700;
       margin-bottom: 20px;
+      letter-spacing: 0.02em;
     }
     .hero h1 {
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 800;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       line-height: 1.3;
+      letter-spacing: -0.01em;
     }
-    .hero p {
+    .hero h1 .accent {
+      color: #FFD24A;
+      display: inline-block;
+    }
+    .hero-lead {
       font-size: 17px;
-      opacity: 0.9;
-      max-width: 500px;
-      margin: 0 auto 30px;
+      opacity: 0.95;
+      max-width: 540px;
+      margin: 0 auto 22px;
       line-height: 1.8;
+    }
+    .hero-stats {
+      display: inline-flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 auto 28px;
+      padding: 14px 22px;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+    }
+    .hero-stat-item {
+      text-align: center;
+      min-width: 90px;
+    }
+    .hero-stat-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFD24A;
+      line-height: 1.1;
+    }
+    .hero-stat-label {
+      font-size: 11px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+    .hero-free {
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .hero-free small {
+      font-size: 18px;
+      font-weight: 800;
+      opacity: 0.9;
+      display: block;
+      margin-top: 4px;
     }
     .hero-cta {
       display: inline-block;
       background: #fff;
       color: #1B7A3D;
-      padding: 16px 40px;
-      border-radius: 12px;
-      font-size: 18px;
+      padding: 18px 48px;
+      border-radius: 14px;
+      font-size: 19px;
       font-weight: 800;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      margin-top: 18px;
+      transition: transform 0.15s ease;
     }
+    .hero-cta:hover { text-decoration: none; transform: translateY(-2px); }
     .hero-sub {
       margin-top: 12px;
       font-size: 13px;
-      opacity: 0.8;
+      opacity: 0.85;
+    }
+    .hero-trustbar {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+      font-size: 12px;
+      opacity: 0.92;
+    }
+    .hero-trustbar span {
+      background: rgba(255,255,255,0.15);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Stats panel */
+    .stats-panel {
+      max-width: 900px;
+      margin: -28px auto 0;
+      position: relative;
+      z-index: 5;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+      padding: 28px 22px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+    .stat-cell {
+      text-align: center;
+      padding: 6px 4px;
+    }
+    .stat-cell + .stat-cell {
+      border-left: 1px solid #ececec;
+    }
+    .stat-num {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1B7A3D;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+    .stat-num small {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1B7A3D;
+      margin-left: 2px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #666;
+      margin-top: 6px;
+      font-weight: 600;
+      line-height: 1.35;
     }
 
     /* Section */
     .section {
-      max-width: 700px;
+      max-width: 880px;
       margin: 0 auto;
-      padding: 50px 24px;
+      padding: 60px 24px;
     }
+    .section.narrow { max-width: 720px; }
+    .section.wide { max-width: 1000px; }
     .section h2 {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 800;
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 14px;
       color: #1B7A3D;
+      letter-spacing: -0.01em;
+    }
+    .section-lead {
+      text-align: center;
+      color: #555;
+      max-width: 620px;
+      margin: 0 auto 36px;
+      font-size: 15px;
+    }
+    .section-cta-wrap {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .section-cta {
+      display: inline-block;
+      background: #1B7A3D;
+      color: #fff;
+      padding: 14px 36px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(27,122,61,0.25);
+    }
+    .section-cta:hover { text-decoration: none; background: #166530; }
+    .section-cta-note {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #888;
     }
 
     /* Features */
@@ -111,29 +304,69 @@
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
-    @media (max-width: 500px) {
-      .features { grid-template-columns: 1fr; }
-    }
     .feature {
       background: #fff;
       border-radius: 14px;
-      padding: 24px;
+      padding: 22px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid #eee;
     }
-    .feature-icon { font-size: 28px; margin-bottom: 10px; }
-    .feature h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .feature p { font-size: 13px; color: #666; }
+    .feature-icon { font-size: 28px; margin-bottom: 8px; }
+    .feature h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #1a1a1a; }
+    .feature p { font-size: 13px; color: #666; line-height: 1.65; }
+
+    /* Differentiators (vs other apps) */
+    .vs-section {
+      background: #fff;
+    }
+    .vs-list {
+      max-width: 720px;
+      margin: 0 auto;
+      list-style: none;
+    }
+    .vs-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 18px 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .vs-item:last-child { border-bottom: none; }
+    .vs-check {
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1B7A3D;
+      color: #fff;
+      text-align: center;
+      line-height: 32px;
+      font-weight: 800;
+      font-size: 16px;
+      transform: translateZ(0);
+    }
+    .vs-body h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #1B7A3D;
+    }
+    .vs-body p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.7;
+    }
 
     /* Pricing */
     .pricing-card {
       background: #fff;
       border: 3px solid #1B7A3D;
       border-radius: 20px;
-      padding: 36px;
+      padding: 36px 28px;
       text-align: center;
-      max-width: 400px;
+      max-width: 420px;
       margin: 0 auto;
-      box-shadow: 0 4px 20px rgba(27,122,61,0.12);
+      box-shadow: 0 6px 24px rgba(27,122,61,0.14);
     }
     .pricing-trial {
       display: inline-block;
@@ -143,18 +376,19 @@
       border-radius: 20px;
       font-size: 14px;
       font-weight: 800;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .pricing-price {
-      font-size: 48px;
+      font-size: 52px;
       font-weight: 800;
       color: #1B7A3D;
+      letter-spacing: -0.02em;
     }
     .pricing-unit { font-size: 18px; color: #888; margin-left: 4px; }
     .pricing-daily {
       font-size: 15px;
       color: #1B7A3D;
-      font-weight: 600;
+      font-weight: 700;
       margin: 8px 0;
     }
     .pricing-note {
@@ -173,17 +407,38 @@
       font-weight: 800;
       text-align: center;
     }
+    .pricing-cta:hover { text-decoration: none; background: #166530; }
     .pricing-safe {
       margin-top: 12px;
       font-size: 12px;
       color: #888;
+    }
+    .pricing-bullets {
+      list-style: none;
+      margin: 18px 0 22px;
+      text-align: left;
+      padding: 0 6px;
+    }
+    .pricing-bullets li {
+      font-size: 14px;
+      color: #444;
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .pricing-bullets li:last-child { border-bottom: none; }
+    .pricing-bullets li::before {
+      content: "✓";
+      color: #1B7A3D;
+      font-weight: 800;
+      margin-right: 8px;
     }
 
     /* Trust */
     .trust {
       display: flex;
       justify-content: center;
-      gap: 32px;
+      gap: 28px;
+      flex-wrap: wrap;
       margin-top: 30px;
     }
     .trust-item { text-align: center; }
@@ -199,20 +454,109 @@
       margin-bottom: 24px;
     }
     .step-num {
-      flex-shrink: 0;
+      flex: 0 0 36px;
       width: 36px;
       height: 36px;
       background: #1B7A3D;
       color: #fff;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      text-align: center;
+      line-height: 36px; /* height と同値にしてサブピクセル誤差で中央に隙間が出るのを防ぐ */
       font-weight: 800;
       font-size: 16px;
+      /* GPU レイヤーに乗せて anti-aliasing artifact を回避 */
+      transform: translateZ(0);
     }
     .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
     .step p { font-size: 14px; color: #666; }
+
+    /* FAQ */
+    .faq-list {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .faq-list details {
+      background: #fff;
+      border-radius: 12px;
+      padding: 0;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border: 1px solid #ececec;
+      overflow: hidden;
+    }
+    .faq-list summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 18px 50px 18px 22px;
+      font-weight: 700;
+      font-size: 15px;
+      color: #1a1a1a;
+      position: relative;
+    }
+    .faq-list summary::-webkit-details-marker { display: none; }
+    .faq-list summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      color: #1B7A3D;
+      font-weight: 700;
+      transition: transform 0.2s ease;
+    }
+    .faq-list details[open] summary::after {
+      content: "−";
+    }
+    .faq-list details[open] summary {
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .faq-list .faq-body {
+      padding: 16px 22px 20px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.8;
+    }
+
+    /* Final CTA */
+    .final-cta-section {
+      background: linear-gradient(135deg, #1B7A3D 0%, #2ea050 100%);
+      color: #fff;
+      text-align: center;
+      padding: 70px 24px;
+    }
+    .final-cta-section h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .final-cta-section p {
+      font-size: 16px;
+      opacity: 0.94;
+      margin-bottom: 28px;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .final-cta {
+      display: inline-block;
+      background: #fff;
+      color: #1B7A3D;
+      padding: 18px 50px;
+      border-radius: 14px;
+      font-size: 19px;
+      font-weight: 800;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+    }
+    .final-cta:hover { text-decoration: none; transform: translateY(-2px); }
+    .final-cta-note {
+      display: block;
+      margin-top: 14px;
+      font-size: 13px;
+      opacity: 0.85;
+    }
 
     /* Company */
     .company-table {
@@ -240,6 +584,19 @@
       text-align: center;
       padding: 40px 24px;
     }
+    .footer-cta-block {
+      margin-bottom: 28px;
+    }
+    .footer-cta {
+      display: inline-block;
+      background: #1B7A3D;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 15px;
+    }
+    .footer-cta:hover { text-decoration: none; background: #2ea050; }
     .footer-links { margin-bottom: 16px; }
     .footer-links a {
       color: rgba(255,255,255,0.7);
@@ -247,63 +604,216 @@
       font-size: 13px;
     }
     .footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+    /* ====== Responsive ====== */
+    @media (max-width: 760px) {
+      .stats-panel {
+        grid-template-columns: repeat(3, 1fr);
+        margin: -20px 16px 0;
+        padding: 22px 14px;
+        gap: 10px;
+      }
+      .stat-cell + .stat-cell { border-left: none; }
+      .stat-cell:nth-child(n+4) { border-top: 1px solid #ececec; padding-top: 14px; }
+    }
+    @media (max-width: 600px) {
+      .features { grid-template-columns: 1fr; }
+      .section { padding: 50px 18px; }
+      .section h2 { font-size: 24px; }
+    }
+    @media (max-width: 480px) {
+      .hero { padding: 56px 16px 50px; }
+      .hero h1 { font-size: 26px; line-height: 1.35; }
+      .hero-lead { font-size: 15px; }
+      .hero-free { font-size: 44px; }
+      .hero-free small { font-size: 15px; }
+      .hero-cta { padding: 16px 32px; font-size: 17px; }
+      .hero-stats { gap: 10px; padding: 10px 14px; }
+      .hero-stat-num { font-size: 18px; }
+      .hero-stat-label { font-size: 10px; }
+      .hero-trustbar { gap: 8px; font-size: 11px; }
+      .stats-panel {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 18px 12px;
+      }
+      .stat-cell:nth-child(n+3) { border-top: 1px solid #ececec; padding-top: 14px; }
+      .stat-num { font-size: 22px; }
+      .pricing-price { font-size: 42px; }
+      .final-cta-section h2 { font-size: 22px; }
+      .final-cta { padding: 16px 36px; font-size: 17px; }
+      .footer-links a { display: inline-block; margin: 4px 8px; }
+      .header { padding: 10px 16px; }
+      .logo { font-size: 16px; }
+      .header-cta { padding: 7px 14px; font-size: 13px; }
+    }
+    @media (max-width: 380px) {
+      .hero h1 { font-size: 23px; }
+      .hero-free { font-size: 38px; }
+      .stats-panel { grid-template-columns: 1fr 1fr; }
+      .feature { padding: 18px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Header (sticky, CTA #1) -->
   <header class="header">
     <div class="logo">宅建士 完全対策</div>
-    <a href="/" class="header-cta">アプリを開く</a>
+    <a href="https://app.takkenkanzen.com/" class="header-cta">7日間 無料で始める</a>
   </header>
 
-  <!-- Hero -->
+  <!-- Hero (CTA #2) -->
   <section class="hero">
-    <div class="hero-badge">宅建試験 合格率No.1を目指すアプリ</div>
-    <h1>宅建士 完全対策</h1>
-    <p>AI解説・模擬試験・一問一答で、<br>合格への最短ルートを実現する学習アプリ</p>
-    <a href="/" class="hero-cta">7日間 無料で始める</a>
+    <div class="hero-badge">2026年法改正完全対応</div>
+    <h1>
+      <span class="accent">AI</span>があなたの弱点を見抜き、<br>
+      合格までの<span class="accent">最短ルート</span>を作る。
+    </h1>
+    <p class="hero-lead">
+      全2,020問の中から、AIが「今のあなたに必要な問題だけ」を出題。<br>
+      わからないところはClaude AIが即解説。忘れる前に自動復習。
+    </p>
+
+    <div class="hero-stats" aria-label="主要数値">
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">2,020</div>
+        <div class="hero-stat-label">総問題数</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">2026</div>
+        <div class="hero-stat-label">法改正対応</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">¥980</div>
+        <div class="hero-stat-label">月額（税込）</div>
+      </div>
+    </div>
+
+    <div class="hero-free">
+      7日間 ¥0 無料
+      <small>クレカ登録時のみ・トライアル中の解約で課金ゼロ</small>
+    </div>
+    <a href="https://app.takkenkanzen.com/" class="hero-cta">いますぐ無料で始める</a>
     <p class="hero-sub">無料期間終了後 ¥980/月 ・ いつでも解約OK</p>
+
+    <div class="hero-trustbar">
+      <span>無料スタート</span>
+      <span>解約自由</span>
+      <span>安全な決済</span>
+      <span>2026年法改正対応</span>
+    </div>
   </section>
 
-  <!-- Features -->
-  <section class="section">
+  <!-- Stats panel (社会的証明 6 マス) -->
+  <div class="stats-panel" aria-label="サービスの数字で見る特長">
+    <div class="stat-cell">
+      <div class="stat-num">820<small>問</small></div>
+      <div class="stat-label">4択 過去問演習</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">1,200<small>問</small></div>
+      <div class="stat-label">一問一答</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">AI</div>
+      <div class="stat-label">Claude AI解説</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">自動</div>
+      <div class="stat-label">忘れる前に復習</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">¥980<small>/月</small></div>
+      <div class="stat-label">無料期間終了後</div>
+    </div>
+  </div>
+
+  <!-- Features (8 cards) -->
+  <section class="section" id="features">
     <h2>主な機能</h2>
+    <p class="section-lead">合格に必要な力を、1つのアプリで完結。すべての機能が無料期間中から使えます。</p>
     <div class="features">
       <div class="feature">
-        <div class="feature-icon">📚</div>
-        <h3>豊富な問題数</h3>
-        <p>過去問ベースの4択問題と一問一答で徹底演習。全問にわかりやすい解説付き。</p>
+        <div class="feature-icon">🤖</div>
+        <h3>Claude AI解説</h3>
+        <p>「なぜそうなる？」を即座に深掘り。納得するまで何度でも追加質問できます。</p>
       </div>
       <div class="feature">
-        <div class="feature-icon">🤖</div>
-        <h3>AI解説</h3>
-        <p>わからない問題はAIがその場で解説。理解が深まるまで何度でも質問できます。</p>
+        <div class="feature-icon">🧠</div>
+        <h3>忘れる前に自動復習</h3>
+        <p>忘却曲線に基づくベストタイミングで自動出題。覚えた知識を試験当日まで保ちます。</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <h3>弱点自動克服</h3>
+        <p>正答率が低い分野・論点を自動抽出し、苦手だけを集中演習できます。</p>
       </div>
       <div class="feature">
         <div class="feature-icon">📝</div>
         <h3>本試験形式 模擬試験</h3>
-        <p>50問・2時間の本番と同じ形式。合否判定と分野別分析で弱点を可視化。</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">📊</div>
-        <h3>AI苦手分析</h3>
-        <p>学習データからAIが苦手分野を特定。効率的な学習プランを自動で提案します。</p>
+        <p>50問・2時間の本番と同じ形式。合否判定と分野別分析で実力を可視化。</p>
       </div>
       <div class="feature">
         <div class="feature-icon">⚡</div>
-        <h3>スキマ時間学習</h3>
-        <p>通勤中やお昼休みに一問一答。短時間でも毎日続けやすい設計です。</p>
+        <h3>直前モード</h3>
+        <p>試験直前の追い込みに最適化。頻出論点だけを最短ルートで総ざらい。</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔥</div>
+        <h3>ストリーク機能</h3>
+        <p>連続学習日数を可視化し、習慣化をサポート。「毎日触る」が自然に続く設計。</p>
       </div>
       <div class="feature">
         <div class="feature-icon">⚖️</div>
-        <h3>2026年法改正対応</h3>
-        <p>最新の法改正に完全対応。古い情報で間違った知識を覚える心配がありません。</p>
+        <h3>2026年法改正完全対応</h3>
+        <p>最新の法令に完全対応。古い情報で誤った知識を覚えるリスクをゼロに。</p>
       </div>
+    </div>
+    <div class="section-cta-wrap">
+      <a href="https://app.takkenkanzen.com/" class="section-cta">7日間 無料で全機能を試す</a>
+      <span class="section-cta-note">クレカ登録のみ・トライアル中の解約で課金ゼロ</span>
     </div>
   </section>
 
-  <!-- How it works -->
+  <!-- Differentiators -->
+  <section class="vs-section">
+    <div class="section narrow">
+      <h2>他の宅建アプリと、ここが違う。</h2>
+      <p class="section-lead">ただの過去問アプリではありません。合格に直結する4つの違い。</p>
+      <ul class="vs-list">
+        <li class="vs-item">
+          <div class="vs-check">1</div>
+          <div class="vs-body">
+            <h3>計2,020問という圧倒的な演習量</h3>
+            <p>4択820問+一問一答1,200問。暗記化を防ぎ、本番でどんな問われ方をされても対応できる演習量を確保しました。</p>
+          </div>
+        </li>
+        <li class="vs-item">
+          <div class="vs-check">2</div>
+          <div class="vs-body">
+            <h3>Claude AI解説 × 何度でも追加質問</h3>
+            <p>「なぜそうなる？」が分からなければAIに納得するまで質問可能。市販書の使い回しではない、論点を深掘りできる解説を実現。</p>
+          </div>
+        </li>
+        <li class="vs-item">
+          <div class="vs-check">3</div>
+          <div class="vs-body">
+            <h3>忘れる前のベストタイミングで自動復習</h3>
+            <p>記憶心理学（忘却曲線）に基づき、「いつ復習すれば最も効率よく覚えられるか」をアプリが自動で計算。あなたが忘れる前に復習問題を提示します。</p>
+          </div>
+        </li>
+        <li class="vs-item">
+          <div class="vs-check">4</div>
+          <div class="vs-body">
+            <h3>月額¥980 ・ 7日間¥0で試せる</h3>
+            <p>市販の過去問題集より安く、解約はいつでも自由。まず7日間ノーリスクで全機能を試せます。</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- How it works (CTA #4 below) -->
   <section class="section" style="background:#fff;">
     <h2>始め方</h2>
     <div class="steps">
@@ -318,7 +828,7 @@
         <div class="step-num">2</div>
         <div>
           <h3>毎日学習を続ける</h3>
-          <p>問題演習・模擬試験・AI解説で効率的に学習。ストリーク機能で習慣化。</p>
+          <p>4択演習・一問一答・模擬試験・AI解説で効率的に学習。自動復習とストリーク機能で習慣化。</p>
         </div>
       </div>
       <div class="step">
@@ -329,21 +839,34 @@
         </div>
       </div>
     </div>
+    <div class="section-cta-wrap">
+      <a href="https://app.takkenkanzen.com/" class="section-cta">いますぐステップ1を始める</a>
+      <span class="section-cta-note">7日間無料・登録3分・いつでも解約OK</span>
+    </div>
   </section>
 
-  <!-- Pricing -->
+  <!-- Pricing (CTA #5) -->
   <section class="section">
     <h2>料金プラン</h2>
+    <p class="section-lead">市販の過去問題集1冊より安く、計2,020問+AI解説+模擬試験+科学的記憶定着がすべて使い放題。</p>
     <div class="pricing-card">
-      <div class="pricing-trial">7日間無料</div>
+      <div class="pricing-trial">7日間 ¥0 無料</div>
       <div>
         <span class="pricing-price">¥980</span>
         <span class="pricing-unit">/月（税込）</span>
       </div>
       <div class="pricing-daily">1日わずか33円</div>
-      <div class="pricing-note">トライアル中にキャンセルすれば料金はかかりません</div>
-      <a href="/" class="pricing-cta">7日間 無料で始める</a>
-      <p class="pricing-safe">いつでも解約OK</p>
+      <div class="pricing-note">トライアル中にキャンセルすれば料金は一切かかりません</div>
+      <ul class="pricing-bullets">
+        <li>4択820問 + 一問一答1,200問 = 計2,020問</li>
+        <li>Claude AI解説 + 何度でも追加質問</li>
+        <li>本試験形式 模擬試験 何度でも</li>
+        <li>忘れる前の自動復習・弱点自動克服</li>
+        <li>2026年法改正完全対応</li>
+        <li>いつでも解約OK</li>
+      </ul>
+      <a href="https://app.takkenkanzen.com/" class="pricing-cta">7日間 無料で始める</a>
+      <p class="pricing-safe">クレカ登録のみ・トライアル中解約で課金ゼロ</p>
     </div>
     <div class="trust">
       <div class="trust-item">
@@ -354,7 +877,89 @@
         <div class="trust-icon">✋</div>
         <div class="trust-text">いつでも解約</div>
       </div>
+      <div class="trust-item">
+        <div class="trust-icon">⚖️</div>
+        <div class="trust-text">2026年法改正対応</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🆓</div>
+        <div class="trust-text">7日間¥0</div>
+      </div>
     </div>
+  </section>
+
+  <!-- FAQ (10 questions, CTA #6 below) -->
+  <section class="section narrow" style="background:#fff;" id="faq">
+    <h2>よくある質問</h2>
+    <p class="section-lead">気になる点は事前にすべてお答えします。それでも不明な点はお気軽にお問い合わせください。</p>
+    <div class="faq-list">
+      <details>
+        <summary>無料期間はいつまでですか？</summary>
+        <div class="faq-body">
+          ご登録から7日間が無料トライアル期間です。期間中はすべての機能（4択820問・一問一答1,200問・AI解説・模擬試験など）を制限なくお試しいただけます。8日目に自動で月額¥980（税込）に移行します。
+        </div>
+      </details>
+      <details>
+        <summary>解約はいつでもできますか？</summary>
+        <div class="faq-body">
+          はい、いつでも解約できます。アプリ内の「設定」→「サブスクリプション管理」から数タップで完了します。電話やメールでの引き留めは一切ありません。トライアル中に解約すれば一切料金は発生しません。
+        </div>
+      </details>
+      <details>
+        <summary>料金はいくらですか？</summary>
+        <div class="faq-body">
+          月額¥980（税込）です。1日あたり約33円。市販の過去問題集1冊より安く、計2,020問+AI解説+模擬試験が使い放題になります。最初の7日間は無料です。
+        </div>
+      </details>
+      <details>
+        <summary>過去問は何年分収録されていますか？</summary>
+        <div class="faq-body">
+          直近の出題傾向を分析し、頻出論点を網羅した4択820問+一問一答1,200問=計2,020問を収録。著作権に配慮し、すべて当アプリオリジナルの問題・解説として再構成しています。最新の出題傾向と2026年法改正にも完全対応しています。
+        </div>
+      </details>
+      <details>
+        <summary>他の宅建アプリと何が違いますか？</summary>
+        <div class="faq-body">
+          (1)計2,020問の圧倒的な演習量、(2)Claude AI解説で何度でも追加質問可能、(3)忘れる前の自動復習で記憶定着、(4)2026年法改正への即時対応、(5)月額¥980+7日間¥0という業界最安水準の価格、の5点で他アプリと差別化しています。
+        </div>
+      </details>
+      <details>
+        <summary>データは別デバイスで同期できますか？</summary>
+        <div class="faq-body">
+          はい、同じアカウントでログインすれば、Web・iOS・Android間で学習履歴・進捗・苦手分析データがすべて自動同期されます。スマホで通勤中に学習し、自宅のPCで続きを解く、といった使い方がスムーズに行えます。
+        </div>
+      </details>
+      <details>
+        <summary>法改正への対応はどうなっていますか？</summary>
+        <div class="faq-body">
+          2026年の法改正に完全対応しています。法令の改正があった場合は、関連問題と解説を速やかに更新し、古い情報で誤って覚えるリスクをゼロにすることに最大限努めます。出題者目線で「いま試験で問われる正しい知識」だけを学べます。
+        </div>
+      </details>
+      <details>
+        <summary>セキュリティは大丈夫ですか？</summary>
+        <div class="faq-body">
+          通信はすべてHTTPSで暗号化。決済情報は当社が直接保持せず、業界標準の決済代行サービスを利用してPCI DSS準拠の環境で処理します。パスワードはハッシュ化して保存しており、当社運営者であっても閲覧できません。
+        </div>
+      </details>
+      <details>
+        <summary>支払方法は何が使えますか？</summary>
+        <div class="faq-body">
+          クレジットカード（Visa, Mastercard, JCB, American Express）でのお支払いに対応しています。
+        </div>
+      </details>
+    </div>
+    <div class="section-cta-wrap">
+      <a href="https://app.takkenkanzen.com/" class="section-cta">疑問解消できたら、無料で始める</a>
+      <span class="section-cta-note">7日間¥0・いつでも解約OK</span>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta-section">
+    <h2>あなたの宅建合格を、<br>最短ルートで。</h2>
+    <p>計2,020問・Claude AI解説・2026年法改正対応。<br>すべての機能を、まずは7日間 ¥0 でお試しください。</p>
+    <a href="https://app.takkenkanzen.com/" class="final-cta">7日間 無料で始める</a>
+    <span class="final-cta-note">クレカ登録のみ・トライアル中解約で課金ゼロ・いつでも解約OK</span>
   </section>
 
   <!-- Company info -->
@@ -363,21 +968,25 @@
     <table class="company-table">
       <tr><th>サービス名</th><td>宅建士 完全対策</td></tr>
       <tr><th>運営</th><td>合同会社カケル</td></tr>
-      <tr><th>所在地</th><td>沖縄県沖縄市美里仲原町18-7-20世紀Mカマキチ303</td></tr>
+      <tr><th>所在地</th><td>沖縄県沖縄市美里仲原町18-7 20世紀Mカマキチ303</td></tr>
       <tr><th>お問い合わせ</th><td><a href="mailto:taira@2023kakeru.com">taira@2023kakeru.com</a></td></tr>
-      <tr><th>サービス内容</th><td>宅地建物取引士試験の学習支援アプリ（Web・iOS・Android対応）。問題演習、模擬試験、AI解説、学習分析機能を提供。</td></tr>
-      <tr><th>料金</th><td>月額980円（税込）・7日間の無料トライアルあり</td></tr>
-      <tr><th>支払方法</th><td>クレジットカード（Visa, Mastercard, JCB, American Express）</td></tr>
+      <tr><th>サービス内容</th><td>宅地建物取引士試験の学習支援アプリ（Web・iOS・Android対応）。4択820問・一問一答1,200問の演習、本試験形式の模擬試験、AI解説、忘れる前の自動復習、学習分析機能を提供。</td></tr>
+      <tr><th>料金</th><td>月額980円（税込）・7日間の無料トライアル後 自動更新</td></tr>
+      <tr><th>支払方法</th><td>PayPal（PayPalアカウント または クレジットカード: Visa / Mastercard / JCB / American Express）</td></tr>
     </table>
   </section>
 
-  <!-- Footer -->
+  <!-- Footer (CTA #8) -->
   <footer class="footer">
+    <div class="footer-cta-block">
+      <a href="https://app.takkenkanzen.com/" class="footer-cta">7日間 無料で始める</a>
+    </div>
     <div class="footer-links">
-      <a href="/">アプリを開く</a>
+      <a href="https://app.takkenkanzen.com/">アプリを開く</a>
       <a href="/tokushoho.html">特定商取引法に基づく表記</a>
       <a href="/terms.html">利用規約</a>
       <a href="/privacy.html">プライバシーポリシー</a>
+      <a href="/delete-account.html">アカウント削除</a>
       <a href="mailto:taira@2023kakeru.com">お問い合わせ</a>
     </div>
     <p class="footer-copy">&copy; 2026 合同会社カケル All rights reserved.</p>
