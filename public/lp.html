@@ -380,7 +380,81 @@
       line-height: 1.7;
     }
 
-    /* Pricing */
+    /* Pricing - 2プラン比較 */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 880px;
+      margin: 0 auto 32px;
+    }
+    .pricing-card-free {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      border-radius: 18px;
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+    }
+    .pricing-card-premium {
+      background: linear-gradient(180deg, #fff 0%, #f0f9f3 100%);
+      border: 2.5px solid #1B7A3D;
+      border-radius: 18px;
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(27,122,61,0.15);
+    }
+    .pricing-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 14px;
+    }
+    .pricing-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #FFD24A;
+      color: #1a1a1a;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 16px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(255,210,74,0.4);
+    }
+    .pricing-price-row { margin-bottom: 4px; }
+    .pricing-price-free {
+      color: #1a1a1a !important;
+      font-weight: 800;
+    }
+    .pricing-cross {
+      color: #aaa !important;
+      text-decoration: line-through;
+    }
+    .pricing-cross::before {
+      content: '✕' !important;
+      color: #c0c0c0 !important;
+      margin-right: 8px;
+    }
+    .pricing-cta-secondary {
+      background: #fff !important;
+      color: #1B7A3D !important;
+      border: 2px solid #1B7A3D !important;
+    }
+    .pricing-cta-secondary:hover {
+      background: #f0f9f3 !important;
+    }
+    /* レスポンシブ: モバイルでは縦並び */
+    @media (max-width: 720px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
     .pricing-card {
       background: #fff;
       border: 3px solid #1B7A3D;
@@ -1034,28 +1108,51 @@
     </div>
   </section>
 
-  <!-- Pricing (CTA #5) -->
+  <!-- Pricing (CTA #5) - 2プラン比較 -->
   <section class="section">
     <h2>料金プラン</h2>
-    <p class="section-lead">市販の過去問題集1冊より安く、計2,020問+AI解説+模擬試験+科学的記憶定着がすべて使い放題。</p>
-    <div class="pricing-card">
-      <div class="pricing-trial">7日間 ¥0 無料</div>
-      <div>
-        <span class="pricing-price">¥980</span>
-        <span class="pricing-unit">/月（税込）</span>
+    <p class="section-lead">まずは無料で試して、本気になったら Premium へ。<br>解約はいつでも、ワンタップ。</p>
+
+    <div class="pricing-grid">
+      <!-- 無料プラン -->
+      <div class="pricing-card pricing-card-free">
+        <h3 class="pricing-name">無料プラン</h3>
+        <div class="pricing-price-row">
+          <span class="pricing-price pricing-price-free">¥0</span>
+        </div>
+        <div class="pricing-daily">ずっと無料</div>
+        <ul class="pricing-bullets">
+          <li>4択問題 1日10問まで</li>
+          <li>一問一答 1日20問まで</li>
+          <li>AI解説 1日3回まで</li>
+          <li>進捗トラッキング</li>
+          <li class="pricing-cross">模擬試験</li>
+          <li class="pricing-cross">弱点AI分析</li>
+        </ul>
+        <a href="https://app.takkenkanzen.com/" class="pricing-cta pricing-cta-secondary">無料で始める</a>
       </div>
-      <div class="pricing-daily">1日わずか33円</div>
-      <div class="pricing-note">トライアル中にキャンセルすれば料金は一切かかりません</div>
-      <ul class="pricing-bullets">
-        <li>4択820問 + 一問一答1,200問 = 計2,020問</li>
-        <li>AI解説 + 何度でも追加質問</li>
-        <li>本試験形式 模擬試験 何度でも</li>
-        <li>忘れる前の自動復習・弱点自動克服</li>
-        <li>2026年法改正完全対応</li>
-        <li>いつでも解約OK</li>
-      </ul>
-      <a href="https://app.takkenkanzen.com/" class="pricing-cta">7日間 無料で始める</a>
-      <p class="pricing-safe">いつでも解約OK</p>
+
+      <!-- Premium プラン (おすすめ) -->
+      <div class="pricing-card pricing-card-premium">
+        <div class="pricing-badge">おすすめ</div>
+        <h3 class="pricing-name">Premium プラン</h3>
+        <div class="pricing-trial">7日間 ¥0 無料</div>
+        <div class="pricing-price-row">
+          <span class="pricing-price">¥980</span>
+          <span class="pricing-unit">/月（税込）</span>
+        </div>
+        <div class="pricing-daily">1日わずか33円</div>
+        <ul class="pricing-bullets">
+          <li>計2,020問 解き放題</li>
+          <li>AI解説 1日100回</li>
+          <li>本試験形式 模擬試験 無制限</li>
+          <li>弱点AI分析・最適出題</li>
+          <li>忘れる前の自動復習</li>
+          <li>2026年法改正完全対応</li>
+        </ul>
+        <a href="https://app.takkenkanzen.com/" class="pricing-cta">7日間 無料で試す</a>
+        <p class="pricing-safe">いつでも解約OK</p>
+      </div>
     </div>
     <div class="trust">
       <div class="trust-item">
