@@ -36,6 +36,13 @@ jest.mock('../../services/errorLogger', () => ({
   logError: jest.fn(),
 }));
 
+// cloudSync をモック (Supabase 依存を切り離す)
+jest.mock('../../services/cloudSync', () => ({
+  pullAchievementsFromCloud: jest.fn(() => Promise.resolve({})),
+  pushAchievementsToCloud: jest.fn(() => Promise.resolve(true)),
+  mergeAchievements: jest.fn((local: any, remote: any) => ({ ...local, ...remote })),
+}));
+
 import { useAchievementStore } from '../../store/useAchievementStore';
 
 const STORAGE_KEY = '@takken_achievements';

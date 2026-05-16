@@ -7,6 +7,11 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Achievement, AchievementId, Category } from '../types';
 import { logError } from '../services/errorLogger';
+import {
+  pullAchievementsFromCloud,
+  pushAchievementsToCloud,
+  mergeAchievements,
+} from '../services/cloudSync';
 
 const STORAGE_KEY = '@takken_achievements';
 
@@ -70,6 +75,7 @@ interface AchievementState {
   getUnlockedCount(): number;
   loadAchievements(): Promise<void>;
   saveAchievements(): Promise<void>;
+  syncWithCloud(userId: string): Promise<void>;  // [Phase 2] クラウド同期
   resetStore(): void;
 }
 
@@ -232,6 +238,30 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ unlocked }));
     } catch (e) {
       logError(e, { context: 'achievement.save' });
+    }
+  },
+
+  // [Phase 2] クラウド同期: アンインストール→再ログインで実績が消えないようにする
+  // - pull: クラウドから取得
+  // - merge: ローカル + リモートを両方保持 (古い解除日を優先)
+  // - push: ローカルが空でなければクラウドに保存 (空 push は安全装置で物理的に止まる)
+  async syncWithCloud(userId: string) {
+    try {
+      const remote = await pullAchievementsFromCloud(userId);
+      const state = get();
+      if (remote) {
+        const merged = mergeAchievements(state.unlocked, remote);
+        set({ unlocked: merged });
+        await get().saveAchievements();
+      }
+      if (remote !== null) {
+        const cur = get();
+        // 空 push 防止 (Data Wipe Disaster 対策)
+        if (Object.keys(cur.unlocked).length === 0) return;
+        await pushAchievementsToCloud(userId, cur.unlocked);
+      }
+    } catch (e) {
+      logError(e, { context: 'achievement.syncWithCloud' });
     }
   },
 }));

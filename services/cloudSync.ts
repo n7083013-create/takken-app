@@ -6,7 +6,7 @@
 
 import { supabase, isSupabaseConfigured } from './supabase';
 import { logError } from './errorLogger';
-import type { QuestionProgress, StudyStats } from '../types';
+import type { QuestionProgress, StudyStats, ExamResult, QuestMissionProgress } from '../types';
 
 // ── Delta sync: track which records changed since last sync ──
 // SECURITY: ユーザー切替で前ユーザーの dirty 状態が次ユーザーに混入する事故を防ぐため
@@ -263,5 +263,263 @@ export function mergeProgress(
     };
   });
 
+  return merged;
+}
+
+// ============================================================
+// [Phase 2] 実績 / 模試 / クエスト のクラウド同期
+// ============================================================
+//
+// 以下の3関数群を追加。いずれも空ガード付きでデータ破壊を防止。
+// テーブル: achievements_progress / exam_history / quest_progress
+//   (supabase/migrations/011_engagement_sync.sql で定義)
+
+// -------------------- 実績 (achievements) --------------------
+
+/**
+ * 実績解除状況をクラウドから取得
+ * @returns { achievementId: unlockedAt } の Record、エラー時 null
+ */
+export async function pullAchievementsFromCloud(
+  userId: string,
+): Promise<Record<string, string> | null> {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const { data, error } = await supabase
+      .from('achievements_progress')
+      .select('achievement_id, unlocked_at')
+      .eq('user_id', userId);
+    if (error) throw error;
+    const result: Record<string, string> = {};
+    (data ?? []).forEach((row: { achievement_id: string; unlocked_at: string }) => {
+      result[row.achievement_id] = row.unlocked_at;
+    });
+    return result;
+  } catch (e) {
+    logError(e, { context: 'cloudSync.pullAchievements' });
+    return null;
+  }
+}
+
+/**
+ * 解除済み実績をクラウドに upsert
+ * 空オブジェクトの場合は no-op (空でクラウドを上書きする災害を防ぐ)
+ */
+export async function pushAchievementsToCloud(
+  userId: string,
+  unlocked: Record<string, string>,
+): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  // [安全装置] 空 push 禁止
+  if (!unlocked || Object.keys(unlocked).length === 0) {
+    return true;
+  }
+  try {
+    const rows = Object.entries(unlocked).map(([achievementId, unlockedAt]) => ({
+      user_id: userId,
+      achievement_id: achievementId,
+      unlocked_at: unlockedAt,
+    }));
+    const { error } = await supabase.from('achievements_progress').upsert(rows);
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    logError(e, { context: 'cloudSync.pushAchievements' });
+    return false;
+  }
+}
+
+/**
+ * ローカルとクラウドの実績をマージ (両方の解除状態を保持、unlocked_at は古い方を優先)
+ * = 「先に解除した記録」を残す
+ */
+export function mergeAchievements(
+  local: Record<string, string>,
+  remote: Record<string, string>,
+): Record<string, string> {
+  const merged: Record<string, string> = { ...local };
+  Object.keys(remote).forEach((id) => {
+    if (!merged[id]) {
+      merged[id] = remote[id];
+    } else {
+      // 両方ある場合は古い方 (先に解除した記録) を残す
+      merged[id] = new Date(merged[id]) < new Date(remote[id]) ? merged[id] : remote[id];
+    }
+  });
+  return merged;
+}
+
+// -------------------- 模試 (exam_history, append-only) --------------------
+
+/**
+ * 模試の受験履歴をクラウドから取得
+ */
+export async function pullExamHistoryFromCloud(
+  userId: string,
+): Promise<ExamResult[] | null> {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const { data, error } = await supabase
+      .from('exam_history')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: true });
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+      id: row.id,
+      date: row.date,
+      score: row.score,
+      total: row.total,
+      passed: row.passed,
+      byCategory: row.by_category,
+      durationSec: row.duration_sec,
+    }));
+  } catch (e) {
+    logError(e, { context: 'cloudSync.pullExamHistory' });
+    return null;
+  }
+}
+
+/**
+ * 模試結果をクラウドに insert (append-only、UPDATE しない)
+ * 単一レコード版。模試完了時に呼ぶ。
+ */
+export async function pushExamResultToCloud(
+  userId: string,
+  result: ExamResult,
+): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  if (!result || !result.id) return false;
+  try {
+    const { error } = await supabase.from('exam_history').upsert({
+      id: result.id,
+      user_id: userId,
+      date: result.date,
+      score: result.score,
+      total: result.total,
+      passed: result.passed,
+      by_category: result.byCategory,
+      duration_sec: result.durationSec,
+    });
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    logError(e, { context: 'cloudSync.pushExamResult' });
+    return false;
+  }
+}
+
+/**
+ * ローカル/リモートの模試履歴を id ベースでマージ (重複排除、append-only)
+ */
+export function mergeExamHistory(
+  local: ExamResult[],
+  remote: ExamResult[],
+): ExamResult[] {
+  const byId = new Map<string, ExamResult>();
+  [...remote, ...local].forEach((r) => {
+    if (r && r.id) byId.set(r.id, r);
+  });
+  return Array.from(byId.values()).sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
+}
+
+// -------------------- クエスト (quest_progress) --------------------
+
+/**
+ * クエスト進捗をクラウドから取得
+ */
+export async function pullQuestProgressFromCloud(
+  userId: string,
+): Promise<Record<string, QuestMissionProgress> | null> {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const { data, error } = await supabase
+      .from('quest_progress')
+      .select('*')
+      .eq('user_id', userId);
+    if (error) throw error;
+    const result: Record<string, QuestMissionProgress> = {};
+    (data ?? []).forEach((row: any) => {
+      result[row.mission_id] = {
+        missionId: row.mission_id,
+        bestScore: row.best_score,
+        attempts: row.attempts,
+        completedAt: row.completed_at ?? undefined,
+        lastAttemptAt: row.last_attempt_at ?? undefined,
+      };
+    });
+    return result;
+  } catch (e) {
+    logError(e, { context: 'cloudSync.pullQuestProgress' });
+    return null;
+  }
+}
+
+/**
+ * クエスト進捗をクラウドに upsert
+ * 空オブジェクトの場合は no-op
+ */
+export async function pushQuestProgressToCloud(
+  userId: string,
+  missionProgress: Record<string, QuestMissionProgress>,
+): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  // [安全装置] 空 push 禁止
+  if (!missionProgress || Object.keys(missionProgress).length === 0) {
+    return true;
+  }
+  try {
+    const rows = Object.values(missionProgress).map((p) => ({
+      user_id: userId,
+      mission_id: p.missionId,
+      best_score: p.bestScore,
+      attempts: p.attempts,
+      completed_at: p.completedAt ?? null,
+      last_attempt_at: p.lastAttemptAt ?? null,
+      updated_at: new Date().toISOString(),
+    }));
+    const { error } = await supabase.from('quest_progress').upsert(rows);
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    logError(e, { context: 'cloudSync.pushQuestProgress' });
+    return false;
+  }
+}
+
+/**
+ * ローカル/リモートのクエスト進捗をマージ
+ * 各ミッションごとに「より進んだ方 (bestScore + attempts が多い)」を採用
+ */
+export function mergeQuestProgress(
+  local: Record<string, QuestMissionProgress>,
+  remote: Record<string, QuestMissionProgress>,
+): Record<string, QuestMissionProgress> {
+  const merged: Record<string, QuestMissionProgress> = { ...local };
+  Object.keys(remote).forEach((id) => {
+    const l = merged[id];
+    const r = remote[id];
+    if (!l) {
+      merged[id] = r;
+      return;
+    }
+    merged[id] = {
+      missionId: id,
+      // bestScore は MAX (頑張った結果を失わない)
+      bestScore: Math.max(l.bestScore, r.bestScore),
+      // attempts は MAX (片方のデバイスでのみ挑戦した分も合算しない、重複の方が安全)
+      attempts: Math.max(l.attempts, r.attempts),
+      // completedAt: どちらかで完了していれば早い方を残す
+      completedAt: l.completedAt && r.completedAt
+        ? (new Date(l.completedAt) < new Date(r.completedAt) ? l.completedAt : r.completedAt)
+        : (l.completedAt ?? r.completedAt),
+      // lastAttemptAt: 新しい方
+      lastAttemptAt: l.lastAttemptAt && r.lastAttemptAt
+        ? (new Date(l.lastAttemptAt) > new Date(r.lastAttemptAt) ? l.lastAttemptAt : r.lastAttemptAt)
+        : (l.lastAttemptAt ?? r.lastAttemptAt),
+    };
+  });
   return merged;
 }

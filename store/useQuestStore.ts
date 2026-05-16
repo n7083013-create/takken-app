@@ -7,6 +7,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QuestMissionProgress } from '../types';
 import { QUEST_CHAPTERS, ALL_QUEST_MISSIONS } from '../data/quests';
 import { logError } from '../services/errorLogger';
+import {
+  pullQuestProgressFromCloud,
+  pushQuestProgressToCloud,
+  mergeQuestProgress,
+} from '../services/cloudSync';
 
 const STORAGE_KEY = '@takken_quest';
 
@@ -28,6 +33,7 @@ interface QuestState {
   resetQuest(): void;
   loadQuest(): Promise<void>;
   saveQuest(): Promise<void>;
+  syncWithCloud(userId: string): Promise<void>;  // [Phase 2] クラウド同期
 }
 
 export const useQuestStore = create<QuestState>((set, get) => ({
@@ -150,6 +156,27 @@ export const useQuestStore = create<QuestState>((set, get) => ({
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ missionProgress }));
     } catch (e) {
       logError(e, { context: 'quest.save' });
+    }
+  },
+
+  // [Phase 2] クラウド同期: アンインストール→再ログインでクエスト進捗が消えないようにする
+  async syncWithCloud(userId: string) {
+    try {
+      const remote = await pullQuestProgressFromCloud(userId);
+      const state = get();
+      if (remote) {
+        const merged = mergeQuestProgress(state.missionProgress, remote);
+        set({ missionProgress: merged });
+        await get().saveQuest();
+      }
+      if (remote !== null) {
+        const cur = get();
+        // 空 push 防止 (Data Wipe Disaster 対策)
+        if (Object.keys(cur.missionProgress).length === 0) return;
+        await pushQuestProgressToCloud(userId, cur.missionProgress);
+      }
+    } catch (e) {
+      logError(e, { context: 'quest.syncWithCloud' });
     }
   },
 }));

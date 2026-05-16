@@ -110,14 +110,31 @@ export default function RootLayout() {
   const stats = useProgressStore((s) => s.stats);
   const getDaysUntilExam = useSettingsStore((s) => s.getDaysUntilExam);
 
-  // フォアグラウンド復帰時にクラウド同期を自動実行
-  // バックグラウンド → アクティブ になったタイミングで進捗をクラウドと同期
+  // [Phase 2] ログイン直後・フォアグラウンド復帰時に全ストアをクラウドと同期
+  // - useProgressStore: 既存 (4択進捗 + 統計)
+  // - useAchievementStore: 実績バッジ (新規)
+  // - useExamStore: 模試履歴 (新規)
+  // - useQuestStore: クエスト進捗 (新規)
+  // 全ストアに空 push 防止ガードを実装済み → クラウドデータの誤上書きは物理的に発生しない
   useEffect(() => {
     if (!user) return;
+    const syncAll = async () => {
+      const uid = user.id;
+      // 並列実行: 各ストアは独立、失敗してもアプリは継続
+      await Promise.allSettled([
+        useProgressStore.getState().syncWithCloud(uid),
+        useAchievementStore.getState().syncWithCloud(uid),
+        useExamStore.getState().syncWithCloud(uid),
+        useQuestStore.getState().syncWithCloud(uid),
+      ]);
+    };
+    // ログイン直後に1回同期
+    syncAll().catch(() => {});
+    // フォアグラウンド復帰時にも同期
     const appState = { current: AppState.currentState };
     const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
       if (appState.current.match(/inactive|background/) && next === 'active') {
-        useProgressStore.getState().syncWithCloud(user.id).catch(() => {});
+        syncAll().catch(() => {});
       }
       appState.current = next;
     });
