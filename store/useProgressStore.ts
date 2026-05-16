@@ -25,6 +25,10 @@ interface QuickQuizStats {
   total: number;
   correct: number;
   categoryStats: Record<Category, { total: number; correct: number }>;
+  /** 今日の解答数（フリーミアム制限用・日付変更でリセット） */
+  todayCount?: number;
+  /** 今日の日付 YYYY-MM-DD */
+  todayDate?: string;
 }
 
 interface ProgressState {
@@ -41,9 +45,12 @@ interface ProgressState {
   getWeakQuestions(): string[];
   getDueForReview(): string[];
   getBookmarkedQuestions(): string[];
+  /** [達成率用] 3回連続正解で「習得済」とみなす。間違えるとリセット。 */
+  getMasteredCount(threshold?: number): number;
   getCategoryAccuracy(category: Category): number;
   getTodayAnswered(): number;
   getTodayCorrect(): number;
+  getTodayQuickQuizCount(): number;
   getDailyLog(): Record<string, number>;
   getStreakFreezeCount(): number;
   /** インターリーブ学習: カテゴリ混合で最適な問題を選出 */
@@ -51,7 +58,7 @@ interface ProgressState {
   /** 就寝前復習: 最も忘れやすい問題を選出 */
   getPreSleepReview(count: number): string[];
   /** 弱点自動ドリル: 最弱サブカテゴリから問題を選出 */
-  getWeakAreaDrill(count: number): string[];
+  getWeakAreaDrill(count: number, filterCategory?: Category): string[];
   resetProgress(): void;
   loadProgress(): Promise<void>;
   saveProgress(): Promise<void>;
@@ -186,11 +193,24 @@ function calculateStreak(
 
   if (!lastStudyAt) return { streak: 1, freezeUsed: false, updatedStats };
 
+  // Issue #14: DST 切替日や夏時間導入国で setHours(0,0,0,0) 後でも 23h/25h 差になり
+  // Math.floor の結果が意図と外れる事故を防ぐため、ローカル日付文字列 (YYYY-MM-DD) で比較する
   const lastDate = new Date(lastStudyAt);
   const today = new Date();
-  lastDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  const diffDays = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+  const lastKey = getDateKey(lastDate);
+  const todayKey = getDateKey(today);
+  // 同日なら 0、翌日なら 1、それ以上は実日数差
+  let diffDays: number;
+  if (lastKey === todayKey) {
+    diffDays = 0;
+  } else {
+    // 簡易日数差: 両方を日付の 00:00 で UTC 化して計算（時刻情報を捨てる）
+    const [ly, lm, ld] = lastKey.split('-').map(Number);
+    const [ty, tm, td] = todayKey.split('-').map(Number);
+    const lastUtc = Date.UTC(ly, lm - 1, ld);
+    const todayUtc = Date.UTC(ty, tm - 1, td);
+    diffDays = Math.round((todayUtc - lastUtc) / (1000 * 60 * 60 * 24));
+  }
 
   if (diffDays === 0) {
     return { streak: currentStreak, freezeUsed: false, updatedStats };
@@ -226,6 +246,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   recordQuickQuizAnswer(quizId: string, category: Category, isCorrect: boolean) {
     const state = get();
+    const today = getDateKey();
+    const sameDay = state.quickQuizStats.todayDate === today;
     const updatedQuickQuizStats: QuickQuizStats = {
       total: state.quickQuizStats.total + 1,
       correct: state.quickQuizStats.correct + (isCorrect ? 1 : 0),
@@ -236,10 +258,20 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
           correct: state.quickQuizStats.categoryStats[category].correct + (isCorrect ? 1 : 0),
         },
       },
+      todayCount: (sameDay ? (state.quickQuizStats.todayCount ?? 0) : 0) + 1,
+      todayDate: today,
     };
 
     set({ quickQuizStats: updatedQuickQuizStats });
     get().saveProgress();
+  },
+
+  /** 今日の一問一答解答数 */
+  getTodayQuickQuizCount(): number {
+    const { quickQuizStats } = get();
+    const today = getDateKey();
+    if (quickQuizStats.todayDate !== today) return 0;
+    return quickQuizStats.todayCount ?? 0;
   },
 
   recordAnswer(questionId: string, category: Category, isCorrect: boolean, confidence: ConfidenceLevel = 'low') {
@@ -324,6 +356,14 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
     // 非同期で保存
     get().saveProgress();
+
+    // ストリーク維持通知 + 日次リマインダー本文を最新化
+    // - 答案ごとに最終学習から 20-22h 後に再予約 → ストリーク切れ前夜の警告
+    // - 日次リマインダー本文も同時に更新（dueCount, streak, weakCount を反映）
+    // 循環依存を避けるため動的 import + fire-and-forget
+    import('../services/notifications')
+      .then((m) => m.refreshNotificationsAfterAnswer())
+      .catch((e) => logError(e, { context: 'progress.refreshNotifications' }));
   },
 
   toggleBookmark(questionId: string) {
@@ -387,6 +427,19 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       .map((p) => p.questionId);
   },
 
+  /**
+   * 「3回連続正解」で習得とみなす問題数を返す。
+   * - 間違えると correctStreak が 0 にリセットされるため、未習得に戻る
+   * - 真の習得度を反映するため、達成率の分子に使う
+   * @param threshold 連続正解数の閾値 (デフォルト 3)
+   */
+  getMasteredCount(threshold = 3): number {
+    const { progress } = get();
+    return Object.values(progress).filter(
+      (p) => (p.correctStreak ?? 0) >= threshold,
+    ).length;
+  },
+
   getCategoryAccuracy(category: Category): number {
     const catStats = get().stats.categoryStats[category];
     // 分母は「掲載問題数」（解いた数ではなく全問数）
@@ -396,30 +449,21 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   },
 
   getTodayAnswered(): number {
-    const { progress } = get();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString();
-    // 今日の解答のみをカウント（lastAttemptAt が今日の場合）
-    // 注: この方法は最終回答日しか見えないため概算
-    // 正確には解答ログが必要だが、statsのtotalQuestionsと合わせて使用
-    return Object.values(progress).filter((p) => {
-      if (!p.lastAttemptAt || p.attempts === 0) return false;
-      const attemptDate = new Date(p.lastAttemptAt);
-      attemptDate.setHours(0, 0, 0, 0);
-      return attemptDate.getTime() >= today.getTime();
-    }).length;
+    // Issue #16: lastAttemptAt ベースは「過去問を見直すだけ（recordAnswer 未呼び出し）」
+    // でも 0 にならない/タイムゾーン境界バグがあった。dailyLog（recordAnswer 内で +1）を真値とする。
+    const stats = get().stats;
+    const todayKey = getDateKey(new Date());
+    return stats.dailyLog?.[todayKey] ?? 0;
   },
 
   getTodayCorrect(): number {
+    // dailyLog は問題数のみで正解数は持たない → 進捗から推定（lastAttemptAt が今日のもののうち正解）
+    // 厳密性は getTodayAnswered ほど重要ではない（UI 表示用途のみ）ため近似でOK
     const { progress } = get();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayKey = getDateKey(new Date());
     return Object.values(progress).filter((p) => {
       if (!p.lastAttemptAt || p.attempts === 0) return false;
-      const attemptDate = new Date(p.lastAttemptAt);
-      attemptDate.setHours(0, 0, 0, 0);
-      return attemptDate.getTime() >= today.getTime() && p.correctCount > 0;
+      return getDateKey(new Date(p.lastAttemptAt)) === todayKey && p.correctCount > 0;
     }).length;
   },
 
@@ -545,14 +589,18 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
    * 弱点自動ドリル
    * 最も正答率が低いサブカテゴリから集中出題
    */
-  getWeakAreaDrill(count: number): string[] {
+  getWeakAreaDrill(count: number, filterCategory?: Category): string[] {
     const { progress, stats } = get();
 
     // 各サブカテゴリの正答率を計算
     type SubcatScore = { cat: Category; key: string; tags: string[]; accuracy: number; total: number };
     const subcatScores: SubcatScore[] = [];
 
-    for (const cat of ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'] as Category[]) {
+    const categories = filterCategory
+      ? [filterCategory]
+      : (['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'] as Category[]);
+
+    for (const cat of categories) {
       const subcats = SUBCATEGORIES[cat];
       for (const sc of subcats) {
         const questions = ALL_QUESTIONS.filter(
@@ -640,11 +688,24 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         });
         await get().saveProgress();
       }
-      // Only push if pull succeeded (remote is not null).
-      // If pull failed, we keep local data but do NOT push to avoid
-      // overwriting potentially newer remote data.
+      // [Bugfix CRITICAL] 空ローカルがクラウドを上書きする災害シナリオを防止
+      // 旧実装の問題:
+      //   1. 再インストール直後はローカルが空
+      //   2. クラウドにデータあり → merge は remote 優先で復元する
+      //   3. しかしバグで「空ローカル」が稀に push されて、クラウドのデータも消えていた
+      //   4. クラウドが Master なので、もう戻せない (Data Wipe Disaster)
+      // 新実装: ローカル進捗が完全に空のときは push しない。
+      //   - 再インストール直後はまずローカルにデータが揃うのを待つ
+      //   - ユーザーが実際に何か解いた瞬間に push される (markDirty + 後続 sync)
+      //   - これでクラウドデータが意図せず消えることはない
       if (remote !== null) {
         const cur = get();
+        const localIsEmpty = Object.keys(cur.progress || {}).length === 0;
+        if (localIsEmpty) {
+          // 空ローカルは絶対 push しない (クラウド保護)
+          set({ syncError: null });
+          return;
+        }
         await Promise.all([
           pushProgressToCloud(userId, cur.progress),
           pushStatsToCloud(userId, cur.stats, cur.quickQuizStats),

@@ -9,12 +9,26 @@ import { logError } from './errorLogger';
 import type { QuestionProgress, StudyStats } from '../types';
 
 // ── Delta sync: track which records changed since last sync ──
+// SECURITY: ユーザー切替で前ユーザーの dirty 状態が次ユーザーに混入する事故を防ぐため
+//           userId と紐付けて管理する。signOut/別ユーザーログイン時に必ず resetSyncState() を呼ぶ
 let lastSyncTimestamp: string | null = null;
+let syncOwnerUserId: string | null = null;
 const dirtyIds = new Set<string>();
 
 /** Mark a question as modified so it will be included in the next push */
 export function markDirty(questionId: string): void {
   dirtyIds.add(questionId);
+}
+
+/**
+ * sync 状態を完全リセット（ログアウト/別ユーザー切替時に必須）
+ * これを呼ばないと前ユーザーの dirtyIds や lastSyncTimestamp が
+ * 次ユーザーのクラウドに混入する。
+ */
+export function resetSyncState(): void {
+  lastSyncTimestamp = null;
+  syncOwnerUserId = null;
+  dirtyIds.clear();
 }
 
 const UPSERT_CHUNK_SIZE = 200;
@@ -88,8 +102,9 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
         }
       : null;
 
-    // Update sync timestamp after successful pull
+    // Update sync timestamp after successful pull (owner-bound)
     lastSyncTimestamp = new Date().toISOString();
+    syncOwnerUserId = userId;
 
     return { progress, stats };
   } catch (e) {
@@ -106,6 +121,18 @@ export async function pushProgressToCloud(
   progress: Record<string, QuestionProgress>,
 ): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
+  // SECURITY: 別ユーザーが所有していた dirty 状態を新ユーザーで push してはいけない
+  // syncOwnerUserId が違えば dirty を捨てて初回扱い
+  if (syncOwnerUserId !== null && syncOwnerUserId !== userId) {
+    resetSyncState();
+  }
+  // [安全装置 CRITICAL] 空 progress を絶対に送信しない (Data Wipe Disaster 防止)
+  // 再インストール直後など、ローカルが完全に空の状態で push が走ると、
+  // クラウドにあった既存データが誤上書きされる災害シナリオを物理的に止める。
+  // 「データを消したい」場合は別途 delete API を経由すべき。
+  if (!progress || Object.keys(progress).length === 0) {
+    return true;
+  }
   try {
     // Delta sync: only push dirty records (or all on first sync)
     const values = dirtyIds.size > 0
@@ -140,6 +167,7 @@ export async function pushProgressToCloud(
     // Successful push: clear dirty set and update timestamp
     dirtyIds.clear();
     lastSyncTimestamp = new Date().toISOString();
+    syncOwnerUserId = userId;
     return true;
   } catch (e) {
     logError(e, { context: 'cloudSync.pushProgress' });
@@ -156,6 +184,13 @@ export async function pushStatsToCloud(
   quickQuizStats: unknown,
 ): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
+  // [安全装置 CRITICAL] 初期値 (totalQuestions === 0) を絶対に push しない
+  // 再インストール直後にローカル統計がデフォルト(0)で初期化されている時、
+  // クラウドにあった既存統計を 0 で上書きする災害を防ぐ。
+  // ユーザーが実際に問題を解いていれば totalQuestions > 0 になる。
+  if (!stats || (stats.totalQuestions === 0 && stats.totalCorrect === 0)) {
+    return true;
+  }
   try {
     const { error } = await supabase.from('study_stats').upsert({
       user_id: userId,
