@@ -34,6 +34,7 @@ import { infoAlert } from '../../services/alert';
 import {
   getRecommendedQuestionsByCategory,
   getRecommendedQuestionsBySubcategory,
+  getRecommendedQuestionsForOther,
 } from '../../services/aiAnalysis';
 import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
@@ -733,7 +734,7 @@ function HomeScreen() {
                 <Text style={[s.catBlockName, { color: catColor }]}>{CATEGORY_LABELS[category]}</Text>
                 <Text style={[s.catBlockArrow, { color: catColor }]}>▶ 全体を解く</Text>
               </Pressable>
-              {/* サブカテゴリ chip 一覧 */}
+              {/* サブカテゴリ chip 一覧 + 末尾に「その他」chip */}
               <View style={s.subChipRow}>
                 {subcats.map((sc) => {
                   const scQuestions = ALL_QUESTIONS.filter(
@@ -772,6 +773,50 @@ function HomeScreen() {
                     </Pressable>
                   );
                 })}
+                {/* [Bugfix] どの subcategory にもマッチしない問題用の「その他」chip。
+                    例: 権利関係に22問、宅建業法に19問、法令に15問、税・その他に12問が該当。
+                    これらが chip からアクセス不能になっていたので末尾に追加。 */}
+                {(() => {
+                  const matchedIds = new Set<string>();
+                  for (const sc of subcats) {
+                    for (const q of ALL_QUESTIONS) {
+                      if (q.category === category && matchSubcat(q.tags, sc.matchTags)) {
+                        matchedIds.add(q.id);
+                      }
+                    }
+                  }
+                  const otherCount = ALL_QUESTIONS.filter(
+                    (q) => q.category === category && !matchedIds.has(q.id),
+                  ).length;
+                  if (otherCount === 0) return null;
+                  return (
+                    <Pressable
+                      key="_other"
+                      style={[s.subChip, { borderColor: catColor + '50' }]}
+                      onPress={async () => {
+                        const progressMap = useProgressStore.getState().progress;
+                        const allMatchTags = subcats.flatMap((sc) => sc.matchTags);
+                        const recommended = getRecommendedQuestionsForOther(progressMap, category, allMatchTags, 15);
+                        if (recommended.length === 0) return;
+                        const ids = recommended.map((r) => r.questionId);
+                        await setAiQueue(
+                          {
+                            getItem: (k) => AsyncStorage.getItem(k),
+                            setItem: (k, v) => AsyncStorage.setItem(k, v),
+                            removeItem: (k) => AsyncStorage.removeItem(k),
+                          },
+                          ids,
+                        );
+                        router.push(`/question/${ids[0]}?source=ai` as any);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${CATEGORY_LABELS[category]}のその他論点を集中して解く`}
+                    >
+                      <Text style={s.subChipIcon}>📦</Text>
+                      <Text style={[s.subChipText, { color: catColor }]}>その他</Text>
+                    </Pressable>
+                  );
+                })()}
               </View>
               {/* リスト表示で全問題を見たい派向け (副導線) */}
               <Pressable
