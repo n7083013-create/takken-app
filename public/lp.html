@@ -413,11 +413,16 @@
       color: #1a1a1a;
       margin-bottom: 16px;
     }
-    /* 「おすすめ」バッジ部分の縦位置統一: 無料プラン側にも同じ高さの透明スペーサーを置く */
-    .pricing-card-free .pricing-trial-spacer {
-      display: block;
-      height: 32px;  /* pricing-trial の高さに合わせる */
-      margin: 0 auto 18px;
+    /* 無料プラン側のバッジ (Premium の pricing-trial と縦位置・高さを揃える) */
+    .pricing-free-badge {
+      display: inline-block;
+      background: #f0f0f0;
+      color: #555;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
     }
     .pricing-badge {
       position: absolute;
@@ -439,13 +444,13 @@
       font-weight: 800;
     }
     .pricing-cross {
-      color: #aaa !important;
-      text-decoration: line-through;
+      color: #888 !important;
     }
     .pricing-cross::before {
       content: '✕' !important;
-      color: #c0c0c0 !important;
+      color: #c0392b !important;
       margin-right: 8px;
+      font-weight: 800;
     }
     .pricing-cta-secondary {
       background: #fff !important;
@@ -489,13 +494,14 @@
     }
     .pricing-trial {
       display: inline-block;
-      background: #FF6B35;
+      background: linear-gradient(135deg, #1B7A3D 0%, #2ea050 100%);
       color: #fff;
       padding: 6px 18px;
       border-radius: 20px;
       font-size: 14px;
       font-weight: 800;
       margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(27,122,61,0.25);
     }
     .pricing-price {
       font-size: 52px;
@@ -1139,7 +1145,7 @@
       <!-- 無料プラン -->
       <div class="pricing-card pricing-card-free">
         <h3 class="pricing-name">無料プラン</h3>
-        <span class="pricing-trial-spacer" aria-hidden="true"></span>
+        <div class="pricing-free-badge">クレカ登録不要・即スタート</div>
         <div class="pricing-price-row">
           <span class="pricing-price pricing-price-free">¥0</span>
         </div>
