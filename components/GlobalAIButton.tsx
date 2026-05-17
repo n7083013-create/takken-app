@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
@@ -29,6 +30,9 @@ export function GlobalAIButton() {
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
+  // [UX改善] PC (>=768px) では全画面 Modal ではなくフローティングパネル
+  const { width: screenWidth } = useWindowDimensions();
+  const isWideScreen = screenWidth >= 768;
 
   const canAI = useSettingsStore((st) => st.canUseAI());
   const isPro = useSettingsStore((st) => st.isPro());
@@ -104,14 +108,27 @@ export function GlobalAIButton() {
         <Text style={s.fabIcon}>🤖</Text>
       </Pressable>
 
-      {/* AIチャットモーダル */}
-      <Modal visible={visible} animationType="slide" onRequestClose={() => setVisible(false)}>
-        {/* [Bugfix] ヘッダーがステータスバーと重なる問題:
-            Modal 内では SafeAreaView の top inset が効かないことがあるため、
-            useSafeAreaInsets で取得した値を header の paddingTop に直接適用する。
-            SafeAreaView は bottom/left/right のみ担当（キーボードや横画面対応）。*/}
-        <SafeAreaView style={s.safe} edges={['bottom', 'left', 'right']}>
-          <View style={[s.header, { paddingTop: insets.top + 12 }]}>
+      {/* AIチャットモーダル
+          - PC (isWideScreen): transparent モーダル + 右側フローティングパネル
+          - モバイル: 通常の slide モーダル (全画面) */}
+      <Modal
+        visible={visible}
+        animationType={isWideScreen ? 'fade' : 'slide'}
+        transparent={isWideScreen}
+        onRequestClose={() => setVisible(false)}
+      >
+        {isWideScreen && (
+          <Pressable
+            style={s.pcBackdrop}
+            onPress={() => setVisible(false)}
+            accessibilityLabel="閉じる"
+          />
+        )}
+        <SafeAreaView
+          style={isWideScreen ? s.pcPanel : s.safe}
+          edges={isWideScreen ? [] : ['bottom', 'left', 'right']}
+        >
+          <View style={[s.header, !isWideScreen && { paddingTop: insets.top + 12 }]}>
             <Text style={s.headerTitle}>🤖 AI学習アシスタント</Text>
             <Pressable onPress={() => setVisible(false)} hitSlop={12}>
               <Text style={s.close}>✕</Text>
@@ -256,6 +273,28 @@ function makeStyles(C: ThemeColors) {
     fabIcon: { fontSize: 28 },
 
     safe: { flex: 1, backgroundColor: C.background },
+    // [UX改善] PC 向けフローティングパネル (画面右側に表示)
+    pcBackdrop: {
+      position: 'absolute',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.25)',
+    },
+    pcPanel: {
+      position: 'absolute',
+      top: 24,
+      right: 24,
+      bottom: 24,
+      width: 440,
+      maxWidth: '50%',
+      backgroundColor: C.background,
+      borderRadius: 16,
+      overflow: 'hidden',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.25,
+      shadowRadius: 24,
+      elevation: 12,
+    },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
