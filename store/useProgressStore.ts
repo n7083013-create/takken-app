@@ -41,6 +41,12 @@ interface ProgressState {
   recordAnswer(questionId: string, category: Category, isCorrect: boolean, confidence?: ConfidenceLevel): void;
   recordQuickQuizAnswer(quizId: string, category: Category, isCorrect: boolean): void;
   toggleBookmark(questionId: string): void;
+  /** ユーザー手動: 「完全に理解した」と自己申告して復習から永久除外 */
+  markAsMastered(questionId: string): void;
+  /** ユーザー手動: マスター済み解除 (再び復習対象に戻す) */
+  unmarkMastered(questionId: string): void;
+  /** マスター済み (手動卒業) の questionId 一覧 */
+  getManuallyMasteredIds(): string[];
   getProgress(questionId: string): QuestionProgress | undefined;
   getWeakQuestions(): string[];
   getDueForReview(): string[];
@@ -122,6 +128,16 @@ export function calculateSM2(
   let easeFactor: number;
 
   if (isCorrect) {
+    // [Bugfix 2026-05] 達成済み (3連正解) に到達する瞬間のみ easeFactor を初期値に再起動
+    // 旧: 過去に何度も不正解 → easeFactor が 1.3 (最低) → 3連正解しても interval=8日で
+    //   すぐ復習対象に戻ってしまい「ちゃんと理解してるのに復習に残る」現象が発生。
+    // 新: 「現在から3連正解 = 完全リセット」のユーザー直感に合わせ、3連目で easeFactor=2.5。
+    //   到達後 (streak >= 3) の継続正解では本来の easeFactor を尊重し SM-2 を破壊しない。
+    const reachingMastered = correctStreak === 2; // streak 2 → 3 の遷移瞬間のみ
+    const effectiveEaseFactor = reachingMastered
+      ? Math.max(currentEaseFactor, INITIAL_EASE_FACTOR)
+      : currentEaseFactor;
+
     // ベース間隔（標準SM-2）
     let baseInterval: number;
     if (correctStreak === 0) {
@@ -129,21 +145,21 @@ export function calculateSM2(
     } else if (correctStreak === 1) {
       baseInterval = 6;
     } else {
-      baseInterval = Math.round(currentInterval * currentEaseFactor);
+      baseInterval = Math.round(currentInterval * effectiveEaseFactor);
     }
 
     if (confidence === 'high') {
       // 簡単 → 間隔を伸ばす、easeFactor大きく上昇
       interval = Math.round(baseInterval * 1.3);
-      easeFactor = Math.min(3.0, currentEaseFactor + 0.05);
+      easeFactor = Math.min(3.0, effectiveEaseFactor + 0.05);
     } else if (confidence === 'none') {
       // 難しい → 間隔を縮める、easeFactor減少
       interval = Math.max(1, Math.round(baseInterval * 0.5));
-      easeFactor = Math.max(MIN_EASE_FACTOR, currentEaseFactor - 0.10);
+      easeFactor = Math.max(MIN_EASE_FACTOR, effectiveEaseFactor - 0.10);
     } else {
       // 普通（デフォルト） → 標準SM-2
       interval = baseInterval;
-      easeFactor = Math.min(3.0, currentEaseFactor + 0.02);
+      easeFactor = Math.min(3.0, effectiveEaseFactor + 0.02);
     }
   } else {
     // 不正解: interval リセット、easeFactor 減少
@@ -401,6 +417,67 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     get().saveProgress();
   },
 
+  /**
+   * ユーザー手動: 「完全に理解した」と自己申告して復習・苦手リストから永久除外
+   * - 未解答でも markAsMastered 可能（例: 基礎的すぎる問題をスキップしたい）
+   * - 解除は unmarkMastered で
+   */
+  markAsMastered(questionId: string) {
+    const state = get();
+    const existing = state.progress[questionId];
+
+    if (existing) {
+      set({
+        progress: {
+          ...state.progress,
+          [questionId]: { ...existing, mastered: true },
+        },
+      });
+    } else {
+      const newProgress: QuestionProgress = {
+        questionId,
+        attempts: 0,
+        correctCount: 0,
+        correctStreak: 0,
+        lastAttemptAt: new Date().toISOString(),
+        bookmarked: false,
+        nextReviewAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1年後 (実質除外)
+        easeFactor: INITIAL_EASE_FACTOR,
+        interval: 0,
+        mastered: true,
+      };
+      set({
+        progress: { ...state.progress, [questionId]: newProgress },
+      });
+    }
+
+    markDirty(questionId);
+    get().saveProgress();
+  },
+
+  /** マスター済み解除 (再び復習対象に戻す) */
+  unmarkMastered(questionId: string) {
+    const state = get();
+    const existing = state.progress[questionId];
+    if (!existing) return;
+    set({
+      progress: {
+        ...state.progress,
+        [questionId]: { ...existing, mastered: false },
+      },
+    });
+    markDirty(questionId);
+    get().saveProgress();
+  },
+
+  /** マスター済み (手動卒業) の questionId 一覧 */
+  getManuallyMasteredIds(): string[] {
+    const { progress } = get();
+    return Object.values(progress)
+      .filter((p) => p.mastered === true)
+      .map((p) => p.questionId);
+  },
+
   getProgress(questionId: string): QuestionProgress | undefined {
     return get().progress[questionId];
   },
@@ -415,6 +492,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     return Object.values(progress)
       .filter((p) => {
         if (p.attempts === 0) return false;
+        // ユーザー手動マスター済みは除外
+        if (p.mastered === true) return false;
         // 達成済み(3連正解)は苦手リストから卒業
         if ((p.correctStreak ?? 0) >= 3) return false;
         // 累計正答率 < 50% で苦手判定
@@ -427,7 +506,12 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const { progress } = get();
     const now = new Date().toISOString();
     return Object.values(progress)
-      .filter((p) => p.attempts > 0 && p.nextReviewAt <= now)
+      .filter((p) => {
+        if (p.attempts === 0) return false;
+        // ユーザー手動マスター済みは復習対象外
+        if (p.mastered === true) return false;
+        return p.nextReviewAt <= now;
+      })
       .map((p) => p.questionId);
   },
 
@@ -517,7 +601,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const result: string[] = [];
 
     for (const { cat, count: needed } of catCounts) {
-      const catQuestions = ALL_QUESTIONS.filter((q) => q.category === cat);
+      // ユーザー手動マスター済みは除外
+      const catQuestions = ALL_QUESTIONS.filter((q) => q.category === cat && progress[q.id]?.mastered !== true);
       const scored = catQuestions.map((q) => {
         const p = progress[q.id];
         let priority = 0;
@@ -572,7 +657,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const oneDay = 24 * 60 * 60 * 1000;
 
     const candidates = Object.values(progress)
-      .filter((p) => p.attempts > 0)
+      .filter((p) => p.attempts > 0 && p.mastered !== true)
       .map((p) => {
         const reviewTime = new Date(p.nextReviewAt).getTime();
         const timeUntilDue = reviewTime - now;
@@ -639,8 +724,11 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const result: string[] = [];
     for (const sc of subcatScores) {
       if (result.length >= count) break;
+      // ユーザー手動マスター済みは除外
       const questions = ALL_QUESTIONS.filter(
-        (q) => q.category === sc.cat && q.tags.some((t: string) => sc.tags.includes(t)),
+        (q) => q.category === sc.cat
+          && q.tags.some((t: string) => sc.tags.includes(t))
+          && progress[q.id]?.mastered !== true,
       );
       // 未正解・低正答率の問題を優先
       const scored = questions.map((q) => {

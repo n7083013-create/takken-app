@@ -56,10 +56,10 @@ function pickSmartQuestion(
 ): Question {
   const now = new Date().toISOString();
 
-  // 1. 復習期限切れ（SM-2 overdue）
+  // 1. 復習期限切れ（SM-2 overdue、ただし手動マスター済みは除外）
   const dueIds = new Set(
     Object.values(progress)
-      .filter((p) => p.attempts > 0 && p.nextReviewAt <= now)
+      .filter((p) => p.attempts > 0 && p.mastered !== true && p.nextReviewAt <= now)
       .map((p) => p.questionId),
   );
   const dueQuestions = ALL_QUESTIONS.filter((q) => dueIds.has(q.id));
@@ -67,12 +67,13 @@ function pickSmartQuestion(
     return dueQuestions[Math.floor(Math.random() * dueQuestions.length)];
   }
 
-  // 2. 苦手（正答率 < 50%、ただし達成済み(3連正解)は除外）
+  // 2. 苦手（正答率 < 50%、ただし達成済み(3連正解)・手動マスター済みは除外）
   // [統一] useProgressStore.getWeakQuestions と同じロジックに揃える
   const weakIds = new Set(
     Object.values(progress)
       .filter((p) => {
         if (p.attempts === 0) return false;
+        if (p.mastered === true) return false;
         if ((p.correctStreak ?? 0) >= 3) return false;
         return p.correctCount / p.attempts < 0.5;
       })
@@ -83,19 +84,24 @@ function pickSmartQuestion(
     return weakQuestions[Math.floor(Math.random() * weakQuestions.length)];
   }
 
-  // 3. 未解答
-  const attemptedIds = new Set(
+  // 3. 未解答（手動マスター済みは除外）
+  const attemptedOrMasteredIds = new Set(
     Object.values(progress)
-      .filter((p) => p.attempts > 0)
+      .filter((p) => p.attempts > 0 || p.mastered === true)
       .map((p) => p.questionId),
   );
-  const unseenQuestions = ALL_QUESTIONS.filter((q) => !attemptedIds.has(q.id));
+  const unseenQuestions = ALL_QUESTIONS.filter((q) => !attemptedOrMasteredIds.has(q.id));
   if (unseenQuestions.length > 0) {
     return unseenQuestions[Math.floor(Math.random() * unseenQuestions.length)];
   }
 
-  // 4. 全部解いた → ランダム
-  return ALL_QUESTIONS[Math.floor(Math.random() * ALL_QUESTIONS.length)];
+  // 4. 全部解いた → ランダム（手動マスター済みは除外）
+  const masteredIds = new Set(
+    Object.values(progress).filter((p) => p.mastered === true).map((p) => p.questionId),
+  );
+  const remaining = ALL_QUESTIONS.filter((q) => !masteredIds.has(q.id));
+  const pool = remaining.length > 0 ? remaining : ALL_QUESTIONS;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 const TOTAL_Q = ALL_QUESTIONS.length;

@@ -894,6 +894,7 @@ export default function ProgressScreen() {
   const getCategoryAccuracy = useProgressStore((s) => s.getCategoryAccuracy);
   const getBookmarkedQuestions = useProgressStore((s) => s.getBookmarkedQuestions);
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
+  const getManuallyMasteredIds = useProgressStore((s) => s.getManuallyMasteredIds);
   const resetProgress = useProgressStore((s) => s.resetProgress);
   const subscription = useSettingsStore((s) => s.subscription);
   const achievementUnlocked = useAchievementStore((s) => s.unlocked);
@@ -918,6 +919,7 @@ export default function ProgressScreen() {
     ? Math.round((Math.min(masteredCount, TOTAL_Q) / TOTAL_Q) * 100) : 0;
   const bookmarks = getBookmarkedQuestions().length;
   const weak = getWeakQuestions().length;
+  const masteredManualCount = getManuallyMasteredIds().length;
   // [Bugfix] 旧: 月間累計 (subscription.aiQueriesUsed) を表示していたが、
   // ローカル加算でずれが蓄積し「使ってないのに100回超え」と表示される問題があった。
   // 新: サーバー認定の日次残数から逆算した「今日の使用数 / 今日の上限」を表示。
@@ -1158,6 +1160,24 @@ export default function ProgressScreen() {
             </View>
           </>
         )}
+
+        {/* ── マスター済み問題（手動卒業）──
+            問題画面で 🎓 ボタンを押した問題が復習・苦手リストから永久除外される。
+            ユーザー報告: 「完全に理解した問題は復習から外したい」への対応 */}
+        <Text style={s.sectionTitle}>マスター済み</Text>
+        <Pressable style={[s.achieveCard, Shadow.sm]} onPress={() => router.push('/mastered')}>
+          <View style={s.achieveHeader}>
+            <Text style={s.achieveTitle}>
+              🎓 {masteredManualCount}問 を復習から除外中
+            </Text>
+            <Text style={s.achieveArrow}>›</Text>
+          </View>
+          <Text style={[s.heroLabel, { marginTop: 6 }]}>
+            {masteredManualCount === 0
+              ? '問題画面の 🎓 ボタンで「もう不要」とマークできます'
+              : 'タップで一覧表示・個別解除できます'}
+          </Text>
+        </Pressable>
 
         {/* ── 実績バッジ概要 ── */}
         <Text style={s.sectionTitle}>実績バッジ</Text>

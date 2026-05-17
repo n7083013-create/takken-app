@@ -333,7 +333,8 @@ function pickRecommendedByFilter(
   filter: (q: typeof ALL_QUESTIONS[number]) => boolean,
   count: number,
 ): WeaknessScore[] {
-  const filtered = ALL_QUESTIONS.filter(filter);
+  // ユーザー手動マスター済みは AI 推奨対象から除外
+  const filtered = ALL_QUESTIONS.filter((q) => filter(q) && progress[q.id]?.mastered !== true);
   if (filtered.length === 0) return [];
 
   // 弱点スコア降順でソート

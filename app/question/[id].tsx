@@ -35,6 +35,7 @@ import { CoreEssenceBox } from '../../components/CoreEssenceBox';
 import { StrikeHint } from '../../components/StrikeHint';
 import { useStrikethrough } from '../../hooks/useStrikethrough';
 import { hapticLight } from '../../services/haptics';
+import { confirmAlert } from '../../services/alert';
 import { AnimatedChoiceCard } from '../../components/AnimatedChoiceCard';
 import { PressableScale } from '../../components/PressableScale';
 import { WebBackButton } from '../../components/WebBackButton';
@@ -62,6 +63,8 @@ export default function QuestionDetailScreen() {
   const recordAnswer = useProgressStore((s) => s.recordAnswer);
   const getTodayAnswered = useProgressStore((s) => s.getTodayAnswered);
   const toggleBookmark = useProgressStore((s) => s.toggleBookmark);
+  const markAsMastered = useProgressStore((s) => s.markAsMastered);
+  const unmarkMastered = useProgressStore((s) => s.unmarkMastered);
   const getProgress = useProgressStore((s) => s.getProgress);
   const checkAchievements = useAchievementChecker();
   const { triggerCorrect, triggerWrong, FeedbackOverlay } = useAnswerFeedback();
@@ -108,6 +111,41 @@ export default function QuestionDetailScreen() {
     bookmarkToastTimerRef.current = setTimeout(() => setBookmarkToast(null), 1500);
   }, [q, prog?.bookmarked, toggleBookmark]);
 
+  /**
+   * 「✓ 完璧に理解」: この問題を復習・苦手リストから永久除外する。
+   * - すでにマスター済みなら解除確認を出す。
+   * - 復習中に「もうこの問題は出さないで」を実現するユーザー向け脱出口。
+   */
+  const handleToggleMastered = useCallback(async () => {
+    if (!q) return;
+    const isMastered = prog?.mastered === true;
+    if (isMastered) {
+      const ok = await confirmAlert(
+        'マスター済みを解除しますか？',
+        'この問題が再び復習対象に戻ります。',
+        { okText: '解除する' },
+      );
+      if (ok) {
+        unmarkMastered(q.id);
+        hapticLight();
+        setBookmarkToast('マスター済みを解除しました');
+      }
+    } else {
+      const ok = await confirmAlert(
+        'この問題を「完璧」にしますか？',
+        '復習や苦手リストにこの問題は表示されなくなります。\n記録画面からいつでも解除できます。',
+        { okText: 'マスター済みにする' },
+      );
+      if (ok) {
+        markAsMastered(q.id);
+        hapticLight();
+        setBookmarkToast('🎓 マスター済みにしました');
+      }
+    }
+    if (bookmarkToastTimerRef.current) clearTimeout(bookmarkToastTimerRef.current);
+    bookmarkToastTimerRef.current = setTimeout(() => setBookmarkToast(null), 1800);
+  }, [q, prog?.mastered, markAsMastered, unmarkMastered]);
+
   // AI Chat state (fullscreen)
   const [aiVisible, setAiVisible] = useState(false);
   const [aiTargetChoice, setAiTargetChoice] = useState<number | null>(null);
@@ -134,13 +172,21 @@ export default function QuestionDetailScreen() {
           <Pressable onPress={() => setReportVisible(true)} style={{ paddingHorizontal: 8 }} accessibilityRole="button" accessibilityLabel="問題を報告する">
             <Text style={{ fontSize: 20 }}>⚠️</Text>
           </Pressable>
+          <Pressable
+            onPress={handleToggleMastered}
+            style={{ paddingHorizontal: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={prog?.mastered ? 'マスター済みを解除' : 'この問題を完璧にする(復習から除外)'}
+          >
+            <Text style={{ fontSize: 22, opacity: prog?.mastered ? 1 : 0.45 }}>🎓</Text>
+          </Pressable>
           <Pressable onPress={handleToggleBookmark} style={{ paddingHorizontal: 16 }} accessibilityRole="button" accessibilityLabel={prog?.bookmarked ? 'ブックマークを解除' : 'ブックマークに追加'}>
             <Text style={{ fontSize: 22, opacity: prog?.bookmarked ? 1 : 0.45 }}>🔖</Text>
           </Pressable>
         </View>
       ),
     });
-  }, [nav, q, prog?.bookmarked, handleToggleBookmark]);
+  }, [nav, q, prog?.bookmarked, prog?.mastered, handleToggleBookmark, handleToggleMastered]);
 
   // 確信度選択前の一時保存（recordAnswerは確信度選択後に呼ぶ）
   const [pendingAnswer, setPendingAnswer] = useState<{ questionId: string; category: Category; isCorrect: boolean } | null>(null);

@@ -149,6 +149,8 @@ export interface Question {
   choiceExplanations?: [string, string, string, string];
   /** 各記述文ごとの解説（個数・組み合わせ問題用） */
   statementExplanations?: string[];
+  /** 1行エッセンス: 論点の核心を1文で要約（試験直前復習用） */
+  coreEssence?: string;
   tags: string[];
   imageUrl?: string;
 
@@ -215,6 +217,13 @@ export interface QuestionProgress {
   easeFactor: number;   // SM-2: 難易度係数（1.3〜2.5）
   interval: number;     // SM-2: 次の復習までの日数
   lastConfidence?: ConfidenceLevel; // 最後の確信度
+  /**
+   * ユーザーが「完全に理解した」と自己申告して復習から永久除外した問題。
+   * - true: 復習・苦手リストから永久除外（ユーザー手動で解除可能）
+   * - undefined/false: 通常 (SM-2 で復習対象)
+   * 現状ローカル AsyncStorage のみ保存 (cloud sync は後追い対応)
+   */
+  mastered?: boolean;
 }
 
 // 学習セッション
@@ -248,6 +257,11 @@ export interface Subscription {
   renewalCount: number;        // 連続更新回数（0=初年度, 1+=継続割引対象）
   // 無料トライアル
   trialStartedAt?: string;     // トライアル開始日
+  // セキュリティ: サーバー検証タイムスタンプ
+  lastVerifiedAt?: string;     // 最後にサーバーでプラン検証した日時（ISO）
+  // [Issue #13] 時計巻き戻し検知
+  // 過去に観測した最大の Date.now() を保存。現在時刻がこれより 1h 以上前なら時計改ざん疑い
+  clockMaxSeen?: string;       // 観測した最大時刻（ISO）
 }
 
 // プラン価格（月額のみ・7日間無料トライアル→自動課金）
@@ -265,13 +279,13 @@ export const AI_DAILY_LIMITS: Record<SubscriptionPlan, number> = {
 // トライアル中のAI制限（コスト管理）
 export const TRIAL_AI_DAILY_LIMIT = 10;
 
-// 無料プランの上限
+// 無料プランの上限（1日あたり）
 export const FREE_LIMITS = {
-  questions: 30,         // 4択問題は最初の30問のみ
-  quickQuizzes: 50,      // 一問一答は最初の50問のみ
-  examMode: false,       // 模擬試験は不可
-  aiAnalysis: false,     // AI苦手分析は不可
-  cloudSync: false,      // クラウド同期は不可
+  questionsPerDay: 10,      // 4択問題は1日10問まで
+  quickQuizzesPerDay: 20,   // 一問一答は1日20問まで
+  examMode: false,          // 模擬試験は不可
+  aiAnalysis: false,        // AI苦手分析は不可
+  cloudSync: false,         // クラウド同期は不可
 } as const;
 
 // ユーザー設定
@@ -286,6 +300,12 @@ export interface UserSettings {
   themeMode: 'system' | 'light' | 'dark';
   examDate?: string; // ISO string — 試験日
   habitStacks?: HabitStack[];
+  /** アニメーション表示レベル
+   * - full: 通常演出（コンボ・祝福・エフェクトすべて）
+   * - subtle: 控えめ（コンボ数のみ・祝福なし）
+   * - off: 最小限（チェックマークのみ・バイブと音は別設定）
+   */
+  animationLevel?: 'full' | 'subtle' | 'off';
 }
 
 // 習慣スタッキング
@@ -295,6 +315,7 @@ export interface HabitStack {
   action: string;      // "一問一答を5問解く"
   icon: string;        // emoji
   enabled: boolean;
+  notifyAt?: string;   // "HH:MM" 形式（例: "07:00"）通知時刻
 }
 
 // 一問一答（○✗クイズ）
@@ -307,6 +328,11 @@ export type QuickQuiz = {
   explanation: string;      // Brief explanation
   relatedQuestionId?: string; // Link to 4-choice question
   tags: string[];
+  // ── 法改正・正確性トラッキング（Question と同じセマンティクス） ──
+  /** true = 自動生成され人間レビュー未完了、または法改正で要見直し */
+  needsReview?: boolean;
+  /** レビュー理由（needsReview=true のとき） */
+  reviewReason?: string;
 };
 
 // ============================================================
