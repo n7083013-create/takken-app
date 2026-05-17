@@ -25,6 +25,7 @@ import {
 import { ALL_QUESTIONS } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
 import { EmptyState } from '../../components/EmptyState';
+import { WebBackButton } from '../../components/WebBackButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setAiQueue } from '../../utils/aiQueue';
 import {
@@ -183,6 +184,10 @@ export default function QuestionsScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      {/* [UX] ホーム「全問題リスト表示」から遷移してきた場合のみ戻る導線を表示。
+          通常タブから来た時は不要なので param 有り時のみ。 */}
+      {params.category ? <WebBackButton /> : null}
+
       {/* Header */}
       <View style={s.header}>
         <Text style={s.title}>問題集</Text>
