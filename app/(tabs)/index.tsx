@@ -522,6 +522,52 @@ function HomeScreen() {
         {/* ── 弱点コーチング（予測スコアから最弱科目を推薦） ── */}
         <WeaknessCoachingCard prediction={examPrediction} />
 
+        {/* ── [UX改善] カテゴリ別 / 論点別に解く ──
+            「宅建業法だけ集中して解きたい」「固定資産税をピンポイントで」
+            のような頻出ニーズに応える。ホームから1〜2タップで該当問題に到達。 */}
+        <Text style={s.sectionTitle}>🎯 カテゴリ別に解く</Text>
+        <View style={s.catChipGrid}>
+          {(['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'] as Category[]).map((cat) => (
+            <Pressable
+              key={cat}
+              style={[s.catChip, { borderColor: CATEGORY_COLORS[cat] }, Shadow.sm]}
+              onPress={() => router.push({ pathname: '/(tabs)/questions', params: { category: cat } } as any)}
+              accessibilityRole="button"
+              accessibilityLabel={`${CATEGORY_LABELS[cat]}の問題を解く`}
+            >
+              <Text style={s.catChipIcon}>{CATEGORY_ICONS[cat]}</Text>
+              <Text style={[s.catChipText, { color: CATEGORY_COLORS[cat] }]}>{CATEGORY_LABELS[cat]}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Text style={s.subSectionLabel}>よく出る論点</Text>
+        <View style={s.topicChipRow}>
+          {[
+            { category: 'kenri' as Category, key: 'tanpo', label: '🔒 抵当権・担保' },
+            { category: 'takkengyoho' as Category, key: 'baikai', label: '📋 媒介契約' },
+            { category: 'takkengyoho' as Category, key: '35jou', label: '📑 重要事項説明' },
+            { category: 'horei_seigen' as Category, key: 'toshi', label: '🗺️ 都市計画法' },
+            { category: 'tax_other' as Category, key: 'kotei', label: '🏠 固定資産税' },
+            { category: 'tax_other' as Category, key: 'shutoku', label: '🏷️ 不動産取得税' },
+          ].map((t) => (
+            <Pressable
+              key={`${t.category}-${t.key}`}
+              style={s.topicChip}
+              onPress={() =>
+                router.push({
+                  pathname: '/(tabs)/questions',
+                  params: { category: t.category, subcategory: t.key },
+                } as any)
+              }
+              accessibilityRole="button"
+              accessibilityLabel={`${t.label}の問題を解く`}
+            >
+              <Text style={s.topicChipText}>{t.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+
         {/* ── その他の学習モード ── */}
         <Text style={s.sectionTitle}>学習モード</Text>
         <View style={s.modeGrid}>
@@ -1035,6 +1081,58 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     marginTop: 28,
     marginBottom: 14,
     letterSpacing: LetterSpacing.tight,
+  },
+
+  // ─── [UX改善] カテゴリ別に解く / よく出る論点 ───
+  catChipGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    paddingHorizontal: Spacing.xl,
+  },
+  catChip: {
+    width: '48%',
+    backgroundColor: C.card,
+    borderRadius: 14,
+    borderWidth: 2,
+    paddingVertical: 16,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  catChipIcon: { fontSize: 24 },
+  catChipText: {
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  subSectionLabel: {
+    fontSize: FontSize.caption,
+    fontWeight: '700',
+    color: C.textSecondary,
+    paddingHorizontal: Spacing.xl,
+    marginTop: 18,
+    marginBottom: 10,
+  },
+  topicChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    paddingHorizontal: Spacing.xl,
+  },
+  topicChip: {
+    backgroundColor: C.primarySurface ?? '#E8F5EC',
+    borderWidth: 1.5,
+    borderColor: C.primary,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  topicChipText: {
+    fontSize: 13,
+    color: C.primary,
+    fontWeight: '700',
   },
 
   // ─── Mode Grid（2列） ───

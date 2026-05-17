@@ -44,7 +44,9 @@ type SectionData = {
 
 export default function QuestionsScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ category?: string }>();
+  // [UX改善] subcategory パラメータ対応:
+  // ホーム画面の「カテゴリ別に解く」「よく出る論点」 chip から直接ジャンプ可能
+  const params = useLocalSearchParams<{ category?: string; subcategory?: string }>();
   const getProgress = useProgressStore((s) => s.getProgress);
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
@@ -58,17 +60,21 @@ export default function QuestionsScreen() {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
   // パラメータ変更時にカテゴリを更新（ホーム画面からのナビゲーション対応）
-  // → サブカテゴリ一覧が見えるように全セクション折りたたみで開始
+  // - subcategory 指定あり: 該当 subcategory のみ展開 (ピンポイント学習)
+  // - subcategory 指定なし: 全セクション折りたたみで一覧表示 (既存挙動)
   useEffect(() => {
     if (params.category && CATEGORIES.includes(params.category as Category)) {
       setSelectedCategory(params.category as Category);
-      // 全セクションを折りたたんでサブカテゴリ一覧を表示
       const subcats = SUBCATEGORIES[params.category as Category];
       const allKeys = new Set(subcats.map((sc) => sc.key));
       allKeys.add('_other');
+      // subcategory 指定がある場合は、その項目だけ展開して残りは折り畳み
+      if (params.subcategory && allKeys.has(params.subcategory)) {
+        allKeys.delete(params.subcategory);
+      }
       setCollapsedSections(allKeys);
     }
-  }, [params.category]);
+  }, [params.category, params.subcategory]);
 
   const toggleSection = useCallback((key: string) => {
     setCollapsedSections((prev) => {
