@@ -10,6 +10,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -40,6 +41,9 @@ export default function QuickQuizScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
+  // [UX改善] PC では AI質問を全画面 Modal ではなくフローティングパネルで表示
+  const { width: screenWidth } = useWindowDimensions();
+  const isWideScreen = screenWidth >= 768;
 
   const quickQuizStats = useProgressStore((s) => s.quickQuizStats);
   const recordQuickQuizAnswer = useProgressStore((s) => s.recordQuickQuizAnswer);
@@ -396,9 +400,24 @@ export default function QuickQuizScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
 
-      {/* AI Fullscreen Modal */}
-      <Modal visible={aiVisible} animationType="slide" onRequestClose={() => setAiVisible(false)}>
-        <SafeAreaView style={s.aiSafe}>
+      {/* AI Modal - PCではフローティングパネル、モバイルは全画面 */}
+      <Modal
+        visible={aiVisible}
+        animationType={isWideScreen ? 'fade' : 'slide'}
+        transparent={isWideScreen}
+        onRequestClose={() => setAiVisible(false)}
+      >
+        {isWideScreen && (
+          <Pressable
+            style={s.aiPcBackdrop}
+            onPress={() => setAiVisible(false)}
+            accessibilityLabel="閉じる"
+          />
+        )}
+        <SafeAreaView
+          style={isWideScreen ? s.aiPcPanel : s.aiSafe}
+          edges={isWideScreen ? [] : undefined}
+        >
           {/* Header */}
           <View style={s.aiHeader}>
             <Text style={s.aiHeaderTitle}>🤖 AI解説アシスタント</Text>
@@ -812,6 +831,26 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
 
   // ─── AI Fullscreen ───
   aiSafe: { flex: 1, backgroundColor: C.background },
+  // [UX改善] PC 向けフローティングパネル
+  aiPcBackdrop: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+  },
+  aiPcPanel: {
+    position: 'absolute',
+    top: 24, right: 24, bottom: 24,
+    width: 440,
+    maxWidth: '50%',
+    backgroundColor: C.background,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    elevation: 12,
+  },
   aiHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12, backgroundColor: C.card, borderBottomWidth: 1, borderBottomColor: C.border },
   aiHeaderTitle: { fontSize: FontSize.headline, fontWeight: '800', color: C.text },
   aiClose: { fontSize: 22, color: C.textTertiary, padding: 4 },
