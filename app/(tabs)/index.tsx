@@ -1184,12 +1184,16 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     marginBottom: 10,
   },
   topicChipRow: {
+    // [Web 互換] flexWrap を確実に動かすため width 制約と alignItems を明示
+    width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'flex-start',
     gap: 8,
     paddingHorizontal: Spacing.xl,
   },
   topicChip: {
+    flexShrink: 0,
     backgroundColor: C.primarySurface ?? '#E8F5EC',
     borderWidth: 1.5,
     borderColor: C.primary,
@@ -1295,8 +1299,13 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     fontWeight: '800',
   },
   subChipRow: {
+    // [Bugfix] Web (PC) で chip 列の最後の要素が右端で見切れる現象を修正。
+    // 原因: 親に明示的な width 制約がないため React Native Web で flexWrap が効かない瞬間がある。
+    // 修正: width: '100%' で親と同じ幅を確保 → 折り返しが確実に動く。
+    width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'flex-start',
     gap: 6,
     marginBottom: 8,
   },
@@ -1309,6 +1318,7 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     gap: 4,
+    flexShrink: 0, // 各 chip は縮めず、折り返しで対応 (Web 互換性)
   },
   subChipIcon: { fontSize: 14 },
   subChipText: {
