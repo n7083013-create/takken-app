@@ -748,6 +748,109 @@
     }
     .footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); }
 
+    /* ====== Founder Story ====== */
+    .story-section {
+      background: #fff;
+      padding: 80px 24px 70px;
+    }
+    .story-container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .story-section h2 {
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      color: #1a1a1a;
+      margin-bottom: 48px;
+      letter-spacing: -0.5px;
+      line-height: 1.4;
+    }
+    .story-block { margin-bottom: 24px; }
+    .story-block p {
+      font-size: 17px;
+      line-height: 1.95;
+      color: #2a2a2a;
+      margin-bottom: 4px;
+    }
+    .story-quote {
+      color: #1B7A3D !important;
+      font-weight: 700 !important;
+      font-style: italic;
+      margin: 16px 0 !important;
+      font-size: 18px !important;
+      line-height: 1.7 !important;
+    }
+    .story-pivot {
+      font-size: 22px !important;
+      font-weight: 800 !important;
+      color: #1B7A3D !important;
+      margin: 8px 0 12px !important;
+      text-align: center;
+    }
+    .story-product {
+      font-size: 20px !important;
+      font-weight: 700 !important;
+      text-align: center;
+      margin-bottom: 18px !important;
+    }
+    .story-product strong { color: #1B7A3D; }
+    .story-emphasis {
+      font-weight: 800 !important;
+      color: #1a1a1a !important;
+      font-size: 19px !important;
+      margin-top: 8px !important;
+    }
+    .story-price-callout {
+      background: #f0f9f3;
+      border-left: 4px solid #1B7A3D;
+      padding: 18px 22px;
+      margin-top: 18px !important;
+      font-size: 18px !important;
+      border-radius: 6px;
+      line-height: 1.7 !important;
+    }
+    .story-price-callout strong {
+      color: #1B7A3D;
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .story-promise {
+      text-align: center !important;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      margin-top: 20px !important;
+      padding: 24px 20px !important;
+      background: linear-gradient(135deg, #1B7A3D 0%, #2ea050 100%) !important;
+      color: #fff !important;
+      border-radius: 14px;
+      line-height: 1.8 !important;
+      box-shadow: 0 8px 24px rgba(27,122,61,0.18);
+    }
+    .story-promise strong {
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+    .story-divider {
+      width: 60px;
+      height: 2px;
+      background: #1B7A3D;
+      margin: 32px auto;
+      opacity: 0.25;
+      border-radius: 1px;
+    }
+    @media (max-width: 720px) {
+      .story-section { padding: 60px 20px 50px; }
+      .story-section h2 { font-size: 22px; margin-bottom: 36px; }
+      .story-block p { font-size: 16px; }
+      .story-quote { font-size: 17px !important; }
+      .story-pivot { font-size: 20px !important; }
+      .story-product { font-size: 18px !important; }
+      .story-price-callout { font-size: 16px !important; padding: 16px 18px; }
+      .story-price-callout strong { font-size: 22px; }
+      .story-promise { font-size: 16px !important; padding: 20px 18px !important; }
+    }
+
     /* ====== Before / After ====== */
     .ba-section {
       background: #fff;
@@ -1015,6 +1118,62 @@
           <p>忘れる前に、自動復習。</p>
           <small>科学的根拠に基づく忘却曲線で、記憶に定着。</small>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder Story (実体験ベースのストーリーで信頼感を獲得) -->
+  <section class="story-section" id="story" aria-labelledby="story-title">
+    <div class="story-container">
+      <h2 id="story-title">私が、このアプリを作った理由</h2>
+
+      <div class="story-block">
+        <p>日中は仕事、夜は育児。</p>
+        <p>気づけば 23時、24時。</p>
+        <p class="story-quote">「いつ勉強すればいいんだ...」</p>
+        <p>睡眠時間を削れば、翌日の体調を崩す。</p>
+        <p>それでも、宅建はなんとしても取りたかった。</p>
+        <p>家族の人生も、自分の未来も、<br>この資格にかかっていたから。</p>
+      </div>
+
+      <div class="story-divider" aria-hidden="true"></div>
+
+      <div class="story-block">
+        <p>大手の通学講座は、数十万円。</p>
+        <p>動画講座も通学も、時間がかかる。</p>
+        <p class="story-quote">「落ちたら、また何万円が消える。」</p>
+        <p>そのプレッシャーが、また勉強を遠ざける。</p>
+        <p class="story-emphasis">悪循環でした。</p>
+      </div>
+
+      <div class="story-divider" aria-hidden="true"></div>
+
+      <div class="story-block">
+        <p class="story-pivot">だから決めました。</p>
+        <p class="story-quote">「お昼休みの10分、電車の中の5分でも、<br>合格に確実に近づくアプリを作ろう」と。</p>
+      </div>
+
+      <div class="story-divider" aria-hidden="true"></div>
+
+      <div class="story-block">
+        <p class="story-product">それが、<strong>宅建士 完全対策</strong>です。</p>
+        <p>AIが、あなたの弱点を見抜く。</p>
+        <p>忘れる前に、自動で復習を組み込む。</p>
+        <p>スキマ時間の積み重ねが、合格点に届く設計。</p>
+        <p class="story-price-callout">
+          月 <strong>¥980</strong>。<br>大手講座の <strong>1/30の価格</strong>で、AI フル装備。
+        </p>
+      </div>
+
+      <div class="story-divider" aria-hidden="true"></div>
+
+      <div class="story-block">
+        <p>今も、試行錯誤を続けています。</p>
+        <p>「もっと合格しやすく」「もっと使いやすく」と。</p>
+        <p class="story-promise">
+          誰にでも合格できる宅建アプリを。<br>
+          それが、<strong>私からの約束</strong>です。
+        </p>
       </div>
     </div>
   </section>
