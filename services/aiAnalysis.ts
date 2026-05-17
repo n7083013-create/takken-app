@@ -76,8 +76,11 @@ export function calculateWeaknessScore(
     }
 
     // 理由ラベル
-    if (accuracy < 0.3) reason = '苦手';
-    else if (accuracy < 0.6) reason = '不安定';
+    // [統一] 弱点判定はアプリ全体で「< 50% = 苦手」「< 80% = 不安定」に統一
+    // (旧: < 30% で苦手だったが useHeatmap・home の < 50% と矛盾していた)
+    // ユーザー方針: 「厳しい方で統一」 = 50%未満は明確に苦手
+    if (accuracy < 0.5) reason = '苦手';
+    else if (accuracy < 0.8) reason = '不安定';
     else if (daysSince > 7) reason = '復習推奨';
     else reason = '定着中';
   }
