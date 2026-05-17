@@ -24,6 +24,13 @@ jest.mock('../services/cloudSync', () => ({
   pushProgressToCloud: jest.fn(() => Promise.resolve()),
   pushStatsToCloud: jest.fn(() => Promise.resolve()),
   mergeProgress: jest.fn((a: unknown) => a),
+  markDirty: jest.fn(),
+  resetSyncState: jest.fn(),
+}));
+
+// notifications モック (動的 import される)
+jest.mock('../services/notifications', () => ({
+  refreshNotificationsAfterAnswer: jest.fn(() => Promise.resolve()),
 }));
 
 // errorLogger モック
@@ -86,6 +93,64 @@ describe('calculateSM2 - SM-2 アルゴリズム', () => {
       const ease = 2.0;
       const result = calculateSM2(true, currentInterval, ease, 10, 'low');
       expect(result.interval).toBe(200);
+    });
+  });
+
+  // ----------------------------------------------------------
+  // [新仕様 2026-05] 達成済み到達時の easeFactor 再起動
+  // ユーザー報告「過去に何度も間違えてた問題が3連正解しても復習に残る」への対応。
+  // streak 2→3 の遷移瞬間にだけ easeFactor を初期値(2.5)以上に強制リセット。
+  // それ以外のタイミングでは本来の easeFactor を尊重。
+  // ----------------------------------------------------------
+  describe('[新仕様] 達成済み到達時 (streak 2→3) の easeFactor 再起動', () => {
+    it('streak=2 から正解時に easeFactor が低かった場合、初期値2.5まで引き上げられる', () => {
+      // 過去に何度も不正解で ease が 1.3 (最低) まで下がった状態
+      const lowEase = 1.3;
+      const result = calculateSM2(true, 6, lowEase, 2, 'low');
+      // 復習間隔: 6 * 2.5 = 15日 (1.3 ベースだと 8日でしか伸びなかった)
+      expect(result.interval).toBe(15);
+      // easeFactor は 2.5 にリセットされてから +0.02 (low confidence) で 2.52
+      expect(result.easeFactor).toBeCloseTo(2.52, 5);
+    });
+
+    it('streak=2 で正解、現在 ease が既に 2.5 以上なら値を尊重 (リセットで下がらない)', () => {
+      const highEase = 2.8;
+      const result = calculateSM2(true, 6, highEase, 2, 'low');
+      // max(2.8, 2.5) = 2.8 が採用される
+      expect(result.interval).toBe(Math.round(6 * 2.8)); // 17
+      expect(result.easeFactor).toBeCloseTo(2.82, 5);
+    });
+
+    it('streak=10 で正解 (既にマスター済みを維持中) ならリセットされない', () => {
+      // 既にマスター後の継続正解では本来の SM-2 を尊重 (低 ease のまま)
+      const lowEase = 1.5;
+      const result = calculateSM2(true, 50, lowEase, 10, 'low');
+      // リセットなし: 50 * 1.5 = 75 (もしリセットされていたら 50 * 2.5 = 125)
+      expect(result.interval).toBe(75);
+    });
+
+    it('streak=0 (初回正解) ではリセットされない', () => {
+      const lowEase = 1.3;
+      const result = calculateSM2(true, 0, lowEase, 0, 'low');
+      // baseInterval=1 で固定 (correctStreak=0 のロジック)
+      expect(result.interval).toBe(1);
+      // ease は本来の値で +0.02
+      expect(result.easeFactor).toBeCloseTo(lowEase + 0.02, 5);
+    });
+
+    it('streak=1 (2連目) ではまだリセットされない', () => {
+      const lowEase = 1.3;
+      const result = calculateSM2(true, 1, lowEase, 1, 'low');
+      // baseInterval=6 で固定 (correctStreak=1 のロジック)
+      expect(result.interval).toBe(6);
+      expect(result.easeFactor).toBeCloseTo(lowEase + 0.02, 5);
+    });
+
+    it('streak=2 で不正解の場合は通常の不正解処理 (リセット効果なし)', () => {
+      const lowEase = 1.3;
+      const result = calculateSM2(false, 6, lowEase, 2, 'low');
+      expect(result.interval).toBe(1); // 不正解で interval リセット
+      expect(result.easeFactor).toBe(1.3); // 1.3-0.2=1.1 → MIN(1.3) でクリップ
     });
   });
 
