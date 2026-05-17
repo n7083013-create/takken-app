@@ -384,32 +384,40 @@
     .pricing-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 24px;
       max-width: 880px;
-      margin: 0 auto 32px;
+      margin: 32px auto;  /* 「おすすめ」バッジが見切れないよう上余白を増やす */
+      align-items: stretch;
+    }
+    .pricing-card-free,
+    .pricing-card-premium {
+      border-radius: 18px;
+      padding: 40px 28px 32px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
     }
     .pricing-card-free {
       background: #fff;
       border: 2px solid #e0e0e0;
-      border-radius: 18px;
-      padding: 32px 24px;
-      text-align: center;
-      position: relative;
     }
     .pricing-card-premium {
       background: linear-gradient(180deg, #fff 0%, #f0f9f3 100%);
       border: 2.5px solid #1B7A3D;
-      border-radius: 18px;
-      padding: 32px 24px;
-      text-align: center;
-      position: relative;
       box-shadow: 0 10px 40px rgba(27,122,61,0.15);
     }
     .pricing-name {
       font-size: 18px;
       font-weight: 800;
       color: #1a1a1a;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+    }
+    /* 「おすすめ」バッジ部分の縦位置統一: 無料プラン側にも同じ高さの透明スペーサーを置く */
+    .pricing-card-free .pricing-trial-spacer {
+      display: block;
+      height: 32px;  /* pricing-trial の高さに合わせる */
+      margin: 0 auto 18px;
     }
     .pricing-badge {
       position: absolute;
@@ -447,11 +455,25 @@
     .pricing-cta-secondary:hover {
       background: #f0f9f3 !important;
     }
+    /* カード内 bullets を伸ばして、CTAボタンを下端に揃える */
+    .pricing-card-free .pricing-bullets,
+    .pricing-card-premium .pricing-bullets {
+      flex: 1;
+      margin-bottom: 16px;
+    }
+    .pricing-card-free .pricing-cta,
+    .pricing-card-premium .pricing-cta {
+      margin-top: auto;
+    }
     /* レスポンシブ: モバイルでは縦並び */
     @media (max-width: 720px) {
       .pricing-grid {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 32px;
+      }
+      .pricing-card-free,
+      .pricing-card-premium {
+        padding: 32px 22px 28px;
       }
     }
 
@@ -1117,6 +1139,7 @@
       <!-- 無料プラン -->
       <div class="pricing-card pricing-card-free">
         <h3 class="pricing-name">無料プラン</h3>
+        <span class="pricing-trial-spacer" aria-hidden="true"></span>
         <div class="pricing-price-row">
           <span class="pricing-price pricing-price-free">¥0</span>
         </div>
