@@ -67,10 +67,15 @@ function pickSmartQuestion(
     return dueQuestions[Math.floor(Math.random() * dueQuestions.length)];
   }
 
-  // 2. 苦手（正答率 < 50%）
+  // 2. 苦手（正答率 < 50%、ただし達成済み(3連正解)は除外）
+  // [統一] useProgressStore.getWeakQuestions と同じロジックに揃える
   const weakIds = new Set(
     Object.values(progress)
-      .filter((p) => p.attempts > 0 && p.correctCount / p.attempts < 0.5)
+      .filter((p) => {
+        if (p.attempts === 0) return false;
+        if ((p.correctStreak ?? 0) >= 3) return false;
+        return p.correctCount / p.attempts < 0.5;
+      })
       .map((p) => p.questionId),
   );
   const weakQuestions = ALL_QUESTIONS.filter((q) => weakIds.has(q.id));

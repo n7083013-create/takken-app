@@ -406,9 +406,20 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   },
 
   getWeakQuestions(): string[] {
+    // [Bugfix 2026-05] 累計正答率だけで判定していたため、過去の失敗の重みが大きく
+    // 「正解しても苦手リストから消えない」というユーザー報告があった。
+    // 修正: 達成済み(3連正解=correctStreak >= 3)になった問題は苦手から卒業。
+    // → 「達成率の判定基準」と「苦手判定」が連動して整合する。
+    // → 一度間違えれば correctStreak=0 にリセットされ、累計正答率 < 50% なら再度苦手リストに戻る (健全)。
     const { progress } = get();
     return Object.values(progress)
-      .filter((p) => p.attempts > 0 && p.correctCount / p.attempts < 0.5)
+      .filter((p) => {
+        if (p.attempts === 0) return false;
+        // 達成済み(3連正解)は苦手リストから卒業
+        if ((p.correctStreak ?? 0) >= 3) return false;
+        // 累計正答率 < 50% で苦手判定
+        return p.correctCount / p.attempts < 0.5;
+      })
       .map((p) => p.questionId);
   },
 
@@ -513,7 +524,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         if (!p || p.attempts === 0) { priority = 2; } // 未解答
         else if (p.nextReviewAt <= now) { priority = 4; } // 復習期限切れ
         else if (p.lastConfidence === 'low') { priority = 3; } // 低確信正解
-        else if (p.correctCount / p.attempts < 0.5) { priority = 3; } // 苦手
+        else if (p.correctCount / p.attempts < 0.5 && (p.correctStreak ?? 0) < 3) { priority = 3; } // 苦手（達成済み3連正解は除外）
         else { priority = 1; } // 通常
         return { id: q.id, priority, rand: Math.random() };
       }).sort((a, b) => b.priority - a.priority || a.rand - b.rand);
