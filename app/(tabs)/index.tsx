@@ -643,10 +643,10 @@ function HomeScreen() {
             <Text style={s.modeTitle}>就寝前復習</Text>
             <Text style={s.modeSub}>記憶固定5問</Text>
           </Pressable>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/achievements')} accessibilityRole="button" accessibilityLabel="実績を表示">
-            <Text style={s.modeIcon}>🏅</Text>
-            <Text style={s.modeTitle}>実績</Text>
-            <Text style={s.modeSub}>{unlockedCount}個獲得</Text>
+          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/mastered')} accessibilityRole="button" accessibilityLabel="マスター済み問題を表示">
+            <Text style={s.modeIcon}>🎓</Text>
+            <Text style={s.modeTitle}>マスター済み</Text>
+            <Text style={s.modeSub}>復習から除外した問題</Text>
           </Pressable>
         </View>
 
@@ -688,11 +688,11 @@ function HomeScreen() {
             style={[s.utilityCard, Shadow.sm]}
             onPress={() => router.push('/achievements')}
             accessibilityRole="button"
-            accessibilityLabel="実績バッジを開く"
+            accessibilityLabel={`実績バッジを開く (${unlockedCount}/${ALL_ACHIEVEMENTS.length}個獲得)`}
           >
             <Text style={s.utilityIcon}>🏆</Text>
             <Text style={s.utilityTitle}>実績バッジ</Text>
-            <Text style={s.utilitySub}>達成記録を確認</Text>
+            <Text style={s.utilitySub}>{unlockedCount}/{ALL_ACHIEVEMENTS.length} 個獲得</Text>
           </Pressable>
         </View>
 
