@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, StyleSheet, Platform, DimensionValue } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Platform, DimensionValue, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Shadow, FontSize, Spacing, BorderRadius, LetterSpacing } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
@@ -146,6 +146,30 @@ export default function LandingPage() {
   const s = useMemo(() => makeStyles(colors), [colors]);
   const daysLeft = useMemo(() => getDaysUntilExam(), []);
 
+  // [UX改善] LP 一本化:
+  // app.takkenkanzen.com に未ログインで来た Web ユーザーは、
+  // マーケLP の takkenkanzen.com にリダイレクトする。
+  // - 広告先(takkenkanzen.com)とブランド体験を統一
+  // - LP の2重メンテを解消
+  // - Native ユーザーは _layout.tsx で /auth/login に既にリダイレクト済みのため影響なし
+  const [shouldRedirectToMarketingLP] = useState(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    // takkenkanzen.com 直接アクセスはリダイレクトせず通常LP表示 (このコンポーネントは
+    // 実質 app.takkenkanzen.com 用だが、念のため保険)
+    if (host === 'takkenkanzen.com' || host === 'www.takkenkanzen.com') return false;
+    // localhost/IPベース 等の開発環境もリダイレクトしない
+    if (host === 'localhost' || host.startsWith('127.') || host.startsWith('192.168.') || host.endsWith('.local')) return false;
+    // それ以外 (app.takkenkanzen.com など) はマーケLPへリダイレクト
+    return true;
+  });
+
+  useEffect(() => {
+    if (shouldRedirectToMarketingLP && Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.location.replace('https://takkenkanzen.com');
+    }
+  }, [shouldRedirectToMarketingLP]);
+
   // FAQ state
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const toggleFaq = useCallback((idx: number) => {
@@ -201,6 +225,15 @@ export default function LandingPage() {
   }, []);
 
   const goLogin = useCallback(() => router.push('/auth/login'), [router]);
+
+  // リダイレクト中はローダーだけ表示し、フル LP のチラ見えを防止
+  if (shouldRedirectToMarketingLP) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content}>
