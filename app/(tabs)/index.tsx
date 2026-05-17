@@ -29,6 +29,11 @@ import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievemen
 import { useExamStore } from '../../store/useExamStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { decideOnboardingState, ONBOARDING_KEYS } from '../../utils/onboarding';
+import { setAiQueue } from '../../utils/aiQueue';
+import {
+  getRecommendedQuestionsByCategory,
+  getRecommendedQuestionsBySubcategory,
+} from '../../services/aiAnalysis';
 import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
 import { DailyGoalCelebration } from '../../components/DailyGoalCelebration';
@@ -524,16 +529,33 @@ function HomeScreen() {
 
         {/* ── [UX改善] カテゴリ別 / 論点別に解く ──
             「宅建業法だけ集中して解きたい」「固定資産税をピンポイントで」
-            のような頻出ニーズに応える。ホームから1〜2タップで該当問題に到達。 */}
+            のような頻出ニーズに応える。
+            タップ → AI推奨の弱点優先問題を10問キューに保存して、最初の問題に直行
+            (= 連続出題モード。質問画面で source=ai を判定して次々と問題を出す) */}
         <Text style={s.sectionTitle}>🎯 カテゴリ別に解く</Text>
+        <Text style={s.sectionDescSmall}>AIがあなたの弱点を優先して10問を選びます</Text>
         <View style={s.catChipGrid}>
           {(['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'] as Category[]).map((cat) => (
             <Pressable
               key={cat}
               style={[s.catChip, { borderColor: CATEGORY_COLORS[cat] }, Shadow.sm]}
-              onPress={() => router.push({ pathname: '/(tabs)/questions', params: { category: cat } } as any)}
+              onPress={async () => {
+                const progress = useProgressStore.getState().progress;
+                const recommended = getRecommendedQuestionsByCategory(progress, cat, 10);
+                if (recommended.length === 0) return;
+                const ids = recommended.map((r) => r.questionId);
+                await setAiQueue(
+                  {
+                    getItem: (k) => AsyncStorage.getItem(k),
+                    setItem: (k, v) => AsyncStorage.setItem(k, v),
+                    removeItem: (k) => AsyncStorage.removeItem(k),
+                  },
+                  ids,
+                );
+                router.push(`/question/${ids[0]}?source=ai` as any);
+              }}
               accessibilityRole="button"
-              accessibilityLabel={`${CATEGORY_LABELS[cat]}の問題を解く`}
+              accessibilityLabel={`${CATEGORY_LABELS[cat]}の弱点問題を連続で解く`}
             >
               <Text style={s.catChipIcon}>{CATEGORY_ICONS[cat]}</Text>
               <Text style={[s.catChipText, { color: CATEGORY_COLORS[cat] }]}>{CATEGORY_LABELS[cat]}</Text>
@@ -554,14 +576,30 @@ function HomeScreen() {
             <Pressable
               key={`${t.category}-${t.key}`}
               style={s.topicChip}
-              onPress={() =>
-                router.push({
-                  pathname: '/(tabs)/questions',
-                  params: { category: t.category, subcategory: t.key },
-                } as any)
-              }
+              onPress={async () => {
+                const progress = useProgressStore.getState().progress;
+                const subcat = SUBCATEGORIES[t.category].find((sc) => sc.key === t.key);
+                const matchTags = subcat?.matchTags ?? [];
+                const recommended = getRecommendedQuestionsBySubcategory(
+                  progress,
+                  t.category,
+                  matchTags,
+                  10,
+                );
+                if (recommended.length === 0) return;
+                const ids = recommended.map((r) => r.questionId);
+                await setAiQueue(
+                  {
+                    getItem: (k) => AsyncStorage.getItem(k),
+                    setItem: (k, v) => AsyncStorage.setItem(k, v),
+                    removeItem: (k) => AsyncStorage.removeItem(k),
+                  },
+                  ids,
+                );
+                router.push(`/question/${ids[0]}?source=ai` as any);
+              }}
               accessibilityRole="button"
-              accessibilityLabel={`${t.label}の問題を解く`}
+              accessibilityLabel={`${t.label}の弱点問題を連続で解く`}
             >
               <Text style={s.topicChipText}>{t.label}</Text>
             </Pressable>
@@ -1084,6 +1122,13 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   },
 
   // ─── [UX改善] カテゴリ別に解く / よく出る論点 ───
+  sectionDescSmall: {
+    fontSize: FontSize.caption,
+    color: C.textSecondary,
+    paddingHorizontal: Spacing.xl,
+    marginTop: -6,
+    marginBottom: 10,
+  },
   catChipGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

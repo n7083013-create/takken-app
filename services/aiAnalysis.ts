@@ -268,6 +268,70 @@ export function getRecommendedQuestions(
 }
 
 // ============================================================
+// カテゴリ/サブカテゴリ別の推奨問題 (弱点優先 + 軽いシャッフル)
+// ============================================================
+//
+// ホーム画面「カテゴリ別に解く」「よく出る論点」 chip から呼ばれる。
+// 「弱点優先で AI が選んだベスト問題を、毎回違う順序で出題」を実現する。
+//
+// アルゴリズム:
+// 1. フィルターで該当問題を抽出
+// 2. 各問題の弱点スコアを計算
+// 3. 弱点スコア降順でソートし、上位 count*1.5 件を「ベストプール」とする
+// 4. ベストプールをシャッフルし、count 件を選んで返す
+// 5. 「ベストから外れない + 順序はランダム」のバランス
+
+/** カテゴリで絞り込んだ推奨問題 */
+export function getRecommendedQuestionsByCategory(
+  progress: Record<string, QuestionProgress>,
+  category: Category,
+  count: number = 10,
+): WeaknessScore[] {
+  return pickRecommendedByFilter(progress, (q) => q.category === category, count);
+}
+
+/** サブカテゴリ (matchTags) で絞り込んだ推奨問題 */
+export function getRecommendedQuestionsBySubcategory(
+  progress: Record<string, QuestionProgress>,
+  category: Category,
+  matchTags: readonly string[],
+  count: number = 10,
+): WeaknessScore[] {
+  return pickRecommendedByFilter(
+    progress,
+    (q) => q.category === category && q.tags.some((t) => matchTags.includes(t)),
+    count,
+  );
+}
+
+/** 内部: フィルターで絞った問題から弱点スコア順上位をシャッフルして取得 */
+function pickRecommendedByFilter(
+  progress: Record<string, QuestionProgress>,
+  filter: (q: typeof ALL_QUESTIONS[number]) => boolean,
+  count: number,
+): WeaknessScore[] {
+  const filtered = ALL_QUESTIONS.filter(filter);
+  if (filtered.length === 0) return [];
+
+  // 弱点スコア降順でソート
+  const scored = filtered
+    .map((q) => calculateWeaknessScore(q, progress[q.id]))
+    .sort((a, b) => b.score - a.score);
+
+  // 上位プール (count の 1.5 倍、最低 count 件)
+  const poolSize = Math.min(scored.length, Math.max(count, Math.ceil(count * 1.5)));
+  const pool = scored.slice(0, poolSize);
+
+  // Fisher-Yates シャッフル (ベストの中から毎回違う順序で)
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  return pool.slice(0, Math.min(count, pool.length));
+}
+
+// ============================================================
 // 学習プラン（試験日までの日割り）
 // ============================================================
 
