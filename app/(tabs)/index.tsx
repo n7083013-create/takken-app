@@ -677,88 +677,93 @@ function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* ── Category Breakdown ── */}
-        <Text style={s.sectionTitle}>科目別の分析</Text>
-        {CATEGORY_STATS.map(({ category, total }) => {
-          const cs = stats.categoryStats[category];
+        {/* ── [UX改善] 科目別 → 全論点 chip 一覧 (タップで即連続出題)
+            旧: カードタップで展開 → サブカテゴリの「正答率%」表示
+                 (進捗率は記録ページに同等機能あるため重複していた)
+            新: 各カテゴリ見出しの下にサブカテゴリ chip 一覧を常時表示
+                 chip タップ = AI弱点優先15問の連続出題が即開始 */}
+        <Text style={s.sectionTitle}>📚 論点を選んで解く</Text>
+        <Text style={s.sectionDescSmall}>苦手な論点をピンポイントで集中学習</Text>
+        {CATEGORY_STATS.map(({ category }) => {
           const catColor = CATEGORY_COLORS[category];
-          const pct = total > 0 ? Math.round((cs.correct / total) * 100) : 0;
-          const expanded = expandedCat === category;
           const subcats = SUBCATEGORIES[category];
 
           return (
-            <View key={category} style={s.catWrapper}>
+            <View key={category} style={s.catBlockWrapper}>
+              {/* カテゴリ見出し (タップ = 該当カテゴリ全体の連続出題) */}
               <Pressable
-                style={[s.catCard, Shadow.sm]}
+                style={[s.catBlockHeader, { borderLeftColor: catColor }]}
+                onPress={async () => {
+                  const progressMap = useProgressStore.getState().progress;
+                  const recommended = getRecommendedQuestionsByCategory(progressMap, category, 20);
+                  if (recommended.length === 0) return;
+                  const ids = recommended.map((r) => r.questionId);
+                  await setAiQueue(
+                    {
+                      getItem: (k) => AsyncStorage.getItem(k),
+                      setItem: (k, v) => AsyncStorage.setItem(k, v),
+                      removeItem: (k) => AsyncStorage.removeItem(k),
+                    },
+                    ids,
+                  );
+                  router.push(`/question/${ids[0]}?source=ai` as any);
+                }}
                 accessibilityRole="button"
-                accessibilityLabel={`${CATEGORY_LABELS[category]}の詳細を${expanded ? '閉じる' : '開く'}`}
-                onPress={() => setExpandedCat(expanded ? null : category)}
+                accessibilityLabel={`${CATEGORY_LABELS[category]}全体を解く`}
               >
-                <View style={[s.catAccent, { backgroundColor: catColor }]} />
-                <View style={s.catBody}>
-                  <View style={s.catTopRow}>
-                    <View style={s.catLeft}>
-                      <Text style={s.catIcon}>{CATEGORY_ICONS[category]}</Text>
-                      <View>
-                        <Text style={s.catName}>{CATEGORY_LABELS[category]}</Text>
-                        <Text style={s.catDetail}>{total}問中 {cs.correct}問正解</Text>
-                      </View>
-                    </View>
-                    <View style={s.catRight}>
-                      <Text style={[s.catRate, { color: catColor }]}>{pct}%</Text>
-                      <Text style={s.catChevron}>{expanded ? '▾' : '▸'}</Text>
-                    </View>
-                  </View>
-                  <View style={s.catTrack}>
-                    <View style={[s.catFill, { width: `${pct}%`, backgroundColor: catColor }]} />
-                  </View>
-                </View>
+                <Text style={s.catBlockIcon}>{CATEGORY_ICONS[category]}</Text>
+                <Text style={[s.catBlockName, { color: catColor }]}>{CATEGORY_LABELS[category]}</Text>
+                <Text style={[s.catBlockArrow, { color: catColor }]}>▶ 全体を解く</Text>
               </Pressable>
-
-              {expanded && (
-                <View style={s.subList}>
-                  {subcats.map((sc) => {
-                    const scQuestions = ALL_QUESTIONS.filter(
-                      (q) => q.category === category && matchSubcat(q.tags, sc.matchTags),
-                    );
-                    const scTotal = scQuestions.length;
-                    if (scTotal === 0) return null;
-                    const scCorrect = scQuestions.filter((q) => {
-                      const p = progress[q.id];
-                      return p && p.correctCount > 0;
-                    }).length;
-                    const scPct = scTotal > 0 ? Math.round((scCorrect / scTotal) * 100) : 0;
-
-                    return (
-                      <Pressable
-                        key={sc.key}
-                        style={s.subRow}
-                        onPress={() =>
-                          router.push({ pathname: '/(tabs)/questions', params: { category } })
-                        }
-                      >
-                        <Text style={s.subIcon}>{sc.icon}</Text>
-                        <View style={s.subInfo}>
-                          <Text style={s.subName}>{sc.label}</Text>
-                          <View style={s.subTrack}>
-                            <View style={[s.subFill, { width: `${scPct}%`, backgroundColor: catColor }]} />
-                          </View>
-                        </View>
-                        <Text style={s.subCount}>{scCorrect}/{scTotal}</Text>
-                        <Text style={[s.subPct, { color: catColor }]}>{scPct}%</Text>
-                      </Pressable>
-                    );
-                  })}
-                  <Pressable
-                    style={[s.subAllBtn, { borderColor: catColor + '30' }]}
-                    onPress={() => router.push({ pathname: '/(tabs)/questions', params: { category } })}
-                  >
-                    <Text style={[s.subAllText, { color: catColor }]}>
-                      {CATEGORY_LABELS[category]}の全問題を見る ›
-                    </Text>
-                  </Pressable>
-                </View>
-              )}
+              {/* サブカテゴリ chip 一覧 */}
+              <View style={s.subChipRow}>
+                {subcats.map((sc) => {
+                  const scQuestions = ALL_QUESTIONS.filter(
+                    (q) => q.category === category && matchSubcat(q.tags, sc.matchTags),
+                  );
+                  if (scQuestions.length === 0) return null;
+                  return (
+                    <Pressable
+                      key={sc.key}
+                      style={[s.subChip, { borderColor: catColor + '50' }]}
+                      onPress={async () => {
+                        const progressMap = useProgressStore.getState().progress;
+                        const recommended = getRecommendedQuestionsBySubcategory(
+                          progressMap,
+                          category,
+                          sc.matchTags,
+                          15,
+                        );
+                        if (recommended.length === 0) return;
+                        const ids = recommended.map((r) => r.questionId);
+                        await setAiQueue(
+                          {
+                            getItem: (k) => AsyncStorage.getItem(k),
+                            setItem: (k, v) => AsyncStorage.setItem(k, v),
+                            removeItem: (k) => AsyncStorage.removeItem(k),
+                          },
+                          ids,
+                        );
+                        router.push(`/question/${ids[0]}?source=ai` as any);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${sc.label}を集中して解く`}
+                    >
+                      <Text style={s.subChipIcon}>{sc.icon}</Text>
+                      <Text style={[s.subChipText, { color: catColor }]}>{sc.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {/* リスト表示で全問題を見たい派向け (副導線) */}
+              <Pressable
+                style={[s.subAllBtn, { borderColor: catColor + '30' }]}
+                onPress={() => router.push({ pathname: '/(tabs)/questions', params: { category } } as any)}
+              >
+                <Text style={[s.subAllText, { color: catColor }]}>
+                  {CATEGORY_LABELS[category]}の全問題をリスト表示 ›
+                </Text>
+              </Pressable>
             </View>
           );
         })}
@@ -1243,6 +1248,55 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
 
   // ─── Category Cards ───
   catWrapper: { marginBottom: 10 },
+
+  // ─── [UX改善] 論点を選んで解く: 全サブカテゴリ chip 一覧 ───
+  catBlockWrapper: {
+    marginBottom: 18,
+    paddingHorizontal: Spacing.xl,
+  },
+  catBlockHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.card,
+    borderLeftWidth: 4,
+    borderRadius: BorderRadius.md,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    gap: 10,
+  },
+  catBlockIcon: { fontSize: 22 },
+  catBlockName: {
+    flex: 1,
+    fontSize: FontSize.subhead,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  catBlockArrow: {
+    fontSize: FontSize.caption,
+    fontWeight: '800',
+  },
+  subChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 8,
+  },
+  subChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.card,
+    borderWidth: 1.5,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 4,
+  },
+  subChipIcon: { fontSize: 14 },
+  subChipText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
   catCard: {
     flexDirection: 'row',
     backgroundColor: C.card,

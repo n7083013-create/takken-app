@@ -60,7 +60,21 @@ export default function QuestionsScreen() {
       ? (params.category as Category)
       : null,
   );
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  // [UX改善] 初回マウントから「全サブカテゴリ折り畳み + 集中するボタン押せる状態」で開始
+  // (展開してから「集中する」ではなく、開いた瞬間からタップ可能にする)
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => {
+    if (params.category && CATEGORIES.includes(params.category as Category)) {
+      const subcats = SUBCATEGORIES[params.category as Category];
+      const allKeys = new Set(subcats.map((sc) => sc.key));
+      allKeys.add('_other');
+      // subcategory 指定がある場合のみ、その項目だけ展開
+      if (params.subcategory && allKeys.has(params.subcategory)) {
+        allKeys.delete(params.subcategory);
+      }
+      return allKeys;
+    }
+    return new Set();
+  });
 
   // パラメータ変更時にカテゴリを更新（ホーム画面からのナビゲーション対応）
   // - subcategory 指定あり: 該当 subcategory のみ展開 (ピンポイント学習)
