@@ -304,6 +304,23 @@ export function getRecommendedQuestionsBySubcategory(
   );
 }
 
+/**
+ * 「その他」(_other) 用: カテゴリ内で、定義された全 matchTags のいずれにもマッチしない問題
+ * = サブカテゴリに分類されていない問題群
+ */
+export function getRecommendedQuestionsForOther(
+  progress: Record<string, QuestionProgress>,
+  category: Category,
+  allMatchTags: readonly string[],
+  count: number = 10,
+): WeaknessScore[] {
+  return pickRecommendedByFilter(
+    progress,
+    (q) => q.category === category && !q.tags.some((t) => allMatchTags.includes(t)),
+    count,
+  );
+}
+
 /** 内部: フィルターで絞った問題から弱点スコア順上位をシャッフルして取得 */
 function pickRecommendedByFilter(
   progress: Record<string, QuestionProgress>,

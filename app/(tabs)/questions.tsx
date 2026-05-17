@@ -27,7 +27,10 @@ import { useProgressStore } from '../../store/useProgressStore';
 import { EmptyState } from '../../components/EmptyState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setAiQueue } from '../../utils/aiQueue';
-import { getRecommendedQuestionsBySubcategory } from '../../services/aiAnalysis';
+import {
+  getRecommendedQuestionsBySubcategory,
+  getRecommendedQuestionsForOther,
+} from '../../services/aiAnalysis';
 
 /** タグベースでサブカテゴリに振り分け */
 function matchSubcategory(q: Question, subcats: Subcategory[]): string {
@@ -258,9 +261,9 @@ export default function QuestionsScreen() {
         renderSectionHeader={({ section }) => {
           const collapsed = collapsedSections.has(section.key);
           const catColor = selectedCategory ? CATEGORY_COLORS[selectedCategory] : colors.primary;
-          // [UX改善] サブカテゴリ表示時のみ「集中する」ボタンを表示
-          // (カテゴリ全体表示時は対象外)
-          const showFocusBtn = !!selectedCategory && section.key !== '_other';
+          // [UX改善] サブカテゴリ表示時に「集中する」ボタンを表示
+          // (カテゴリ全体表示時は対象外。_other も対象に含める)
+          const showFocusBtn = !!selectedCategory;
           return (
             <View style={[s.sectionHeader, Shadow.sm]}>
               <Pressable
@@ -281,15 +284,29 @@ export default function QuestionsScreen() {
                 <Pressable
                   style={[s.focusBtn, { backgroundColor: catColor }]}
                   onPress={async () => {
-                    const subcat = SUBCATEGORIES[selectedCategory].find((sc) => sc.key === section.key);
-                    if (!subcat) return;
                     const progress = useProgressStore.getState().progress;
-                    const recommended = getRecommendedQuestionsBySubcategory(
-                      progress,
-                      selectedCategory,
-                      subcat.matchTags,
-                      15,
-                    );
+                    let recommended;
+                    if (section.key === '_other') {
+                      // 「その他」(未分類): カテゴリ内の全 matchTags にマッチしない問題
+                      const allMatchTags = SUBCATEGORIES[selectedCategory].flatMap(
+                        (sc) => sc.matchTags as string[],
+                      );
+                      recommended = getRecommendedQuestionsForOther(
+                        progress,
+                        selectedCategory,
+                        allMatchTags,
+                        15,
+                      );
+                    } else {
+                      const subcat = SUBCATEGORIES[selectedCategory].find((sc) => sc.key === section.key);
+                      if (!subcat) return;
+                      recommended = getRecommendedQuestionsBySubcategory(
+                        progress,
+                        selectedCategory,
+                        subcat.matchTags,
+                        15,
+                      );
+                    }
                     if (recommended.length === 0) return;
                     const ids = recommended.map((r) => r.questionId);
                     await setAiQueue(
