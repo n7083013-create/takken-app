@@ -15,7 +15,10 @@ export const TARGET_SCORES: Record<Category, { total: number; target: number }> 
   tax_other: { total: 8, target: 5 },
 };
 
-export const TOTAL_TARGET_SCORE = 41; // 50問中41点 = 余裕の合格
+// [統一] 安全圏 = 42点 (constants/exam.ts の GRADE_A.min と一致)
+// 旧: 41点だったが、画面ごとに 41/42 が混在しユーザー混乱の原因。
+// ユーザー方針「厳しい方で統一」に従い、より厳しい 42 点を採用。
+export const TOTAL_TARGET_SCORE = 42; // 50問中42点 = ◎ A 安全圏（確実合格ライン）
 
 // 各カテゴリの重要度（配点比率ベース）
 const CATEGORY_WEIGHT: Record<Category, number> = {
@@ -172,7 +175,7 @@ export function analyzeCategoryStrength(
 
 export interface OverallAnalysis {
   predictedTotal: number;        // 本番予想得点（0-50）
-  targetTotal: number;           // 41
+  targetTotal: number;           // 42（安全圏）
   passProbability: number;       // 0-100%
   categories: CategoryAnalysis[];
   weakestCategory: Category;
@@ -202,7 +205,7 @@ export function analyzeOverall(
   if (stats.totalQuestions < 20) {
     recommendation = 'まずは各カテゴリ10問ずつ解いて、AIに弱点を把握させよう';
   } else if (passProbability >= 80) {
-    recommendation = `合格圏内！${labelOf(weakestCategory)}を仕上げて余裕の合格を狙おう`;
+    recommendation = `合格圏内！${labelOf(weakestCategory)}を仕上げて安全圏(42点)を狙おう`;
   } else if (passProbability >= 50) {
     recommendation = `${labelOf(weakestCategory)}が伸び代。今日のおすすめ問題を集中攻略`;
   } else {

@@ -30,6 +30,7 @@ import { useExamStore } from '../../store/useExamStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { decideOnboardingState, ONBOARDING_KEYS } from '../../utils/onboarding';
 import { setAiQueue } from '../../utils/aiQueue';
+import { infoAlert } from '../../services/alert';
 import {
   getRecommendedQuestionsByCategory,
   getRecommendedQuestionsBySubcategory,
@@ -376,10 +377,16 @@ function HomeScreen() {
               </Text>
             </View>
             <View style={s.dashStats}>
-              <View style={s.dashStatItem}>
+              <Pressable
+                style={s.dashStatItem}
+                onPress={() => infoAlert(
+                  '達成率について',
+                  '「3回連続で正解した問題」の割合です。\n間違えると0からカウントし直しになります。\nまぐれ正解ではなく「本当に理解した問題」を把握できます。',
+                )}
+              >
                 <AnimatedNumber value={rate} style={s.dashStatNum} suffix="%" duration={600} />
-                <Text style={s.dashStatLabel}>達成率</Text>
-              </View>
+                <Text style={s.dashStatLabel}>達成率 ⓘ</Text>
+              </Pressable>
               <View style={s.dashStatItem}>
                 <AnimatedNumber value={stats.totalQuestions} style={s.dashStatNum} duration={600} />
                 <Text style={s.dashStatLabel}>累計解答</Text>

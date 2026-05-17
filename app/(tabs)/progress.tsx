@@ -950,10 +950,16 @@ export default function ProgressScreen() {
               <Text style={s.heroLabel}>総解答数</Text>
             </View>
             <View style={s.heroDivider} />
-            <View style={s.heroItem}>
+            <Pressable
+              style={s.heroItem}
+              onPress={() => infoAlert(
+                '達成率について',
+                '「3回連続で正解した問題」の割合です。\n間違えると0からカウントし直しになります。\nまぐれ正解ではなく「本当に理解した問題」を把握できます。',
+              )}
+            >
               <Text style={[s.heroValue, { color: colors.primary }]}>{rate}%</Text>
-              <Text style={s.heroLabel}>達成率</Text>
-            </View>
+              <Text style={s.heroLabel}>達成率 ⓘ</Text>
+            </Pressable>
             <View style={s.heroDivider} />
             <View style={s.heroItem}>
               <Text style={[s.heroValue, { color: colors.accent }]}>{stats.streak}</Text>
