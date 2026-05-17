@@ -533,7 +533,7 @@ function HomeScreen() {
             タップ → AI推奨の弱点優先問題を10問キューに保存して、最初の問題に直行
             (= 連続出題モード。質問画面で source=ai を判定して次々と問題を出す) */}
         <Text style={s.sectionTitle}>🎯 カテゴリ別に解く</Text>
-        <Text style={s.sectionDescSmall}>AIがあなたの弱点を優先して10問を選びます</Text>
+        <Text style={s.sectionDescSmall}>AIがあなたの弱点を優先してベスト問題を選びます</Text>
         <View style={s.catChipGrid}>
           {(['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'] as Category[]).map((cat) => (
             <Pressable
@@ -541,7 +541,7 @@ function HomeScreen() {
               style={[s.catChip, { borderColor: CATEGORY_COLORS[cat] }, Shadow.sm]}
               onPress={async () => {
                 const progress = useProgressStore.getState().progress;
-                const recommended = getRecommendedQuestionsByCategory(progress, cat, 10);
+                const recommended = getRecommendedQuestionsByCategory(progress, cat, 20);
                 if (recommended.length === 0) return;
                 const ids = recommended.map((r) => r.questionId);
                 await setAiQueue(
@@ -584,7 +584,7 @@ function HomeScreen() {
                   progress,
                   t.category,
                   matchTags,
-                  10,
+                  15,
                 );
                 if (recommended.length === 0) return;
                 const ids = recommended.map((r) => r.questionId);

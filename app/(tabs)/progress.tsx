@@ -7,6 +7,7 @@ import {
   Platform,
   Linking,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { confirmAlert, infoAlert } from '../../services/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -73,6 +74,9 @@ function SettingsSection() {
   };
 
   const goalOptions = [5, 10, 15, 20, 30, 50];
+  // [UX改善] カスタム目標値入力 (ユーザー報告:「自分で目標を決めたい」)
+  const [customGoalInput, setCustomGoalInput] = useState('');
+  const isCustomGoal = !goalOptions.includes(settings.dailyGoal);
 
   return (
     <View style={sset.box}>
@@ -91,6 +95,35 @@ function SettingsSection() {
             </Text>
           </Pressable>
         ))}
+      </View>
+      {/* [UX改善] カスタム入力 */}
+      <View style={sset.customRow}>
+        <Text style={sset.customLabel}>カスタム:</Text>
+        <TextInput
+          style={[sset.customInput, isCustomGoal && sset.customInputActive]}
+          keyboardType="number-pad"
+          placeholder={isCustomGoal ? String(settings.dailyGoal) : '例: 75'}
+          placeholderTextColor={isCustomGoal ? colors.primary : colors.textTertiary}
+          value={customGoalInput}
+          onChangeText={(text) => setCustomGoalInput(text.replace(/[^0-9]/g, ''))}
+          onBlur={() => {
+            const n = parseInt(customGoalInput, 10);
+            if (!isNaN(n) && n >= 1 && n <= 500) {
+              updateSettings({ dailyGoal: n });
+              setCustomGoalInput('');
+            }
+          }}
+          onSubmitEditing={() => {
+            const n = parseInt(customGoalInput, 10);
+            if (!isNaN(n) && n >= 1 && n <= 500) {
+              updateSettings({ dailyGoal: n });
+              setCustomGoalInput('');
+            }
+          }}
+          returnKeyType="done"
+          maxLength={3}
+        />
+        <Text style={sset.customLabel}>問 (1〜500)</Text>
       </View>
 
       <Text style={sset.label}>テーマ</Text>
@@ -278,7 +311,36 @@ function makeSettingsStyles(C: ThemeColors) {
       color: C.textTertiary,
       marginTop: 2,
     },
-    segRow: { flexDirection: 'row', gap: 8 },
+    segRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+    // [UX改善] カスタム目標値入力
+    customRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginTop: 10,
+    },
+    customLabel: {
+      fontSize: FontSize.caption,
+      color: C.textSecondary,
+      fontWeight: '600',
+    },
+    customInput: {
+      flex: 1,
+      backgroundColor: C.background,
+      borderRadius: BorderRadius.md,
+      paddingVertical: 10,
+      paddingHorizontal: 14,
+      borderWidth: 1,
+      borderColor: C.border,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      textAlign: 'center',
+      minWidth: 80,
+    },
+    customInputActive: {
+      borderColor: C.primary,
+      borderWidth: 2,
+    },
     segBtn: {
       flex: 1,
       backgroundColor: C.background,

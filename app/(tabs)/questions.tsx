@@ -25,6 +25,9 @@ import {
 import { ALL_QUESTIONS } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
 import { EmptyState } from '../../components/EmptyState';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setAiQueue } from '../../utils/aiQueue';
+import { getRecommendedQuestionsBySubcategory } from '../../services/aiAnalysis';
 
 /** タグベースでサブカテゴリに振り分け */
 function matchSubcategory(q: Question, subcats: Subcategory[]): string {
@@ -241,21 +244,57 @@ export default function QuestionsScreen() {
         renderSectionHeader={({ section }) => {
           const collapsed = collapsedSections.has(section.key);
           const catColor = selectedCategory ? CATEGORY_COLORS[selectedCategory] : colors.primary;
+          // [UX改善] サブカテゴリ表示時のみ「集中する」ボタンを表示
+          // (カテゴリ全体表示時は対象外)
+          const showFocusBtn = !!selectedCategory && section.key !== '_other';
           return (
-            <Pressable
-              style={[s.sectionHeader, Shadow.sm]}
-              onPress={() => toggleSection(section.key)}
-              accessibilityRole="button"
-              accessibilityLabel={`${section.title} ${section.count}問 ${collapsed ? '展開する' : '折りたたむ'}`}
-            >
-              <View style={s.sectionLeft}>
-                <Text style={s.sectionTitle}>{section.title}</Text>
-                <View style={[s.sectionCount, { backgroundColor: catColor + '14' }]}>
-                  <Text style={[s.sectionCountText, { color: catColor }]}>{section.count}問</Text>
+            <View style={[s.sectionHeader, Shadow.sm]}>
+              <Pressable
+                style={s.sectionHeaderMain}
+                onPress={() => toggleSection(section.key)}
+                accessibilityRole="button"
+                accessibilityLabel={`${section.title} ${section.count}問 ${collapsed ? '展開する' : '折りたたむ'}`}
+              >
+                <View style={s.sectionLeft}>
+                  <Text style={s.sectionTitle}>{section.title}</Text>
+                  <View style={[s.sectionCount, { backgroundColor: catColor + '14' }]}>
+                    <Text style={[s.sectionCountText, { color: catColor }]}>{section.count}問</Text>
+                  </View>
                 </View>
-              </View>
-              <Text style={s.sectionChevron}>{collapsed ? '▸' : '▾'}</Text>
-            </Pressable>
+                <Text style={s.sectionChevron}>{collapsed ? '▸' : '▾'}</Text>
+              </Pressable>
+              {showFocusBtn && selectedCategory && (
+                <Pressable
+                  style={[s.focusBtn, { backgroundColor: catColor }]}
+                  onPress={async () => {
+                    const subcat = SUBCATEGORIES[selectedCategory].find((sc) => sc.key === section.key);
+                    if (!subcat) return;
+                    const progress = useProgressStore.getState().progress;
+                    const recommended = getRecommendedQuestionsBySubcategory(
+                      progress,
+                      selectedCategory,
+                      subcat.matchTags,
+                      15,
+                    );
+                    if (recommended.length === 0) return;
+                    const ids = recommended.map((r) => r.questionId);
+                    await setAiQueue(
+                      {
+                        getItem: (k) => AsyncStorage.getItem(k),
+                        setItem: (k, v) => AsyncStorage.setItem(k, v),
+                        removeItem: (k) => AsyncStorage.removeItem(k),
+                      },
+                      ids,
+                    );
+                    router.push(`/question/${ids[0]}?source=ai` as any);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${section.title}をAI優先で集中して解く`}
+                >
+                  <Text style={s.focusBtnText}>▶ 集中する</Text>
+                </Pressable>
+              )}
+            </View>
           );
         }}
         renderItem={({ item }) => {
@@ -411,19 +450,36 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
 
   // ─── Section Headers ───
   sectionHeader: {
+    backgroundColor: C.card,
+    borderRadius: BorderRadius.lg,
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  sectionHeaderMain: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: C.card,
-    borderRadius: BorderRadius.lg,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    marginBottom: 8,
   },
   sectionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  // [UX改善] サブカテゴリ集中ボタン
+  focusBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.2)',
+  },
+  focusBtnText: {
+    color: '#fff',
+    fontSize: FontSize.footnote,
+    fontWeight: '800',
+    letterSpacing: 0.3,
   },
   sectionTitle: {
     fontSize: FontSize.subhead,
