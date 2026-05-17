@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,12 +20,16 @@ import { Shadow } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useAuthStore } from '../../store/useAuthStore';
 import { supabase, isSupabaseConfigured } from '../../services/supabase';
+import { trackEvent } from '../../services/analytics';
 
 type Mode = 'signin' | 'signup';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  // [UX改善] LP「Premium で始める」CTA → paywall 直行フローで
+  // ログイン画面が中継ステップとして挟まる際の「あと1ステップ」プログレス表示
+  const isHeadingToPaywall = returnTo === '/paywall';
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
   const signIn = useAuthStore((s) => s.signInWithEmail);
@@ -40,6 +44,34 @@ export default function LoginScreen() {
   const [agreed, setAgreed] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
+  // Issue #23: サインアップ完了後の永続UI状態（メール確認待ち）
+  const [signupCompletedEmail, setSignupCompletedEmail] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((v) => v - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  const handleResendVerification = async () => {
+    if (!signupCompletedEmail || resendCooldown > 0) return;
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: signupCompletedEmail,
+      });
+      if (error) {
+        infoAlert('再送失敗', error.message || '時間をおいて再度お試しください');
+        return;
+      }
+      infoAlert('再送完了', `${signupCompletedEmail} に確認メールを再送しました`);
+      setResendCooldown(60); // 60秒のクールダウン
+    } catch (e) {
+      infoAlert('再送失敗', '通信エラーが発生しました');
+    }
+  };
 
   const configured = isSupabaseConfigured();
 
@@ -47,6 +79,59 @@ export default function LoginScreen() {
   const handleAppleSignIn = async () => {
     try {
       setAppleLoading(true);
+
+      // Web: Supabase の OAuth フロー（Apple Service ID 経由）
+      if (Platform.OS === 'web') {
+        // OAuth 戻り先を保存
+        if (returnTo && typeof window !== 'undefined') {
+          localStorage?.setItem('auth_returnTo', returnTo);
+        }
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'apple',
+          options: {
+            redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+          },
+        });
+        if (error) throw error;
+        // ブラウザが Apple のページに遷移する。戻りは onAuthStateChange で処理
+        return;
+      }
+
+      // Android: Supabase OAuth + deep link callback（iOS は signInAsync を下で使う）
+      if (Platform.OS === 'android') {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'apple',
+          options: {
+            skipBrowserRedirect: true,
+            redirectTo: 'takken-app://auth/callback',
+          },
+        });
+        if (error || !data?.url) throw error || new Error('Apple ログイン URL が取得できませんでした');
+        // expo-web-browser の openAuthSessionAsync で deep link 完了を待つ
+        const WebBrowser = await import('expo-web-browser');
+        const result = await WebBrowser.openAuthSessionAsync(data.url, 'takken-app://auth/callback');
+        if (result.type === 'success' && result.url) {
+          const callbackUrl = new URL(result.url);
+          const code = callbackUrl.searchParams.get('code');
+          if (code) {
+            // PKCE フロー
+            await supabase.auth.exchangeCodeForSession(code);
+          } else {
+            // implicit fallback
+            const params = new URLSearchParams(
+              callbackUrl.hash ? callbackUrl.hash.substring(1) : callbackUrl.search.substring(1),
+            );
+            const accessToken = params.get('access_token');
+            const refreshToken = params.get('refresh_token');
+            if (accessToken && refreshToken) {
+              await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+            }
+          }
+        }
+        return;
+      }
+
+      // Native (iOS): 既存の AppleAuthentication.signInAsync
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -96,12 +181,11 @@ export default function LoginScreen() {
       return;
     }
     if (mode === 'signup') {
-      // Show verification prompt and stay on the login screen
-      Alert.alert(
-        'メール確認',
-        '確認メールを送信しました。メール内のリンクをクリックしてアカウントを有効化してください。',
-        [{ text: 'OK' }],
-      );
+      // Google広告コンバージョン（登録）発火
+      trackEvent('sign_up', { currency: 'JPY' });
+      // Issue #23: Alert だけだと閉じた瞬間ユーザーが離脱しやすい。
+      // 永続的な「メール確認待ち」UI を画面に表示し、再送ボタンと迷惑メール案内を残す。
+      setSignupCompletedEmail(email.trim());
       return;
     }
     const safeReturn = returnTo && typeof returnTo === 'string' && returnTo.startsWith('/') && !returnTo.startsWith('//')
@@ -123,8 +207,18 @@ export default function LoginScreen() {
     setGoogleLoading(false);
     if (error) {
       infoAlert('エラー', error);
+      return;
     }
-    // OAuth redirect handles the rest on web
+    // [Bugfix] Native (iOS/Android) では OAuth 完了後にアプリ内で
+    // ログイン画面に留まっているため明示的にホームへ遷移させる必要がある。
+    // Web ではすでにブラウザのフルページリダイレクトで遷移済みなのでスキップ。
+    if (Platform.OS !== 'web') {
+      // signInWithGoogle 内で session が確立済み。state 反映を待ってから遷移
+      const safeReturn = returnTo && typeof returnTo === 'string' && returnTo.startsWith('/') && !returnTo.startsWith('//')
+        ? returnTo : '/(tabs)';
+      // user state が onAuthStateChange 経由で更新されるまでわずかに待つ
+      setTimeout(() => router.replace(safeReturn as any), 100);
+    }
   };
 
   return (
@@ -143,11 +237,69 @@ export default function LoginScreen() {
             </Text>
           </View>
 
+          {/* [UX改善] Premium 訴求プログレスバナー (LP → ログイン → paywall のフロー) */}
+          {isHeadingToPaywall && (
+            <View style={s.premiumProgressBox}>
+              <Text style={s.premiumProgressTitle}>
+                ✨ あと1ステップで 7日間無料スタート!
+              </Text>
+              <View style={s.progressRow}>
+                <View style={s.progressStep}>
+                  <View style={[s.progressDot, s.progressDotActive]}>
+                    <Text style={s.progressDotNum}>1</Text>
+                  </View>
+                  <Text style={[s.progressLabel, s.progressLabelActive]}>登録</Text>
+                </View>
+                <View style={s.progressLine} />
+                <View style={s.progressStep}>
+                  <View style={s.progressDot}>
+                    <Text style={s.progressDotNum}>2</Text>
+                  </View>
+                  <Text style={s.progressLabel}>Premium 開始</Text>
+                </View>
+              </View>
+            </View>
+          )}
+
           {!configured && (
             <View style={s.warnBox}>
               <Text style={s.warnText}>
                 ⚠️ 認証サーバーが未設定です。現在ご利用いただけません。
               </Text>
+            </View>
+          )}
+
+          {/* Issue #23: サインアップ完了後の永続UI（離脱防止） */}
+          {signupCompletedEmail && (
+            <View style={s.verifyBox}>
+              <Text style={s.verifyEmoji}>📨</Text>
+              <Text style={s.verifyTitle}>確認メールを送信しました</Text>
+              <Text style={s.verifyEmail}>{signupCompletedEmail}</Text>
+              <Text style={s.verifyDesc}>
+                メール内のリンクをクリックしてアカウントを有効化してください。
+              </Text>
+              <View style={s.verifyTipsBox}>
+                <Text style={s.verifyTip}>📁 迷惑メールフォルダもご確認ください</Text>
+                <Text style={s.verifyTip}>⏱ メールが届くまで数分かかる場合があります</Text>
+              </View>
+              <Pressable
+                style={[s.verifyResendBtn, resendCooldown > 0 && s.btnDisabled]}
+                onPress={handleResendVerification}
+                disabled={resendCooldown > 0}
+              >
+                <Text style={s.verifyResendText}>
+                  {resendCooldown > 0 ? `再送可能まで ${resendCooldown} 秒` : '確認メールを再送する'}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={s.verifyBackBtn}
+                onPress={() => {
+                  setSignupCompletedEmail(null);
+                  setMode('signin');
+                }}
+              >
+                <Text style={s.verifyBackText}>確認後にログインする →</Text>
+              </Pressable>
             </View>
           )}
 
@@ -167,7 +319,7 @@ export default function LoginScreen() {
             )}
           </Pressable>
 
-          {/* Appleサインインボタン（iOSのみ） */}
+          {/* Appleサインインボタン（iOS native） */}
           {Platform.OS === 'ios' && (
             <AppleAuthentication.AppleAuthenticationButton
               buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
@@ -176,6 +328,26 @@ export default function LoginScreen() {
               style={s.appleBtn}
               onPress={handleAppleSignIn}
             />
+          )}
+
+          {/* Appleサインインボタン（Web 経由 OAuth） */}
+          {Platform.OS === 'web' && (
+            <Pressable
+              style={[s.appleWebBtn, Shadow.sm, (!configured || appleLoading) && s.btnDisabled]}
+              onPress={handleAppleSignIn}
+              disabled={!configured || appleLoading}
+              accessibilityRole="button"
+              accessibilityLabel="Appleでサインイン"
+            >
+              {appleLoading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <>
+                  <Text style={s.appleWebIcon}>{''}</Text>
+                  <Text style={s.appleWebText}>Appleでサインイン</Text>
+                </>
+              )}
+            </Pressable>
           )}
 
           {/* 区切り線 */}
@@ -298,6 +470,101 @@ function makeStyles(C: ThemeColors) {
     },
     warnText: { fontSize: 12, color: C.accentDark, lineHeight: 18 },
 
+    // [UX改善] Premium 訴求プログレスバナー
+    premiumProgressBox: {
+      backgroundColor: C.primarySurface ?? '#E8F5EC',
+      borderRadius: 14,
+      borderWidth: 1.5,
+      borderColor: C.primary,
+      padding: 16,
+      marginBottom: 16,
+      alignItems: 'center',
+    },
+    premiumProgressTitle: {
+      fontSize: 14,
+      fontWeight: '800',
+      color: C.primary,
+      marginBottom: 12,
+      textAlign: 'center',
+    },
+    progressRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+    },
+    progressStep: {
+      alignItems: 'center',
+      minWidth: 80,
+    },
+    progressDot: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: '#d0d0d0',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 6,
+    },
+    progressDotActive: {
+      backgroundColor: C.primary,
+    },
+    progressDotNum: {
+      fontSize: 14,
+      fontWeight: '800',
+      color: '#fff',
+    },
+    progressLine: {
+      width: 36,
+      height: 2,
+      backgroundColor: '#d0d0d0',
+      marginBottom: 22,
+    },
+    progressLabel: {
+      fontSize: 11,
+      color: C.textSecondary,
+      fontWeight: '600',
+    },
+    progressLabelActive: {
+      color: C.primary,
+      fontWeight: '800',
+    },
+
+    // Issue #23: サインアップ完了後の永続UI
+    verifyBox: {
+      backgroundColor: C.surface,
+      borderRadius: 16,
+      padding: 24,
+      marginBottom: 16,
+      borderWidth: 2,
+      borderColor: C.primary,
+      alignItems: 'center',
+    },
+    verifyEmoji: { fontSize: 56, marginBottom: 8 },
+    verifyTitle: { fontSize: 18, fontWeight: '700', color: C.text, marginBottom: 4 },
+    verifyEmail: { fontSize: 14, fontWeight: '600', color: C.primary, marginBottom: 12 },
+    verifyDesc: { fontSize: 13, color: C.textSecondary, lineHeight: 20, textAlign: 'center', marginBottom: 16 },
+    verifyTipsBox: {
+      width: '100%',
+      backgroundColor: C.background,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 16,
+    },
+    verifyTip: { fontSize: 12, color: C.textSecondary, lineHeight: 18, marginVertical: 2 },
+    verifyResendBtn: {
+      backgroundColor: C.primary,
+      borderRadius: 24,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      width: '100%',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    verifyResendText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
+    verifyBackBtn: { paddingVertical: 8 },
+    verifyBackText: { fontSize: 13, color: C.primary, fontWeight: '600' },
+
     // Google button
     googleBtn: {
       flexDirection: 'row',
@@ -321,12 +588,26 @@ function makeStyles(C: ThemeColors) {
       color: '#333',
     },
 
-    // Apple button
+    // Apple button (iOS native)
     appleBtn: {
       width: '100%',
       height: 50,
       marginTop: 12,
     },
+    // Apple button (Web 用カスタム)
+    appleWebBtn: {
+      width: '100%',
+      height: 50,
+      marginTop: 12,
+      backgroundColor: '#000',
+      borderRadius: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+    },
+    appleWebIcon: { color: '#fff', fontSize: 20, fontFamily: 'System' },
+    appleWebText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 
     // Divider
     divider: {
