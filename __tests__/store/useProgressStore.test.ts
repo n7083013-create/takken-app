@@ -498,3 +498,67 @@ describe('useProgressStore - getDueForReview (復習対象)', () => {
     expect(useProgressStore.getState().getDueForReview()).toContain('q1');
   });
 });
+
+// ============================================================
+// [Phase 1.3] first_question_answered コンバージョン発火
+// 初回正解 (stats.totalCorrect === 0 → 1) のタイミングのみ発火
+// ============================================================
+// services/analytics をモック (動的 import が呼ぶ)
+jest.mock('../../services/analytics', () => ({
+  trackEvent: jest.fn(),
+}));
+
+describe('useProgressStore - first_question_answered (アクティベーション計測)', () => {
+  beforeEach(() => {
+    useProgressStore.getState().resetProgress();
+    jest.clearAllMocks();
+  });
+
+  it('初回正解時に trackEvent("first_question_answered") が発火する', async () => {
+    const { trackEvent } = require('../../services/analytics');
+    useProgressStore.getState().recordAnswer('q1', 'kenri', true);
+    // 動的 import の resolve を待つ
+    await new Promise((r) => setImmediate(r));
+    expect(trackEvent).toHaveBeenCalledWith('first_question_answered', expect.objectContaining({
+      value: 1,
+      currency: 'JPY',
+    }));
+  });
+
+  it('2回目の正解では発火しない (totalCorrect が 0 から始まらないため)', async () => {
+    const { trackEvent } = require('../../services/analytics');
+    useProgressStore.getState().recordAnswer('q1', 'kenri', true);
+    await new Promise((r) => setImmediate(r));
+    (trackEvent as jest.Mock).mockClear();
+    useProgressStore.getState().recordAnswer('q2', 'kenri', true);
+    await new Promise((r) => setImmediate(r));
+    expect(trackEvent).not.toHaveBeenCalledWith(
+      'first_question_answered',
+      expect.anything(),
+    );
+  });
+
+  it('不正解では発火しない', async () => {
+    const { trackEvent } = require('../../services/analytics');
+    useProgressStore.getState().recordAnswer('q1', 'kenri', false);
+    await new Promise((r) => setImmediate(r));
+    expect(trackEvent).not.toHaveBeenCalledWith(
+      'first_question_answered',
+      expect.anything(),
+    );
+  });
+
+  it('不正解の後に初回正解 → 発火する', async () => {
+    const { trackEvent } = require('../../services/analytics');
+    useProgressStore.getState().recordAnswer('q1', 'kenri', false);
+    useProgressStore.getState().recordAnswer('q2', 'kenri', false);
+    await new Promise((r) => setImmediate(r));
+    (trackEvent as jest.Mock).mockClear();
+    useProgressStore.getState().recordAnswer('q3', 'kenri', true);
+    await new Promise((r) => setImmediate(r));
+    expect(trackEvent).toHaveBeenCalledWith(
+      'first_question_answered',
+      expect.objectContaining({ value: 1, currency: 'JPY' }),
+    );
+  });
+});
