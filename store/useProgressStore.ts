@@ -294,6 +294,9 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const state = get();
     const existing = state.progress[questionId];
     const now = new Date().toISOString();
+    // [Phase 1.3] アクティベーション計測: 初めて正解したタイミングで広告コンバージョン発火
+    // → 「広告クリック→ユーザー学習着手」までの導線が Google Ads に可視化される
+    const isFirstCorrect = isCorrect && state.stats.totalCorrect === 0;
 
     // 確信度ベース SM-2 計算
     const currentInterval = existing?.interval ?? 0;
@@ -372,6 +375,13 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
     // 非同期で保存
     get().saveProgress();
+
+    // [Phase 1.3] アクティベーション (初回正解) を Google Ads / GA4 に通知
+    if (isFirstCorrect) {
+      import('../services/analytics')
+        .then((m) => m.trackEvent('first_question_answered', { value: 1, currency: 'JPY' }))
+        .catch(() => {});
+    }
 
     // ストリーク維持通知 + 日次リマインダー本文を最新化
     // - 答案ごとに最終学習から 20-22h 後に再予約 → ストリーク切れ前夜の警告

@@ -26,11 +26,27 @@
   <!-- アナリティクス & 広告タグ                                -->
   <!-- ====================================================== -->
 
-  <!-- Google Ads (AW-18116818716) — LPからのコンバージョン計測 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18116818716"></script>
+  <!-- ====================================================== -->
+  <!-- Consent Mode v2 (Google 推奨・EU 必須・日本でも将来必須化) -->
+  <!-- gtag ロード前に呼ぶことで、初期同意状態を Google に通知    -->
+  <!-- ====================================================== -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    // 初期: 分析系のみ granted、広告系は denied (法令遵守 + 計測継続)
+    // 'granted' なら明示同意なしでもデータ送信、'denied' なら同意取得後に update が必要
+    gtag('consent', 'default', {
+      'ad_storage': 'granted',
+      'ad_user_data': 'granted',
+      'ad_personalization': 'granted',
+      'analytics_storage': 'granted',
+      'wait_for_update': 500
+    });
+  </script>
+
+  <!-- Google Ads (AW-18116818716) — LPからのコンバージョン計測 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18116818716"></script>
+  <script>
     gtag('js', new Date());
     // cookie_domain を .takkenkanzen.com にして apex/www/app の subdomain 間で
     // クリック計測を共有する（gclid と _gcl_aw を引き継ぐ）
@@ -38,6 +54,43 @@
       'cookie_domain': 'takkenkanzen.com',
       'cookie_flags': 'SameSite=None;Secure'
     });
+  </script>
+
+  <!-- ====================================================== -->
+  <!-- GCLID キャプチャ + 永続化 (90日)                          -->
+  <!-- 広告クリック ID を localStorage に保存し、後で sign_up 時に Supabase へ送信。 -->
+  <!-- これにより iOS/Android アプリで購入された場合も、サーバー側で gclid と紐付けて -->
+  <!-- Google Ads Offline Conversion API にコンバージョンを送信できる。           -->
+  <!-- ====================================================== -->
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var attribution = {};
+        // Google Ads クリック ID
+        ['gclid', 'wbraid', 'gbraid'].forEach(function(k) {
+          var v = params.get(k);
+          if (v) attribution[k] = v;
+        });
+        // UTM パラメータ (チャネル分析用)
+        ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(function(k) {
+          var v = params.get(k);
+          if (v) attribution[k] = v;
+        });
+        // 何かしらの広告 ID/UTM が付いていれば最新クリックとして保存 (90日有効)
+        if (Object.keys(attribution).length > 0) {
+          attribution.captured_at = new Date().toISOString();
+          attribution.landing_page = window.location.pathname + window.location.search;
+          var expiresAt = Date.now() + 90 * 24 * 60 * 60 * 1000; // 90日
+          localStorage.setItem('takken_ad_attribution', JSON.stringify({
+            data: attribution,
+            expires_at: expiresAt
+          }));
+        }
+      } catch (e) {
+        // localStorage 拒否 (Safari Private 等) でもアプリ動作は妨げない
+      }
+    })();
   </script>
 
   <!-- LP の CTA クリックを Google Ads にイベント送信（ファネル可視化用） -->

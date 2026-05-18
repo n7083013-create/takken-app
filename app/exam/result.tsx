@@ -22,6 +22,7 @@ import { StaggeredFadeIn } from '../../components/StaggeredFadeIn';
 import { AnimatedNumber } from '../../components/AnimatedNumber';
 import { PressableScale } from '../../components/PressableScale';
 import { WebBackButton } from '../../components/WebBackButton';
+import { trackEvent } from '../../services/analytics';
 
 export default function ExamResultScreen() {
   const router = useRouter();
@@ -44,6 +45,11 @@ export default function ExamResultScreen() {
     });
     // 実績チェック（模試スコア付き）
     setTimeout(() => checkAchievements({ examScore: correctCount }), 100);
+    // [Phase 1.3] 模試合格 = 満足度・継続予測の最重要シグナル
+    // → Google Ads / GA4 で「広告経由ユーザーの教材適合度」が分析可能に
+    if (correctCount >= PASS_LINE) {
+      trackEvent('exam_passed', { value: correctCount, currency: 'JPY' });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.id]);
 

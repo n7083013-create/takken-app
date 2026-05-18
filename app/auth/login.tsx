@@ -20,7 +20,7 @@ import { Shadow } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useAuthStore } from '../../store/useAuthStore';
 import { supabase, isSupabaseConfigured } from '../../services/supabase';
-import { trackEvent } from '../../services/analytics';
+import { trackEvent, trackEventWithUserData, getAdAttribution } from '../../services/analytics';
 
 type Mode = 'signin' | 'signup';
 
@@ -181,8 +181,34 @@ export default function LoginScreen() {
       return;
     }
     if (mode === 'signup') {
-      // Google広告コンバージョン（登録）発火
-      trackEvent('sign_up', { currency: 'JPY' });
+      // [Phase 1.2] Enhanced Conversions: email を SHA-256 ハッシュ化して送信
+      // → iOS Safari ITP (cookie 3-party 制限) を超えて Google Ads がマッチング可能
+      await trackEventWithUserData('sign_up', email.trim(), { currency: 'JPY' });
+
+      // [Phase 1.1] 広告アトリビューションを Supabase profiles に保存
+      // → 後の購入時 (Web/iOS/Android) に gclid と紐付けて Offline Conversion API に送信可能
+      try {
+        const attribution = getAdAttribution();
+        if (attribution) {
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData?.user?.id) {
+            await supabase.from('profiles').update({
+              ad_gclid: attribution.gclid ?? null,
+              ad_wbraid: attribution.wbraid ?? null,
+              ad_gbraid: attribution.gbraid ?? null,
+              ad_utm_source: attribution.utm_source ?? null,
+              ad_utm_medium: attribution.utm_medium ?? null,
+              ad_utm_campaign: attribution.utm_campaign ?? null,
+              ad_utm_term: attribution.utm_term ?? null,
+              ad_utm_content: attribution.utm_content ?? null,
+              ad_captured_at: attribution.captured_at ?? null,
+              ad_landing_page: attribution.landing_page ?? null,
+            }).eq('id', userData.user.id);
+          }
+        }
+      } catch {
+        // attribution 保存失敗はサインアップ完了を妨げない
+      }
       // Issue #23: Alert だけだと閉じた瞬間ユーザーが離脱しやすい。
       // 永続的な「メール確認待ち」UI を画面に表示し、再送ボタンと迷惑メール案内を残す。
       setSignupCompletedEmail(email.trim());
