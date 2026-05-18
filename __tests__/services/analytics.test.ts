@@ -19,6 +19,9 @@ import {
   updateConsent,
   trackEvent,
   trackEventWithUserData,
+  isAnalyticsExcluded,
+  setAnalyticsExcluded,
+  syncAnalyticsExclusionForUser,
 } from '../../services/analytics';
 
 // グローバル window / localStorage / gtag をモック
@@ -265,5 +268,87 @@ describe('trackEventWithUserData', () => {
     await expect(
       trackEventWithUserData('sign_up', 'test@example.com'),
     ).resolves.toBeUndefined();
+  });
+});
+
+// ============================================================
+// 計測除外 (管理者・テスト用)
+// ============================================================
+describe('Analytics Exclusion (管理者の自己コンバージョン汚染を防止)', () => {
+  describe('isAnalyticsExcluded / setAnalyticsExcluded', () => {
+    it('初期状態は false', () => {
+      expect(isAnalyticsExcluded()).toBe(false);
+    });
+
+    it('setAnalyticsExcluded(true) で true になり、localStorage に保存される', () => {
+      setAnalyticsExcluded(true);
+      expect(isAnalyticsExcluded()).toBe(true);
+      expect(mockLocalStorage['takken_analytics_excluded']).toBe('1');
+    });
+
+    it('setAnalyticsExcluded(false) で false に戻り、localStorage から削除される', () => {
+      setAnalyticsExcluded(true);
+      setAnalyticsExcluded(false);
+      expect(isAnalyticsExcluded()).toBe(false);
+      expect(mockLocalStorage['takken_analytics_excluded']).toBeUndefined();
+    });
+  });
+
+  describe('syncAnalyticsExclusionForUser (auth store からの呼び出し想定)', () => {
+    const originalEnv = process.env.EXPO_PUBLIC_ADMIN_EMAILS;
+
+    afterEach(() => {
+      process.env.EXPO_PUBLIC_ADMIN_EMAILS = originalEnv;
+    });
+
+    it('admin email でログイン中なら excluded=true になる', () => {
+      process.env.EXPO_PUBLIC_ADMIN_EMAILS = 'admin@example.com,taira@2023kakeru.com';
+      syncAnalyticsExclusionForUser('taira@2023kakeru.com');
+      expect(isAnalyticsExcluded()).toBe(true);
+    });
+
+    it('admin email の大文字小文字 + 前後空白を正規化する', () => {
+      process.env.EXPO_PUBLIC_ADMIN_EMAILS = 'Admin@Example.com';
+      syncAnalyticsExclusionForUser(' admin@example.com ');
+      expect(isAnalyticsExcluded()).toBe(true);
+    });
+
+    it('非 admin email では excluded=false になる', () => {
+      process.env.EXPO_PUBLIC_ADMIN_EMAILS = 'admin@example.com';
+      setAnalyticsExcluded(true); // 前回の状態を残す
+      syncAnalyticsExclusionForUser('user@example.com');
+      expect(isAnalyticsExcluded()).toBe(false);
+    });
+
+    it('email が null (ログアウト) なら excluded=false に解除', () => {
+      setAnalyticsExcluded(true);
+      syncAnalyticsExclusionForUser(null);
+      expect(isAnalyticsExcluded()).toBe(false);
+    });
+
+    it('EXPO_PUBLIC_ADMIN_EMAILS 未設定なら常に excluded=false', () => {
+      process.env.EXPO_PUBLIC_ADMIN_EMAILS = '';
+      syncAnalyticsExclusionForUser('taira@2023kakeru.com');
+      expect(isAnalyticsExcluded()).toBe(false);
+    });
+  });
+
+  describe('trackEvent / trackEventWithUserData が excluded 時に skip', () => {
+    it('isAnalyticsExcluded=true なら trackEvent は gtag を呼ばない', () => {
+      setAnalyticsExcluded(true);
+      trackEvent('sign_up', { currency: 'JPY' });
+      expect(mockGtag).not.toHaveBeenCalled();
+    });
+
+    it('isAnalyticsExcluded=true なら trackEventWithUserData も gtag を呼ばない', async () => {
+      setAnalyticsExcluded(true);
+      await trackEventWithUserData('sign_up', 'test@example.com');
+      expect(mockGtag).not.toHaveBeenCalled();
+    });
+
+    it('isAnalyticsExcluded=false (デフォルト) なら通常通り発火する', () => {
+      trackEvent('sign_up');
+      expect(mockGtag).toHaveBeenCalled();
+    });
   });
 });

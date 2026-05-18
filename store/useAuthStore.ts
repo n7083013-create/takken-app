@@ -12,6 +12,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { logError } from '../services/errorLogger';
 import { isValidEmail, validatePassword } from '../services/validation';
+import { syncAnalyticsExclusionForUser } from '../services/analytics';
 import { useProgressStore } from './useProgressStore';
 import { useSettingsStore } from './useSettingsStore';
 import { useAchievementStore } from './useAchievementStore';
@@ -155,6 +156,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         initialized: true,
       });
 
+      // [計測除外] admin email でログイン中なら Google Ads/GA4 計測を自動除外
+      // → 自己コンバージョンで広告データが汚れない
+      syncAnalyticsExclusionForUser(activeSession?.user?.email ?? null);
+
       // 既存リスナーがあれば先に解除（HMR・多重 init 対策。リスナーリーク防止）
       if (authStateSub) {
         try { authStateSub.unsubscribe(); } catch {}
@@ -166,6 +171,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // 発火時点での current user を再確認してから sync する
         const eventUserId = session?.user?.id ?? null;
         set({ session, user: session?.user ?? null });
+
+        // [計測除外] ユーザー切替・ログアウトのたびに admin 判定を更新
+        syncAnalyticsExclusionForUser(session?.user?.email ?? null);
 
         // SIGNED_OUT は state を消すだけで sync 不要
         if (event === 'SIGNED_OUT' || !session?.user || !eventUserId) return;

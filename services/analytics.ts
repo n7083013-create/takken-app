@@ -41,12 +41,76 @@ const GOOGLE_ADS_CONVERSIONS: Partial<Record<EventName, { id: string; defaultVal
   trial_start: { id: 'AW-18116818716/P5JmCL6mraIcEJzu4r5D', defaultValue: 1 },
 };
 
+// ============================================================
+// 計測除外 (管理者・テストアカウント等の自己コンバージョン汚染を防止)
+// ============================================================
+const STORAGE_KEY_EXCLUDED = 'takken_analytics_excluded';
+
+/**
+ * 現在のセッションで計測除外が有効か
+ * - 管理者 (EXPO_PUBLIC_ADMIN_EMAILS に含まれる email) のログイン時に自動で true になる
+ * - QA テスト用に手動で setAnalyticsExcluded(true) でも有効化可能
+ */
+export function isAnalyticsExcluded(): boolean {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return false;
+  try {
+    return window.localStorage.getItem(STORAGE_KEY_EXCLUDED) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 計測除外フラグを設定
+ * useAuthStore のログイン処理で自動的に呼び出される (admin email の場合 true、それ以外は false)
+ */
+export function setAnalyticsExcluded(excluded: boolean): void {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+  try {
+    if (excluded) {
+      window.localStorage.setItem(STORAGE_KEY_EXCLUDED, '1');
+    } else {
+      window.localStorage.removeItem(STORAGE_KEY_EXCLUDED);
+    }
+  } catch {}
+}
+
+/**
+ * email が管理者リストに含まれるか判定し、計測除外フラグを自動設定
+ * useAuthStore から呼ぶことを想定 (循環依存を避けるため auth から analytics への一方向のみ)
+ */
+export function syncAnalyticsExclusionForUser(email: string | null | undefined): void {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+  if (!email) {
+    setAnalyticsExcluded(false);
+    return;
+  }
+  try {
+    const adminEmailsRaw = process.env.EXPO_PUBLIC_ADMIN_EMAILS || '';
+    const adminEmails = adminEmailsRaw
+      .split(',')
+      .map((e: string) => e.trim().toLowerCase())
+      .filter(Boolean);
+    if (adminEmails.length === 0) {
+      setAnalyticsExcluded(false);
+      return;
+    }
+    const normalized = email.toLowerCase().trim();
+    setAnalyticsExcluded(adminEmails.includes(normalized));
+  } catch {
+    // 設定取得失敗時は安全側 (除外しない・計測する) に倒す
+    setAnalyticsExcluded(false);
+  }
+}
+
 /**
  * イベントを全ての有効な追跡サービスに送信
  */
 export function trackEvent(eventName: EventName, params?: EventParams): void {
   // Web のみ動作
   if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+  // [計測除外] 管理者・テストアカウントの自己コンバージョン汚染を防ぐ
+  if (isAnalyticsExcluded()) return;
 
   try {
     const w = window as any;
@@ -229,6 +293,8 @@ export async function trackEventWithUserData(
   params?: EventParams,
 ): Promise<void> {
   if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+  // [計測除外] 管理者・テストアカウントは早期 return
+  if (isAnalyticsExcluded()) return;
   try {
     const w = window as any;
     if (!email || typeof w.gtag !== 'function') {
