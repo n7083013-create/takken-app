@@ -28,6 +28,7 @@ import { useExamStore } from '../../store/useExamStore';
 import { APP_VERSION, API_BASE_URL } from '../../constants/config';
 import { HABIT_PRESETS } from '../../constants/habitPresets';
 import HabitStackingSetup from '../../components/HabitStackingSetup';
+import { planLabel as computePlanLabel } from '../../utils/subscriptionLabel';
 import { WeeklyEmailToggle } from '../../components/WeeklyEmailToggle';
 import {
   requestNotificationPermission,
@@ -566,14 +567,13 @@ function SubscriptionSection() {
   const trial = isTrialActive();
   const daysLeft = trialDaysLeft();
 
-  // [UI修正] プラン表示を LP に合わせて 2プラン構成 (無料 / Premium) に統一
-  // unlimited (Premium+) はコードに実装されているが、現状運用しておらず LP にも非表示。
-  // 実運用 plan は 'free' と 'standard' のみ。
-  const planLabel = trial
-    ? `無料トライアル（残り${daysLeft}日）`
-    : subscription.plan === 'standard' || subscription.plan === 'unlimited'
-      ? 'Premium プラン'
-      : '無料プラン';
+  // [UI修正] プラン表示を LP に合わせて 2プラン構成 (無料 / Premium) に統一。
+  // utils/subscriptionLabel.ts に純関数として切り出し、ユニットテスト化済み。
+  const planLabel = computePlanLabel({
+    plan: subscription.plan,
+    isTrial: trial,
+    trialDaysLeft: daysLeft,
+  });
 
   return (
     <View style={ss.box}>

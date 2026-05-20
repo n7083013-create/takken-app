@@ -65,6 +65,10 @@ if (!DRY && !APPLY && SAMPLE == null) {
 // .env.local から ANTHROPIC_API_KEY を読み込み
 // [Bugfix] 値が "..." で囲まれている場合はクオートを除去する。
 // 旧: m[2] = `"sk-ant-..."` (クオート付き) → API リクエストで 401 になっていた
+//
+// 仕様の canonical 実装は utils/envParser.ts (parseEnvLine / parseEnvFile)。
+// テストは __tests__/utils/envParser.test.ts。
+// この .mjs は ES module 単体実行のため inline で持つが、ロジックは同期させること。
 function loadEnv() {
   const candidates = ['.env.local', '.env.production', '.env'];
   for (const f of candidates) {

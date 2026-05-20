@@ -26,6 +26,7 @@ import { useStrikethrough } from '../hooks/useStrikethrough';
 import { hapticLight } from '../services/haptics';
 import { StrikeHint } from '../components/StrikeHint';
 import { WebBackButton } from '../components/WebBackButton';
+import { getStatementExplanation } from '../utils/explanationVisibility';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const DRILL_COUNT = 10;
@@ -332,7 +333,7 @@ export default function WeakDrillScreen() {
             {q.statements.map((stmt, si) => {
               const stmtCorrect = q.statementAnswers?.[si];
               const showResult = answered && stmtCorrect !== undefined;
-              const stmtExpl = q.statementExplanations?.[si];
+              const stmtExpl = getStatementExplanation(q, answered, si);
               return (
                 <View key={si} style={s.statementRow}>
                   <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
@@ -348,7 +349,7 @@ export default function WeakDrillScreen() {
                         {stmtCorrect ? '○ 正しい' : '✕ 誤り'}
                       </Text>
                     )}
-                    {answered && stmtExpl && (
+                    {stmtExpl && (
                       <Text
                         style={{
                           fontSize: FontSize.footnote,

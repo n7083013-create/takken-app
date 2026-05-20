@@ -43,6 +43,10 @@ import { WebBackButton } from '../../components/WebBackButton';
 import { useStrikethrough } from '../../hooks/useStrikethrough';
 import { StrikeHint } from '../../components/StrikeHint';
 import { hapticLight } from '../../services/haptics';
+import {
+  shouldShowChoiceExplanation,
+  getStatementExplanation,
+} from '../../utils/explanationVisibility';
 
 type AIChatMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -453,9 +457,14 @@ export default function QuestSessionScreen() {
                         {stmtCorrect ? '○ 正しい' : '✗ 誤り'}
                       </Text>
                     )}
-                    {answerState !== 'idle' && currentQuestion.statementExplanations?.[i] && (
-                      <Text style={s.statementExpl}>{currentQuestion.statementExplanations[i]}</Text>
-                    )}
+                    {(() => {
+                      const stmtExpl = getStatementExplanation(
+                        currentQuestion,
+                        answerState !== 'idle',
+                        i,
+                      );
+                      return stmtExpl ? <Text style={s.statementExpl}>{stmtExpl}</Text> : null;
+                    })()}
                   </View>
                 </View>
               );
@@ -511,21 +520,26 @@ export default function QuestSessionScreen() {
                   </Text>
                   {struck && !answered && <Text style={s.strikeMark}>✕</Text>}
                 </Pressable>
-                {/* [Bugfix] 個数問題・組み合わせ問題では選択肢別解説を非表示
-                    (ア/イ/ウ/エの statementExplanations で十分・冗長を回避) */}
-                {answered &&
-                  currentQuestion.questionFormat !== 'count' &&
-                  currentQuestion.questionFormat !== 'combination' &&
-                  currentQuestion.choiceExplanations?.[origIdx] && (
-                  <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
-                    <Text style={s.choiceExplText}>{currentQuestion.choiceExplanations[origIdx]}</Text>
-                    {isPro && (
-                      <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)}>
-                        <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
-                      </Pressable>
-                    )}
-                  </View>
-                )}
+                {/* [Bugfix] 個数問題・組み合わせ問題では選択肢別解説を非表示。
+                    判定ロジックは utils/explanationVisibility.ts に切り出し (テスト済み)。 */}
+                {(() => {
+                  const choiceExpl = shouldShowChoiceExplanation(
+                    currentQuestion,
+                    answered,
+                    origIdx,
+                  );
+                  if (!choiceExpl) return null;
+                  return (
+                    <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
+                      <Text style={s.choiceExplText}>{choiceExpl}</Text>
+                      {isPro && (
+                        <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)}>
+                          <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  );
+                })()}
               </View>
             );
           })}

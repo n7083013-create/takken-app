@@ -39,6 +39,10 @@ import { confirmAlert } from '../../services/alert';
 import { AnimatedChoiceCard } from '../../components/AnimatedChoiceCard';
 import { PressableScale } from '../../components/PressableScale';
 import { WebBackButton } from '../../components/WebBackButton';
+import {
+  shouldShowChoiceExplanation,
+  getStatementExplanation,
+} from '../../utils/explanationVisibility';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const STMT_LABELS = ['ア', 'イ', 'ウ', 'エ'] as const;
@@ -509,9 +513,10 @@ export default function QuestionDetailScreen() {
                       {stmtCorrect ? '○ 正しい' : '✗ 誤り'}
                     </Text>
                   )}
-                  {answered && q.statementExplanations?.[i] && (
-                    <Text style={s.statementExpl}>{q.statementExplanations[i]}</Text>
-                  )}
+                  {(() => {
+                    const stmtExpl = getStatementExplanation(q, answered, i);
+                    return stmtExpl ? <Text style={s.statementExpl}>{stmtExpl}</Text> : null;
+                  })()}
                 </View>
               </View>
             );
@@ -541,9 +546,8 @@ export default function QuestionDetailScreen() {
 
           // [Bugfix 2026-05] 個数問題・組み合わせ問題では choiceExplanations を非表示。
           // ユーザー報告: 「1つ/2つ/3つ/4つ」の選択肢に解説をつけるとごちゃごちゃ。
-          // statements (ア/イ/ウ/エ) ベースの statementExplanations で説明する方が直感的。
-          const isCountOrComb = q.questionFormat === 'count' || q.questionFormat === 'combination';
-          const choiceExpl = answered && !isCountOrComb && q.choiceExplanations ? q.choiceExplanations[origIdx] : null;
+          // 判定ロジックは utils/explanationVisibility.ts にユニットテスト付きで切り出し済み。
+          const choiceExpl = shouldShowChoiceExplanation(q, answered, origIdx);
 
           const struck = !answered && isStruck(origIdx);
 

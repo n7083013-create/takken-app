@@ -16,6 +16,7 @@ import { CATEGORY_LABELS, CATEGORY_COLORS, type Category, type ConfidenceLevel }
 import { getQuestionById } from '../data';
 import { useAchievementChecker } from '../hooks/useAchievementChecker';
 import { WebBackButton } from '../components/WebBackButton';
+import { getStatementExplanation } from '../utils/explanationVisibility';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 const QUESTION_COUNT = 5;
@@ -259,7 +260,7 @@ export default function PreSleepReviewScreen() {
             {q.statements.map((stmt, si) => {
               const stmtCorrect = q.statementAnswers?.[si];
               const showResult = answered && stmtCorrect !== undefined;
-              const stmtExpl = q.statementExplanations?.[si];
+              const stmtExpl = getStatementExplanation(q, answered, si);
               return (
                 <View key={si} style={s.statementRow}>
                   <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
@@ -275,7 +276,7 @@ export default function PreSleepReviewScreen() {
                         {stmtCorrect ? '○ 正しい' : '✕ 誤り'}
                       </Text>
                     )}
-                    {answered && stmtExpl && (
+                    {stmtExpl && (
                       <Text
                         style={{
                           fontSize: FontSize.footnote,
