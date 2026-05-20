@@ -477,6 +477,7 @@ function makeHabitStyles(C: ThemeColors) {
 function SubscriptionSection() {
   const colors = useThemeColors();
   const ss = useMemo(() => makeSubStyles(colors), [colors]);
+  const router = useRouter();
   const isPro = useSettingsStore((s) => s.isPro);
   const subscription = useSettingsStore((s) => s.subscription);
   const isTrialActive = useSettingsStore((s) => s.isTrialActive);
@@ -484,7 +485,8 @@ function SubscriptionSection() {
   const verifySubscription = useSettingsStore((s) => s.verifySubscription);
   const session = useAuthStore((s) => s.session);
   const [restoring, setRestoring] = useState(false);
-  const [canceling, setCanceling] = useState(false);
+  // [2026-05] canceling state は cancel-flow.tsx に移管済み。
+  // 解約ボタン押下は即 /cancel-flow へ navigate するため、ここでスピナーは不要。
 
   const handleRestore = useCallback(async () => {
     if (!session?.access_token) {
@@ -507,49 +509,19 @@ function SubscriptionSection() {
     }
   }, [session, verifySubscription]);
 
-  /** ワンタップ解約処理（Web/Android） */
+  /**
+   * 解約ボタン → 解約防止フロー (Spotify / Netflix パターン) へ誘導。
+   * [2026-05] 旧: ここで confirmAlert → 直接 PayPal API 呼び出し。
+   * 新: /cancel-flow で理由ヒアリング → counter-offer → 最終確認の 3 ステップ。
+   * 実際の API 呼び出しは cancel-flow.tsx 内に移管済み。
+   */
   const handleCancelSubscription = useCallback(async () => {
     if (!session?.access_token) {
       infoAlert('ログインが必要です', '解約するにはログインしてください。');
       return;
     }
-
-    const confirmed = await confirmAlert(
-      'サブスクリプションを解約しますか？',
-      '✓ 次回更新日まで引き続き全機能をご利用いただけます\n✓ 違約金・解約手数料は一切かかりません\n✓ 学習データは保持されます\n\n解約を完了しますか？',
-      { okText: '解約する', cancelText: 'やめる', destructive: true },
-    );
-    if (!confirmed) return;
-
-    setCanceling(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/paypal/cancel-subscription`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        await infoAlert(
-          '解約に失敗しました',
-          data.error || '時間をおいて再度お試しください。問題が続く場合はお問い合わせください。',
-        );
-        return;
-      }
-      // 解約完了 → サーバーから最新状態を取得
-      await verifySubscription(session.access_token);
-      await infoAlert(
-        '解約が完了しました',
-        data.message || '次回更新日まで引き続きご利用いただけます。ご利用ありがとうございました。',
-      );
-    } catch {
-      await infoAlert('エラー', '通信エラーが発生しました。時間をおいて再度お試しください。');
-    } finally {
-      setCanceling(false);
-    }
-  }, [session, verifySubscription]);
+    router.push('/cancel-flow');
+  }, [session, router]);
 
   const handleManageSubscription = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -597,20 +569,15 @@ function SubscriptionSection() {
             <Text style={ss.manageArrow}>{'\u203A'}</Text>
           </Pressable>
 
-          {/* Web/Android: 直接解約ボタン */}
+          {/* Web/Android: 解約フローへ進むボタン */}
           {Platform.OS !== 'ios' && subscription.subscriptionStatus !== 'canceled' && (
             <Pressable
-              style={[ss.cancelBtn, canceling && ss.cancelBtnDisabled]}
+              style={ss.cancelBtn}
               onPress={handleCancelSubscription}
-              disabled={canceling}
               accessibilityRole="button"
               accessibilityLabel="サブスクリプションを解約"
             >
-              {canceling ? (
-                <ActivityIndicator size="small" color={colors.error} />
-              ) : (
-                <Text style={ss.cancelBtnText}>解約する</Text>
-              )}
+              <Text style={ss.cancelBtnText}>解約する</Text>
             </Pressable>
           )}
 

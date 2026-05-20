@@ -182,6 +182,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen name="auth/reset-password" options={{ headerShown: false }} />
         <Stack.Screen name="paywall" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="cancel-flow" options={{ headerShown: false, presentation: 'modal' }} />
         <Stack.Screen name="quest/index" options={{ headerShown: false }} />
         <Stack.Screen name="quest/[missionId]" options={{ headerShown: false }} />
         <Stack.Screen name="heatmap" options={{ headerShown: false }} />

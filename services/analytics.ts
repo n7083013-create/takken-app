@@ -28,7 +28,13 @@ type EventName =
   | 'trial_start'       // 無料トライアル開始
   | 'subscribe_start'   // サブスク登録フロー開始 (PayPal CTA クリック)
   | 'subscribe_complete' // サブスク有効化完了 (本契約成立)
-  | 'subscribe_cancel'  // 解約
+  | 'subscribe_cancel'  // 解約 (実際にキャンセル完了)
+  // ── 解約防止フロー (2026-05) ──
+  | 'cancel_flow_started'         // 解約ボタン押下 → reason picker 表示
+  | 'cancel_flow_reason_selected' // 解約理由を選択
+  | 'cancel_flow_offer_accepted'  // counter-offer を受け入れた (解約を回避)
+  | 'cancel_flow_offer_declined'  // counter-offer を断った
+  | 'cancel_flow_completed'       // 最終確認後、実際に解約処理を発火
   | 'first_question_answered'  // 初めて問題を解いた (アクティベーション)
   | 'exam_passed'       // 模擬試験合格 (満足度・継続予測)
   | 'custom';
