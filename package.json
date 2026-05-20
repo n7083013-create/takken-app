@@ -12,9 +12,9 @@
     "essences:dump": "node scripts/dump-questions.mjs",
     "essences:generate": "node scripts/generate-core-essences.mjs",
     "essences:merge": "node scripts/merge-core-essences.mjs",
-    "explanations:audit": "tsx scripts/admin/audit_choice_statement.mjs",
-    "explanations:generate": "tsx scripts/admin/enhance_explanations.mjs --apply",
-    "explanations:apply": "tsx scripts/admin/apply_enhanced.mjs --apply",
+    "explanations:audit": "npx tsx scripts/admin/audit_choice_statement.mjs",
+    "explanations:generate": "npx tsx scripts/admin/enhance_explanations.mjs --apply",
+    "explanations:apply": "npx tsx scripts/admin/apply_enhanced.mjs --apply",
     "explanations:all": "npm run explanations:audit && npm run explanations:generate && npm run explanations:apply"
   },
   "dependencies": {
