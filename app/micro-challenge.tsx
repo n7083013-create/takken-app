@@ -372,7 +372,7 @@ export default function MicroChallengeScreen() {
                     {reviewQuestion.q.statements.map((stmt, si) => (
                       <View key={si} style={s.statementRow}>
                         <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
-                        <Text style={s.statementText}>{stmt}</Text>
+                        <Text style={s.statementText} selectable>{stmt}</Text>
                       </View>
                     ))}
                   </View>
@@ -508,7 +508,7 @@ export default function MicroChallengeScreen() {
       >
         {/* Question */}
         <View style={s.questionArea}>
-          <Text style={s.questionText}>{currentQuestion.text}</Text>
+          <Text style={s.questionText} selectable>{currentQuestion.text}</Text>
         </View>
 
         {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ の本文 (statements) を表示
@@ -518,7 +518,7 @@ export default function MicroChallengeScreen() {
             {currentQuestion.statements.map((stmt, si) => (
               <View key={si} style={s.statementRow}>
                 <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
-                <Text style={s.statementText}>{stmt}</Text>
+                <Text style={s.statementText} selectable>{stmt}</Text>
               </View>
             ))}
           </View>

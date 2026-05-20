@@ -429,7 +429,7 @@ export default function QuestSessionScreen() {
               </Text>
             </View>
           </View>
-          <Text style={s.questionText}>{currentQuestion.text}</Text>
+          <Text style={s.questionText} selectable>{currentQuestion.text}</Text>
         </View>
 
         {/* Statements（個数問題・組み合わせ問題のア〜エ記述） */}
@@ -447,7 +447,7 @@ export default function QuestSessionScreen() {
                     <Text style={[s.statementLabelText, showResult && { color: stmtCorrect ? colors.success : colors.error }]}>{STMT_LABELS[i]}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.statementText}>{stmt}</Text>
+                    <Text style={s.statementText} selectable>{stmt}</Text>
                     {showResult && (
                       <Text style={[s.statementResult, { color: stmtCorrect ? colors.success : colors.error }]}>
                         {stmtCorrect ? '○ 正しい' : '✗ 誤り'}

@@ -503,7 +503,7 @@ export default function QuestionDetailScreen() {
                   <Text style={[s.statementLabelText, showResult && { color: stmtCorrect ? colors.success : colors.error }]}>{STMT_LABELS[i]}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.statementText}>{stmt}</Text>
+                  <Text style={s.statementText} selectable>{stmt}</Text>
                   {showResult && (
                     <Text style={[s.statementResult, { color: stmtCorrect ? colors.success : colors.error }]}>
                       {stmtCorrect ? '○ 正しい' : '✗ 誤り'}
@@ -606,7 +606,7 @@ export default function QuestionDetailScreen() {
           <CoreEssenceBox essence={q.coreEssence} />
 
           <Text style={s.explainLabel}>解説</Text>
-          <Text style={s.explainText}>{q.explanation}</Text>
+          <Text style={s.explainText} selectable>{q.explanation}</Text>
 
           {/* AI Button */}
           {isPro && (

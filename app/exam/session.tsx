@@ -71,6 +71,24 @@ export default function ExamSessionScreen() {
         }}
       />
 
+      {/* 試験を中断してホームに戻る (進捗保持) - 全プラットフォーム表示 */}
+      <View style={s.webPauseBar}>
+        <Pressable
+          style={s.webPauseBtn}
+          onPress={() => {
+            confirmAlert(
+              '試験を中断',
+              '試験を中断してホームに戻ります。残り時間と回答は保持され、後で再開できます。',
+              () => router.replace('/(tabs)' as any),
+            );
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="試験を中断してホームに戻る"
+        >
+          <Text style={s.webPauseText}>⏸ 中断してホームへ</Text>
+        </Pressable>
+      </View>
+
       {/* Timer header */}
       <View style={[s.timerBar, current.remainingSec < 600 && s.timerBarWarn]}>
         <Text style={s.timerText}>⏱ {formatTime(current.remainingSec)}</Text>
@@ -129,7 +147,7 @@ export default function ExamSessionScreen() {
                 {q.statements.map((stmt, si) => (
                   <View key={si} style={s.statementRow}>
                     <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
-                    <Text style={s.statementText}>{stmt}</Text>
+                    <Text style={s.statementText} selectable>{stmt}</Text>
                   </View>
                 ))}
               </View>
@@ -181,6 +199,22 @@ function makeStyles(C: ThemeColors) {
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: C.background },
     empty: { textAlign: 'center', marginTop: 40, color: C.textSecondary },
+    webPauseBar: {
+      paddingHorizontal: 16,
+      paddingTop: 10,
+      paddingBottom: 4,
+      backgroundColor: C.background,
+    },
+    webPauseBtn: {
+      alignSelf: 'flex-start',
+      paddingVertical: 8,
+      paddingHorizontal: 14,
+      borderRadius: 8,
+      backgroundColor: C.card,
+      borderWidth: 1,
+      borderColor: C.border,
+    },
+    webPauseText: { fontSize: 14, fontWeight: '600', color: C.primary },
     timerBar: {
       flexDirection: 'row',
       justifyContent: 'space-between',

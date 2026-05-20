@@ -226,11 +226,40 @@ export default function ReviewScreen() {
 
           {/* Question */}
           <View style={[s.questionBox, Shadow.sm]}>
-            <Text style={s.questionText}>{currentQuestion.text}</Text>
+            <Text style={s.questionText} selectable>{currentQuestion.text}</Text>
           </View>
 
           {/* Law Amendment Badge */}
           <LawAmendmentBadge tags={currentQuestion.tags} />
+
+          {/* [Bugfix 2026-05] 個数問題・組み合わせ問題の ア〜エ 本文 (statements) を表示
+              これが無いとユーザーが何を判定すればよいか分からない重大バグだった。
+              解答後: statementAnswers の正誤マーク (○/✕) + statementExplanations の個別解説を表示。 */}
+          {currentQuestion.statements && currentQuestion.statements.length > 0 && (
+            <View style={[s.statementsBox, Shadow.sm]}>
+              {currentQuestion.statements.map((stmt, si) => {
+                const answered = answerState !== 'idle';
+                const stmtCorrect = currentQuestion.statementAnswers?.[si];
+                const stmtExpl = currentQuestion.statementExplanations?.[si];
+                return (
+                  <View key={si} style={s.statementRow}>
+                    <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.statementText} selectable>{stmt}</Text>
+                      {answered && stmtCorrect !== undefined && (
+                        <Text style={[s.statementResult, { color: stmtCorrect ? colors.success : colors.error }]}>
+                          {stmtCorrect ? '○ 正しい' : '✕ 誤り'}
+                        </Text>
+                      )}
+                      {answered && stmtExpl && (
+                        <Text style={s.statementExpl} selectable>{stmtExpl}</Text>
+                      )}
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          )}
 
           {/* Choices */}
           <View style={s.choiceList}>
@@ -260,7 +289,7 @@ export default function ReviewScreen() {
                   <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
                     <Text style={[s.choiceLabelText, { color: labelColor }]}>{LABELS[i]}</Text>
                   </View>
-                  <Text style={s.choiceText}>{choice}</Text>
+                  <Text style={s.choiceText} selectable>{choice}</Text>
                   {answered && isCorrect && <Text style={s.checkMark}>✓</Text>}
                 </Pressable>
               );
@@ -276,7 +305,7 @@ export default function ReviewScreen() {
                   {answerState === 'correct' ? '正解！' : '不正解'}
                 </Text>
               </View>
-              <Text style={s.explainText}>{currentQuestion.explanation}</Text>
+              <Text style={s.explainText} selectable>{currentQuestion.explanation}</Text>
 
               {/* 難易度セレクター（次へ進むボタンを兼ねる） */}
               <View style={s.confidenceSection}>
@@ -746,6 +775,55 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     fontWeight: '600',
     color: C.text,
     lineHeight: LineHeight.callout,
+  },
+
+  // ─── Statements (個数問題・組み合わせ問題の ア〜エ) ───
+  statementsBox: {
+    backgroundColor: C.card,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+    gap: Spacing.sm,
+    borderLeftWidth: 4,
+    borderLeftColor: C.primary,
+  },
+  statementRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 4,
+  },
+  statementLabel: {
+    fontSize: FontSize.subhead,
+    fontWeight: '800',
+    color: C.primary,
+    width: 28,
+  },
+  statementText: {
+    flex: 1,
+    fontSize: FontSize.subhead,
+    color: C.text,
+    lineHeight: LineHeight.subhead,
+  },
+  statementMark: {
+    fontSize: FontSize.headline,
+    fontWeight: '800',
+    marginLeft: 8,
+    minWidth: 24,
+    textAlign: 'center',
+  },
+  statementResult: {
+    fontSize: FontSize.footnote,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+  statementExpl: {
+    fontSize: FontSize.footnote,
+    color: C.textSecondary,
+    lineHeight: LineHeight.footnote,
+    marginTop: 4,
+    paddingTop: 4,
+    borderTopWidth: 1,
+    borderTopColor: C.borderLight,
   },
 
   // ─── Choices ───

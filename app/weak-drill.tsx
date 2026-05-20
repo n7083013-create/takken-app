@@ -321,7 +321,7 @@ export default function WeakDrillScreen() {
 
         {/* Question */}
         <View style={[s.questionBox, Shadow.sm]}>
-          <Text style={s.questionText}>{q.text}</Text>
+          <Text style={s.questionText} selectable>{q.text}</Text>
         </View>
 
         {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ 本文 (statements) を表示 */}
@@ -330,7 +330,7 @@ export default function WeakDrillScreen() {
             {q.statements.map((stmt, si) => (
               <View key={si} style={s.statementRow}>
                 <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
-                <Text style={s.statementText}>{stmt}</Text>
+                <Text style={s.statementText} selectable>{stmt}</Text>
               </View>
             ))}
           </View>
@@ -431,7 +431,7 @@ export default function WeakDrillScreen() {
             </View>
 
             <Text style={s.explainLabel}>解説</Text>
-            <Text style={s.explainText}>{q.explanation}</Text>
+            <Text style={s.explainText} selectable>{q.explanation}</Text>
 
             {/* Confidence Selector */}
             {!confidence && (

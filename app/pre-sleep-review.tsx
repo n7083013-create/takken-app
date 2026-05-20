@@ -249,7 +249,7 @@ export default function PreSleepReviewScreen() {
 
         {/* Question */}
         <View style={[s.questionBox, Shadow.sm]}>
-          <Text style={s.questionText}>{q.text}</Text>
+          <Text style={s.questionText} selectable>{q.text}</Text>
         </View>
 
         {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ 本文 (statements) を表示 */}
@@ -258,7 +258,7 @@ export default function PreSleepReviewScreen() {
             {q.statements.map((stmt, si) => (
               <View key={si} style={s.statementRow}>
                 <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
-                <Text style={s.statementText}>{stmt}</Text>
+                <Text style={s.statementText} selectable>{stmt}</Text>
               </View>
             ))}
           </View>
@@ -299,7 +299,7 @@ export default function PreSleepReviewScreen() {
                     {LABELS[displayIdx]}
                   </Text>
                 </View>
-                <Text style={s.choiceText}>{choice}</Text>
+                <Text style={s.choiceText} selectable>{choice}</Text>
                 {answered && isCorrectChoice && <Text style={s.checkMark}>✓</Text>}
                 {isWrongAnswer && <Text style={s.crossMark}>✗</Text>}
               </Pressable>
@@ -346,7 +346,7 @@ export default function PreSleepReviewScreen() {
             </View>
 
             <Text style={s.explainLabel}>解説</Text>
-            <Text style={s.explainText}>{q.explanation}</Text>
+            <Text style={s.explainText} selectable>{q.explanation}</Text>
 
             {/* Difficulty Selector（選択で次へ進む） */}
             {!confidence && (
