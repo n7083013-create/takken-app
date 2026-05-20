@@ -252,15 +252,46 @@ export default function PreSleepReviewScreen() {
           <Text style={s.questionText} selectable>{q.text}</Text>
         </View>
 
-        {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ 本文 (statements) を表示 */}
+        {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ 本文 (statements) を表示
+            解答後は正誤マーク + statementExplanations を直下に表示 */}
         {q.statements && q.statements.length > 0 && (
           <View style={[s.statementsBox, Shadow.sm]}>
-            {q.statements.map((stmt, si) => (
-              <View key={si} style={s.statementRow}>
-                <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
-                <Text style={s.statementText} selectable>{stmt}</Text>
-              </View>
-            ))}
+            {q.statements.map((stmt, si) => {
+              const stmtCorrect = q.statementAnswers?.[si];
+              const showResult = answered && stmtCorrect !== undefined;
+              const stmtExpl = q.statementExplanations?.[si];
+              return (
+                <View key={si} style={s.statementRow}>
+                  <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.statementText} selectable>{stmt}</Text>
+                    {showResult && (
+                      <Text
+                        style={[
+                          { fontSize: FontSize.footnote, fontWeight: '700', marginTop: 4 },
+                          { color: stmtCorrect ? colors.success : colors.error },
+                        ]}
+                      >
+                        {stmtCorrect ? '○ 正しい' : '✕ 誤り'}
+                      </Text>
+                    )}
+                    {answered && stmtExpl && (
+                      <Text
+                        style={{
+                          fontSize: FontSize.footnote,
+                          color: colors.textSecondary,
+                          lineHeight: LineHeight.footnote,
+                          marginTop: 4,
+                        }}
+                        selectable
+                      >
+                        {stmtExpl}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              );
+            })}
           </View>
         )}
 

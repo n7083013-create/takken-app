@@ -566,12 +566,15 @@ function SubscriptionSection() {
   const trial = isTrialActive();
   const daysLeft = trialDaysLeft();
 
+  // [UI修正] プラン表示を LP の表記 (Premium / Premium+) と一致させる
+  // 旧: standard='スタンダード', unlimited='アンリミテッド' (LPと不一致でユーザーが混乱)
+  // 新: standard='Premium', unlimited='Premium+'
   const planLabel = trial
     ? `無料トライアル（残り${daysLeft}日）`
     : subscription.plan === 'standard'
-      ? 'スタンダードプラン'
+      ? 'Premium プラン'
       : subscription.plan === 'unlimited'
-        ? 'アンリミテッドプラン'
+        ? 'Premium+ プラン'
         : '無料プラン';
 
   return (
