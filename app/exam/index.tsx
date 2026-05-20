@@ -8,8 +8,10 @@ import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamStore, EXAM_COMPOSITION, scoreExam } from '../../store/useExamStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { CATEGORY_LABELS, Category } from '../../types';
-import { getAvailableExamYears, toWareki, getExamByYear } from '../../data';
+import { getMockPresetCount, getMockPresetByNumber } from '../../data';
 import { PASS_LINE } from '../../constants/exam';
+import { WebBackButton } from '../../components/WebBackButton';
+import { LimitReachedScreen } from '../../components/LimitReachedScreen';
 
 export default function ExamHomeScreen() {
   const router = useRouter();
@@ -29,32 +31,23 @@ export default function ExamHomeScreen() {
   const hasActive = current && !current.submitted;
   const hasResult = current && current.submitted;
 
+  // [UX改善 2026-05] 共通 LimitReachedScreen に統一。CTA を trial-first 文言に。
   if (loaded && !isPro) {
     return (
-      <SafeAreaView style={s.safe}>
+      <>
         <Stack.Screen options={{ title: '模擬試験' }} />
-        <View style={{ flex: 1, padding: 24, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: 56, marginBottom: 16 }}>📝</Text>
-          <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text, marginBottom: 8 }}>
-            模擬試験はPREMIUM会員限定
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', marginBottom: 24, lineHeight: 20 }}>
-            本試験形式 50問・120分の模擬試験で{'\n'}時間配分を本番同様に練習できます
-          </Text>
-          <Pressable
-            style={[s.primaryBtn, Shadow.md, { paddingHorizontal: 40 }]}
-            onPress={() => router.push('/paywall')}
-          >
-            <Text style={s.primaryBtnText}>PREMIUMプランを見る</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
+        <LimitReachedScreen
+          mode={{ kind: 'feature_locked_exam' }}
+          onUpgrade={() => router.push('/paywall')}
+        />
+      </>
     );
   }
 
   return (
     <SafeAreaView style={s.safe}>
       <Stack.Screen options={{ title: '模擬試験', headerBackTitle: '戻る' }} />
+      <WebBackButton />
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.hero}>
           <Text style={s.heroIcon}>📝</Text>
@@ -124,47 +117,72 @@ export default function ExamHomeScreen() {
           </Text>
         </Pressable>
 
-        {/* ─── 年度別過去問 ─── */}
+        {/* ─── 模擬試験プリセット (本試験形式) ─── */}
         <View style={[s.card, Shadow.sm, { marginTop: 8 }]}>
-          <Text style={s.cardTitle}>📋 年度別 過去問チャレンジ</Text>
+          <Text style={s.cardTitle}>📋 本試験形式 模擬試験</Text>
           <Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 14, lineHeight: 18 }}>
-            本試験と同じ出題比率で年度別に挑戦できます
+            本試験と同じ出題比率の模擬試験です。順番に挑戦して合格レベルを目指しましょう。
           </Text>
-          {getAvailableExamYears().slice(0, 12).map((year) => {
-            const count = getExamByYear(year).length;
+          {Array.from({ length: getMockPresetCount() }, (_, i) => i + 1).slice(0, 12).map((n) => {
+            const count = getMockPresetByNumber(n).length;
             return (
               <Pressable
-                key={year}
+                key={`mock-${n}`}
                 style={s.yearRow}
                 accessibilityRole="button"
-                accessibilityLabel={`${toWareki(year)}の過去問を解く`}
+                accessibilityLabel={`模擬${n}を開始`}
                 onPress={() => {
+                  const start = () => {
+                    useExamStore.getState().startMockPreset(n);
+                    router.push('/exam/session');
+                  };
                   if (hasActive) {
                     confirmAlert(
                       '新しい試験を開始',
                       '進行中の試験は破棄されます。よろしいですか？',
-                      () => {
-                        abandonExam();
-                        const startYearExam = useExamStore.getState().startYearExam;
-                        startYearExam(year);
-                        router.push('/exam/session');
-                      },
+                      () => { abandonExam(); start(); },
                     );
                   } else {
-                    const startYearExam = useExamStore.getState().startYearExam;
-                    startYearExam(year);
-                    router.push('/exam/session');
+                    start();
                   }
                 }}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={s.yearLabel}>{toWareki(year)}</Text>
+                  <Text style={s.yearLabel}>模擬 {n}</Text>
                   <Text style={s.yearSub}>{count}問 / 120分</Text>
                 </View>
                 <Text style={s.yearArrow}>{'>'}</Text>
               </Pressable>
             );
           })}
+
+          {/* ランダム模擬: 全模擬を解いた人向け or やり込み用 */}
+          <Pressable
+            style={[s.yearRow, { marginTop: 8, borderTopWidth: 1, borderTopColor: colors.border }]}
+            accessibilityRole="button"
+            accessibilityLabel="ランダム模擬を開始"
+            onPress={() => {
+              const start = () => {
+                useExamStore.getState().startRandomMock();
+                router.push('/exam/session');
+              };
+              if (hasActive) {
+                confirmAlert(
+                  '新しい試験を開始',
+                  '進行中の試験は破棄されます。よろしいですか？',
+                  () => { abandonExam(); start(); },
+                );
+              } else {
+                start();
+              }
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={s.yearLabel}>🎲 ランダム模擬</Text>
+              <Text style={s.yearSub}>全問題からシャッフルで50問 / 120分</Text>
+            </View>
+            <Text style={s.yearArrow}>{'>'}</Text>
+          </Pressable>
         </View>
 
         <View style={s.notes}>

@@ -47,6 +47,7 @@ import {
   shouldShowChoiceExplanation,
   getStatementExplanation,
 } from '../../utils/explanationVisibility';
+import { InlineAILimitCTA } from '../../components/InlineAILimitCTA';
 
 type AIChatMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -80,6 +81,9 @@ export default function QuestSessionScreen() {
   const canAI = useSettingsStore((st) => st.canUseAI());
   const isPro = useSettingsStore((st) => st.isPro());
   const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
+  const aiDailyRemaining = useSettingsStore((st) => st.getAIDailyRemaining());
+  const aiDailyLimit = useSettingsStore((st) => st.getAIDailyLimit());
+  const aiUsedToday = Math.max(0, aiDailyLimit - aiDailyRemaining);
 
   const mission = useMemo(() => getQuestMission(missionId), [missionId]);
   const questionIds = useMemo(() => getQuestQuestions(missionId), [missionId]);
@@ -387,7 +391,11 @@ export default function QuestSessionScreen() {
           </Pressable>
         </View>
         {!canAI && (
-          <Text style={s.aiLimitText}>本日のAI質問回数の上限に達しました</Text>
+          <InlineAILimitCTA
+            usedToday={aiUsedToday}
+            limit={aiDailyLimit}
+            onUpgrade={() => router.push('/paywall')}
+          />
         )}
       </KeyboardAvoidingView>
     </>
@@ -957,6 +965,6 @@ function makeStyles(C: ThemeColors, isWide = false) {
     aiSendBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center' },
     aiSendBtnDisabled: { backgroundColor: C.borderLight },
     aiSendIcon: { fontSize: 20, fontWeight: '800', color: C.white },
-    aiLimitText: { textAlign: 'center', fontSize: FontSize.caption2, color: C.error, paddingBottom: 12, backgroundColor: C.card },
+    // [2026-05] aiLimitText は InlineAILimitCTA に置換のため削除済み。
   });
 }

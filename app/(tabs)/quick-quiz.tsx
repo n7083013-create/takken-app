@@ -34,6 +34,8 @@ import { HighlightedText } from '../../components/HighlightedText';
 import { askAI } from '../../services/claude';
 import { useAchievementChecker } from '../../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../../components/AnswerFeedback';
+import { LimitReachedScreen } from '../../components/LimitReachedScreen';
+import { InlineAILimitCTA } from '../../components/InlineAILimitCTA';
 
 type AnswerState = 'unanswered' | 'correct' | 'incorrect';
 
@@ -61,6 +63,9 @@ export default function QuickQuizScreen() {
   const isPro = useSettingsStore((st) => st.isPro());
   const canAI = useSettingsStore((st) => st.canUseAI());
   const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
+  const aiDailyRemaining = useSettingsStore((st) => st.getAIDailyRemaining());
+  const aiDailyLimit = useSettingsStore((st) => st.getAIDailyLimit());
+  const aiUsedToday = Math.max(0, aiDailyLimit - aiDailyRemaining);
   const [aiVisible, setAiVisible] = useState(false);
   const [aiMessages, setAiMessages] = useState<AIChatMessage[]>([]);
   const [aiInput, setAiInput] = useState('');
@@ -116,13 +121,11 @@ export default function QuickQuizScreen() {
   const handleAnswer = useCallback((userAnswer: boolean) => {
     if (!currentQuiz || answerState !== 'unanswered') return;
 
-    // フリーミアム制限: 1日20問まで（未課金ユーザー）
-    if (!isPro) {
-      const todayCount = getTodayQuickQuizCount();
-      if (todayCount >= 20) {
-        router.push('/paywall');
-        return;
-      }
+    // [UX改善 2026-05] 以前はここで router.push('/paywall') してハードリダイレクトしていたが、
+    // ユーザー文脈 (どの問題を解いていたか) が失われる悪体験だった。
+    // 上限到達は render 時点で LimitReachedScreen を描画する方式に統一 (世界基準: Linear/Notion パターン)。
+    if (!isPro && getTodayQuickQuizCount() >= 20) {
+      return; // 念のため二重防御 — 通常はこの分岐に来ない
     }
 
     const isCorrect = userAnswer === currentQuiz.isCorrect;
@@ -192,6 +195,21 @@ export default function QuickQuizScreen() {
       setTimeout(() => aiScrollRef.current?.scrollToEnd({ animated: true }), 100);
     }
   }, [currentQuiz, aiInput, aiLoading, canAI, aiMessages]);
+
+  // [UX改善 2026-05] 1日20問上限到達時は LimitReachedScreen を描画。
+  // 旧: handleAnswer 内で router.push('/paywall') ハードリダイレクト → 文脈破壊。
+  // 新: 共通 Celebration 画面 (「今日の20問達成！」+ streak + trial CTA)。
+  const stats = useProgressStore((st) => st.stats);
+  if (!isPro && getTodayQuickQuizCount() >= 20) {
+    return (
+      <LimitReachedScreen
+        mode={{ kind: 'daily_limit_quickquiz', streak: stats.streak }}
+        onUpgrade={() => router.push('/paywall')}
+        onSecondary={() => router.replace('/(tabs)' as any)}
+        secondaryLabel="ホームに戻る"
+      />
+    );
+  }
 
   return (
     <SafeAreaView style={s.safe}>
@@ -510,7 +528,13 @@ export default function QuickQuizScreen() {
                 <Text style={s.aiSendIcon}>↑</Text>
               </Pressable>
             </View>
-            {!canAI && <Text style={s.aiLimitText}>本日のAI質問回数の上限に達しました</Text>}
+            {!canAI && (
+              <InlineAILimitCTA
+                usedToday={aiUsedToday}
+                limit={aiDailyLimit}
+                onUpgrade={() => router.push('/paywall')}
+              />
+            )}
           </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
@@ -886,7 +910,7 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   aiSendBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center' },
   aiSendBtnDisabled: { backgroundColor: C.borderLight },
   aiSendIcon: { fontSize: 20, fontWeight: '800', color: C.white },
-  aiLimitText: { textAlign: 'center', fontSize: FontSize.caption2, color: C.error, paddingBottom: 12, backgroundColor: C.card },
+  // [2026-05] aiLimitText は InlineAILimitCTA に置換のため削除済み。
 
   // ─── Glossary Modal ───
   glossaryOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'flex-end' },

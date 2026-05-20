@@ -39,6 +39,8 @@ import { confirmAlert } from '../../services/alert';
 import { AnimatedChoiceCard } from '../../components/AnimatedChoiceCard';
 import { PressableScale } from '../../components/PressableScale';
 import { WebBackButton } from '../../components/WebBackButton';
+import { LimitReachedScreen } from '../../components/LimitReachedScreen';
+import { InlineAILimitCTA } from '../../components/InlineAILimitCTA';
 import {
   shouldShowChoiceExplanation,
   getStatementExplanation,
@@ -70,6 +72,7 @@ export default function QuestionDetailScreen() {
   const markAsMastered = useProgressStore((s) => s.markAsMastered);
   const unmarkMastered = useProgressStore((s) => s.unmarkMastered);
   const getProgress = useProgressStore((s) => s.getProgress);
+  const stats = useProgressStore((s) => s.stats);
   const checkAchievements = useAchievementChecker();
   const { triggerCorrect, triggerWrong, FeedbackOverlay } = useAnswerFeedback();
 
@@ -162,6 +165,9 @@ export default function QuestionDetailScreen() {
   const canAI = useSettingsStore((st) => st.canUseAI());
   const isPro = useSettingsStore((st) => st.isPro());
   const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
+  const aiDailyRemaining = useSettingsStore((st) => st.getAIDailyRemaining());
+  const aiDailyLimit = useSettingsStore((st) => st.getAIDailyLimit());
+  const aiUsedToday = Math.max(0, aiDailyLimit - aiDailyRemaining);
 
   const colors = useThemeColors();
   const { width: screenWidth } = useWindowDimensions();
@@ -323,24 +329,17 @@ export default function QuestionDetailScreen() {
   }
 
   // フリーミアム制御: 1日10問まで（未回答状態で上限に達していれば表示）
+  // [UX改善 2026-05] 共通 LimitReachedScreen + paywallCopy.ts に統一。
+  // Celebration ファースト (「今日の10問達成！」) + streak shield + trial-first CTA。
   const todayAnswered = getTodayAnswered();
   if (!canAccess(isPro, 'question', todayAnswered) && state === 'idle') {
     return (
-      <View style={[s.safe, s.lockContainer]}>
-        <WebBackButton />
-        <Text style={s.lockEmoji}>⏰</Text>
-        <Text style={s.lockTitle}>本日の無料枠を使い切りました</Text>
-        <Text style={s.lockDesc}>
-          無料プランでは1日10問まで解けます。{'\n'}
-          明日また挑戦するか、PREMIUMで今すぐ続けましょう。
-        </Text>
-        <Pressable
-          style={[s.lockBtn, Shadow.md]}
-          onPress={() => router.push('/paywall')}
-        >
-          <Text style={s.lockBtnText}>7日間無料で全問解き放題</Text>
-        </Pressable>
-      </View>
+      <LimitReachedScreen
+        mode={{ kind: 'daily_limit_question', streak: stats.streak }}
+        onUpgrade={() => router.push('/paywall')}
+        onSecondary={() => router.replace('/(tabs)' as any)}
+        secondaryLabel="ホームに戻る"
+      />
     );
   }
 
@@ -450,7 +449,11 @@ export default function QuestionDetailScreen() {
           </Pressable>
         </View>
         {!canAI && (
-          <Text style={s.aiLimitText}>本日のAI質問回数の上限に達しました</Text>
+          <InlineAILimitCTA
+            usedToday={aiUsedToday}
+            limit={aiDailyLimit}
+            onUpgrade={() => router.push('/paywall')}
+          />
         )}
       </KeyboardAvoidingView>
     </>
@@ -808,13 +811,8 @@ function makeStyles(C: ThemeColors, isWide = false) {
       marginTop: 100,
     },
 
-    // ─── Lock Screen ───
-    lockContainer: { padding: Spacing.xxl, justifyContent: 'center', alignItems: 'center' },
-    lockEmoji: { fontSize: 48, marginBottom: Spacing.lg },
-    lockTitle: { fontSize: FontSize.headline, fontWeight: '800', color: C.text, marginBottom: Spacing.sm },
-    lockDesc: { fontSize: FontSize.footnote, color: C.textSecondary, textAlign: 'center', marginBottom: Spacing.xxl, lineHeight: LineHeight.footnote },
-    lockBtn: { backgroundColor: C.primary, paddingHorizontal: 32, paddingVertical: 14, borderRadius: BorderRadius.md },
-    lockBtnText: { color: C.white, fontSize: FontSize.subhead, fontWeight: '700' },
+    // [2026-05] 旧 Lock Screen スタイル (lockContainer / lockEmoji / lockTitle / lockDesc / lockBtn)
+    // は components/LimitReachedScreen.tsx + utils/paywallCopy.ts に移行のため削除済み。
 
     // ─── Meta ───
     metaRow: { flexDirection: 'row', gap: 8, marginBottom: Spacing.lg },
@@ -1205,12 +1203,6 @@ function makeStyles(C: ThemeColors, isWide = false) {
       fontWeight: '800',
       color: C.white,
     },
-    aiLimitText: {
-      textAlign: 'center',
-      fontSize: FontSize.caption2,
-      color: C.error,
-      paddingBottom: 12,
-      backgroundColor: C.card,
-    },
+    // [2026-05] aiLimitText は InlineAILimitCTA に置換のため削除済み。
   });
 }

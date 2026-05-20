@@ -16,6 +16,7 @@ import {
 } from '../../services/aiAnalysis';
 import { getQuestionById } from '../../data';
 import { setAiQueue } from '../../utils/aiQueue';
+import { LimitReachedScreen } from '../../components/LimitReachedScreen';
 
 export default function AIAnalysisScreen() {
   const router = useRouter();
@@ -25,25 +26,13 @@ export default function AIAnalysisScreen() {
   const progress = useProgressStore((s) => s.progress);
   const isPro = useSettingsStore((s) => s.isPro());
 
+  // [UX改善 2026-05] 共通 LimitReachedScreen に統一。trial-first CTA。
   if (!isPro) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-        <View style={{ flex: 1, padding: 24, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: 56, marginBottom: 16 }}>🤖</Text>
-          <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text, marginBottom: 8 }}>
-            AI分析はPREMIUM会員限定
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', marginBottom: 24, lineHeight: 20 }}>
-            合格予測・苦手分析・おすすめ問題で{'\n'}最短ルートで合格点を狙えます
-          </Text>
-          <Pressable
-            style={{ backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 14, borderRadius: 12 }}
-            onPress={() => router.push('/paywall')}
-          >
-            <Text style={{ color: colors.white, fontSize: 15, fontWeight: '800' }}>PREMIUMプランを見る</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
+      <LimitReachedScreen
+        mode={{ kind: 'feature_locked_ai_analysis' }}
+        onUpgrade={() => router.push('/paywall')}
+      />
     );
   }
 
