@@ -539,7 +539,11 @@ export default function QuestionDetailScreen() {
           const labelBg = isCorrectAnswer ? colors.success : isWrongAnswer ? colors.error : colors.borderLight;
           const labelColor = isCorrectAnswer || isWrongAnswer ? colors.white : colors.textSecondary;
 
-          const choiceExpl = answered && q.choiceExplanations ? q.choiceExplanations[origIdx] : null;
+          // [Bugfix 2026-05] 個数問題・組み合わせ問題では choiceExplanations を非表示。
+          // ユーザー報告: 「1つ/2つ/3つ/4つ」の選択肢に解説をつけるとごちゃごちゃ。
+          // statements (ア/イ/ウ/エ) ベースの statementExplanations で説明する方が直感的。
+          const isCountOrComb = q.questionFormat === 'count' || q.questionFormat === 'combination';
+          const choiceExpl = answered && !isCountOrComb && q.choiceExplanations ? q.choiceExplanations[origIdx] : null;
 
           const struck = !answered && isStruck(origIdx);
 

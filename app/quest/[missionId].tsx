@@ -511,8 +511,12 @@ export default function QuestSessionScreen() {
                   </Text>
                   {struck && !answered && <Text style={s.strikeMark}>✕</Text>}
                 </Pressable>
-                {/* 選択肢別解説 */}
-                {answered && currentQuestion.choiceExplanations?.[origIdx] && (
+                {/* [Bugfix] 個数問題・組み合わせ問題では選択肢別解説を非表示
+                    (ア/イ/ウ/エの statementExplanations で十分・冗長を回避) */}
+                {answered &&
+                  currentQuestion.questionFormat !== 'count' &&
+                  currentQuestion.questionFormat !== 'combination' &&
+                  currentQuestion.choiceExplanations?.[origIdx] && (
                   <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
                     <Text style={s.choiceExplText}>{currentQuestion.choiceExplanations[origIdx]}</Text>
                     {isPro && (
