@@ -1,9 +1,12 @@
 // ============================================================
-// 正解/不正解フィードバック（中毒性のあるマイクロインタラクション）
+// 正解/不正解フィードバック（設定対応・集中力重視）
 // ============================================================
-// - 正解時: 紙吹雪エフェクト + ハプティック + コンボカウンター
-// - 不正解時: 穏やかな振動 + 励ましメッセージ
-// - ストリーク到達時: 特別な祝福アニメーション
+// - 設定 animationLevel に応じて演出の強度を変える:
+//   - full:    紙吹雪 + コンボ + フラッシュ（従来のリッチ演出）
+//   - subtle:  コンボのみ控えめ表示
+//   - off:     チェックマーク相当（演出なし）
+// - バイブ・音は vibrationEnabled / soundEnabled を尊重
+// - 集中を妨げない位置・持続時間
 
 import { useEffect, useRef, useMemo, useState } from 'react';
 import {
@@ -14,9 +17,10 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import * as Haptics from 'expo-haptics';
 import { FontSize, BorderRadius, Spacing } from '../constants/theme';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
+import { hapticSuccess, hapticError, hapticMedium, getAnimationLevel } from '../services/haptics';
+import { useSessionStore } from '../store/useSessionStore';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -99,12 +103,12 @@ function ConfettiOverlay({ active }: ConfettiProps) {
   );
 }
 
-// ─── コンボカウンター表示 ───
+// ─── コンボカウンター表示（full 用：大きめ） ───
 interface ComboProps {
   combo: number;
 }
 
-function ComboDisplay({ combo }: ComboProps) {
+function ComboDisplayLarge({ combo }: ComboProps) {
   const colors = useThemeColors();
   const s = useMemo(() => comboStyles(colors), [colors]);
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -150,10 +154,48 @@ function ComboDisplay({ combo }: ComboProps) {
           opacity: scaleAnim,
         },
       ]}
+      pointerEvents="none"
     >
       <Text style={[s.comboCount, { color: comboColor }]}>{combo}</Text>
       <Text style={[s.comboLabel, { color: comboColor }]}>{comboLabel}</Text>
       <Text style={s.comboSub}>連続正解</Text>
+    </Animated.View>
+  );
+}
+
+// ─── コンボカウンター表示（subtle 用：小さく控えめ） ───
+function ComboDisplaySubtle({ combo }: ComboProps) {
+  const colors = useThemeColors();
+  const s = useMemo(() => comboSubtleStyles(colors), [colors]);
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(-6)).current;
+
+  useEffect(() => {
+    if (combo < 3) return;
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 180, useNativeDriver: true }),
+      Animated.spring(translateY, { toValue: 0, friction: 6, useNativeDriver: true }),
+    ]).start(() => {
+      setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(opacity, { toValue: 0, duration: 220, useNativeDriver: true }),
+          Animated.timing(translateY, { toValue: -6, duration: 220, useNativeDriver: true }),
+        ]).start();
+      }, 1200);
+    });
+  }, [combo]);
+
+  if (combo < 3) return null;
+
+  const emoji = combo >= 20 ? '👑' : combo >= 10 ? '⚡' : '🔥';
+
+  return (
+    <Animated.View
+      style={[s.container, { opacity, transform: [{ translateY }] }]}
+      pointerEvents="none"
+    >
+      <Text style={s.emoji}>{emoji}</Text>
+      <Text style={s.text}>{combo}連続正解</Text>
     </Animated.View>
   );
 }
@@ -184,79 +226,136 @@ function comboStyles(C: ThemeColors) {
   });
 }
 
-// ─── メインフィードバックコンポーネント ───
-export interface AnswerFeedbackRef {
-  triggerCorrect: () => void;
-  triggerWrong: () => void;
-  getCombo: () => number;
-  resetCombo: () => void;
+function comboSubtleStyles(C: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: C.primary,
+      borderRadius: BorderRadius.full,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      gap: 4,
+      zIndex: 100,
+    },
+    emoji: {
+      fontSize: 14,
+    },
+    text: {
+      fontSize: FontSize.caption,
+      fontWeight: '800',
+      color: C.white,
+    },
+  });
 }
 
-interface FeedbackProps {
-  /** 外部からcomboを管理したい場合 */
-  combo?: number;
-  showCombo?: boolean;
-}
-
+// ─── メインフィードバックフック ───
 export function useAnswerFeedback() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [combo, setCombo] = useState(0);
   const flashAnim = useRef(new Animated.Value(0)).current;
 
   const triggerCorrect = () => {
-    setCombo((c) => c + 1);
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 1200);
+    const level = getAnimationLevel();
+    // ローカルコンボ + グローバルセッションコンボを同期
+    setCombo((c) => {
+      const next = c + 1;
+      // [Quick Win B] ハプティック 3段階: コンボ数で振動強度を変える
+      // → Duolingo / Apple Fitness 流の「達成感の段階的強化」
+      hapticSuccess();
+      if (next >= 5) {
+        // 5連以上: 中程度の振動を追加 (連続成功の興奮を表現)
+        setTimeout(() => hapticMedium(), 80);
+      }
+      if (next >= 10) {
+        // 10連以上: 3連発でトリプルパンチ (圧倒的達成感)
+        setTimeout(() => hapticMedium(), 160);
+        setTimeout(() => hapticSuccess(), 240);
+      }
+      return next;
+    });
+    useSessionStore.getState().recordCorrect();
 
-    // ハプティック（iOS/Android）
-    if (Platform.OS !== 'web') {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    // full のみ紙吹雪 + フラッシュ
+    if (level === 'full') {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 1200);
+
+      // [Quick Win B] フラッシュ強度もコンボに連動
+      flashAnim.setValue(1);
+      Animated.timing(flashAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
     }
-
-    // 画面フラッシュ
-    flashAnim.setValue(1);
-    Animated.timing(flashAnim, {
-      toValue: 0,
-      duration: 400,
-      useNativeDriver: true,
-    }).start();
   };
 
   const triggerWrong = () => {
+    const level = getAnimationLevel();
+    // ローカルコンボ + グローバルセッションコンボをリセット
     setCombo(0);
+    useSessionStore.getState().recordIncorrect();
 
-    if (Platform.OS !== 'web') {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    // 不正解バイブ
+    hapticError();
+
+    // full のみフラッシュ
+    if (level === 'full') {
+      flashAnim.setValue(1);
+      Animated.timing(flashAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
     }
-
-    flashAnim.setValue(1);
-    Animated.timing(flashAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
   };
 
-  const resetCombo = () => setCombo(0);
+  const resetCombo = () => {
+    setCombo(0);
+    useSessionStore.getState().resetCombo();
+  };
 
   const FeedbackOverlay = useMemo(
     () =>
       function Overlay() {
+        const level = getAnimationLevel();
+
+        // off の場合は何も表示しない
+        if (level === 'off') return null;
+
         return (
           <>
-            <ConfettiOverlay active={showConfetti} />
-            <ComboDisplay combo={combo} />
-            {/* 正解フラッシュ（緑） */}
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                StyleSheet.absoluteFill,
-                {
-                  backgroundColor: combo > 0 ? 'rgba(76, 175, 80, 0.12)' : 'rgba(229, 57, 53, 0.10)',
-                  opacity: flashAnim,
-                },
-              ]}
-            />
+            {level === 'full' && (
+              <>
+                <ConfettiOverlay active={showConfetti} />
+                <ComboDisplayLarge combo={combo} />
+                {/* [Quick Win B] 正解フラッシュ（緑）: コンボ数に応じて強度UP
+                    - 1-4連: 0.12 (控えめ)
+                    - 5-9連: 0.22 (強め・興奮)
+                    - 10+連: 0.32 (圧倒的達成感) */}
+                <Animated.View
+                  pointerEvents="none"
+                  style={[
+                    StyleSheet.absoluteFill,
+                    {
+                      backgroundColor: combo >= 10
+                        ? 'rgba(76, 175, 80, 0.32)'
+                        : combo >= 5
+                          ? 'rgba(76, 175, 80, 0.22)'
+                          : combo > 0
+                            ? 'rgba(76, 175, 80, 0.12)'
+                            : 'rgba(229, 57, 53, 0.10)',
+                      opacity: flashAnim,
+                    },
+                  ]}
+                />
+              </>
+            )}
+            {level === 'subtle' && <ComboDisplaySubtle combo={combo} />}
           </>
         );
       },
@@ -293,6 +392,15 @@ export function StreakCelebration({ streak, visible, onDismiss }: StreakCelebrat
 
   useEffect(() => {
     if (visible && milestone) {
+      const level = getAnimationLevel();
+
+      // off の場合は表示せず、バイブのみ
+      if (level === 'off') {
+        hapticSuccess();
+        setTimeout(onDismiss, 500);
+        return;
+      }
+
       scaleAnim.setValue(0);
       opacityAnim.setValue(0);
       Animated.parallel([
@@ -300,9 +408,7 @@ export function StreakCelebration({ streak, visible, onDismiss }: StreakCelebrat
         Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
       ]).start();
 
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+      hapticSuccess();
 
       // 自動消去
       const timer = setTimeout(onDismiss, 3000);
@@ -312,6 +418,9 @@ export function StreakCelebration({ streak, visible, onDismiss }: StreakCelebrat
 
   if (!visible || !milestone) return null;
 
+  const level = getAnimationLevel();
+  if (level === 'off') return null;
+
   return (
     <Animated.View
       style={[
@@ -320,7 +429,7 @@ export function StreakCelebration({ streak, visible, onDismiss }: StreakCelebrat
       ]}
       pointerEvents="box-none"
     >
-      <ConfettiOverlay active={visible} />
+      {level === 'full' && <ConfettiOverlay active={visible} />}
       <Animated.View
         style={[
           streakStyles.card,

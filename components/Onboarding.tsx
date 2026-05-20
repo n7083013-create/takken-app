@@ -1,8 +1,12 @@
 // ============================================================
 // 宅建士 完全対策 - オンボーディング（初回起動時のみ表示）
 // ============================================================
-// 4ステップのスワイプ可能なフルスクリーンオンボーディング
+// 3ステップのスワイプ可能なフルスクリーンオンボーディング（離脱率最小化版）
+//   1. Welcome + 価値提案（¥980 / 7日無料 / 解約自由）
+//   2. 試験日の確認 + カウントダウン
+//   3. 通知許可 + 完了
 // AsyncStorage `@takken_onboarding_done` で表示済み管理
+// 日目標・習慣スタッキングなどの詳細設定は「進捗」タブから後追い設定可能
 
 import { useState, useRef, useMemo, useCallback } from 'react';
 import {
@@ -20,38 +24,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow, FontSize, Spacing, BorderRadius, LetterSpacing } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 import { useSettingsStore } from '../store/useSettingsStore';
-import HabitStackingSetup from './HabitStackingSetup';
-import { HABIT_PRESETS } from '../constants/habitPresets';
-import type { HabitStack } from '../types';
+import { getNextTakkenExamDate } from '../constants/exam';
+import { requestNotificationPermission } from '../services/notifications';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ONBOARDING_KEY = '@takken_onboarding_done';
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 3;
 
 interface OnboardingProps {
   onComplete: () => void;
-}
-
-// ── Daily goal presets ──
-const GOAL_PRESETS = [
-  { value: 10, label: '10問/日', desc: 'のんびり', icon: '🌱' },
-  { value: 20, label: '20問/日', desc: 'おすすめ', icon: '🎯' },
-  { value: 30, label: '30問/日', desc: 'がっつり', icon: '🔥' },
-] as const;
-
-/** 指定年の10月第3日曜日を計算 */
-function calcThirdSunday(year: number): Date {
-  const oct1 = new Date(year, 9, 1);
-  const firstSunday = ((7 - oct1.getDay()) % 7) + 1;
-  return new Date(year, 9, firstSunday + 14);
-}
-
-/** 直近の宅建試験日を自動計算（過ぎていたら翌年） */
-function getNextExamDate(): Date {
-  const now = new Date();
-  const thisYear = calcThirdSunday(now.getFullYear());
-  if (thisYear.getTime() > now.getTime()) return thisYear;
-  return calcThirdSunday(now.getFullYear() + 1);
 }
 
 export default function Onboarding({ onComplete }: OnboardingProps) {
@@ -59,64 +40,75 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const s = useMemo(() => makeStyles(colors), [colors]);
   const scrollRef = useRef<ScrollView>(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [notifyRequesting, setNotifyRequesting] = useState(false);
 
-  // ── Step 2: Exam date (自動計算) ──
-  const examDate = useMemo(() => getNextExamDate(), []);
+  // ── Step 2: Exam date (自動計算・試験翌日から次回にカウントダウン) ──
+  const examDate = useMemo(() => getNextTakkenExamDate(), []);
   const examDateStr = useMemo(
     () =>
       `${examDate.getFullYear()}年${examDate.getMonth() + 1}月${examDate.getDate()}日（日）`,
     [examDate],
   );
-
-  // ── Step 3: Daily goal ──
-  const [selectedGoal, setSelectedGoal] = useState(20);
-
-  // ── Step 4: Habit stacking ──
-  const [selectedHabits, setSelectedHabits] = useState<HabitStack[]>(HABIT_PRESETS);
+  const daysUntilExam = useMemo(
+    () =>
+      Math.max(
+        0,
+        Math.ceil((examDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000)),
+      ),
+    [examDate],
+  );
 
   const updateSettings = useSettingsStore((s) => s.updateSettings);
 
   // ── Navigation ──
-  const goToStep = useCallback(
-    (step: number) => {
-      scrollRef.current?.scrollTo({ x: step * SCREEN_WIDTH, animated: true });
-      setCurrentStep(step);
-    },
-    [],
-  );
+  const goToStep = useCallback((step: number) => {
+    scrollRef.current?.scrollTo({ x: step * SCREEN_WIDTH, animated: true });
+    setCurrentStep(step);
+  }, []);
+
+  /** 試験日を保存（バリデーション: 未来日かつ Date オブジェクト有効） */
+  const persistExamDate = useCallback(() => {
+    if (!isNaN(examDate.getTime()) && examDate.getTime() > Date.now()) {
+      updateSettings({ examDate: examDate.toISOString() });
+    }
+  }, [examDate, updateSettings]);
 
   const handleNext = useCallback(() => {
     if (currentStep === 1) {
-      // Save exam date
-      updateSettings({ examDate: examDate.toISOString() });
-    }
-    if (currentStep === 2) {
-      // Save daily goal
-      updateSettings({ dailyGoal: selectedGoal });
-    }
-    if (currentStep === 3) {
-      // Save habit stacks
-      const enabledHabits = selectedHabits.filter((h) => h.enabled);
-      updateSettings({ habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined });
+      persistExamDate();
     }
     if (currentStep < TOTAL_STEPS - 1) {
       goToStep(currentStep + 1);
     }
-  }, [currentStep, examDate, selectedGoal, selectedHabits, updateSettings, goToStep]);
+  }, [currentStep, persistExamDate, goToStep]);
 
-  const handleComplete = useCallback(async () => {
-    // Save all settings one more time
-    const enabledHabits = selectedHabits.filter((h) => h.enabled);
-    updateSettings({
-      examDate: examDate.toISOString(),
-      dailyGoal: selectedGoal,
-      habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined,
-    });
+  const finalizeOnboarding = useCallback(async () => {
+    persistExamDate();
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     onComplete();
-  }, [examDate, selectedGoal, selectedHabits, updateSettings, onComplete]);
+  }, [persistExamDate, onComplete]);
 
-  const handleSkip = useCallback(async () => {
+  /** Step 3: 通知許可 → 完了 */
+  const handleEnableNotifications = useCallback(async () => {
+    if (notifyRequesting) return;
+    setNotifyRequesting(true);
+    try {
+      await requestNotificationPermission();
+    } catch {
+      // 拒否されても完了に進める（後から設定で再要求可能）
+    } finally {
+      setNotifyRequesting(false);
+      await finalizeOnboarding();
+    }
+  }, [notifyRequesting, finalizeOnboarding]);
+
+  /** Step 3: 通知をスキップして完了 */
+  const handleSkipNotifications = useCallback(async () => {
+    await finalizeOnboarding();
+  }, [finalizeOnboarding]);
+
+  /** ヘッダの「スキップ」: オンボーディング全体をスキップ */
+  const handleSkipAll = useCallback(async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     onComplete();
   }, [onComplete]);
@@ -125,31 +117,23 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const page = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
       if (page !== currentStep && page >= 0 && page < TOTAL_STEPS) {
-        // Save settings when swiping away from step 2, 3, or 4
         if (currentStep === 1) {
-          updateSettings({ examDate: examDate.toISOString() });
-        }
-        if (currentStep === 2) {
-          updateSettings({ dailyGoal: selectedGoal });
-        }
-        if (currentStep === 3) {
-          const enabledHabits = selectedHabits.filter((h) => h.enabled);
-          updateSettings({ habitStacks: enabledHabits.length > 0 ? enabledHabits : undefined });
+          persistExamDate();
         }
         setCurrentStep(page);
       }
     },
-    [currentStep, examDate, selectedGoal, selectedHabits, updateSettings],
+    [currentStep, persistExamDate],
   );
 
   return (
     <View style={s.root}>
       <SafeAreaView style={s.safeArea}>
-        {/* Skip button (steps 1-3) */}
+        {/* Skip button (steps 1-2) */}
         {currentStep < TOTAL_STEPS - 1 && (
           <Pressable
             style={s.skipBtn}
-            onPress={handleSkip}
+            onPress={handleSkipAll}
             accessibilityRole="button"
             accessibilityLabel="オンボーディングをスキップ"
           >
@@ -168,31 +152,47 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           bounces={false}
           style={s.scrollView}
         >
-          {/* ── Step 1: Welcome ── */}
+          {/* ── Step 1: Welcome + 価値提案 + [Quick Win A] 3秒インパクト ── */}
           <View style={s.page}>
             <View style={s.pageContent}>
+              {/* [Quick Win A] タッケン君 (マスコット) で 3秒で印象づけ
+                  世界基準: Duolingo の Duo / Headspace のオレンジ円 のような
+                  「3秒で覚えてもらえる」ビジュアル */}
               <View style={s.welcomeVisual}>
-                <Text style={s.welcomeEmoji}>🏠</Text>
-                <View style={s.welcomeEmojiRow}>
-                  <Text style={s.welcomeEmojiSide}>📖</Text>
-                  <Text style={s.welcomeEmojiCenter}>🎓</Text>
-                  <Text style={s.welcomeEmojiSide}>✨</Text>
+                <Text style={s.welcomeMascot}>🐕</Text>
+                <Text style={s.welcomeBubble}>「合格まで一緒に走ろう！」</Text>
+              </View>
+              <Text style={s.pageTitle}>試験まであと {daysUntilExam}日</Text>
+              <Text style={s.pageSubtitle}>
+                全 2,020 問の過去問×AI解説で、{'\n'}あなた専用の最短合格ルートを作成
+              </Text>
+
+              {/* 価値提案バッジ: ¥980 / 7日無料 / 解約自由 */}
+              <View style={s.valueRow}>
+                <View style={s.valueBadge}>
+                  <Text style={s.valueBadgeNum}>¥980</Text>
+                  <Text style={s.valueBadgeLabel}>全機能</Text>
+                </View>
+                <View style={s.valueBadge}>
+                  <Text style={s.valueBadgeNum}>7日</Text>
+                  <Text style={s.valueBadgeLabel}>無料体験</Text>
+                </View>
+                <View style={s.valueBadge}>
+                  <Text style={s.valueBadgeNum}>自由</Text>
+                  <Text style={s.valueBadgeLabel}>いつでも解約</Text>
                 </View>
               </View>
-              <Text style={s.pageTitle}>宅建合格への最短ルート</Text>
-              <Text style={s.pageSubtitle}>
-                AIが弱点を分析し、{'\n'}あなただけの学習プランを作成します
-              </Text>
             </View>
             <View style={s.pageFooter}>
               <Pressable
                 style={s.nextBtn}
                 onPress={handleNext}
                 accessibilityRole="button"
-                accessibilityLabel="次へ"
+                accessibilityLabel="はじめる"
               >
                 <Text style={s.nextBtnText}>はじめる</Text>
               </Pressable>
+              <Text style={s.swipeHint}>スワイプでも次へ進めます</Text>
             </View>
           </View>
 
@@ -209,21 +209,12 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               <View style={s.examDateCard}>
                 <Text style={s.examDateLabel}>試験日</Text>
                 <Text style={s.examDateValue}>{examDateStr}</Text>
-                <Text style={s.examDateNote}>
-                  宅建試験は毎年10月第3日曜日
-                </Text>
+                <Text style={s.examDateNote}>宅建試験は毎年10月第3日曜日</Text>
               </View>
 
               {/* Days until exam */}
               <View style={s.daysPreview}>
-                <Text style={s.daysPreviewNum}>
-                  {Math.max(
-                    0,
-                    Math.ceil(
-                      (examDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000),
-                    ),
-                  )}
-                </Text>
+                <Text style={s.daysPreviewNum}>{daysUntilExam}</Text>
                 <Text style={s.daysPreviewLabel}>日後</Text>
               </View>
             </View>
@@ -239,154 +230,49 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             </View>
           </View>
 
-          {/* ── Step 3: Daily goal ── */}
+          {/* ── Step 3: 通知許可 + 完了 ── */}
           <View style={s.page}>
             <View style={s.pageContent}>
-              <Text style={s.stepIcon}>🎯</Text>
-              <Text style={s.pageTitle}>1日の目標を決めよう</Text>
+              <Text style={s.stepIcon}>🔔</Text>
+              <Text style={s.pageTitle}>毎日の学習を{'\n'}リマインドしますか？</Text>
               <Text style={s.pageSubtitle}>
-                無理なく続けることが合格の鍵
+                合格者の習慣を後押しする{'\n'}最適なタイミングでお知らせします
               </Text>
 
-              <View style={s.goalList}>
-                {GOAL_PRESETS.map((preset) => (
-                  <Pressable
-                    key={preset.value}
-                    style={[
-                      s.goalCard,
-                      selectedGoal === preset.value && s.goalCardActive,
-                    ]}
-                    onPress={() => setSelectedGoal(preset.value)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${preset.label} ${preset.desc}`}
-                    accessibilityState={{ selected: selectedGoal === preset.value }}
-                  >
-                    <Text style={s.goalIcon}>{preset.icon}</Text>
-                    <View style={s.goalInfo}>
-                      <Text
-                        style={[
-                          s.goalLabel,
-                          selectedGoal === preset.value && s.goalLabelActive,
-                        ]}
-                      >
-                        {preset.label}
-                      </Text>
-                      <Text
-                        style={[
-                          s.goalDesc,
-                          selectedGoal === preset.value && s.goalDescActive,
-                        ]}
-                      >
-                        {preset.desc}
-                      </Text>
-                    </View>
-                    <View
-                      style={[
-                        s.goalRadio,
-                        selectedGoal === preset.value && s.goalRadioActive,
-                      ]}
-                    >
-                      {selectedGoal === preset.value && (
-                        <View style={s.goalRadioDot} />
-                      )}
-                    </View>
-                  </Pressable>
-                ))}
-              </View>
-
-              {selectedGoal === 20 && (
-                <View style={s.recommendBadge}>
-                  <Text style={s.recommendText}>
-                    多くの合格者が選んでいるペースです
-                  </Text>
+              <View style={s.notifyCard}>
+                <View style={s.notifyRow}>
+                  <Text style={s.notifyIcon}>⏰</Text>
+                  <Text style={s.notifyText}>朝の通勤前・寝る前など</Text>
                 </View>
-              )}
-            </View>
-            <View style={s.pageFooter}>
-              <Pressable
-                style={s.nextBtn}
-                onPress={handleNext}
-                accessibilityRole="button"
-                accessibilityLabel="次へ"
-              >
-                <Text style={s.nextBtnText}>次へ</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* ── Step 4: Habit Stacking ── */}
-          <View style={s.page}>
-            <View style={s.pageContent}>
-              <Text style={s.stepIcon}>⚡</Text>
-              <Text style={s.pageTitle}>習慣にくっつけて学習</Text>
-              <Text style={s.pageSubtitle}>
-                いつもの習慣に学習をプラス{'\n'}続けやすくなります
-              </Text>
-              <View style={s.habitSetupWrap}>
-                <HabitStackingSetup
-                  selectedHabits={selectedHabits}
-                  onUpdate={setSelectedHabits}
-                />
-              </View>
-            </View>
-            <View style={s.pageFooter}>
-              <Pressable
-                style={s.nextBtn}
-                onPress={handleNext}
-                accessibilityRole="button"
-                accessibilityLabel="次へ"
-              >
-                <Text style={s.nextBtnText}>次へ</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* ── Step 5: Ready ── */}
-          <View style={s.page}>
-            <View style={s.pageContent}>
-              <View style={s.readyVisual}>
-                <Text style={s.readyEmoji}>🎉</Text>
-              </View>
-              <Text style={s.pageTitle}>準備完了！</Text>
-              <Text style={s.pageSubtitle}>
-                まずは1問解いてみましょう
-              </Text>
-
-              {/* Summary */}
-              <View style={s.summaryCard}>
-                <View style={s.summaryRow}>
-                  <Text style={s.summaryIcon}>📅</Text>
-                  <Text style={s.summaryLabel}>試験日</Text>
-                  <Text style={s.summaryValue}>{examDateStr}</Text>
+                <View style={s.notifyRow}>
+                  <Text style={s.notifyIcon}>🔥</Text>
+                  <Text style={s.notifyText}>連続学習日数（ストリーク）を維持</Text>
                 </View>
-                <View style={s.summaryDivider} />
-                <View style={s.summaryRow}>
-                  <Text style={s.summaryIcon}>🎯</Text>
-                  <Text style={s.summaryLabel}>日目標</Text>
-                  <Text style={s.summaryValue}>{selectedGoal}問/日</Text>
+                <View style={s.notifyRow}>
+                  <Text style={s.notifyIcon}>⚙️</Text>
+                  <Text style={s.notifyText}>後から設定でON/OFF切替可能</Text>
                 </View>
-                {selectedHabits.filter((h) => h.enabled).length > 0 && (
-                  <>
-                    <View style={s.summaryDivider} />
-                    <View style={s.summaryRow}>
-                      <Text style={s.summaryIcon}>⚡</Text>
-                      <Text style={s.summaryLabel}>習慣</Text>
-                      <Text style={s.summaryValue}>
-                        {selectedHabits.filter((h) => h.enabled).length}つ設定
-                      </Text>
-                    </View>
-                  </>
-                )}
               </View>
             </View>
             <View style={s.pageFooter}>
               <Pressable
                 style={[s.nextBtn, s.startBtn]}
-                onPress={handleComplete}
+                onPress={handleEnableNotifications}
+                disabled={notifyRequesting}
                 accessibilityRole="button"
-                accessibilityLabel="学習を始める"
+                accessibilityLabel="通知を許可して学習を始める"
               >
-                <Text style={s.startBtnText}>学習を始める</Text>
+                <Text style={s.startBtnText}>
+                  {notifyRequesting ? '処理中...' : '通知を許可して始める'}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={s.skipFinalBtn}
+                onPress={handleSkipNotifications}
+                accessibilityRole="button"
+                accessibilityLabel="通知をスキップして学習を始める"
+              >
+                <Text style={s.skipFinalText}>あとで設定する</Text>
               </Pressable>
             </View>
           </View>
@@ -397,10 +283,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <View
               key={i}
-              style={[
-                s.dot,
-                i === currentStep ? s.dotActive : s.dotInactive,
-              ]}
+              style={[s.dot, i === currentStep ? s.dotActive : s.dotInactive]}
             />
           ))}
         </View>
@@ -501,6 +384,61 @@ function makeStyles(C: ThemeColors) {
       fontSize: 44,
     },
 
+    // ─── [Quick Win A] マスコット (タッケン君) ───
+    welcomeMascot: {
+      fontSize: 96,
+      marginBottom: 4,
+    },
+    welcomeBubble: {
+      fontSize: FontSize.callout,
+      fontWeight: '800',
+      color: C.primary,
+      backgroundColor: C.primarySurface,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: BorderRadius.full,
+      overflow: 'hidden',
+    },
+
+    // ─── 価値提案バッジ (¥980 / 7日無料 / 解約自由) ───
+    valueRow: {
+      flexDirection: 'row',
+      gap: 10,
+      marginTop: Spacing.xxl,
+      width: '100%',
+      justifyContent: 'space-between',
+    },
+    valueBadge: {
+      flex: 1,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.sm,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: C.border,
+      ...Shadow.sm,
+    },
+    valueBadgeNum: {
+      fontSize: FontSize.headline,
+      fontWeight: '900',
+      color: C.primary,
+      letterSpacing: LetterSpacing.tight,
+    },
+    valueBadgeLabel: {
+      fontSize: FontSize.caption,
+      fontWeight: '600',
+      color: C.textSecondary,
+      marginTop: 4,
+      textAlign: 'center',
+    },
+    swipeHint: {
+      fontSize: FontSize.caption,
+      color: C.textTertiary,
+      textAlign: 'center',
+      marginTop: 12,
+    },
+
     // ─── Next / Start button ───
     nextBtn: {
       backgroundColor: C.primary,
@@ -523,6 +461,16 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '800',
       color: C.white,
       letterSpacing: LetterSpacing.wide,
+    },
+    skipFinalBtn: {
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 6,
+    },
+    skipFinalText: {
+      fontSize: FontSize.subhead,
+      fontWeight: '600',
+      color: C.textSecondary,
     },
 
     // ─── Dots ───
@@ -593,125 +541,29 @@ function makeStyles(C: ThemeColors) {
       marginLeft: 4,
     },
 
-    // ─── Step 3: Daily goal ───
-    goalList: {
-      width: '100%',
-      marginTop: 32,
-      gap: 12,
-    },
-    goalCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: C.card,
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.lg,
-      borderWidth: 2,
-      borderColor: C.border,
-      ...Shadow.sm,
-    },
-    goalCardActive: {
-      borderColor: C.primary,
-      backgroundColor: C.primarySurface,
-    },
-    goalIcon: {
-      fontSize: 28,
-      marginRight: 14,
-    },
-    goalInfo: {
-      flex: 1,
-    },
-    goalLabel: {
-      fontSize: FontSize.callout,
-      fontWeight: '700',
-      color: C.text,
-    },
-    goalLabelActive: {
-      color: C.primary,
-    },
-    goalDesc: {
-      fontSize: FontSize.caption,
-      fontWeight: '500',
-      color: C.textSecondary,
-      marginTop: 2,
-    },
-    goalDescActive: {
-      color: C.primary,
-    },
-    goalRadio: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      borderWidth: 2,
-      borderColor: C.border,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    goalRadioActive: {
-      borderColor: C.primary,
-    },
-    goalRadioDot: {
-      width: 12,
-      height: 12,
-      borderRadius: 6,
-      backgroundColor: C.primary,
-    },
-    recommendBadge: {
-      marginTop: 16,
-      backgroundColor: C.primarySurface,
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      borderRadius: BorderRadius.full,
-    },
-    recommendText: {
-      fontSize: FontSize.caption,
-      fontWeight: '600',
-      color: C.primary,
-    },
-
-    // ─── Step 4: Habit stacking ───
-    habitSetupWrap: {
-      width: '100%',
-      marginTop: Spacing.md,
-    },
-
-    // ─── Step 5: Ready ───
-    readyVisual: {
-      marginBottom: Spacing.md,
-    },
-    readyEmoji: {
-      fontSize: 80,
-    },
-    summaryCard: {
+    // ─── Step 3: 通知 ───
+    notifyCard: {
       width: '100%',
       marginTop: 32,
       backgroundColor: C.card,
       borderRadius: BorderRadius.xl,
       padding: Spacing.xl,
-      ...Shadow.md,
+      gap: 14,
+      ...Shadow.sm,
     },
-    summaryRow: {
+    notifyRow: {
       flexDirection: 'row',
       alignItems: 'center',
     },
-    summaryIcon: {
-      fontSize: 20,
-      marginRight: 10,
+    notifyIcon: {
+      fontSize: 22,
+      marginRight: 12,
     },
-    summaryLabel: {
+    notifyText: {
       fontSize: FontSize.subhead,
       fontWeight: '500',
-      color: C.textSecondary,
-      flex: 1,
-    },
-    summaryValue: {
-      fontSize: FontSize.subhead,
-      fontWeight: '700',
       color: C.text,
-    },
-    summaryDivider: {
-      height: 1,
-      backgroundColor: C.borderLight,
-      marginVertical: 14,
+      flex: 1,
     },
   });
 }

@@ -413,6 +413,35 @@ function HomeScreen() {
           <View style={s.dashProgress}>
             <View style={[s.dashProgressFill, { width: `${dailyGoalPct}%` }]} />
           </View>
+
+          {/* [Quick Win D] 合格距離 視覚化バー
+              世界基準: Duolingo の「合格までのキロメートル」風。
+              ・色: < 30%(赤) / 30-70%(黄) / 70+(緑)
+              ・残り問題数を視覚化 → 「あと N問でマスター」 */}
+          {(() => {
+            const distanceColor = rate >= 70 ? colors.success : rate >= 30 ? '#E8860C' : colors.error;
+            const remainingMastery = Math.max(0, TOTAL_Q - Math.round(TOTAL_Q * (rate / 100)));
+            return (
+              <View style={s.distanceBox}>
+                <View style={s.distanceHeader}>
+                  <Text style={s.distanceLabel}>🎯 合格までの距離</Text>
+                  <Text style={[s.distanceValue, { color: distanceColor }]}>
+                    あと {remainingMastery}問 マスター
+                  </Text>
+                </View>
+                <View style={s.distanceTrack}>
+                  <View style={[s.distanceFill, { width: `${rate}%`, backgroundColor: distanceColor }]} />
+                </View>
+                <Text style={s.distanceSub}>
+                  {rate >= 70
+                    ? '🏆 合格圏内！あと一息で本試験レベル到達'
+                    : rate >= 30
+                      ? '⚡ 順調に進んでいます。この調子で続けよう'
+                      : '🌱 まずは1日5問から。継続が合格への鍵'}
+                </Text>
+              </View>
+            );
+          })()}
         </View>
 
         {/* ── 今日の習慣（習慣スタッキング） ── */}
@@ -1027,6 +1056,45 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     height: '100%',
     backgroundColor: C.accent,
     borderRadius: 3,
+  },
+
+  // ─── [Quick Win D] 合格距離 視覚化 ───
+  distanceBox: {
+    marginTop: 16,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: C.borderLight,
+  },
+  distanceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  distanceLabel: {
+    fontSize: FontSize.footnote,
+    fontWeight: '700',
+    color: C.text,
+  },
+  distanceValue: {
+    fontSize: FontSize.subhead,
+    fontWeight: '800',
+  },
+  distanceTrack: {
+    height: 10,
+    backgroundColor: C.borderLight,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  distanceFill: {
+    height: '100%',
+    borderRadius: 5,
+  },
+  distanceSub: {
+    fontSize: FontSize.caption2,
+    color: C.textSecondary,
+    marginTop: 8,
+    fontWeight: '600',
   },
 
   // ─── Habit Row ───
