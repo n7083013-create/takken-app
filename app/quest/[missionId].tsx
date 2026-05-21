@@ -111,6 +111,11 @@ export default function QuestSessionScreen() {
 
   // [機能追加] 消去法（打ち消し線）: 選択肢を長押しで打ち消し
   const { toggleStrike, isStruck } = useStrikethrough(currentQuestion?.id);
+  // [2026-05-22] 個数/組み合わせ問題は statement (ア〜エ) 側を消去
+  const {
+    toggleStrike: toggleStmtStrike,
+    isStruck: isStmtStruck,
+  } = useStrikethrough(currentQuestion?.id ? `${currentQuestion.id}:stmt` : undefined);
 
   // 問題が変わったらシャッフル（個数・組み合わせ問題はシャッフルしない）
   useEffect(() => {
@@ -444,22 +449,37 @@ export default function QuestSessionScreen() {
           <Text style={s.questionText} selectable>{currentQuestion.text}</Text>
         </View>
 
-        {/* Statements（個数問題・組み合わせ問題のア〜エ記述） */}
+        {/* Statements（個数問題・組み合わせ問題のア〜エ記述）
+            [2026-05-22] 未回答時は長押しで消去法 */}
         {currentQuestion.statements && currentQuestion.statements.length > 0 && (
           <View style={s.statementsBox}>
             {currentQuestion.statements.map((stmt, i) => {
               const stmtCorrect = currentQuestion.statementAnswers?.[i];
               const showResult = answerState !== 'idle' && stmtCorrect !== undefined;
+              const stmtStruck = answerState === 'idle' && isStmtStruck(i);
               return (
-                <View key={i} style={[
-                  s.statementRow,
-                  showResult && (stmtCorrect ? s.statementCorrect : s.statementWrong),
-                ]}>
+                <Pressable
+                  key={i}
+                  style={[
+                    s.statementRow,
+                    showResult && (stmtCorrect ? s.statementCorrect : s.statementWrong),
+                    stmtStruck && s.statementStruck,
+                  ]}
+                  onLongPress={() => {
+                    if (answerState !== 'idle') return;
+                    hapticLight();
+                    toggleStmtStrike(i);
+                  }}
+                  delayLongPress={350}
+                  disabled={answerState !== 'idle'}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${STMT_LABELS[i]}: ${stmt}${stmtStruck ? '(消去済み)' : ''}`}
+                >
                   <View style={[s.statementLabel, showResult && { backgroundColor: stmtCorrect ? colors.success + '20' : colors.error + '20' }]}>
                     <Text style={[s.statementLabelText, showResult && { color: stmtCorrect ? colors.success : colors.error }]}>{STMT_LABELS[i]}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.statementText} selectable>{stmt}</Text>
+                    <Text style={[s.statementText, stmtStruck && s.statementTextStruck]} selectable>{stmt}</Text>
                     {showResult && (
                       <Text style={[s.statementResult, { color: stmtCorrect ? colors.success : colors.error }]}>
                         {stmtCorrect ? '○ 正しい' : '✗ 誤り'}
@@ -474,14 +494,25 @@ export default function QuestSessionScreen() {
                       return stmtExpl ? <Text style={s.statementExpl}>{stmtExpl}</Text> : null;
                     })()}
                   </View>
-                </View>
+                  {stmtStruck && <Text style={s.strikeMark}>✕</Text>}
+                </Pressable>
               );
             })}
           </View>
         )}
 
-        {/* [機能追加] 消去法ヒント (未回答時のみ) */}
-        {answerState === 'idle' && <StrikeHint />}
+        {/* [機能追加] 消去法ヒント (未回答時のみ)
+            [2026-05-22] 個数/組み合わせ問題ではヒント文言を切替 */}
+        {answerState === 'idle' && (
+          <StrikeHint
+            target={
+              currentQuestion.questionFormat === 'count' ||
+              currentQuestion.questionFormat === 'combination'
+                ? 'statement'
+                : 'choice'
+            }
+          />
+        )}
 
         {/* 選択肢 */}
         <View style={s.choicesWrap}>
@@ -493,8 +524,11 @@ export default function QuestSessionScreen() {
 
             const isCorrectAnswer = answered && isCorrectChoice;
             const isWrongAnswer = answered && isSelected && !isCorrectChoice;
-            // [機能追加] 打ち消し状態 (未回答時のみ有効)
-            const struck = !answered && isStruck(origIdx);
+            // [2026-05-22] 個数/組み合わせ問題は statements 側で消去するためここは無効化
+            const isSpecial =
+              currentQuestion.questionFormat === 'count' ||
+              currentQuestion.questionFormat === 'combination';
+            const struck = !answered && !isSpecial && isStruck(origIdx);
 
             return (
               <View key={`${displayIdx}-${origIdx}`}>
@@ -508,15 +542,15 @@ export default function QuestSessionScreen() {
                   ]}
                   onPress={() => handleSelect(origIdx)}
                   onLongPress={() => {
-                    if (answered) return;
+                    if (answered || isSpecial) return;
                     hapticLight();
                     toggleStrike(origIdx);
                   }}
                   delayLongPress={350}
                   disabled={answered}
                   accessibilityRole="button"
-                  accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}${struck ? '（消去済み）' : ''}`}
-                  accessibilityHint={!answered ? '長押しで打ち消し線の切り替え' : undefined}
+                  accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}${struck ? '(消去済み)' : ''}`}
+                  accessibilityHint={!answered && !isSpecial ? '長押しで打ち消し線の切り替え' : undefined}
                 >
                   <View style={[s.choiceLabelWrap, answered && isCorrectChoice && s.choiceLabelWrapCorrect, answered && isSelected && !isCorrectChoice && s.choiceLabelWrapWrong]}>
                     <Text style={[s.choiceLabelText, answered && isCorrectChoice && s.choiceLabelTextCorrect, answered && isSelected && !isCorrectChoice && s.choiceLabelTextWrong]}>
@@ -714,6 +748,9 @@ function makeStyles(C: ThemeColors, isWide = false) {
     statementRow: { flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 6, borderRadius: BorderRadius.sm, borderLeftWidth: 3, borderLeftColor: 'transparent' },
     statementCorrect: { backgroundColor: C.success + '08', borderLeftColor: C.success },
     statementWrong: { backgroundColor: C.error + '08', borderLeftColor: C.error },
+    // [2026-05-22] 消去された statement
+    statementStruck: { backgroundColor: C.borderLight + '40', opacity: 0.55 },
+    statementTextStruck: { textDecorationLine: 'line-through', color: C.textTertiary },
     statementLabel: { width: 26, height: 26, borderRadius: 13, backgroundColor: C.borderLight, alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 2 },
     statementLabelText: { fontSize: FontSize.caption, fontWeight: '800', color: C.textSecondary },
     statementText: { fontSize: FontSize.subhead, color: C.text, lineHeight: LineHeight.subhead },

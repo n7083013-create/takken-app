@@ -81,6 +81,12 @@ export default function QuestionDetailScreen() {
 
   // 消去法: 選択肢の打ち消し線（長押しで切替・問題が変わると自動リセット）
   const { toggleStrike, isStruck } = useStrikethrough(currentId);
+  // [2026-05-22] 個数/組み合わせ問題用に statement (ア〜エ) 側の打ち消し線も独立管理
+  // (キーを変えることで choice 側の state と分離)
+  const {
+    toggleStrike: toggleStmtStrike,
+    isStruck: isStmtStruck,
+  } = useStrikethrough(currentId ? `${currentId}:stmt` : undefined);
 
   const q = getQuestionById(currentId);
   const prog = q ? getProgress(q.id) : undefined;
@@ -495,22 +501,38 @@ export default function QuestionDetailScreen() {
       {/* Law Amendment Badge */}
       <LawAmendmentBadge tags={q.tags} />
 
-      {/* Statements（個数問題・組み合わせ問題のア〜エ記述） */}
+      {/* Statements（個数問題・組み合わせ問題のア〜エ記述）
+          [2026-05-22] 未回答時は長押しで打ち消し線 (消去法) 対応 */}
       {q.statements && q.statements.length > 0 && (
         <View style={s.statementsBox}>
           {q.statements.map((stmt, i) => {
             const stmtCorrect = q.statementAnswers?.[i];
             const showResult = answered && stmtCorrect !== undefined;
+            const stmtStruck = !answered && isStmtStruck(i);
             return (
-              <View key={i} style={[
-                s.statementRow,
-                showResult && (stmtCorrect ? s.statementCorrect : s.statementWrong),
-              ]}>
+              <Pressable
+                key={i}
+                style={[
+                  s.statementRow,
+                  showResult && (stmtCorrect ? s.statementCorrect : s.statementWrong),
+                  stmtStruck && s.statementStruck,
+                ]}
+                onLongPress={() => {
+                  if (answered) return;
+                  hapticLight();
+                  toggleStmtStrike(i);
+                }}
+                delayLongPress={350}
+                disabled={answered}
+                accessibilityRole="button"
+                accessibilityLabel={`${STMT_LABELS[i]}: ${stmt}${stmtStruck ? '（消去済み）' : ''}`}
+                accessibilityHint={!answered ? '長押しで打ち消し線の切り替え' : undefined}
+              >
                 <View style={[s.statementLabel, showResult && { backgroundColor: stmtCorrect ? colors.success + '20' : colors.error + '20' }]}>
                   <Text style={[s.statementLabelText, showResult && { color: stmtCorrect ? colors.success : colors.error }]}>{STMT_LABELS[i]}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.statementText} selectable>{stmt}</Text>
+                  <Text style={[s.statementText, stmtStruck && s.statementTextStruck]} selectable>{stmt}</Text>
                   {showResult && (
                     <Text style={[s.statementResult, { color: stmtCorrect ? colors.success : colors.error }]}>
                       {stmtCorrect ? '○ 正しい' : '✗ 誤り'}
@@ -521,14 +543,24 @@ export default function QuestionDetailScreen() {
                     return stmtExpl ? <Text style={s.statementExpl}>{stmtExpl}</Text> : null;
                   })()}
                 </View>
-              </View>
+                {stmtStruck && !answered && <Text style={s.strikeMark}>✕</Text>}
+              </Pressable>
             );
           })}
         </View>
       )}
 
-      {/* 消去法ヒント（未回答時のみ・ユーザー非表示設定可能） */}
-      {!answered && <StrikeHint />}
+      {/* 消去法ヒント（未回答時のみ・ユーザー非表示設定可能）
+          [2026-05-22] 個数/組み合わせ問題ではヒント文言を「ア〜エを長押し」に変更 */}
+      {!answered && (
+        <StrikeHint
+          target={
+            q.questionFormat === 'count' || q.questionFormat === 'combination'
+              ? 'statement'
+              : 'choice'
+          }
+        />
+      )}
 
       {/* Choices (シャッフル済み) */}
       <View style={s.choiceList}>
@@ -552,7 +584,10 @@ export default function QuestionDetailScreen() {
           // 判定ロジックは utils/explanationVisibility.ts にユニットテスト付きで切り出し済み。
           const choiceExpl = shouldShowChoiceExplanation(q, answered, origIdx);
 
-          const struck = !answered && isStruck(origIdx);
+          // [2026-05-22] 個数/組み合わせ問題では選択肢 (1つ/2つ etc) ではなく
+          // statements (ア〜エ) 側に打ち消し線を適用するため、こちらは無効化
+          const isSpecial = q.questionFormat === 'count' || q.questionFormat === 'combination';
+          const struck = !answered && !isSpecial && isStruck(origIdx);
 
           // Per-choice feedback state for animated bounce/shake
           const choiceFeedback: 'idle' | 'correct' | 'wrong' =
@@ -567,15 +602,15 @@ export default function QuestionDetailScreen() {
                 style={[s.choiceCard, cardExtra, Shadow.sm, struck && s.choiceCardStruck]}
                 onPress={() => handleSelect(origIdx)}
                 onLongPress={() => {
-                  if (answered) return;
+                  if (answered || isSpecial) return;
                   hapticLight();
                   toggleStrike(origIdx);
                 }}
                 delayLongPress={350}
                 disabled={answered}
                 accessibilityRole="button"
-                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}${struck ? '（消去済み）' : ''}`}
-                accessibilityHint={!answered ? '長押しで打ち消し線の切り替え' : undefined}
+                accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}${struck ? '(消去済み)' : ''}`}
+                accessibilityHint={!answered && !isSpecial ? '長押しで打ち消し線の切り替え' : undefined}
               >
                 <View style={[s.choiceLabel, { backgroundColor: labelBg }, struck && s.choiceLabelStruck]}>
                   <Text style={[s.choiceLabelText, { color: labelColor }, struck && s.choiceLabelTextStruck]}>{LABELS[displayIdx]}</Text>
@@ -828,6 +863,9 @@ function makeStyles(C: ThemeColors, isWide = false) {
     statementRow: { flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 8, borderRadius: BorderRadius.md, borderLeftWidth: 3, borderLeftColor: 'transparent' },
     statementCorrect: { backgroundColor: C.success + '08', borderLeftColor: C.success },
     statementWrong: { backgroundColor: C.error + '08', borderLeftColor: C.error },
+    // [2026-05-22] 個数/組み合わせ問題で長押し消去された statement
+    statementStruck: { backgroundColor: C.borderLight + '40', opacity: 0.55 },
+    statementTextStruck: { textDecorationLine: 'line-through', color: C.textTertiary },
     statementLabel: { width: 28, height: 28, borderRadius: 14, backgroundColor: C.borderLight, alignItems: 'center', justifyContent: 'center', marginRight: 12, marginTop: 2 },
     statementLabelText: { fontSize: FontSize.footnote, fontWeight: '800', color: C.textSecondary },
     statementText: { fontSize: FontSize.subhead, color: C.text, lineHeight: LineHeight.subhead },
