@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>宅建士 完全対策 | AIが弱点を分析・最短合格を実現・2026年法改正対応</title>
-  <meta name="description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。全2,020問+AI解説+忘れる前の自動復習で宅建合格を最短化。2026年法改正完全対応。7日間無料・月額¥980・いつでも解約OK。" />
+  <meta name="description" content="AIがあなたの弱点を見抜き、合格に必要な問題だけを最適出題。全2,020問+AI解説+忘れる前の自動復習で宅建合格を最短化。2026年法改正完全対応。7日間無料・月額¥980 / 年額¥5,980 (約49%OFF)・いつでも解約OK。" />
   <meta name="keywords" content="宅建,宅地建物取引士,宅建試験,2026年,法改正,過去問,一問一答,模擬試験,AI解説,合格率" />
   <meta name="theme-color" content="#1B7A3D" />
   <!-- OGP -->
@@ -523,6 +523,76 @@
     .pricing-card-premium .pricing-cta {
       margin-top: auto;
     }
+    /* [2026-05] Premium カード内の 月額/年額 2 列表示 */
+    .pricing-cycle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0 18px;
+    }
+    .pricing-cycle-item {
+      border: 2px solid #d0e6d8;
+      border-radius: 14px;
+      padding: 14px 10px 12px;
+      background: #fff;
+      position: relative;
+    }
+    .pricing-cycle-item.is-recommended {
+      border-color: #1B7A3D;
+      background: linear-gradient(180deg, #fff 0%, #e8f5ec 100%);
+      box-shadow: 0 4px 14px rgba(27,122,61,0.18);
+    }
+    .pricing-cycle-badge {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #E8860C;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .pricing-cycle-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 4px;
+    }
+    .pricing-cycle-item.is-recommended .pricing-cycle-label {
+      color: #1B7A3D;
+    }
+    .pricing-cycle-amount {
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a1a1a;
+      line-height: 1.1;
+    }
+    .pricing-cycle-amount small {
+      font-size: 11px;
+      font-weight: 700;
+      color: #777;
+      margin-left: 2px;
+    }
+    .pricing-cycle-monthly-eq {
+      font-size: 10px;
+      color: #555;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+    .pricing-savings {
+      display: inline-block;
+      background: #E8860C;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-top: 6px;
+    }
+
     /* レスポンシブ: モバイルでは縦並び */
     @media (max-width: 720px) {
       .pricing-grid {
@@ -1379,11 +1449,22 @@
         <div class="pricing-badge">おすすめ</div>
         <h3 class="pricing-name">Premium プラン</h3>
         <div class="pricing-trial">7日間 ¥0 無料</div>
-        <div class="pricing-price-row">
-          <span class="pricing-price">¥980</span>
-          <span class="pricing-unit">/月（税込）</span>
+
+        <!-- [2026-05] 月額 / 年額 の 2 列表示 (年額は 49% OFF で推奨) -->
+        <div class="pricing-cycle-row">
+          <div class="pricing-cycle-item">
+            <div class="pricing-cycle-label">月額</div>
+            <div class="pricing-cycle-amount">¥980<small>/月</small></div>
+          </div>
+          <div class="pricing-cycle-item is-recommended">
+            <div class="pricing-cycle-badge">人気No.1</div>
+            <div class="pricing-cycle-label">年額</div>
+            <div class="pricing-cycle-amount">¥5,980<small>/年</small></div>
+            <div class="pricing-cycle-monthly-eq">¥498/月相当</div>
+            <div class="pricing-savings">約 49% OFF</div>
+          </div>
         </div>
-        <div class="pricing-daily">1日わずか33円</div>
+
         <ul class="pricing-bullets">
           <li>計2,020問 解き放題</li>
           <li>AI解説 1日100回</li>
@@ -1393,7 +1474,7 @@
           <li>2026年法改正完全対応</li>
         </ul>
         <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="pricing-cta">7日間 無料で試す</a>
-        <p class="pricing-safe">いつでも解約OK</p>
+        <p class="pricing-safe">月額/年額どちらもアプリで選べる ・ いつでも解約OK</p>
       </div>
     </div>
     <div class="trust">

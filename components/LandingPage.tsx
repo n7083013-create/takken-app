@@ -444,8 +444,27 @@ export default function LandingPage() {
               <Text style={s.planBadgeText}>おすすめ</Text>
             </View>
             <Text style={[s.planName, s.planNamePremium]}>PREMIUM</Text>
-            <Text style={[s.planPrice, s.planPricePremium]}>¥980</Text>
-            <Text style={[s.planPeriod, s.planPeriodPremium]}>月額（税込）</Text>
+
+            {/* [2026-05] 月額 / 年額 の 2 列価格表示 (年額が 49% OFF で推奨) */}
+            <View style={s.planCycleRow}>
+              <View style={s.planCycleItem}>
+                <Text style={s.planCycleLabel}>月額</Text>
+                <Text style={s.planCycleAmount}>¥980</Text>
+                <Text style={s.planCycleUnit}>/月</Text>
+              </View>
+              <View style={[s.planCycleItem, s.planCycleItemRecommended]}>
+                <View style={s.planCycleTopBadge}>
+                  <Text style={s.planCycleTopBadgeText}>人気No.1</Text>
+                </View>
+                <Text style={s.planCycleLabel}>年額</Text>
+                <Text style={s.planCycleAmount}>¥5,980</Text>
+                <Text style={s.planCycleUnit}>¥498/月相当</Text>
+                <View style={s.planSavingsBadge}>
+                  <Text style={s.planSavingsBadgeText}>約 49% OFF</Text>
+                </View>
+              </View>
+            </View>
+
             <View style={[s.planDivider, { borderColor: 'rgba(255,255,255,0.2)' }]} />
             <Text style={s.planFeaturePremium}>✓ 全{TOTAL_Q}問が解き放題</Text>
             <Text style={s.planFeaturePremium}>✓ 一問一答{TOTAL_QQ}問</Text>
@@ -457,7 +476,7 @@ export default function LandingPage() {
               style={[s.planCTA, Shadow.sm]}
               onPress={goLogin}
               accessibilityRole="button"
-              accessibilityLabel="PREMIUMプラン 7日間無料で試す"
+              accessibilityLabel="PREMIUMプラン 7日間無料で試す (月額/年額どちらも選べます)"
             >
               <Text style={s.planCTAText}>7日間無料で試す</Text>
             </Pressable>
@@ -1016,6 +1035,73 @@ function makeStyles(C: ThemeColors) {
       marginTop: 20,
     },
     planCTAText: { fontSize: FontSize.subhead, fontWeight: '800', color: C.primary },
+
+    // [2026-05] 月額 / 年額 2 列表示 (PREMIUM カード内)
+    planCycleRow: {
+      flexDirection: 'row',
+      gap: 10,
+      marginTop: 12,
+      marginBottom: 4,
+    },
+    planCycleItem: {
+      flex: 1,
+      borderWidth: 2,
+      borderColor: 'rgba(255,255,255,0.25)',
+      borderRadius: BorderRadius.md,
+      paddingVertical: 12,
+      paddingHorizontal: 8,
+      alignItems: 'center',
+      backgroundColor: 'rgba(255,255,255,0.08)',
+      position: 'relative',
+    },
+    planCycleItemRecommended: {
+      borderColor: C.white,
+      backgroundColor: 'rgba(255,255,255,0.18)',
+    },
+    planCycleTopBadge: {
+      position: 'absolute',
+      top: -9,
+      backgroundColor: C.accent ?? '#E8860C',
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 999,
+    },
+    planCycleTopBadgeText: {
+      fontSize: 10,
+      fontWeight: '800',
+      color: C.white,
+    },
+    planCycleLabel: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: 'rgba(255,255,255,0.85)',
+      marginBottom: 4,
+      marginTop: 2,
+    },
+    planCycleAmount: {
+      fontSize: 20,
+      fontWeight: '900',
+      color: C.white,
+      lineHeight: 22,
+    },
+    planCycleUnit: {
+      fontSize: 10,
+      color: 'rgba(255,255,255,0.75)',
+      marginTop: 2,
+      fontWeight: '600',
+    },
+    planSavingsBadge: {
+      marginTop: 6,
+      backgroundColor: C.accent ?? '#E8860C',
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 999,
+    },
+    planSavingsBadgeText: {
+      fontSize: 10,
+      fontWeight: '800',
+      color: C.white,
+    },
 
     // ─── Comparison Table ───
     comparisonTable: {
