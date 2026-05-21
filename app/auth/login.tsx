@@ -29,7 +29,9 @@ export default function LoginScreen() {
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
   // [UX改善] LP「Premium で始める」CTA → paywall 直行フローで
   // ログイン画面が中継ステップとして挟まる際の「あと1ステップ」プログレス表示
-  const isHeadingToPaywall = returnTo === '/paywall';
+  // [2026-05-22] LP の月額/年額 CTA で ?cycle=monthly|annual のクエリが付くようになったため
+  // exact match から「/paywall で始まる」判定に拡張
+  const isHeadingToPaywall = !!returnTo && returnTo.startsWith('/paywall');
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
   const signIn = useAuthStore((s) => s.signInWithEmail);
