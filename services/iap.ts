@@ -1,82 +1,409 @@
 // ============================================================
-// In-App Purchase サービス
-// Apple IAP / Google Play Billing の統合レイヤー
+// In-App Purchase サービス（Google Play Billing 実装）
 // ============================================================
+// アーキテクチャ:
+//   1. クライアント (app)        : react-native-iap で購入フロー実行
+//   2. サーバー (vercel function): Google Play Developer API でレシート検証
+//   3. RTDN (vercel function)    : Real-Time Developer Notifications で更新/解約検知
 //
-// App Store 提出前に以下の設定が必要:
-// 1. Apple Developer Console で Subscription Group を作成
-// 2. Product ID を登録 (例: com.takken.app.standard.monthly)
-// 3. App Store Connect で価格設定
-// 4. `expo-in-app-purchases` または `react-native-iap` をインストール
+// 動作プラットフォーム:
+//   - Android: Google Play Billing
+//   - iOS:     Apple IAP（同じインターフェイス）— Apple サブミット時に検証エンドポイント要追加
+//   - Web:     PayPal（既存・iap.ts は呼ばれない）
 //
-// Web版は引き続き PAY.JP を使用（Apple IAP はネイティブのみ）
+// IMPORTANT:
+// - 起動時に initializeIAP() を呼び、購入リスナーを起動
+// - 購入後は必ず finishTransaction() でアクノレッジしないと
+//   ユーザーが3日後に自動返金される（Google Play 仕様）
 // ============================================================
 
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logError } from './errorLogger';
+import { API_BASE_URL } from '../constants/config';
+import { useAuthStore } from '../store/useAuthStore';
 
-// Product IDs — Apple Developer Console で作成後に設定
+// Issue #7: 購入直後に verify が失敗した場合に保存しておく
+// 起動時/復帰時/ログイン時にリトライして finishTransaction 漏れを防ぐ
+const PENDING_PURCHASE_KEY = '@takken_pending_iap_purchases';
+
+async function queuePendingPurchase(purchase: any): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(PENDING_PURCHASE_KEY);
+    const list: any[] = raw ? JSON.parse(raw) : [];
+    // 重複チェック（productId + transactionId / purchaseToken）
+    const id = purchase.transactionId || purchase.purchaseToken;
+    if (id && !list.some((p) => (p.transactionId || p.purchaseToken) === id)) {
+      list.push({
+        productId: purchase.productId,
+        transactionId: purchase.transactionId,
+        purchaseToken: purchase.purchaseToken,
+        transactionReceipt: purchase.transactionReceipt,
+        queuedAt: Date.now(),
+      });
+      await AsyncStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(list));
+    }
+  } catch (e) {
+    logError(e, { context: 'iap.queuePendingPurchase' });
+  }
+}
+
+/**
+ * 保存されている pending purchase を一括で再検証 + finishTransaction
+ * - 起動時 / ログイン直後 / paywall 表示時に呼ぶ
+ */
+export async function retryPendingPurchases(): Promise<number> {
+  if (Platform.OS === 'web') return 0;
+  try {
+    const raw = await AsyncStorage.getItem(PENDING_PURCHASE_KEY);
+    if (!raw) return 0;
+    const list: any[] = JSON.parse(raw);
+    if (!list.length) return 0;
+
+    const lib = await loadIAPLib();
+    if (!lib) return 0;
+    if (!connectionInitialized) {
+      try { await lib.initConnection(); connectionInitialized = true; } catch {}
+    }
+
+    const remaining: any[] = [];
+    let resolved = 0;
+    for (const purchase of list) {
+      const verified = await verifyPurchaseOnServer(purchase);
+      if (verified) {
+        try {
+          await lib.finishTransaction({ purchase, isConsumable: false });
+          resolved++;
+        } catch (e) {
+          logError(e, { context: 'iap.retryPendingPurchases.finish' });
+          remaining.push(purchase);
+        }
+      } else {
+        // 24時間以上残っている場合は警告 + 残す（運営が手動対応する余地）
+        if (Date.now() - (purchase.queuedAt || 0) > 24 * 60 * 60 * 1000) {
+          logError(new Error('Pending purchase still unverified > 24h'), {
+            context: 'iap.retryPendingPurchases',
+            extra: { productId: purchase.productId },
+          });
+        }
+        remaining.push(purchase);
+      }
+    }
+    if (remaining.length === 0) {
+      await AsyncStorage.removeItem(PENDING_PURCHASE_KEY);
+    } else {
+      await AsyncStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(remaining));
+    }
+    return resolved;
+  } catch (e) {
+    logError(e, { context: 'iap.retryPendingPurchases' });
+    return 0;
+  }
+}
+
+// 各プラットフォームのプロダクトID
+// ────────────────────────────────────────────────────────────
+// 🚧 2026-06 ストアリリース時の TODO:
+//   1. 下記に PREMIUM_ANNUAL_ANDROID / PREMIUM_ANNUAL_IOS を追加
+//   2. getProductId(billingCycle) で月額/年額を切替
+//   3. purchaseSubscription(billingCycle) も同様に
+//   4. App Store Connect / Play Console で 年額 SKU 登録 (¥5,980/年・7日トライアル)
+//   詳細手順: takken-knowledge/04-roadmap/store-release-playbook.md
+// ────────────────────────────────────────────────────────────
 export const IAP_PRODUCTS = {
-  STANDARD_MONTHLY: 'com.takken.app.standard.monthly',
+  // Google Play では短い ID 推奨（Play Console で同じ ID を作成）
+  PREMIUM_MONTHLY_ANDROID: 'premium_monthly',
+  // Apple IAP は逆ドメイン形式
+  PREMIUM_MONTHLY_IOS: 'com.takkenkanzen.app.premium.monthly',
+  // TODO 2026-06: 年額プランの SKU をストアで登録後、以下のコメントアウトを外す
+  // PREMIUM_ANNUAL_ANDROID: 'premium_annual',
+  // PREMIUM_ANNUAL_IOS: 'com.takkenkanzen.app.premium.annual',
 } as const;
 
+export function getProductId(): string {
+  // TODO 2026-06: billingCycle 引数を取って annual / monthly を切替えるよう拡張
+  if (Platform.OS === 'android') return IAP_PRODUCTS.PREMIUM_MONTHLY_ANDROID;
+  if (Platform.OS === 'ios') return IAP_PRODUCTS.PREMIUM_MONTHLY_IOS;
+  throw new Error('IAP is only supported on iOS and Android');
+}
+
+// 動的 import で Web ビルド時の参照エラーを回避
+// （expo-iap は native モジュールのため Web からは触れない）
+let IAPLib: any = null;
+let purchaseUpdateSub: any = null;
+let purchaseErrorSub: any = null;
+let connectionInitialized = false;
+
+async function loadIAPLib() {
+  if (IAPLib || Platform.OS === 'web') return IAPLib;
+  try {
+    // @ts-ignore — Web ビルド時に型が見つからない場合があるため
+    IAPLib = await import('expo-iap');
+    return IAPLib;
+  } catch (e) {
+    logError(e, { context: 'iap.loadIAPLib' });
+    return null;
+  }
+}
+
 /**
- * IAP初期化（アプリ起動時に呼ぶ）
- * TODO: expo-in-app-purchases インストール後に実装
+ * 起動時に呼ぶ：ストア接続 + 購入リスナー登録
  */
 export async function initializeIAP(): Promise<void> {
-  if (Platform.OS === 'web') return; // Web は PAY.JP を使用
+  if (Platform.OS === 'web') return;
+  if (connectionInitialized) return;
 
-  // TODO: Implementation
-  // await IAPManager.initConnection();
-  // await IAPManager.getSubscriptions([IAP_PRODUCTS.STANDARD_MONTHLY]);
-  console.log('[IAP] Native IAP not yet implemented');
+  const lib = await loadIAPLib();
+  if (!lib) return;
+
+  try {
+    await lib.initConnection();
+    connectionInitialized = true;
+
+    // 購入完了リスナー — 購入後に呼ばれる
+    purchaseUpdateSub = lib.purchaseUpdatedListener(async (purchase: any) => {
+      try {
+        const verified = await verifyPurchaseOnServer(purchase);
+        if (verified) {
+          // 購入アクノレッジ（必須・3日以内）
+          await lib.finishTransaction({ purchase, isConsumable: false });
+          return;
+        }
+
+        // Issue #7: verify が失敗した（多くは ログイン切れ／オフライン／一時障害）。
+        // ここで何もしないと Google は 3日後に自動返金、ユーザーは課金されてないのに
+        // サーバー認識上「課金済み」のまま乖離する致命的状態になる。
+        // → ペンディングキューに保存し、復帰時に再 verify する仕組みを使う。
+        logError(new Error('IAP verification failed - queued for retry'), {
+          context: 'iap.purchaseUpdated',
+          extra: { productId: purchase.productId },
+        });
+        await queuePendingPurchase(purchase);
+        // finishTransaction はしない（再 verify 成功後に呼ぶ）
+      } catch (e) {
+        logError(e, { context: 'iap.purchaseUpdatedListener' });
+      }
+    });
+
+    // エラーリスナー
+    purchaseErrorSub = lib.purchaseErrorListener((error: any) => {
+      // ユーザー キャンセルは想定内（旧コード E_USER_CANCELLED と新 OpenIAP 仕様 'user-cancelled' / 'userCancelled' 両方ハンドリング）
+      const code = String(error?.code || '').toLowerCase();
+      if (
+        code === 'user-cancelled' ||
+        code === 'usercancelled' ||
+        code === 'e_user_cancelled' ||
+        code === 'user_cancelled'
+      ) return;
+      logError(new Error(error?.message || 'IAP error'), {
+        context: 'iap.purchaseError',
+        extra: { code: error?.code },
+      });
+    });
+  } catch (e) {
+    logError(e, { context: 'iap.initialize' });
+  }
 }
 
 /**
- * サブスクリプション購入
- * TODO: expo-in-app-purchases インストール後に実装
+ * アプリ終了 / ログアウト時にリソース解放
  */
-export async function purchaseSubscription(productId: string): Promise<boolean> {
+export async function teardownIAP(): Promise<void> {
+  if (Platform.OS === 'web') return;
+  try {
+    purchaseUpdateSub?.remove();
+    purchaseErrorSub?.remove();
+    purchaseUpdateSub = null;
+    purchaseErrorSub = null;
+    if (IAPLib && connectionInitialized) {
+      await IAPLib.endConnection();
+      connectionInitialized = false;
+    }
+  } catch (e) {
+    logError(e, { context: 'iap.teardown' });
+  }
+}
+
+/**
+ * サブスクリプション情報取得（価格表示用）
+ */
+export async function fetchSubscriptionInfo(): Promise<{
+  price: string;
+  currency: string;
+  title: string;
+  offerToken?: string;
+} | null> {
+  if (Platform.OS === 'web') return null;
+  const lib = await loadIAPLib();
+  if (!lib) return null;
+
+  try {
+    if (!connectionInitialized) await lib.initConnection();
+    const sku = getProductId();
+    // expo-iap: fetchProducts API（getSubscriptions も alias で生きてる）
+    const subscriptions = lib.fetchProducts
+      ? await lib.fetchProducts({ skus: [sku], type: 'subs' })
+      : await lib.getSubscriptions({ skus: [sku] });
+    if (!subscriptions?.length) return null;
+    const sub = subscriptions[0];
+
+    // Android (Play Billing v6+): subscriptionOfferDetails から取得
+    // expo-iap v4+ は Android-suffix 付き名前 (`subscriptionOfferDetailsAndroid`) を新仕様に。
+    // 古い名前と新しい名前の両方に対応（バージョン差異の安全網）。
+    if (Platform.OS === 'android') {
+      const offerDetails =
+        sub.subscriptionOfferDetailsAndroid ??
+        sub.subscriptionOfferDetails;
+      const offer = offerDetails?.[0];
+      // pricingPhases は `{ pricingPhaseList: [...] }` の形と純配列 `[...]` の両方ありうる
+      const phaseList =
+        offer?.pricingPhases?.pricingPhaseList ??
+        offer?.pricingPhases ??
+        [];
+      const phase = phaseList[0];
+      return {
+        price: phase?.formattedPrice ?? sub.localizedPrice ?? sub.displayPrice ?? '¥980',
+        currency: phase?.priceCurrencyCode ?? 'JPY',
+        title: sub.title ?? sub.displayName ?? 'Premium 月額プラン',
+        offerToken: offer?.offerToken,
+      };
+    }
+
+    // iOS
+    return {
+      price: sub.localizedPrice ?? sub.displayPrice ?? '¥980',
+      currency: sub.currency ?? sub.currencyCode ?? 'JPY',
+      title: sub.title ?? sub.displayName ?? 'Premium 月額プラン',
+    };
+  } catch (e) {
+    logError(e, { context: 'iap.fetchSubscriptionInfo' });
+    return null;
+  }
+}
+
+/**
+ * サブスクリプション購入を開始
+ * 購入完了は purchaseUpdatedListener で非同期に検知
+ */
+export async function purchaseSubscription(): Promise<void> {
   if (Platform.OS === 'web') {
-    throw new Error('Web purchases should use PAY.JP');
+    throw new Error('Web は paywall.tsx で PayPal を使用してください');
+  }
+  // 必ず initializeIAP を経由してリスナーが登録されている状態にする（再入可・冪等）
+  // teardownIAP 後や HMR 後に paywall を直接開いた場合の race を防止
+  await initializeIAP();
+  const lib = await loadIAPLib();
+  if (!lib) throw new Error('IAP モジュールが読み込めません');
+  if (!connectionInitialized) await lib.initConnection();
+
+  const sku = getProductId();
+
+  if (Platform.OS === 'android') {
+    // Android Play Billing v6+ は offerToken 必須
+    const info = await fetchSubscriptionInfo();
+    if (!info?.offerToken) {
+      throw new Error('サブスクリプション情報を取得できませんでした');
+    }
+    // expo-iap v4+: per-platform request shape
+    // Android は skus (複数形・配列) + subscriptionOffers
+    await lib.requestPurchase({
+      request: {
+        android: {
+          skus: [sku],
+          subscriptionOffers: [{ sku, offerToken: info.offerToken }],
+        },
+      },
+      type: 'subs',
+    });
+    return;
   }
 
-  // TODO: Implementation
-  // const purchase = await IAPManager.requestSubscription(productId);
-  // await verifyReceiptOnServer(purchase.transactionReceipt);
-  // return true;
-
-  throw new Error('Native IAP not yet implemented');
+  // iOS — per-platform request shape
+  // SECURITY (Issue #4): appAccountToken に user.id を渡してトランザクションを user に紐付け
+  // サーバー側で apple-asn / verify-receipt が一致確認することで他人の購入の流用を防ぐ
+  const userId = useAuthStore.getState().user?.id;
+  await lib.requestPurchase({
+    request: {
+      ios: {
+        sku,
+        // appAccountToken は UUID。Supabase の user.id は UUID 形式なのでそのまま使える
+        ...(userId ? { appAccountToken: userId } : {}),
+      },
+    },
+    type: 'subs',
+  });
 }
 
 /**
- * 購入の復元
+ * 購入の復元（アプリ再インストール後など）
  */
 export async function restorePurchases(): Promise<boolean> {
   if (Platform.OS === 'web') return false;
+  const lib = await loadIAPLib();
+  if (!lib) return false;
 
-  // TODO: Implementation
-  // const purchases = await IAPManager.getAvailablePurchases();
-  // for (const purchase of purchases) {
-  //   await verifyReceiptOnServer(purchase.transactionReceipt);
-  // }
-  // return purchases.length > 0;
-
-  return false;
+  try {
+    if (!connectionInitialized) await lib.initConnection();
+    const purchases = await lib.getAvailablePurchases();
+    let anyVerified = false;
+    for (const purchase of purchases) {
+      const verified = await verifyPurchaseOnServer(purchase);
+      if (verified) {
+        await lib.finishTransaction({ purchase, isConsumable: false });
+        anyVerified = true;
+      }
+    }
+    return anyVerified;
+  } catch (e) {
+    logError(e, { context: 'iap.restorePurchases' });
+    return false;
+  }
 }
 
 /**
- * レシート検証（サーバーサイド）
+ * サーバー側で購入レシート検証
+ * Google Play Developer API / App Store Server API を経由
  */
-async function verifyReceiptOnServer(_receipt: string): Promise<void> {
-  // TODO: /api/verify-receipt エンドポイントを作成して
-  // Apple の verifyReceipt API でサーバーサイド検証
-}
+async function verifyPurchaseOnServer(purchase: any): Promise<boolean> {
+  const session = useAuthStore.getState().session;
+  if (!session?.access_token) {
+    logError(new Error('No session for IAP verify'), { context: 'iap.verify' });
+    return false;
+  }
 
-/**
- * IAP接続を閉じる（アプリ終了時）
- */
-export async function finalizeIAP(): Promise<void> {
-  if (Platform.OS === 'web') return;
-  // TODO: IAPManager.endConnection();
+  try {
+    const platform = Platform.OS; // 'android' | 'ios'
+    const body = {
+      platform,
+      productId: purchase.productId,
+      // Android: purchaseToken / iOS: transactionReceipt
+      purchaseToken: purchase.purchaseToken ?? null,
+      transactionReceipt: purchase.transactionReceipt ?? null,
+      transactionId: purchase.transactionId ?? null,
+    };
+
+    const res = await fetch(`${API_BASE_URL}/iap/verify-receipt`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      logError(new Error(data.error || `Verify failed: ${res.status}`), {
+        context: 'iap.verify.serverResponse',
+        extra: { status: res.status, productId: purchase.productId },
+      });
+      return false;
+    }
+
+    const data = await res.json();
+    return data.ok === true;
+  } catch (e) {
+    logError(e, { context: 'iap.verifyPurchaseOnServer' });
+    return false;
+  }
 }
