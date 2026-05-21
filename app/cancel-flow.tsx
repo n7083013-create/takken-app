@@ -313,8 +313,10 @@ function getOfferAcceptedMessage(offerType: OfferType): string {
       return '次回更新時に半額（¥490）を適用します。\n適用には数日かかる場合があります。';
     case 'pause_subscription':
       return '次の試験 (10月) まで一時停止の手続きを承りました。\n再開のご案内を試験前にお送りします。';
+    // [2026-05-22] free_extension_14days は廃止 (手動運用負担のため)
+    // 残しているのは型互換のためのみ。実際にはこのケースは呼ばれない。
     case 'free_extension_14days':
-      return '14日間料金をスキップする手続きを承りました。\n14日後 (XX/XX) に次回課金が発生します。\nそれまでにキャンセルすれば料金は発生しません。';
+      return '解約手続きをキャンセルしました。引き続きご利用いただけます。';
     case 'pause_short':
       return '1〜3ヶ月の一時停止を承りました。\n再開したい時はメールでお知らせください。';
     case 'support_form':

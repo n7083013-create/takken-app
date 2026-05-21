@@ -456,30 +456,7 @@ export default function LandingPage() {
             </Pressable>
           </View>
 
-          {/* 2. PREMIUM 月額 */}
-          <View style={[s.planCard, s.planCardMonthly, Shadow.sm]}>
-            <Text style={[s.planName, s.planNameMonthly]}>Premium 月額</Text>
-            <Text style={[s.planPrice, s.planPriceMonthly]}>¥980</Text>
-            <Text style={[s.planPeriod, s.planPeriodMonthly]}>/月（税込）</Text>
-            <Text style={s.planMonthlyDaily}>1日わずか33円</Text>
-            <View style={s.planDivider} />
-            <Text style={s.planFeature}>✓ 全{TOTAL_Q}問が解き放題</Text>
-            <Text style={s.planFeature}>✓ 一問一答{TOTAL_QQ}問</Text>
-            <Text style={s.planFeature}>✓ 模擬試験 無制限</Text>
-            <Text style={s.planFeature}>✓ AI解説 1日100回</Text>
-            <Text style={s.planFeature}>✓ AI苦手分析</Text>
-            <Text style={s.planFeature}>✓ 法改正完全対応</Text>
-            <Pressable
-              style={[s.planCTA, s.planCTASecondary, Shadow.sm]}
-              onPress={goPremiumMonthly}
-              accessibilityRole="button"
-              accessibilityLabel="Premium 月額プラン 7日間無料で試す"
-            >
-              <Text style={[s.planCTAText, s.planCTATextSecondary]}>月額で7日間無料</Text>
-            </Pressable>
-          </View>
-
-          {/* 3. PREMIUM 年額 (人気No.1) */}
+          {/* 2. PREMIUM 年額 (人気No.1・中央配置で視線誘導 - Headspace パターン) */}
           <View style={[s.planCard, s.planCardPremium, Shadow.md]}>
             <View style={s.planBadge}>
               <Text style={s.planBadgeText}>人気No.1</Text>
@@ -505,6 +482,29 @@ export default function LandingPage() {
               accessibilityLabel="Premium 年額プラン 7日間無料で試す (約49%OFF)"
             >
               <Text style={s.planCTAText}>年額で7日間無料</Text>
+            </Pressable>
+          </View>
+
+          {/* 3. PREMIUM 月額 */}
+          <View style={[s.planCard, s.planCardMonthly, Shadow.sm]}>
+            <Text style={[s.planName, s.planNameMonthly]}>Premium 月額</Text>
+            <Text style={[s.planPrice, s.planPriceMonthly]}>¥980</Text>
+            <Text style={[s.planPeriod, s.planPeriodMonthly]}>/月（税込）</Text>
+            <Text style={s.planMonthlyDaily}>1日わずか33円</Text>
+            <View style={s.planDivider} />
+            <Text style={s.planFeature}>✓ 全{TOTAL_Q}問が解き放題</Text>
+            <Text style={s.planFeature}>✓ 一問一答{TOTAL_QQ}問</Text>
+            <Text style={s.planFeature}>✓ 模擬試験 無制限</Text>
+            <Text style={s.planFeature}>✓ AI解説 1日100回</Text>
+            <Text style={s.planFeature}>✓ AI苦手分析</Text>
+            <Text style={s.planFeature}>✓ 法改正完全対応</Text>
+            <Pressable
+              style={[s.planCTA, s.planCTASecondary, Shadow.sm]}
+              onPress={goPremiumMonthly}
+              accessibilityRole="button"
+              accessibilityLabel="Premium 月額プラン 7日間無料で試す"
+            >
+              <Text style={[s.planCTAText, s.planCTATextSecondary]}>月額で7日間無料</Text>
             </Pressable>
           </View>
         </View>

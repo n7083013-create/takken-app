@@ -178,13 +178,15 @@ export function getCounterOffer(
           declineCta: 'それでも解約する',
         };
       }
+      // [2026-05-22] 月額契約者向けも「14日無料延長」を廃止し no_offer に。
+      // 旧 offer は手動運用負担が大きいため。代わりに「次回更新日まで全機能使える」+ 励まし。
       return {
-        offerType: 'free_extension_14days',
+        offerType: 'no_offer',
         emoji: '🌱',
         title: '諦めるのはまだ早いかもしれません',
         subtitle:
-          '14日間料金をスキップして、Premium を続けてご利用ください。\n14日後に次回課金 (¥980/月) が発生します。それまでにいつでもキャンセル可。',
-        acceptCta: '14日無料延長で続ける',
+          '次回更新日まで全機能をご利用いただけます。\n来年に向けて、無理ないペースで続けませんか？\n学習データは保存されているので、再開時もそのまま使えます。',
+        acceptCta: '来年に向けて続ける',
         declineCta: 'それでも解約する',
       };
 

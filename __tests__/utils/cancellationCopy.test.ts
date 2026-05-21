@@ -91,17 +91,18 @@ describe('getCounterOffer - 理由別 counter-offer 生成', () => {
     expect(text).toMatch(/一時停止|休止|来年|次の試験/);
   });
 
-  test('gave_up は応援メッセージ + 14日無料延長 (30日から短縮: 2026-05-22)', () => {
+  test('gave_up は応援メッセージで no_offer (2026-05-22 14日延長を廃止)', () => {
+    // 14日無料延長 offer は手動運用負担が大きいため廃止。
+    // 代わりに「次回更新日まで全機能使える」+ 励まし文言を提示。
     const o = getCounterOffer('gave_up');
-    expect(o.offerType).toBe('free_extension_14days');
+    expect(o.offerType).toBe('no_offer');
     const text = `${o.title} ${o.subtitle}`;
-    expect(text).toMatch(/14日|延長|諦める|スキップ/);
+    expect(text).toMatch(/諦める|来年|続け/);
   });
 
-  test('14日延長 offer のメッセージに「次回課金が発生」明示 (透明性)', () => {
+  test('gave_up の subtitle に「次回更新日まで使える」が含まれる (loss aversion)', () => {
     const o = getCounterOffer('gave_up');
-    expect(o.subtitle).toMatch(/次回課金|14日後/);
-    expect(o.subtitle).toMatch(/キャンセル/);
+    expect(o.subtitle).toMatch(/次回更新日|来年|学習データ/);
   });
 
   test('no_time も一時停止 (短期版)', () => {
