@@ -242,9 +242,15 @@ export interface StudySession {
 // 内部キーは 'standard' を維持（DB互換）、UIでは「PREMIUM」表示
 export type SubscriptionPlan = 'free' | 'standard' | 'unlimited';
 
+// 課金サイクル (2026-05 年額プラン追加)
+// monthly: ¥980/月  /  annual: ¥5,980/年 (約 49% OFF / ¥498/月相当)
+export type BillingCycle = 'monthly' | 'annual';
+
 // サブスクリプション情報
 export interface Subscription {
   plan: SubscriptionPlan;
+  /** 課金サイクル。free または未設定の場合は undefined */
+  billingCycle?: BillingCycle;
   expiresAt?: string;
   subscriptionStatus?: string;
   aiQueriesUsed: number;
@@ -264,9 +270,12 @@ export interface Subscription {
   clockMaxSeen?: string;       // 観測した最大時刻（ISO）
 }
 
-// プラン価格（月額のみ・7日間無料トライアル→自動課金）
+// プラン価格 (2026-05 年額プラン追加)
+// 年額は約 49% OFF (6 ヶ月分強の価格で 12 ヶ月使える) で攻めた割引率。
+// 宅建試験は年 1 回 (10 月) のため、年額プランは試験 1 サイクル分の利用権を提供する設計。
 export const PLAN_PRICES = {
   monthly: 980,
+  annual: 5980,
 } as const;
 
 // AI解説の1日あたり上限（フェア利用ポリシー）

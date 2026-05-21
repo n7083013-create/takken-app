@@ -44,6 +44,9 @@ export default function CancelFlowScreen() {
   const s = useMemo(() => makeStyles(colors), [colors]);
   const session = useAuthStore((st) => st.session);
   const verifySubscription = useSettingsStore((st) => st.verifySubscription);
+  // [2026-05] 年額 / 月額 で offer を分岐する
+  const subscription = useSettingsStore((st) => st.subscription);
+  const billingCycle = subscription.billingCycle ?? 'monthly';
 
   const [step, setStep] = useState<Step>('reason');
   const [reason, setReason] = useState<CancellationReason | null>(null);
@@ -52,11 +55,14 @@ export default function CancelFlowScreen() {
   // セッション開始イベント (初回マウント)
   const [funnelStarted, setFunnelStarted] = useState(false);
   if (!funnelStarted) {
-    trackEvent('cancel_flow_started');
+    trackEvent('cancel_flow_started', { custom_label: billingCycle });
     setFunnelStarted(true);
   }
 
-  const offer = useMemo(() => (reason ? getCounterOffer(reason) : null), [reason]);
+  const offer = useMemo(
+    () => (reason ? getCounterOffer(reason, billingCycle) : null),
+    [reason, billingCycle],
+  );
   const finalCopy = useMemo(() => getFinalConfirmCopy(), []);
 
   // ----------------------------------------------------------

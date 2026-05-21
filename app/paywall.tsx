@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Shadow } from '../constants/theme';
+import { Shadow, FontSize, Spacing, BorderRadius } from '../constants/theme';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -21,6 +21,15 @@ import { API_BASE_URL } from '../constants/config';
 import { trackEvent } from '../services/analytics';
 import { purchaseSubscription as iapPurchase, restorePurchases as iapRestore } from '../services/iap';
 import { WebBackButton } from '../components/WebBackButton';
+import { PLAN_PRICES, type BillingCycle } from '../types';
+import {
+  planPriceLabel,
+  planPriceWithUnit,
+  monthlyEquivalentLabel,
+  annualSavingsLabel,
+  annualBadgeLabel,
+  postTrialDescription,
+} from '../utils/pricingCopy';
 
 const TOTAL_Q = ALL_QUESTIONS.length;
 const TOTAL_QQ = ALL_QUICK_QUIZZES.length;
@@ -53,6 +62,8 @@ export default function PaywallScreen() {
   const [loading, setLoading] = useState(false);
   const [activating, setActivating] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  // [2026-05] 課金サイクル選択。デフォルトは年額 (ARPU を最大化 + 49% OFF で訴求力高い)
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('annual');
 
   // 既に有料会員ならホームに戻す
   useEffect(() => {
@@ -131,7 +142,12 @@ export default function PaywallScreen() {
     }
 
     setLoading(true);
-    trackEvent('subscribe_start', { value: 980, currency: 'JPY' });
+    // [2026-05] 課金サイクルを value に反映。年額の方が conversion value 高い
+    trackEvent('subscribe_start', {
+      value: PLAN_PRICES[billingCycle],
+      currency: 'JPY',
+      custom_label: billingCycle,
+    });
 
     // ─── Native: Google Play Billing / Apple IAP ───
     // Google Play 規約上、Android アプリ内で Web 課金（PayPal）は使えない
@@ -193,6 +209,7 @@ export default function PaywallScreen() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
+        body: JSON.stringify({ billingCycle }),
       });
       const data = await res.json().catch(() => ({
         error: `サーバー応答エラー (${res.status})`,
@@ -287,18 +304,68 @@ export default function PaywallScreen() {
           ))}
         </View>
 
-        {/* 価格セクション */}
+        {/* [2026-05] 月額 / 年額トグル + 価格セクション
+            年額デフォルト・49% OFF 訴求・月換算併記で price anchoring */}
         <View style={[s.priceCard, Shadow.md]}>
           <View style={s.trialBadge}>
             <Text style={s.trialBadgeText}>7日間無料</Text>
           </View>
           <Text style={s.priceExplain}>まず無料で全機能をお試し</Text>
+
+          {/* ── 月額 / 年額 トグル ── */}
+          <View style={s.cycleToggleWrap}>
+            <Pressable
+              style={[s.cycleTab, billingCycle === 'annual' && s.cycleTabActive]}
+              onPress={() => setBillingCycle('annual')}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: billingCycle === 'annual' }}
+              accessibilityLabel="年額プラン"
+            >
+              <View style={s.annualBadge}>
+                <Text style={s.annualBadgeText}>{annualBadgeLabel()}</Text>
+              </View>
+              <Text style={[s.cycleTabTitle, billingCycle === 'annual' && s.cycleTabTitleActive]}>
+                年額
+              </Text>
+              <Text style={[s.cycleTabPrice, billingCycle === 'annual' && s.cycleTabPriceActive]}>
+                {planPriceLabel('annual')}
+              </Text>
+              <Text style={s.cycleTabSub}>
+                {monthlyEquivalentLabel('annual')}
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[s.cycleTab, billingCycle === 'monthly' && s.cycleTabActive]}
+              onPress={() => setBillingCycle('monthly')}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: billingCycle === 'monthly' }}
+              accessibilityLabel="月額プラン"
+            >
+              <Text style={[s.cycleTabTitle, billingCycle === 'monthly' && s.cycleTabTitleActive]}>
+                月額
+              </Text>
+              <Text style={[s.cycleTabPrice, billingCycle === 'monthly' && s.cycleTabPriceActive]}>
+                {planPriceLabel('monthly')}
+              </Text>
+              <Text style={s.cycleTabSub}>/月</Text>
+            </Pressable>
+          </View>
+
+          {/* ── 価格表示 ── */}
           <View style={s.priceRow}>
             <Text style={s.priceAmount}>¥0</Text>
             <Text style={s.priceSlash}> → </Text>
-            <Text style={s.priceAfter}>¥980/月</Text>
+            <Text style={s.priceAfter}>{planPriceWithUnit(billingCycle)}</Text>
           </View>
-          <Text style={s.priceDetail}>8日目から月額¥980（1日わずか33円）</Text>
+          <Text style={s.priceDetail}>{postTrialDescription(billingCycle)}</Text>
+
+          {/* 年額選択時の savings 強調 */}
+          {billingCycle === 'annual' && (
+            <Text style={s.savingsCallout}>
+              {annualSavingsLabel()} ・ 月額プランより年 ¥{(PLAN_PRICES.monthly * 12 - PLAN_PRICES.annual).toLocaleString('en-US')} お得
+            </Text>
+          )}
+
           <Text style={s.priceSafe}>トライアル中にキャンセルすれば一切料金はかかりません</Text>
         </View>
 
@@ -351,7 +418,9 @@ export default function PaywallScreen() {
         </View>
 
         <Text style={s.smallNote}>
-          ・7日間の無料トライアル後、月額¥980で自動更新されます{'\n'}
+          {billingCycle === 'annual'
+            ? `・7日間の無料トライアル後、年額${planPriceLabel('annual')} (${monthlyEquivalentLabel('annual')}) で自動更新されます\n`
+            : `・7日間の無料トライアル後、月額${planPriceLabel('monthly')}で自動更新されます\n`}
           ・更新日の24時間前までにいつでも解約できます{'\n'}
           ・解約後は無料プランに戻ります
         </Text>
@@ -473,6 +542,68 @@ function makeStyles(C: ThemeColors) {
     priceAfter: { fontSize: 20, fontWeight: '700', color: C.text },
     priceDetail: { fontSize: 13, color: C.textSecondary, marginTop: 4 },
     priceSafe: { fontSize: 11, color: C.primary, marginTop: 10, textAlign: 'center' },
+
+    // [2026-05] 月額 / 年額トグル (年額デフォルト・49% OFF 訴求)
+    cycleToggleWrap: {
+      flexDirection: 'row',
+      gap: 12,
+      alignSelf: 'stretch',
+      marginBottom: 18,
+      marginTop: 4,
+    },
+    cycleTab: {
+      flex: 1,
+      borderWidth: 2,
+      borderColor: C.border,
+      borderRadius: BorderRadius.lg,
+      paddingVertical: 16,
+      paddingHorizontal: 12,
+      alignItems: 'center',
+      backgroundColor: C.background,
+      position: 'relative',
+    },
+    cycleTabActive: {
+      borderColor: C.primary,
+      backgroundColor: C.primarySurface,
+    },
+    cycleTabTitle: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.textSecondary,
+      marginBottom: 4,
+    },
+    cycleTabTitleActive: { color: C.primary },
+    cycleTabPrice: {
+      fontSize: FontSize.title3,
+      fontWeight: '900',
+      color: C.text,
+      marginBottom: 2,
+    },
+    cycleTabPriceActive: { color: C.primary },
+    cycleTabSub: {
+      fontSize: FontSize.caption,
+      color: C.textTertiary,
+    },
+    annualBadge: {
+      position: 'absolute',
+      top: -10,
+      backgroundColor: C.accent ?? C.primary,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 999,
+    },
+    annualBadgeText: {
+      color: C.white,
+      fontSize: 10,
+      fontWeight: '800',
+    },
+    savingsCallout: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.accent ?? C.primary,
+      marginTop: 8,
+      textAlign: 'center',
+    },
 
     ctaBtn: {
       backgroundColor: C.primary,

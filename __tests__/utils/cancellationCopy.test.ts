@@ -193,3 +193,98 @@ describe('offerEventLabel - GA4 イベントラベル', () => {
     }
   });
 });
+
+describe('getCounterOffer - 年額/月額 で分岐 (2026-05 追加)', () => {
+  // ----------------------------------------------------------
+  // 年額契約者には「半額」が意味をなさないので別文言
+  // ----------------------------------------------------------
+
+  test('annual + too_expensive は「既に最大割引」と説明 (no_offer)', () => {
+    const o = getCounterOffer('too_expensive', 'annual');
+    expect(o.offerType).toBe('no_offer');
+    expect(o.title).toMatch(/最大割引|割引|49%/);
+  });
+
+  test('monthly + too_expensive は従来通り 半額 offer', () => {
+    const o = getCounterOffer('too_expensive', 'monthly');
+    expect(o.offerType).toBe('half_price_one_month');
+    expect(o.title).toContain('半額');
+  });
+
+  // ----------------------------------------------------------
+  // 年額契約者は「一時停止」が不要 (残り期間を使えばよい)
+  // ----------------------------------------------------------
+
+  test('annual + exam_done は「残り期間で次の試験まで使える」', () => {
+    const o = getCounterOffer('exam_done', 'annual');
+    expect(o.offerType).toBe('no_offer');
+    const text = `${o.title} ${o.subtitle}`;
+    expect(text).toMatch(/残り|次の試験|来年/);
+  });
+
+  test('monthly + exam_done は従来通り 一時停止 offer', () => {
+    const o = getCounterOffer('exam_done', 'monthly');
+    expect(o.offerType).toBe('pause_subscription');
+  });
+
+  test('annual + gave_up は「来年に向けて使い続けて」', () => {
+    const o = getCounterOffer('gave_up', 'annual');
+    expect(o.offerType).toBe('no_offer');
+    const text = `${o.title} ${o.subtitle}`;
+    expect(text).toMatch(/来年|残り期間/);
+  });
+
+  test('annual + no_time は「いつでも戻れる」', () => {
+    const o = getCounterOffer('no_time', 'annual');
+    expect(o.offerType).toBe('no_offer');
+    expect(`${o.title} ${o.subtitle}`).toMatch(/戻れ|残り期間/);
+  });
+
+  // ----------------------------------------------------------
+  // features (機能不満) は cycle 不問
+  // ----------------------------------------------------------
+
+  test('features は annual/monthly どちらも support_form offer', () => {
+    expect(getCounterOffer('features', 'monthly').offerType).toBe('support_form');
+    expect(getCounterOffer('features', 'annual').offerType).toBe('support_form');
+  });
+
+  // ----------------------------------------------------------
+  // 後方互換: billingCycle 省略時は monthly 扱い
+  // ----------------------------------------------------------
+
+  test('billingCycle 省略時は monthly と同じ結果', () => {
+    expect(getCounterOffer('too_expensive')).toEqual(
+      getCounterOffer('too_expensive', 'monthly'),
+    );
+    expect(getCounterOffer('exam_done')).toEqual(
+      getCounterOffer('exam_done', 'monthly'),
+    );
+  });
+
+  // ----------------------------------------------------------
+  // すべての理由 × 両 cycle で valid な offer が返る (網羅性)
+  // ----------------------------------------------------------
+
+  test.each([
+    ['too_expensive', 'monthly'],
+    ['too_expensive', 'annual'],
+    ['exam_done', 'monthly'],
+    ['exam_done', 'annual'],
+    ['gave_up', 'monthly'],
+    ['gave_up', 'annual'],
+    ['no_time', 'monthly'],
+    ['no_time', 'annual'],
+    ['features', 'monthly'],
+    ['features', 'annual'],
+    ['other', 'monthly'],
+    ['other', 'annual'],
+  ] as const)('reason=%s cycle=%s で全フィールドが埋まる', (reason, cycle) => {
+    const o = getCounterOffer(reason, cycle);
+    expect(o.title.length).toBeGreaterThan(0);
+    expect(o.subtitle.length).toBeGreaterThan(0);
+    expect(o.acceptCta.length).toBeGreaterThan(0);
+    expect(o.declineCta.length).toBeGreaterThan(0);
+    expect(o.emoji.length).toBeGreaterThan(0);
+  });
+});

@@ -9,6 +9,12 @@
 //
 // このモジュールは純関数で実装し、ユニットテストで挙動を保証する。
 // 「文言劣化」「offer 設計の漏れ」を CI で防止。
+//
+// 2026-05 年額プラン追加に伴い、`getCounterOffer(reason, billingCycle)` で
+// 月額 / 年額ユーザーで offer を分岐するよう拡張済み。
+// 年額契約者は支払い済み期間が長いため「半額」「一時停止」の意味が変わる。
+
+import type { BillingCycle } from '../types';
 
 /** 宅建士アプリ固有のドメイン文脈に最適化した 6 種類の解約理由 */
 export type CancellationReason =
@@ -100,10 +106,32 @@ export const REASON_CHOICES: ReasonChoice[] = [
 /**
  * 解約理由に応じた最適な counter-offer を返す。
  * 「お引き止め」ではなく「ユーザーの状況に合った代替案」を提示するのが世界基準。
+ *
+ * @param reason 解約理由
+ * @param billingCycle 月額 / 年額。年額契約者は既に長期支払い済みなので別文言。
+ *                     省略時は 'monthly' (後方互換)
  */
-export function getCounterOffer(reason: CancellationReason): CounterOffer {
+export function getCounterOffer(
+  reason: CancellationReason,
+  billingCycle: BillingCycle = 'monthly',
+): CounterOffer {
+  const isAnnual = billingCycle === 'annual';
+
   switch (reason) {
     case 'too_expensive':
+      // 年額契約者は既に「月額 ¥498 相当」を払っているので「半額」が刺さらない。
+      // 代わりに「残り期間は全機能使えます」「翌年は更新タイミングで考えよう」と提示。
+      if (isAnnual) {
+        return {
+          offerType: 'no_offer',
+          emoji: '💝',
+          title: '年額プランは既に最大割引価格です',
+          subtitle:
+            '月額換算 ¥498/月 (約 49% OFF) で、これ以上の割引はありません。\n次回更新は 1 年後。それまで全機能をお使いいただけます。',
+          acceptCta: '残り期間を使う',
+          declineCta: 'それでも解約する',
+        };
+      }
       return {
         offerType: 'half_price_one_month',
         emoji: '💝',
@@ -115,6 +143,18 @@ export function getCounterOffer(reason: CancellationReason): CounterOffer {
       };
 
     case 'exam_done':
+      // 年額契約者は「次の試験まで」が既に支払い済みなので、解約せず使ってもらえばよい。
+      if (isAnnual) {
+        return {
+          offerType: 'no_offer',
+          emoji: '⏸️',
+          title: 'ご支払い済みの残り期間で次の試験まで使えます',
+          subtitle:
+            '年額プランは次回更新まで全機能ご利用可能。\n来年もう一度受験する場合、復習データもそのまま使えます。',
+          acceptCta: '残り期間を活用する',
+          declineCta: 'それでも解約する',
+        };
+      }
       return {
         offerType: 'pause_subscription',
         emoji: '⏸️',
@@ -126,6 +166,18 @@ export function getCounterOffer(reason: CancellationReason): CounterOffer {
       };
 
     case 'gave_up':
+      // 年額契約者は「もう払ってあるから来年まで使い続けて」と励まし。
+      if (isAnnual) {
+        return {
+          offerType: 'no_offer',
+          emoji: '🌱',
+          title: 'お支払い済みの 1 年で巻き返しを',
+          subtitle:
+            '今年は無理でも、年額の残り期間で来年合格を目指しませんか？\nペースを落とせばよし。学習データは保存されます。',
+          acceptCta: '来年に向けて続ける',
+          declineCta: 'それでも解約する',
+        };
+      }
       return {
         offerType: 'free_extension_30days',
         emoji: '🌱',
@@ -137,6 +189,18 @@ export function getCounterOffer(reason: CancellationReason): CounterOffer {
       };
 
     case 'no_time':
+      // 年額契約者は「もう払ってあるから余裕ができたら戻ってきて」
+      if (isAnnual) {
+        return {
+          offerType: 'no_offer',
+          emoji: '⏸️',
+          title: '残り期間はいつでも戻れます',
+          subtitle:
+            '年額プランは次回更新まで有効です。\n余裕ができた時に、いつでもログインして再開できます。',
+          acceptCta: 'いったん休む',
+          declineCta: 'それでも解約する',
+        };
+      }
       return {
         offerType: 'pause_short',
         emoji: '⏸️',
@@ -148,6 +212,7 @@ export function getCounterOffer(reason: CancellationReason): CounterOffer {
       };
 
     case 'features':
+      // 機能不満は cycle 不問 (要望ヒアリング → 改善が一番のお引き止め)
       return {
         offerType: 'support_form',
         emoji: '🛠️',
@@ -164,8 +229,9 @@ export function getCounterOffer(reason: CancellationReason): CounterOffer {
         offerType: 'no_offer',
         emoji: '👋',
         title: 'ご利用ありがとうございました',
-        subtitle:
-          '次回更新日まで全機能を引き続きご利用いただけます。\nまたいつでもお待ちしております。',
+        subtitle: isAnnual
+          ? '次回更新日 (年額の残り期間) まで全機能をご利用いただけます。\nまたいつでもお待ちしております。'
+          : '次回更新日まで全機能を引き続きご利用いただけます。\nまたいつでもお待ちしております。',
         acceptCta: '解約をやめる',
         declineCta: '解約する',
       };
