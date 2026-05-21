@@ -554,13 +554,14 @@ function SubscriptionSection() {
 
     setUpgrading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/paypal/revise-subscription`, {
+      // [2026-05-22] Vercel 12 Functions 制限のため、revise は create-subscription に統合
+      const res = await fetch(`${API_BASE_URL}/paypal/create-subscription`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ billingCycle: 'annual' }),
+        body: JSON.stringify({ billingCycle: 'annual', action: 'revise' }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {

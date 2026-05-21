@@ -48,6 +48,10 @@ module.exports = async (req, res) => {
   const billingCycle = requestedCycle === 'annual' ? 'annual' : 'monthly';
   const planId = resolvePlanId(billingCycle);
 
+  // [2026-05-22] action="revise" の場合は既存サブスクのプラン変更フローに分岐
+  // (Vercel Hobby plan の 12 Functions 制限のため、エンドポイントを統合)
+  const action = (req.body && req.body.action) || 'create';
+
   if (!planId) {
     return res.status(500).json({
       error: billingCycle === 'annual'
@@ -76,6 +80,90 @@ module.exports = async (req, res) => {
         code: 'email_not_confirmed',
       });
     }
+
+    // [2026-05-22] action='revise' の場合: 既存サブスクのプラン変更フロー
+    // (Vercel Hobby plan 12 Functions 制限のため、create と統合)
+    if (action === 'revise') {
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('paypal_subscription_id, subscription_status, plan, billing_cycle')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (!profile?.paypal_subscription_id) {
+        return res.status(400).json({ error: 'PayPal サブスクリプションが見つかりません' });
+      }
+      if (profile.plan !== 'standard') {
+        return res.status(400).json({ error: '有料プランに登録されていません' });
+      }
+      if (profile.subscription_status === 'canceled') {
+        return res.status(400).json({ error: '解約済みのサブスクリプションは変更できません' });
+      }
+      if (profile.billing_cycle === billingCycle) {
+        return res.status(400).json({
+          error: billingCycle === 'annual'
+            ? '既に年額プランに登録されています'
+            : '既に月額プランに登録されています',
+        });
+      }
+
+      const reviseResult = await paypalFetch(
+        `/v1/billing/subscriptions/${profile.paypal_subscription_id}/revise`,
+        {
+          method: 'POST',
+          body: {
+            plan_id: planId,
+            application_context: {
+              brand_name: '宅建士 完全対策',
+              locale: 'ja-JP',
+              shipping_preference: 'NO_SHIPPING',
+              user_action: 'SUBSCRIBE_NOW',
+              return_url: `${RETURN_URL}&cycle=${billingCycle}&revised=1`,
+              cancel_url: CANCEL_URL,
+            },
+          },
+          headers: {
+            'PayPal-Request-Id': `revise-${user.id}-${billingCycle}-${Date.now()}`,
+            'Prefer': 'return=representation',
+          },
+        },
+      );
+
+      const approveLink = reviseResult.links?.find((l) => l.rel === 'approve');
+      if (!approveLink) {
+        // 自動承認 (即時反映) ケース
+        try {
+          await supabaseAdmin
+            .from('profiles')
+            .update({ billing_cycle: billingCycle, updated_at: new Date().toISOString() })
+            .eq('id', user.id);
+        } catch {
+          // billing_cycle 列が無ければ無視
+        }
+        return res.status(200).json({
+          subscriptionId: profile.paypal_subscription_id,
+          status: 'auto-approved',
+          billingCycle,
+        });
+      }
+
+      // 状態を「revising」に
+      await supabaseAdmin
+        .from('profiles')
+        .update({
+          subscription_status: 'revising',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      return res.status(200).json({
+        subscriptionId: profile.paypal_subscription_id,
+        approvalUrl: approveLink.href,
+        newPlanId: planId,
+        newCycle: billingCycle,
+      });
+    }
+    // === 通常の create フローは以下続行 ===
 
     // [不正利用防止] トライアル履歴チェック
     // 同じメアド（または正規化後ハッシュ一致）が過去にトライアル使用済みなら拒否
