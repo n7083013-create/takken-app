@@ -75,6 +75,19 @@ module.exports = async (req, res) => {
       return res.status(403).json({ error: 'このサブスクリプションはこのユーザーのものではありません' });
     }
 
+    // [2026-05-22] Revise (月→年 等のプラン変更) 後の取り扱い
+    // custom_id は初回作成時の cycle のままなので、サブスクの現在 plan_id を見て上書きする。
+    // (例: 月額作成時 custom_id={cycle:'monthly'} → revise で plan_id=PAYPAL_PLAN_ANNUAL → 'annual' に更新)
+    const currentPlanId = subscription.plan_id;
+    if (currentPlanId === process.env.PAYPAL_PLAN_ANNUAL) {
+      customCycle = 'annual';
+    } else if (
+      currentPlanId === process.env.PAYPAL_PLAN_MONTHLY ||
+      currentPlanId === process.env.PAYPAL_PLAN_ID
+    ) {
+      customCycle = 'monthly';
+    }
+
     // ステータスが ACTIVE or APPROVAL_PENDING → 許容
     const status = subscription.status;
     if (status !== 'ACTIVE' && status !== 'APPROVAL_PENDING' && status !== 'APPROVED') {

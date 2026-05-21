@@ -485,8 +485,8 @@ function SubscriptionSection() {
   const verifySubscription = useSettingsStore((s) => s.verifySubscription);
   const session = useAuthStore((s) => s.session);
   const [restoring, setRestoring] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
   // [2026-05] canceling state は cancel-flow.tsx に移管済み。
-  // 解約ボタン押下は即 /cancel-flow へ navigate するため、ここでスピナーは不要。
 
   const handleRestore = useCallback(async () => {
     if (!session?.access_token) {
@@ -535,6 +535,67 @@ function SubscriptionSection() {
     }
   }, []);
 
+  /**
+   * [2026-05-22] 月額 → 年額アップグレード (Web/PayPal のみ)
+   * PayPal Subscription Revise API を呼んで、承認画面に遷移させる。
+   * 承認後は activate-subscription 経由で profiles.billing_cycle = 'annual' に更新される。
+   */
+  const handleUpgradeToAnnual = useCallback(async () => {
+    if (!session?.access_token) {
+      await infoAlert('ログインが必要です', 'プラン変更にはログインしてください。');
+      return;
+    }
+    const confirmed = await confirmAlert(
+      '年額プランにアップグレード',
+      '月額 ¥980 → 年額 ¥5,980 (¥498/月相当・約 49% OFF)\n\nPayPal の承認画面で確認後、年額プランに切り替わります。\n切替後は次回課金日に年額が請求されます。',
+      { okText: '変更する', cancelText: 'やめる' },
+    );
+    if (!confirmed) return;
+
+    setUpgrading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/paypal/revise-subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ billingCycle: 'annual' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        await infoAlert(
+          'プラン変更に失敗しました',
+          data.error || '時間をおいて再度お試しください。',
+        );
+        return;
+      }
+      // 自動承認 (PayPal 側で即適用)
+      if (data.status === 'auto-approved') {
+        await verifySubscription(session.access_token);
+        await infoAlert('変更完了', '年額プランへの変更が完了しました。');
+        return;
+      }
+      // 通常は承認 URL に遷移
+      if (data.approvalUrl) {
+        if (Platform.OS === 'web') {
+          window.location.href = data.approvalUrl;
+        } else {
+          await Linking.openURL(data.approvalUrl);
+        }
+      } else {
+        await infoAlert(
+          'プラン変更を受け付けました',
+          'PayPal 側で処理中です。完了後に「購入を復元」をお試しください。',
+        );
+      }
+    } catch (e: any) {
+      await infoAlert('通信エラー', e.message || 'ネットワーク接続を確認してください');
+    } finally {
+      setUpgrading(false);
+    }
+  }, [session, verifySubscription]);
+
   const pro = isPro();
   const trial = isTrialActive();
   const daysLeft = trialDaysLeft();
@@ -568,6 +629,29 @@ function SubscriptionSection() {
             <Text style={ss.manageBtnText}>サブスクリプションを管理</Text>
             <Text style={ss.manageArrow}>{'\u203A'}</Text>
           </Pressable>
+
+          {/* [2026-05-22] 月額契約者のみ: 年額にアップグレード CTA (Web/PayPal のみ)
+              iOS/Android の IAP では年額 SKU 未公開 (来月予定) */}
+          {Platform.OS === 'web' &&
+            subscription.billingCycle === 'monthly' &&
+            subscription.subscriptionStatus !== 'canceled' && (
+              <Pressable
+                style={[ss.upgradeBtn, upgrading && { opacity: 0.5 }]}
+                onPress={handleUpgradeToAnnual}
+                disabled={upgrading}
+                accessibilityRole="button"
+                accessibilityLabel="年額プランにアップグレード"
+              >
+                {upgrading ? (
+                  <ActivityIndicator size="small" color={colors.white} />
+                ) : (
+                  <View style={ss.upgradeBtnInner}>
+                    <Text style={ss.upgradeBtnText}>年額にアップグレード</Text>
+                    <Text style={ss.upgradeBtnSub}>¥5,980/年・約 49% OFF</Text>
+                  </View>
+                )}
+              </Pressable>
+            )}
 
           {/* Web/Android: 解約フローへ進むボタン */}
           {Platform.OS !== 'ios' && subscription.subscriptionStatus !== 'canceled' && (
@@ -708,6 +792,32 @@ function makeSubStyles(C: ThemeColors) {
       fontSize: FontSize.subhead,
       color: C.error,
       fontWeight: '700',
+    },
+
+    // [2026-05-22] 年額にアップグレード CTA
+    upgradeBtn: {
+      marginTop: 4,
+      marginBottom: 12,
+      paddingVertical: 14,
+      paddingHorizontal: 16,
+      borderRadius: BorderRadius.md,
+      backgroundColor: C.accent ?? '#E8860C',
+      alignItems: 'center',
+      ...Shadow.sm,
+    },
+    upgradeBtnInner: {
+      alignItems: 'center',
+    },
+    upgradeBtnText: {
+      fontSize: FontSize.subhead,
+      color: C.white,
+      fontWeight: '800',
+    },
+    upgradeBtnSub: {
+      fontSize: FontSize.caption,
+      color: 'rgba(255,255,255,0.92)',
+      fontWeight: '700',
+      marginTop: 2,
     },
     // 解約予定表示
     canceledInfo: {

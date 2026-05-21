@@ -91,11 +91,17 @@ describe('getCounterOffer - 理由別 counter-offer 生成', () => {
     expect(text).toMatch(/一時停止|休止|来年|次の試験/);
   });
 
-  test('gave_up は応援メッセージ + 30日無料延長', () => {
+  test('gave_up は応援メッセージ + 14日無料延長 (30日から短縮: 2026-05-22)', () => {
     const o = getCounterOffer('gave_up');
-    expect(o.offerType).toBe('free_extension_30days');
+    expect(o.offerType).toBe('free_extension_14days');
     const text = `${o.title} ${o.subtitle}`;
-    expect(text).toMatch(/30日|延長|諦める|来年/);
+    expect(text).toMatch(/14日|延長|諦める|スキップ/);
+  });
+
+  test('14日延長 offer のメッセージに「次回課金が発生」明示 (透明性)', () => {
+    const o = getCounterOffer('gave_up');
+    expect(o.subtitle).toMatch(/次回課金|14日後/);
+    expect(o.subtitle).toMatch(/キャンセル/);
   });
 
   test('no_time も一時停止 (短期版)', () => {
@@ -183,7 +189,7 @@ describe('offerEventLabel - GA4 イベントラベル', () => {
     const types: OfferType[] = [
       'half_price_one_month',
       'pause_subscription',
-      'free_extension_30days',
+      'free_extension_14days',
       'pause_short',
       'support_form',
       'no_offer',

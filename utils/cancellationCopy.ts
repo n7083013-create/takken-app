@@ -29,7 +29,7 @@ export type CancellationReason =
 export type OfferType =
   | 'half_price_one_month'   // 1ヶ月だけ半額
   | 'pause_subscription'     // 一時停止 (次の試験まで)
-  | 'free_extension_30days'  // 30日無料延長 + 応援
+  | 'free_extension_14days'  // 14日無料延長 + 応援 (2026-05 30日から短縮)
   | 'pause_short'            // 1-3ヶ月だけ一時停止
   | 'support_form'           // 問題報告フォーム + 30日返金
   | 'no_offer';              // オファーなし (= 即最終確認へ)
@@ -179,12 +179,12 @@ export function getCounterOffer(
         };
       }
       return {
-        offerType: 'free_extension_30days',
+        offerType: 'free_extension_14days',
         emoji: '🌱',
         title: '諦めるのはまだ早いかもしれません',
         subtitle:
-          '30日間無料で延長します。\nペースを落としてでも、一緒に来年合格を目指しませんか？',
-        acceptCta: '30日無料延長で続ける',
+          '14日間料金をスキップして、Premium を続けてご利用ください。\n14日後に次回課金 (¥980/月) が発生します。それまでにいつでもキャンセル可。',
+        acceptCta: '14日無料延長で続ける',
         declineCta: 'それでも解約する',
       };
 
