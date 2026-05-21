@@ -24,6 +24,10 @@ import { AIChatModal } from '../components/AIChatModal';
 import { ALL_QUESTIONS, getQuestionById } from '../data';
 import { WebBackButton } from '../components/WebBackButton';
 import type { Question, Category } from '../types';
+import {
+  shouldShowChoiceExplanation,
+  getStatementExplanation,
+} from '../utils/explanationVisibility';
 
 const TOTAL_QUESTIONS = 3;
 const TIME_LIMIT_SEC = 60;
@@ -512,15 +516,30 @@ export default function MicroChallengeScreen() {
         </View>
 
         {/* [Bugfix] 個数問題・組み合わせ問題の ア〜エ の本文 (statements) を表示
-            これがないと「ア〜エの記述のうち正しいものはいくつあるか」が読めない */}
+            これがないと「ア〜エの記述のうち正しいものはいくつあるか」が読めない
+            [2026-05-22] 回答後は各 statement 直下に個別解説を表示 */}
         {currentQuestion.statements && currentQuestion.statements.length > 0 && (
           <View style={s.statementsBox}>
-            {currentQuestion.statements.map((stmt, si) => (
-              <View key={si} style={s.statementRow}>
-                <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
-                <Text style={s.statementText} selectable>{stmt}</Text>
-              </View>
-            ))}
+            {currentQuestion.statements.map((stmt, si) => {
+              const stmtAns = currentQuestion.statementAnswers?.[si];
+              const stmtExpl = getStatementExplanation(currentQuestion, showFeedback, si);
+              return (
+                <View key={si} style={s.statementRow}>
+                  <Text style={s.statementLabel}>{['ア', 'イ', 'ウ', 'エ'][si]}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.statementText} selectable>{stmt}</Text>
+                    {showFeedback && stmtAns !== undefined && (
+                      <Text style={[s.statementResult, { color: stmtAns ? colors.success : colors.error }]}>
+                        {stmtAns ? '○ 正しい' : '✕ 誤り'}
+                      </Text>
+                    )}
+                    {stmtExpl && (
+                      <Text style={s.statementExpl} selectable>{stmtExpl}</Text>
+                    )}
+                  </View>
+                </View>
+              );
+            })}
           </View>
         )}
 
@@ -545,34 +564,60 @@ export default function MicroChallengeScreen() {
             choiceStyle = s.choiceSelected;
           }
 
+          // [2026-05-22] 回答後は選択肢直下に個別解説を表示
+          // (個数/組み合わせ問題は statement ベースなので非表示)
+          const choiceExpl = shouldShowChoiceExplanation(currentQuestion, showFeedback, origIdx);
+
           return (
-            <Pressable
-              key={origIdx}
-              style={[s.choiceBtn, choiceStyle]}
-              onPress={() => handleSelectAnswer(origIdx)}
-              disabled={showFeedback}
-              accessibilityRole="button"
-              accessibilityLabel={`選択肢${CHOICE_LABELS[displayIdx]}: ${choice}`}
-            >
-              <Text style={[s.choiceLabel, showFeedback && isCorrectChoice && s.choiceLabelCorrect]}>
-                {CHOICE_LABELS[displayIdx]}
-              </Text>
-              <Text
-                style={[s.choiceText, choiceTextStyle]}
+            <View key={origIdx}>
+              <Pressable
+                style={[s.choiceBtn, choiceStyle]}
+                onPress={() => handleSelectAnswer(origIdx)}
+                disabled={showFeedback}
+                accessibilityRole="button"
+                accessibilityLabel={`選択肢${CHOICE_LABELS[displayIdx]}: ${choice}`}
               >
-                {choice}
-              </Text>
-            </Pressable>
+                <Text style={[s.choiceLabel, showFeedback && isCorrectChoice && s.choiceLabelCorrect]}>
+                  {CHOICE_LABELS[displayIdx]}
+                </Text>
+                <Text
+                  style={[s.choiceText, choiceTextStyle]}
+                >
+                  {choice}
+                </Text>
+              </Pressable>
+              {/* [2026-05-22] 選択肢ごとの個別解説 (回答後・standard 形式のみ) */}
+              {choiceExpl && (
+                <View
+                  style={[
+                    s.choiceExplBox,
+                    isCorrectChoice
+                      ? s.choiceExplCorrect
+                      : (isSelected && !isCorrectChoice)
+                        ? s.choiceExplWrong
+                        : s.choiceExplNeutral,
+                  ]}
+                >
+                  <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
+                </View>
+              )}
+            </View>
           );
         })}
 
         {/* [UX改善] フィードバック中: 解説 + AIに聞く + 次へボタン */}
         {showFeedback && (
           <>
-            {/* 解説 (q.explanation がある場合) */}
+            {/* 解説 (q.explanation がある場合)
+                [2026-05-22] 選択肢ごと/statement ごとに個別解説を表示するように変更したため、
+                全体解説 (まとめ) は補足扱い。choiceExplanations または statementExplanations
+                が定義されている問題では「全体まとめ」として表示し、定義されていない場合は
+                これが唯一の解説となる。 */}
             {currentQuestion.explanation && (
               <View style={s.inlineExplanationBox}>
-                <Text style={s.inlineExplanationHeader}>💡 解説</Text>
+                <Text style={s.inlineExplanationHeader}>
+                  💡 {(currentQuestion.choiceExplanations || currentQuestion.statementExplanations) ? '全体まとめ' : '解説'}
+                </Text>
                 <Text style={s.inlineExplanationText}>{currentQuestion.explanation}</Text>
               </View>
             )}
@@ -798,6 +843,51 @@ function makeStyles(C: ThemeColors) {
     },
     choiceTextWrong: {
       color: C.error,
+    },
+
+    // [2026-05-22] 選択肢ごとの個別解説 (question/[id].tsx と同じパターン)
+    choiceExplBox: {
+      marginLeft: 24 + Spacing.md, // choiceLabel 幅 + padding 分インデント
+      marginRight: 8,
+      marginTop: 6,
+      marginBottom: Spacing.sm,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: BorderRadius.md,
+      borderLeftWidth: 3,
+    },
+    choiceExplCorrect: {
+      backgroundColor: C.successSurface,
+      borderLeftColor: C.success,
+    },
+    choiceExplWrong: {
+      backgroundColor: C.errorSurface,
+      borderLeftColor: C.error,
+    },
+    choiceExplNeutral: {
+      backgroundColor: C.background,
+      borderLeftColor: C.border,
+    },
+    choiceExplText: {
+      fontSize: FontSize.footnote,
+      color: C.textSecondary,
+      lineHeight: LineHeight.footnote,
+    },
+
+    // [2026-05-22] statement (個数問題ア〜エ) 直下の正誤マーク + 解説
+    statementResult: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      marginTop: 4,
+    },
+    statementExpl: {
+      fontSize: FontSize.footnote,
+      color: C.textSecondary,
+      lineHeight: LineHeight.footnote,
+      marginTop: 4,
+      paddingTop: 6,
+      borderTopWidth: 1,
+      borderTopColor: C.borderLight,
     },
 
     // Result screen
