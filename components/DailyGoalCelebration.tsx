@@ -38,10 +38,15 @@ export function DailyGoalCelebration({
 
     hapticSuccess();
 
-    // アニメーションの有無に関わらず 3秒後に自動で閉じる
-    const autoClose = setTimeout(() => {
+    // [2026-05-22] オーナー指摘「消えるの早すぎる」への対応。
+    // 旧: 3.5秒で自動 close → 内容 (達成・ストリーク・タッケン君メッセージ) を読み切れない
+    // 新: タップで閉じる only (Duolingo / Apple Activity / Headspace 標準)
+    //     ユーザーが自分のペースで読み、能動的に閉じる
+    //
+    // フォールバック: 完全放置時の永続表示を防ぐため 60 秒で自動 close (実用上ほぼ発火しない)
+    const fallbackClose = setTimeout(() => {
       onDismiss();
-    }, 3500);
+    }, 60000);
 
     if (showFull) {
       Animated.parallel([
@@ -64,7 +69,7 @@ export function DailyGoalCelebration({
       scale.setValue(1);
     }
 
-    return () => clearTimeout(autoClose);
+    return () => clearTimeout(fallbackClose);
   }, [visible, showFull]);
 
   if (!visible) return null;
@@ -110,7 +115,7 @@ export function DailyGoalCelebration({
                 {'\n'}1日5分でも続けると、合格はもっと近づくよ
               </Text>
             </View>
-            <Text style={s.hint}>タップで閉じる</Text>
+            <Text style={s.hint}>👆 タップして閉じる</Text>
           </Animated.View>
         </Pressable>
       </SafeAreaView>
@@ -169,9 +174,10 @@ function makeStyles(C: ThemeColors) {
       color: C.white,
     },
     hint: {
-      fontSize: FontSize.caption2,
-      color: C.textTertiary,
-      marginTop: 4,
+      fontSize: FontSize.caption,
+      color: C.textSecondary,
+      marginTop: 8,
+      fontWeight: '600',
     },
     // [Quick Win C] 「明日も続けたくなる」演出
     tomorrowBox: {
