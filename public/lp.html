@@ -434,18 +434,21 @@
     }
 
     /* Pricing - 2プラン比較 */
+    /* [2026-05] 3 プラン構成 (無料 / 月額 / 年額) に変更
+       LP の時点で年額/月額を選択できるようにし、paywall への摩擦を削減 */
     .pricing-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      max-width: 880px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
       margin: 32px auto;  /* 「おすすめ」バッジが見切れないよう上余白を増やす */
       align-items: stretch;
     }
     .pricing-card-free,
-    .pricing-card-premium {
+    .pricing-card-monthly,
+    .pricing-card-annual {
       border-radius: 18px;
-      padding: 40px 28px 32px;
+      padding: 36px 22px 28px;
       text-align: center;
       position: relative;
       display: flex;
@@ -453,8 +456,19 @@
     }
     .pricing-card-free {
       background: #fff;
-      border: 2.5px solid #e0e0e0;  /* Premium と同じ太さに揃える (色だけ差別化) */
+      border: 2.5px solid #e0e0e0;
     }
+    .pricing-card-monthly {
+      background: #fff;
+      border: 2.5px solid #c8dccf;
+    }
+    .pricing-card-annual {
+      background: linear-gradient(180deg, #fff 0%, #f0f9f3 100%);
+      border: 2.5px solid #1B7A3D;
+      box-shadow: 0 10px 40px rgba(27,122,61,0.18);
+      transform: scale(1.02);  /* 年額カードを視覚的に主張 */
+    }
+    /* 後方互換 (pricing-card-premium 旧クラスを使うコードがあった場合に備える) */
     .pricing-card-premium {
       background: linear-gradient(180deg, #fff 0%, #f0f9f3 100%);
       border: 2.5px solid #1B7A3D;
@@ -515,13 +529,41 @@
     }
     /* カード内 bullets を伸ばして、CTAボタンを下端に揃える */
     .pricing-card-free .pricing-bullets,
+    .pricing-card-monthly .pricing-bullets,
+    .pricing-card-annual .pricing-bullets,
     .pricing-card-premium .pricing-bullets {
       flex: 1;
       margin-bottom: 16px;
     }
     .pricing-card-free .pricing-cta,
+    .pricing-card-monthly .pricing-cta,
+    .pricing-card-annual .pricing-cta,
     .pricing-card-premium .pricing-cta {
       margin-top: auto;
+    }
+    /* 年額カードの savings 表示 */
+    .pricing-savings-banner {
+      display: inline-block;
+      background: #E8860C;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .pricing-monthly-eq {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1B7A3D;
+      margin-top: 2px;
+    }
+    .pricing-vs-monthly {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+      text-decoration: line-through;
     }
     /* [2026-05] Premium カード内の 月額/年額 2 列表示 */
     .pricing-cycle-row {
@@ -593,13 +635,28 @@
       margin-top: 6px;
     }
 
-    /* レスポンシブ: モバイルでは縦並び */
-    @media (max-width: 720px) {
+    /* レスポンシブ: タブレット (3 列 → 2 列にはせず、年額のみ強調維持) */
+    @media (max-width: 1100px) {
+      .pricing-grid {
+        gap: 16px;
+      }
+      .pricing-card-annual {
+        transform: none;  /* タブレットでは強調しすぎないよう scale 解除 */
+      }
+    }
+    /* レスポンシブ: モバイルでは縦並び、年額を最上部に */
+    @media (max-width: 820px) {
       .pricing-grid {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 28px;
+      }
+      .pricing-card-annual {
+        order: -1;  /* モバイルでは年額を一番上に持ってくる */
+        transform: none;
       }
       .pricing-card-free,
+      .pricing-card-monthly,
+      .pricing-card-annual,
       .pricing-card-premium {
         padding: 32px 22px 28px;
       }
@@ -1418,13 +1475,13 @@
     </div>
   </section>
 
-  <!-- Pricing (CTA #5) - 2プラン比較 -->
+  <!-- Pricing (CTA #5) - 3 プラン構成 (無料 / 月額 / 年額) -->
   <section class="section">
     <h2>料金プラン</h2>
-    <p class="section-lead">まずは無料で試して、本気になったら Premium へ。<br>解約はいつでも、ワンタップ。</p>
+    <p class="section-lead">LP の時点で月額・年額が選べます。<br>解約はいつでも、ワンタップ。</p>
 
     <div class="pricing-grid">
-      <!-- 無料プラン -->
+      <!-- 1. 無料プラン -->
       <div class="pricing-card pricing-card-free">
         <h3 class="pricing-name">無料プラン</h3>
         <div class="pricing-free-badge">クレカ登録不要・即スタート</div>
@@ -1444,27 +1501,15 @@
         <p class="pricing-safe">登録は30秒で完了</p>
       </div>
 
-      <!-- Premium プラン (おすすめ) -->
-      <div class="pricing-card pricing-card-premium">
-        <div class="pricing-badge">おすすめ</div>
-        <h3 class="pricing-name">Premium プラン</h3>
+      <!-- 2. Premium 月額プラン -->
+      <div class="pricing-card pricing-card-monthly">
+        <h3 class="pricing-name">Premium 月額</h3>
         <div class="pricing-trial">7日間 ¥0 無料</div>
-
-        <!-- [2026-05] 月額 / 年額 の 2 列表示 (年額は 49% OFF で推奨) -->
-        <div class="pricing-cycle-row">
-          <div class="pricing-cycle-item">
-            <div class="pricing-cycle-label">月額</div>
-            <div class="pricing-cycle-amount">¥980<small>/月</small></div>
-          </div>
-          <div class="pricing-cycle-item is-recommended">
-            <div class="pricing-cycle-badge">人気No.1</div>
-            <div class="pricing-cycle-label">年額</div>
-            <div class="pricing-cycle-amount">¥5,980<small>/年</small></div>
-            <div class="pricing-cycle-monthly-eq">¥498/月相当</div>
-            <div class="pricing-savings">約 49% OFF</div>
-          </div>
+        <div class="pricing-price-row">
+          <span class="pricing-price">¥980</span>
+          <span class="pricing-unit">/月（税込）</span>
         </div>
-
+        <div class="pricing-daily">1日わずか33円</div>
         <ul class="pricing-bullets">
           <li>計2,020問 解き放題</li>
           <li>AI解説 1日100回</li>
@@ -1473,8 +1518,32 @@
           <li>忘れる前の自動復習</li>
           <li>2026年法改正完全対応</li>
         </ul>
-        <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="pricing-cta">7日間 無料で試す</a>
-        <p class="pricing-safe">月額/年額どちらもアプリで選べる ・ いつでも解約OK</p>
+        <a href="https://app.takkenkanzen.com/auth/login?returnTo=%2Fpaywall%3Fcycle%3Dmonthly" class="pricing-cta pricing-cta-secondary">月額で7日間無料</a>
+        <p class="pricing-safe">いつでも解約OK</p>
+      </div>
+
+      <!-- 3. Premium 年額プラン (人気No.1) -->
+      <div class="pricing-card pricing-card-annual">
+        <div class="pricing-badge">人気No.1</div>
+        <h3 class="pricing-name">Premium 年額</h3>
+        <div class="pricing-trial">7日間 ¥0 無料</div>
+        <div class="pricing-savings-banner">約 49% OFF</div>
+        <div class="pricing-price-row">
+          <span class="pricing-price">¥5,980</span>
+          <span class="pricing-unit">/年（税込）</span>
+        </div>
+        <div class="pricing-monthly-eq">¥498/月相当</div>
+        <div class="pricing-vs-monthly">月額換算 ¥980/月</div>
+        <ul class="pricing-bullets">
+          <li>計2,020問 解き放題</li>
+          <li>AI解説 1日100回</li>
+          <li>本試験形式 模擬試験 無制限</li>
+          <li>弱点AI分析・最適出題</li>
+          <li>忘れる前の自動復習</li>
+          <li>2026年法改正完全対応</li>
+        </ul>
+        <a href="https://app.takkenkanzen.com/auth/login?returnTo=%2Fpaywall%3Fcycle%3Dannual" class="pricing-cta">年額で7日間無料</a>
+        <p class="pricing-safe">¥5,880 (月6回分) と僅か ¥100 差で 12 ヶ月利用可</p>
       </div>
     </div>
     <div class="trust">

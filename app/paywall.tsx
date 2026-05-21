@@ -49,7 +49,7 @@ const API_BASE = API_BASE_URL;
 
 export default function PaywallScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ status?: string; subscription_id?: string }>();
+  const params = useLocalSearchParams<{ status?: string; subscription_id?: string; cycle?: string }>();
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
   const getDaysUntilExam = useSettingsStore((s) => s.getDaysUntilExam);
@@ -62,8 +62,11 @@ export default function PaywallScreen() {
   const [loading, setLoading] = useState(false);
   const [activating, setActivating] = useState(false);
   const [restoring, setRestoring] = useState(false);
-  // [2026-05] 課金サイクル選択。デフォルトは年額 (ARPU を最大化 + 49% OFF で訴求力高い)
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('annual');
+  // [2026-05] 課金サイクル選択。
+  // - デフォルトは年額 (ARPU を最大化 + 49% OFF で訴求力高い)
+  // - LP の月額/年額 CTA から ?cycle=monthly|annual を渡せば、その値で開く
+  const initialCycle: BillingCycle = params.cycle === 'monthly' ? 'monthly' : 'annual';
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>(initialCycle);
 
   // 既に有料会員ならホームに戻す
   useEffect(() => {

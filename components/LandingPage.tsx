@@ -225,6 +225,15 @@ export default function LandingPage() {
   }, []);
 
   const goLogin = useCallback(() => router.push('/auth/login'), [router]);
+  // [2026-05] LP の月額/年額カードから cycle 指定で paywall へ
+  const goPremiumMonthly = useCallback(
+    () => router.push('/auth/login?returnTo=/paywall?cycle=monthly' as any),
+    [router],
+  );
+  const goPremiumAnnual = useCallback(
+    () => router.push('/auth/login?returnTo=/paywall?cycle=annual' as any),
+    [router],
+  );
 
   // リダイレクト中はローダーだけ表示し、フル LP のチラ見えを防止
   if (shouldRedirectToMarketingLP) {
@@ -423,8 +432,9 @@ export default function LandingPage() {
         <Text style={s.sectionLabel}>PRICING</Text>
         <Text style={s.sectionTitle}>シンプルな料金プラン</Text>
 
+        {/* [2026-05] 3 プラン構成 (無料 / 月額 / 年額) */}
         <View style={s.planRow}>
-          {/* FREE */}
+          {/* 1. FREE */}
           <View style={[s.planCard, Shadow.sm]}>
             <Text style={s.planName}>FREE</Text>
             <Text style={s.planPrice}>¥0</Text>
@@ -436,35 +446,51 @@ export default function LandingPage() {
             <Text style={s.planFeatureDisabled}>× 模擬試験</Text>
             <Text style={s.planFeatureDisabled}>× AI解説</Text>
             <Text style={s.planFeatureDisabled}>× AI苦手分析</Text>
+            <Pressable
+              style={[s.planCTA, s.planCTASecondary, Shadow.sm]}
+              onPress={goLogin}
+              accessibilityRole="button"
+              accessibilityLabel="無料で始める"
+            >
+              <Text style={[s.planCTAText, s.planCTATextSecondary]}>無料で始める</Text>
+            </Pressable>
           </View>
 
-          {/* PREMIUM */}
+          {/* 2. PREMIUM 月額 */}
+          <View style={[s.planCard, s.planCardMonthly, Shadow.sm]}>
+            <Text style={[s.planName, s.planNameMonthly]}>Premium 月額</Text>
+            <Text style={[s.planPrice, s.planPriceMonthly]}>¥980</Text>
+            <Text style={[s.planPeriod, s.planPeriodMonthly]}>/月（税込）</Text>
+            <Text style={s.planMonthlyDaily}>1日わずか33円</Text>
+            <View style={s.planDivider} />
+            <Text style={s.planFeature}>✓ 全{TOTAL_Q}問が解き放題</Text>
+            <Text style={s.planFeature}>✓ 一問一答{TOTAL_QQ}問</Text>
+            <Text style={s.planFeature}>✓ 模擬試験 無制限</Text>
+            <Text style={s.planFeature}>✓ AI解説 1日100回</Text>
+            <Text style={s.planFeature}>✓ AI苦手分析</Text>
+            <Text style={s.planFeature}>✓ 法改正完全対応</Text>
+            <Pressable
+              style={[s.planCTA, s.planCTASecondary, Shadow.sm]}
+              onPress={goPremiumMonthly}
+              accessibilityRole="button"
+              accessibilityLabel="Premium 月額プラン 7日間無料で試す"
+            >
+              <Text style={[s.planCTAText, s.planCTATextSecondary]}>月額で7日間無料</Text>
+            </Pressable>
+          </View>
+
+          {/* 3. PREMIUM 年額 (人気No.1) */}
           <View style={[s.planCard, s.planCardPremium, Shadow.md]}>
             <View style={s.planBadge}>
-              <Text style={s.planBadgeText}>おすすめ</Text>
+              <Text style={s.planBadgeText}>人気No.1</Text>
             </View>
-            <Text style={[s.planName, s.planNamePremium]}>PREMIUM</Text>
-
-            {/* [2026-05] 月額 / 年額 の 2 列価格表示 (年額が 49% OFF で推奨) */}
-            <View style={s.planCycleRow}>
-              <View style={s.planCycleItem}>
-                <Text style={s.planCycleLabel}>月額</Text>
-                <Text style={s.planCycleAmount}>¥980</Text>
-                <Text style={s.planCycleUnit}>/月</Text>
-              </View>
-              <View style={[s.planCycleItem, s.planCycleItemRecommended]}>
-                <View style={s.planCycleTopBadge}>
-                  <Text style={s.planCycleTopBadgeText}>人気No.1</Text>
-                </View>
-                <Text style={s.planCycleLabel}>年額</Text>
-                <Text style={s.planCycleAmount}>¥5,980</Text>
-                <Text style={s.planCycleUnit}>¥498/月相当</Text>
-                <View style={s.planSavingsBadge}>
-                  <Text style={s.planSavingsBadgeText}>約 49% OFF</Text>
-                </View>
-              </View>
+            <Text style={[s.planName, s.planNamePremium]}>Premium 年額</Text>
+            <View style={s.planSavingsBanner}>
+              <Text style={s.planSavingsBannerText}>約 49% OFF</Text>
             </View>
-
+            <Text style={[s.planPrice, s.planPricePremium]}>¥5,980</Text>
+            <Text style={[s.planPeriod, s.planPeriodPremium]}>/年（税込）</Text>
+            <Text style={s.planAnnualMonthlyEq}>¥498/月相当</Text>
             <View style={[s.planDivider, { borderColor: 'rgba(255,255,255,0.2)' }]} />
             <Text style={s.planFeaturePremium}>✓ 全{TOTAL_Q}問が解き放題</Text>
             <Text style={s.planFeaturePremium}>✓ 一問一答{TOTAL_QQ}問</Text>
@@ -474,11 +500,11 @@ export default function LandingPage() {
             <Text style={s.planFeaturePremium}>✓ 法改正完全対応</Text>
             <Pressable
               style={[s.planCTA, Shadow.sm]}
-              onPress={goLogin}
+              onPress={goPremiumAnnual}
               accessibilityRole="button"
-              accessibilityLabel="PREMIUMプラン 7日間無料で試す (月額/年額どちらも選べます)"
+              accessibilityLabel="Premium 年額プラン 7日間無料で試す (約49%OFF)"
             >
-              <Text style={s.planCTAText}>7日間無料で試す</Text>
+              <Text style={s.planCTAText}>年額で7日間無料</Text>
             </Pressable>
           </View>
         </View>
@@ -1035,6 +1061,56 @@ function makeStyles(C: ThemeColors) {
       marginTop: 20,
     },
     planCTAText: { fontSize: FontSize.subhead, fontWeight: '800', color: C.primary },
+
+    // [2026-05] 3 プラン構成 (無料 / 月額 / 年額) 追加スタイル
+    planCardMonthly: {
+      backgroundColor: C.card,
+      borderWidth: 2,
+      borderColor: C.borderLight,
+    },
+    planNameMonthly: {
+      color: C.textSecondary,
+    },
+    planPriceMonthly: {
+      color: C.text,
+    },
+    planPeriodMonthly: {
+      color: C.textSecondary,
+    },
+    planMonthlyDaily: {
+      fontSize: FontSize.caption,
+      color: C.textTertiary,
+      marginTop: 4,
+      fontWeight: '600',
+    },
+    planSavingsBanner: {
+      alignSelf: 'center',
+      backgroundColor: C.accent ?? '#E8860C',
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 999,
+      marginVertical: 8,
+    },
+    planSavingsBannerText: {
+      color: C.white,
+      fontSize: 12,
+      fontWeight: '800',
+      letterSpacing: 0.5,
+    },
+    planAnnualMonthlyEq: {
+      fontSize: FontSize.caption,
+      color: 'rgba(255,255,255,0.9)',
+      fontWeight: '700',
+      marginTop: 2,
+    },
+    planCTASecondary: {
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderColor: C.primary,
+    },
+    planCTATextSecondary: {
+      color: C.primary,
+    },
 
     // [2026-05] 月額 / 年額 2 列表示 (PREMIUM カード内)
     planCycleRow: {
