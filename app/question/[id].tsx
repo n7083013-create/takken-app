@@ -67,7 +67,7 @@ export default function QuestionDetailScreen() {
   const router = useRouter();
   const nav = useNavigation();
   const recordAnswer = useProgressStore((s) => s.recordAnswer);
-  const getTodayAnswered = useProgressStore((s) => s.getTodayAnswered);
+  const getTodayFourChoiceCount = useProgressStore((s) => s.getTodayFourChoiceCount);
   const toggleBookmark = useProgressStore((s) => s.toggleBookmark);
   const markAsMastered = useProgressStore((s) => s.markAsMastered);
   const unmarkMastered = useProgressStore((s) => s.unmarkMastered);
@@ -337,7 +337,11 @@ export default function QuestionDetailScreen() {
   // フリーミアム制御: 1日10問まで（未回答状態で上限に達していれば表示）
   // [UX改善 2026-05] 共通 LimitReachedScreen + paywallCopy.ts に統一。
   // Celebration ファースト (「今日の10問達成！」) + streak shield + trial-first CTA。
-  const todayAnswered = getTodayAnswered();
+  //
+  // [2026-05-22] 4択 freemium 制限は 4択 raw count のみで判定。
+  // getTodayAnswered() は 一問一答 × 0.2 が混ざるので、ここで使うと
+  // 一問一答を解いた後に 4択を制限以下なのに弾く誤判定が発生する。
+  const todayAnswered = getTodayFourChoiceCount();
   if (!canAccess(isPro, 'question', todayAnswered) && state === 'idle') {
     return (
       <LimitReachedScreen

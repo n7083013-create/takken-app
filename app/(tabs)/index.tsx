@@ -232,15 +232,19 @@ function HomeScreen() {
   const dailyLog = useMemo(() => getDailyLog(), [stats]);
   const freezeCount = useMemo(() => getStreakFreezeCount(), [stats]);
 
-  const todayAnswered = useMemo(() => getTodayAnswered(), [progress, getTodayAnswered]);
+  // [2026-05-22] getTodayAnswered は 4択 + 一問一答×0.2 の float を返す。
+  // 目標判定 / 進捗バーは float のまま使う (滑らかな進捗表示)。
+  // 数値カードや「X/Y問」表記は丸めて整数表示する。
+  const todayAnsweredRaw = useMemo(() => getTodayAnswered(), [progress, getTodayAnswered]);
+  const todayAnswered = useMemo(() => Math.round(todayAnsweredRaw), [todayAnsweredRaw]);
   const dailyGoalPct = useMemo(
-    () => dailyGoal > 0 ? Math.min(100, Math.round((todayAnswered / dailyGoal) * 100)) : 0,
-    [todayAnswered, dailyGoal],
+    () => dailyGoal > 0 ? Math.min(100, Math.round((todayAnsweredRaw / dailyGoal) * 100)) : 0,
+    [todayAnsweredRaw, dailyGoal],
   );
 
   // 日目標達成を検知 → 1日1回だけ祝福演出を発火
   useEffect(() => {
-    if (dailyGoal > 0 && todayAnswered >= dailyGoal) {
+    if (dailyGoal > 0 && todayAnsweredRaw >= dailyGoal) {
       const today = new Date().toISOString().slice(0, 10);
       const key = `daily_goal_${today}`;
       if (!isCelebrated(key)) {

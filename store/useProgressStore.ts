@@ -21,6 +21,18 @@ const STORAGE_KEY = '@takken_progress';
 const INITIAL_EASE_FACTOR = 2.5;
 const MIN_EASE_FACTOR = 1.3;
 
+/**
+ * 「今日の目標」計算における 一問一答 の重み。
+ *
+ * 設計判断 (2026-05-22):
+ *  - 4択問題は思考プロセスが重く 1問 = 1.0 でカウント
+ *  - 一問一答は ◯× の単純判定なので 1問 = 0.2 (約 1/5 の負荷感)
+ *  - これにより「一問一答を 5 問解く ≒ 4択 1問」となり達成感のスケールが揃う
+ *  - 旧仕様では 一問一答が dailyGoal に 1 ミリも反映されず「解いても達成感ない」
+ *    というユーザーフィードバックがあった
+ */
+export const QUICK_QUIZ_WEIGHT = 0.2;
+
 interface QuickQuizStats {
   total: number;
   correct: number;
@@ -55,6 +67,7 @@ interface ProgressState {
   getMasteredCount(threshold?: number): number;
   getCategoryAccuracy(category: Category): number;
   getTodayAnswered(): number;
+  getTodayFourChoiceCount(): number;
   getTodayCorrect(): number;
   getTodayQuickQuizCount(): number;
   getDailyLog(): Record<string, number>;
@@ -556,6 +569,25 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   getTodayAnswered(): number {
     // Issue #16: lastAttemptAt ベースは「過去問を見直すだけ（recordAnswer 未呼び出し）」
     // でも 0 にならない/タイムゾーン境界バグがあった。dailyLog（recordAnswer 内で +1）を真値とする。
+    //
+    // [2026-05-22] 一問一答も今日の目標達成に寄与させる:
+    //   4択: 1問あたり 1.0
+    //   一問一答: 1問あたり QUICK_QUIZ_WEIGHT (0.2)
+    //   → 一問一答 5問 ≒ 4択 1問
+    //   返り値は float になり得る。表示側で必要なら Math.round() する。
+    //
+    // ⚠️ フリーミアム 4択 10問/日 の判定にはこれを使わないこと (一問一答が混ざる)。
+    //    そちらは getTodayFourChoiceCount() を使う。
+    const fourChoiceCount = get().getTodayFourChoiceCount();
+    const quickQuizCount = get().getTodayQuickQuizCount();
+    return fourChoiceCount + quickQuizCount * QUICK_QUIZ_WEIGHT;
+  },
+
+  /**
+   * 今日の 4択問題の解答数 (一問一答を含まない raw count)。
+   * フリーミアム制限 (10問/日) や Heatmap セル値で使う。
+   */
+  getTodayFourChoiceCount(): number {
     const stats = get().stats;
     const todayKey = getDateKey(new Date());
     return stats.dailyLog?.[todayKey] ?? 0;

@@ -251,9 +251,63 @@ describe('useProgressStore - streak', () => {
       expect(log[todayKey]).toBe(2);
     });
 
-    it('getTodayAnswered が dailyLog の当日値を返す', () => {
+    it('getTodayAnswered が dailyLog の当日値を返す (4択のみ・1問=1.0)', () => {
       useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
       expect(useProgressStore.getState().getTodayAnswered()).toBe(1);
+    });
+  });
+
+  // ----------------------------------------------------------
+  // [2026-05-22] 一問一答も今日の目標達成に寄与する (重み 0.2)
+  // ----------------------------------------------------------
+  describe('getTodayAnswered - 一問一答の重み 0.2 加算', () => {
+    it('一問一答 1問 = 0.2 として加算される', () => {
+      useProgressStore.getState().recordQuickQuizAnswer('qq1', 'kenri', true);
+      // 4択 0問 + 一問一答 1問 × 0.2 = 0.2
+      expect(useProgressStore.getState().getTodayAnswered()).toBeCloseTo(0.2, 5);
+    });
+
+    it('一問一答 5問 で 4択 1問と同等 (= 1.0)', () => {
+      for (let i = 0; i < 5; i++) {
+        useProgressStore.getState().recordQuickQuizAnswer(`qq${i}`, 'kenri', true);
+      }
+      expect(useProgressStore.getState().getTodayAnswered()).toBeCloseTo(1.0, 5);
+    });
+
+    it('4択 + 一問一答 の合算が正しい', () => {
+      // 4択 3問
+      useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
+      useProgressStore.getState().recordAnswer('q2', 'kenri', true, 'low');
+      useProgressStore.getState().recordAnswer('q3', 'kenri', false, 'low');
+      // 一問一答 5問
+      for (let i = 0; i < 5; i++) {
+        useProgressStore.getState().recordQuickQuizAnswer(`qq${i}`, 'kenri', true);
+      }
+      // 3 + 5 × 0.2 = 4.0
+      expect(useProgressStore.getState().getTodayAnswered()).toBeCloseTo(4.0, 5);
+    });
+
+    it('一問一答 10問でdailyGoal 2 と同等の進捗 (10 × 0.2 = 2.0)', () => {
+      // 「達成感のなさ」原因はここ: 旧仕様だと一問一答 10問解いても getTodayAnswered=0 だった
+      for (let i = 0; i < 10; i++) {
+        useProgressStore.getState().recordQuickQuizAnswer(`qq${i}`, 'kenri', true);
+      }
+      expect(useProgressStore.getState().getTodayAnswered()).toBeCloseTo(2.0, 5);
+    });
+
+    it('getTodayFourChoiceCount は一問一答を含まない (raw 4択)', () => {
+      // フリーミアム 4択 10問/日 判定で使うので、一問一答が混ざってはいけない
+      useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
+      useProgressStore.getState().recordAnswer('q2', 'kenri', true, 'low');
+      useProgressStore.getState().recordQuickQuizAnswer('qq1', 'kenri', true);
+      useProgressStore.getState().recordQuickQuizAnswer('qq2', 'kenri', true);
+      expect(useProgressStore.getState().getTodayFourChoiceCount()).toBe(2);
+    });
+
+    it('一問一答だけ解いても getTodayFourChoiceCount は 0', () => {
+      useProgressStore.getState().recordQuickQuizAnswer('qq1', 'kenri', true);
+      useProgressStore.getState().recordQuickQuizAnswer('qq2', 'kenri', true);
+      expect(useProgressStore.getState().getTodayFourChoiceCount()).toBe(0);
     });
   });
 
