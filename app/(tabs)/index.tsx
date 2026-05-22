@@ -191,6 +191,9 @@ function HomeScreen() {
   const insets = useSafeAreaInsets();
   const stats = useProgressStore((s) => s.stats);
   const progress = useProgressStore((s) => s.progress);
+  // [2026-05-22] 一問一答も「今日の目標」に寄与するようになったので、
+  // quickQuizStats も購読し再レンダーをトリガする。
+  const quickQuizStats = useProgressStore((s) => s.quickQuizStats);
   const getDueForReview = useProgressStore((s) => s.getDueForReview);
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
   const isPro = useSettingsStore((s) => s.isPro());
@@ -235,7 +238,11 @@ function HomeScreen() {
   // [2026-05-22] getTodayAnswered は 4択 + 一問一答×0.2 の float を返す。
   // 目標判定 / 進捗バーは float のまま使う (滑らかな進捗表示)。
   // 数値カードや「X/Y問」表記は丸めて整数表示する。
-  const todayAnsweredRaw = useMemo(() => getTodayAnswered(), [progress, getTodayAnswered]);
+  // deps に quickQuizStats を含めること: 一問一答を解いた直後の再計算をトリガする。
+  const todayAnsweredRaw = useMemo(
+    () => getTodayAnswered(),
+    [progress, quickQuizStats, getTodayAnswered],
+  );
   const todayAnswered = useMemo(() => Math.round(todayAnsweredRaw), [todayAnsweredRaw]);
   const dailyGoalPct = useMemo(
     () => dailyGoal > 0 ? Math.min(100, Math.round((todayAnsweredRaw / dailyGoal) * 100)) : 0,
