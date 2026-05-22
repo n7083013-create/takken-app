@@ -103,6 +103,15 @@ describe('resolvePlanId - billingCycle → Plan ID 解決', () => {
     expect(() => resolvePlanId('monthly')).not.toThrow();
   });
 
+  // 2026-05-22: 実際に踏んだバグ。`echo "X" | vercel env add` で trailing \n が入り、
+  // PayPal が INVALID_PARAMETER_SYNTAX を返す現象を防ぐ防御コード。
+  test('env 値の trailing whitespace / 改行を trim する', () => {
+    process.env.PAYPAL_PLAN_ANNUAL = 'P-CLEAN-ANNUAL\n';
+    process.env.PAYPAL_PLAN_MONTHLY = '  P-CLEAN-MONTHLY  ';
+    expect(resolvePlanId('annual')).toBe('P-CLEAN-ANNUAL');
+    expect(resolvePlanId('monthly')).toBe('P-CLEAN-MONTHLY');
+  });
+
   // env の動的反映を保証 (module load 時固定だった旧実装のリグレッション防止)
   test('env を変えた直後に呼んでも反映される (関数呼び出し時に読む)', () => {
     process.env.PAYPAL_PLAN_ANNUAL = 'P-ANNUAL-OLD';

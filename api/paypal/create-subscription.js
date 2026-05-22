@@ -25,10 +25,13 @@ const supabaseAdmin = createClient(
 /**
  * リクエストの billingCycle から PayPal Plan ID を解決。
  * env vars は呼び出し時に都度読み取る。
+ * trim() で trailing whitespace / 改行を除去 (env 設定時の事故を防御)。
  */
 function resolvePlanId(billingCycle) {
-  if (billingCycle === 'annual') return process.env.PAYPAL_PLAN_ANNUAL;
-  return process.env.PAYPAL_PLAN_MONTHLY || process.env.PAYPAL_PLAN_ID;
+  const raw = billingCycle === 'annual'
+    ? process.env.PAYPAL_PLAN_ANNUAL
+    : (process.env.PAYPAL_PLAN_MONTHLY || process.env.PAYPAL_PLAN_ID);
+  return typeof raw === 'string' ? raw.trim() : raw;
 }
 
 /**
@@ -401,7 +404,13 @@ module.exports = async (req, res) => {
     // detail / paypalError は機密ではない (plan ID 先頭のみ) のでフロント表示してOK。
     const paypalErrorName = e?.data?.name;
     const paypalErrorDetails = Array.isArray(e?.data?.details)
-      ? e.data.details.map((d) => d.issue + (d.description ? `: ${d.description}` : '')).join(' / ')
+      ? e.data.details
+          .map((d) => {
+            const field = d.field ? `[${d.field}] ` : '';
+            const desc = d.description ? `: ${d.description}` : '';
+            return field + d.issue + desc;
+          })
+          .join(' / ')
       : undefined;
     return res.status(500).json({
       error: 'サブスクリプション作成に失敗しました',
