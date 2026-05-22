@@ -27,11 +27,12 @@ export type CancellationReason =
 
 /** counter-offer の種類 (UI 分岐と分析イベント両方で使う) */
 export type OfferType =
-  | 'half_price_one_month'   // 1ヶ月だけ半額
-  | 'pause_subscription'     // 一時停止 (次の試験まで)
-  | 'free_extension_14days'  // 14日無料延長 + 応援 (2026-05 30日から短縮)
-  | 'pause_short'            // 1-3ヶ月だけ一時停止
-  | 'support_form'           // 問題報告フォーム + 30日返金
+  | 'half_price_one_month'   // [非推奨 2026-05-22] 1ヶ月半額 - 手動運用負担で廃止
+  | 'pause_subscription'     // [非推奨 2026-05-22] 一時停止 - 手動運用負担で廃止
+  | 'free_extension_14days'  // [非推奨 2026-05-22] 14日延長 - 手動運用負担で廃止
+  | 'pause_short'            // [非推奨 2026-05-22] 短期一時停止 - 手動運用負担で廃止
+  | 'upgrade_to_annual'      // 月額 → 年額アップグレード (自動・Spotify trade-up パターン)
+  | 'support_form'           // 問題報告フォーム
   | 'no_offer';              // オファーなし (= 即最終確認へ)
 
 export interface ReasonChoice {
@@ -119,8 +120,7 @@ export function getCounterOffer(
 
   switch (reason) {
     case 'too_expensive':
-      // 年額契約者は既に「月額 ¥498 相当」を払っているので「半額」が刺さらない。
-      // 代わりに「残り期間は全機能使えます」「翌年は更新タイミングで考えよう」と提示。
+      // 年額契約者は既に「月額 ¥498 相当」を払っているので、これ以上の割引なし。
       if (isAnnual) {
         return {
           offerType: 'no_offer',
@@ -132,18 +132,20 @@ export function getCounterOffer(
           declineCta: 'それでも解約する',
         };
       }
+      // [2026-05-22] 月額契約者には「年額アップグレード」を提案 (Spotify trade-up パターン)。
+      // ¥980/月 → ¥498/月相当 で実質半額、自動切替 (PayPal Revise API 経由) で運用コストゼロ。
       return {
-        offerType: 'half_price_one_month',
-        emoji: '💝',
-        title: '1ヶ月だけ半額（¥490）で続けてみませんか？',
+        offerType: 'upgrade_to_annual',
+        emoji: '💎',
+        title: '年額プランなら ¥498/月相当 (約 49% OFF)',
         subtitle:
-          '今月だけ価格を半額にします。\n気が変わったらいつでも解約できます。',
-        acceptCta: '半額で1ヶ月続ける',
+          '月額 ¥980 → 年額 ¥5,980 (月換算 ¥498) に変更すると、\nほぼ半額で同じ機能をご利用いただけます。\n変更は次の画面でワンタップ完了。',
+        acceptCta: '年額に切替えてお得に続ける',
         declineCta: 'それでも解約する',
       };
 
     case 'exam_done':
-      // 年額契約者は「次の試験まで」が既に支払い済みなので、解約せず使ってもらえばよい。
+      // 年額契約者: 次回更新まで支払い済み → そのまま使ってもらう
       if (isAnnual) {
         return {
           offerType: 'no_offer',
@@ -155,13 +157,15 @@ export function getCounterOffer(
           declineCta: 'それでも解約する',
         };
       }
+      // [2026-05-22] 月額契約者向けも no_offer (一時停止は手動運用負担のため廃止)。
+      // 月額の場合は次回更新日まで使えること + 学習データ保持を強調。
       return {
-        offerType: 'pause_subscription',
-        emoji: '⏸️',
-        title: '次の試験まで一時停止しませんか？',
+        offerType: 'no_offer',
+        emoji: '🎓',
+        title: 'お疲れさまでした',
         subtitle:
-          '解約せずに支払いだけ止められます。\n学習データはそのまま、来年すぐ再開できます。',
-        acceptCta: '次の試験まで一時停止',
+          '次回更新日まで全機能ご利用いただけます。\n来年もう一度受験する場合、学習データは保持されるので、再登録時もそのまま使えます。',
+        acceptCta: '残り期間を活用する',
         declineCta: 'それでも解約する',
       };
 
@@ -191,7 +195,7 @@ export function getCounterOffer(
       };
 
     case 'no_time':
-      // 年額契約者は「もう払ってあるから余裕ができたら戻ってきて」
+      // 年額契約者: 次回更新まで有効 → そのまま放置でも復帰時に使える
       if (isAnnual) {
         return {
           offerType: 'no_offer',
@@ -203,24 +207,26 @@ export function getCounterOffer(
           declineCta: 'それでも解約する',
         };
       }
+      // [2026-05-22] 月額契約者向けも no_offer (一時停止は手動運用負担のため廃止)。
       return {
-        offerType: 'pause_short',
-        emoji: '⏸️',
-        title: '1〜3ヶ月だけ一時停止できます',
+        offerType: 'no_offer',
+        emoji: '⏰',
+        title: '次回更新日までゆっくり使えます',
         subtitle:
-          '解約せずに支払いだけ止めて、\n余裕ができたら再開できます。学習データはそのまま。',
-        acceptCta: '一時停止する',
+          '解約せずとも、次回更新日まで全機能をご利用いただけます。\n余裕ができた時にまた使えますし、学習データも保存されます。',
+        acceptCta: '残り期間を活用する',
         declineCta: 'それでも解約する',
       };
 
     case 'features':
       // 機能不満は cycle 不問 (要望ヒアリング → 改善が一番のお引き止め)
+      // [2026-05-22] 「30日返金保証」の文言を削除 (手動運用が必要・現状未対応)
       return {
         offerType: 'support_form',
         emoji: '🛠️',
         title: '改善できることがあるかもしれません',
         subtitle:
-          'ご不満な点を教えていただければ、\n優先的に対応します。30日間の返金保証もあります。',
+          'ご不満な点を教えていただければ、\n優先的に対応します。\nアプリ改善の参考にさせてください。',
         acceptCta: '要望を伝える',
         declineCta: 'それでも解約する',
       };

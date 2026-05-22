@@ -77,18 +77,21 @@ describe('getCounterOffer - 理由別 counter-offer 生成', () => {
   // 文言の方向性: ドメイン文脈が反映されている
   // ----------------------------------------------------------
 
-  test('too_expensive は「半額」オファー', () => {
+  test('too_expensive (monthly) は年額アップグレード提案 (Spotify trade-up)', () => {
+    // [2026-05-22] 1ヶ月半額 は手動運用負担で廃止。
+    // 代わりに「年額にアップグレード ¥498/月相当」を自動提案する世界基準パターン。
     const o = getCounterOffer('too_expensive');
-    expect(o.offerType).toBe('half_price_one_month');
+    expect(o.offerType).toBe('upgrade_to_annual');
     const text = `${o.title} ${o.subtitle} ${o.acceptCta}`;
-    expect(text).toMatch(/半額|¥490/);
+    expect(text).toMatch(/年額|¥498|49%/);
   });
 
-  test('exam_done は「一時停止」オファー (試験は年1回の文脈)', () => {
+  test('exam_done (monthly) は no_offer + 残り期間案内 (一時停止廃止)', () => {
+    // [2026-05-22] 一時停止 (pause_subscription) は手動運用負担で廃止 → no_offer に
     const o = getCounterOffer('exam_done');
-    expect(o.offerType).toBe('pause_subscription');
+    expect(o.offerType).toBe('no_offer');
     const text = `${o.title} ${o.subtitle}`;
-    expect(text).toMatch(/一時停止|休止|来年|次の試験/);
+    expect(text).toMatch(/次回更新日|来年|学習データ|残り期間/);
   });
 
   test('gave_up は応援メッセージで no_offer (2026-05-22 14日延長を廃止)', () => {
@@ -105,16 +108,19 @@ describe('getCounterOffer - 理由別 counter-offer 生成', () => {
     expect(o.subtitle).toMatch(/次回更新日|来年|学習データ/);
   });
 
-  test('no_time も一時停止 (短期版)', () => {
+  test('no_time (monthly) も no_offer + 残り期間案内 (短期一時停止廃止)', () => {
+    // [2026-05-22] pause_short は手動運用負担で廃止 → no_offer に
     const o = getCounterOffer('no_time');
-    expect(o.offerType).toBe('pause_short');
-    expect(`${o.title} ${o.subtitle}`).toMatch(/一時停止|休止/);
+    expect(o.offerType).toBe('no_offer');
+    expect(`${o.title} ${o.subtitle}`).toMatch(/次回更新日|残り期間|余裕/);
   });
 
-  test('features は要望ヒアリングへ誘導', () => {
+  test('features は要望ヒアリングへ誘導 (30日返金保証は削除)', () => {
     const o = getCounterOffer('features');
     expect(o.offerType).toBe('support_form');
     expect(`${o.title} ${o.subtitle} ${o.acceptCta}`).toMatch(/要望|改善|教えて/);
+    // [2026-05-22] 30日返金保証の文言は削除 (手動運用が必要・現状未対応)
+    expect(o.subtitle).not.toMatch(/30日.*返金|返金保証/);
   });
 
   test('other は offer なし (no_offer)', () => {
@@ -212,14 +218,16 @@ describe('getCounterOffer - 年額/月額 で分岐 (2026-05 追加)', () => {
     expect(o.title).toMatch(/最大割引|割引|49%/);
   });
 
-  test('monthly + too_expensive は従来通り 半額 offer', () => {
+  test('monthly + too_expensive は年額アップグレード (Spotify trade-up)', () => {
+    // [2026-05-22] 半額 (手動運用) → 年額アップグレード (自動・PayPal Revise) に変更
     const o = getCounterOffer('too_expensive', 'monthly');
-    expect(o.offerType).toBe('half_price_one_month');
-    expect(o.title).toContain('半額');
+    expect(o.offerType).toBe('upgrade_to_annual');
+    expect(o.title).toMatch(/年額|49%/);
   });
 
   // ----------------------------------------------------------
   // 年額契約者は「一時停止」が不要 (残り期間を使えばよい)
+  // 月額契約者も 2026-05-22 以降は手動運用負担廃止のため no_offer
   // ----------------------------------------------------------
 
   test('annual + exam_done は「残り期間で次の試験まで使える」', () => {
@@ -229,9 +237,10 @@ describe('getCounterOffer - 年額/月額 で分岐 (2026-05 追加)', () => {
     expect(text).toMatch(/残り|次の試験|来年/);
   });
 
-  test('monthly + exam_done は従来通り 一時停止 offer', () => {
+  test('monthly + exam_done は no_offer + 残り期間案内 (一時停止廃止)', () => {
+    // [2026-05-22] pause_subscription 廃止 → no_offer
     const o = getCounterOffer('exam_done', 'monthly');
-    expect(o.offerType).toBe('pause_subscription');
+    expect(o.offerType).toBe('no_offer');
   });
 
   test('annual + gave_up は「来年に向けて使い続けて」', () => {

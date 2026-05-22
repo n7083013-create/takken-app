@@ -33,7 +33,6 @@ import {
   getFinalConfirmCopy,
   offerEventLabel,
   type CancellationReason,
-  type OfferType,
 } from '../utils/cancellationCopy';
 
 type Step = 'reason' | 'offer' | 'final';
@@ -83,17 +82,24 @@ export default function CancelFlowScreen() {
       custom_label: offerEventLabel(offer.offerType),
     });
 
-    // [MVP] 自動適用は未実装 (PayPal subscription modification API 連携が別途必要)。
-    // 当面は「申請を受け付けた」UI 表示 + サーバー側の管理者通知メールに集約。
-    // 後続 PR で half_price / pause を PayPal API で自動化する。
-    const message = getOfferAcceptedMessage(offer.offerType);
-    await infoAlert('お申し込みを受け付けました', message);
+    // [2026-05-22] 年額アップグレード offer (自動・PayPal Revise API 経由)
+    // 月額契約者で「料金が高い」を選んだ場合の trade-up パターン
+    if (offer.offerType === 'upgrade_to_annual') {
+      router.replace('/paywall?cycle=annual' as any);
+      return;
+    }
 
-    // 「要望を伝える」だけは feedback ページへ誘導
+    // 「要望を伝える」は feedback ページへ誘導
     if (offer.offerType === 'support_form') {
       router.replace('/feedback' as any);
       return;
     }
+
+    // それ以外 (no_offer 系) は解約手続きをキャンセルしたメッセージ
+    await infoAlert(
+      '解約手続きをキャンセルしました',
+      '引き続きご利用いただけます。\n何かあればお気軽にサポートまでご連絡ください。',
+    );
     router.back();
   }, [offer, reason, router]);
 
@@ -303,29 +309,11 @@ export default function CancelFlowScreen() {
   );
 }
 
-/**
- * offer を受け入れた時に表示するメッセージ。
- * MVP では自動適用ではなく「申請受付」表示。後続で自動化予定。
- */
-function getOfferAcceptedMessage(offerType: OfferType): string {
-  switch (offerType) {
-    case 'half_price_one_month':
-      return '次回更新時に半額（¥490）を適用します。\n適用には数日かかる場合があります。';
-    case 'pause_subscription':
-      return '次の試験 (10月) まで一時停止の手続きを承りました。\n再開のご案内を試験前にお送りします。';
-    // [2026-05-22] free_extension_14days は廃止 (手動運用負担のため)
-    // 残しているのは型互換のためのみ。実際にはこのケースは呼ばれない。
-    case 'free_extension_14days':
-      return '解約手続きをキャンセルしました。引き続きご利用いただけます。';
-    case 'pause_short':
-      return '1〜3ヶ月の一時停止を承りました。\n再開したい時はメールでお知らせください。';
-    case 'support_form':
-      return 'ご要望をお聞かせください。優先的に検討します。';
-    case 'no_offer':
-    default:
-      return '解約手続きをキャンセルしました。引き続きご利用いただけます。';
-  }
-}
+// [2026-05-22] getOfferAcceptedMessage は廃止。
+// 旧 half_price / pause_subscription / pause_short / free_extension_14days の
+// 手動運用 offer はすべて no_offer に変更したため、accept 時の処理は
+// upgrade_to_annual / support_form / それ以外 (no_offer) の 3 分岐のみ。
+// → handleAcceptOffer 内で router 遷移 or 「キャンセルしました」alert で完結。
 
 function makeStyles(C: ThemeColors) {
   return StyleSheet.create({
