@@ -157,14 +157,14 @@ describe('postTrialDescription - トライアル後課金説明', () => {
 });
 
 describe('annualBadgeLabel - 年額タブのバッジ', () => {
-  test('「人気No.1」と「OFF」を含む', () => {
-    const l = annualBadgeLabel();
-    expect(l).toContain('人気No.1');
-    expect(l).toContain('OFF');
+  // [2026-05-22] 「約49% OFF・人気No.1」は narrow phone で2行折返し「年額」と重なるため、
+  // 1行に収まる「人気No.1」のみに短縮。割引率は ¥498/月相当 サブラベルで伝わる。
+  test('「人気No.1」を含む (social proof)', () => {
+    expect(annualBadgeLabel()).toContain('人気No.1');
   });
 
-  test('savings% が文字列に含まれる', () => {
-    expect(annualBadgeLabel()).toContain(`${annualSavingsPercent()}%`);
+  test('1行に収まる短さ (10 文字以内)', () => {
+    expect(annualBadgeLabel().length).toBeLessThanOrEqual(10);
   });
 });
 

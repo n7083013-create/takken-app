@@ -102,7 +102,9 @@ export function postTrialDescription(cycle: BillingCycle): string {
  * 「人気No.1」「お得」など複数表現を ABテスト的に持ちたい場合は配列化を検討。
  */
 export function annualBadgeLabel(): string {
-  return `${annualSavingsLabel()} ・ 人気No.1`;
+  // [2026-05-22] バッジは1行に収まる短い文言にする (長文だと折り返して「年額」と重なる)。
+  // 割引率は ¥498/月相当 サブラベルで既に伝わるため、ここは social proof に振る。
+  return '人気No.1';
 }
 
 /**
