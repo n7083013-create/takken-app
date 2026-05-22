@@ -642,6 +642,9 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
     const result: string[] = [];
 
+    // [2026-05-22] 「全体的にレベルを高く」のフィードバックに対応:
+    //   優先度が同点なら難易度の高い問題を選ぶ (difficulty 3 > 2 > 1)
+    //   弱点 → 未解答の順は維持しつつ、同列の中では難問を引き寄せる
     for (const { cat, count: needed } of catCounts) {
       // ユーザー手動マスター済みは除外
       const catQuestions = ALL_QUESTIONS.filter((q) => q.category === cat && progress[q.id]?.mastered !== true);
@@ -653,7 +656,9 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         else if (p.lastConfidence === 'low') { priority = 3; } // 低確信正解
         else if (p.correctCount / p.attempts < 0.5 && (p.correctStreak ?? 0) < 3) { priority = 3; } // 苦手（達成済み3連正解は除外）
         else { priority = 1; } // 通常
-        return { id: q.id, priority, rand: Math.random() };
+        // 難易度ボーナス: priority 同点で d3 > d2 > d1 になる程度の小さな上乗せ
+        const difficultyBoost = (q.difficulty ?? 2) * 0.1; // 0.1 / 0.2 / 0.3
+        return { id: q.id, priority: priority + difficultyBoost, rand: Math.random() };
       }).sort((a, b) => b.priority - a.priority || a.rand - b.rand);
 
       result.push(...scored.slice(0, needed).map((s) => s.id));
