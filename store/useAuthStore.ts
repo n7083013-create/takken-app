@@ -90,7 +90,7 @@ interface AuthState {
 
   init(): Promise<void>;
   signInWithEmail(email: string, password: string): Promise<{ error: string | null }>;
-  signUpWithEmail(email: string, password: string): Promise<{ error: string | null }>;
+  signUpWithEmail(email: string, password: string): Promise<{ error: string | null; code?: string }>;
   signInWithGoogle(): Promise<{ error: string | null }>;
   resetPassword(email: string): Promise<{ error: string | null }>;
   signOut(): Promise<void>;
@@ -244,15 +244,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (!pwCheck.valid) return { error: pwCheck.message };
     set({ loading: true });
     try {
-      const { error } = await supabase.auth.signUp({ email: email.trim(), password });
+      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
       set({ loading: false });
       if (error) {
         logError(error, { context: 'auth.signUp' });
         if (error.message.includes('already registered')) {
-          return { error: 'このメールアドレスは既に登録されています' };
+          // [2026-05-22] 既存ユーザー検出時はサインインへ誘導用の code を返す
+          return { error: 'このメールアドレスは既に登録されています。ログイン画面に切り替えてご利用ください。', code: 'already_registered' };
         }
         return { error: 'アカウント作成に失敗しました。時間をおいて再度お試しください' };
       }
+
+      // [2026-05-22] Supabase は既存の email confirmed ユーザーへの signUp に対して
+      // エラーを返さない代わりに data.user.identities を空配列で返す (anti-enumeration 対策)。
+      // この場合は確認メールも送られないため、ユーザーに正直に「既に登録されている」と伝える。
+      // 参考: https://github.com/supabase/auth/issues/1517
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        return {
+          error: 'このメールアドレスは既に登録されています。ログイン画面に切り替えてご利用ください。',
+          code: 'already_registered',
+        };
+      }
+
       return { error: null };
     } catch (e) {
       set({ loading: false });

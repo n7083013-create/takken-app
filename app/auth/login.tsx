@@ -177,7 +177,21 @@ export default function LoginScreen() {
       return;
     }
     const fn = mode === 'signin' ? signIn : signUp;
-    const { error } = await fn(email, password);
+    const result = await fn(email, password);
+    const error = result.error;
+    // [2026-05-22] サインアップで既存ユーザー検出時は、自動でログインモードに切替
+    // (Supabase は anti-enumeration のため signUp 成功で identities=[] を返す挙動を持つ。
+    //  これを検知してユーザーに正直に伝え、ログインへスムーズに誘導する)
+    const code = (result as { code?: string }).code;
+    if (mode === 'signup' && code === 'already_registered') {
+      setMode('signin');
+      // パスワードは保持 (同じものを試行できる)
+      await infoAlert(
+        'このメールアドレスは既に登録されています',
+        'ログイン画面に切り替えました。\nパスワードを入力して「ログイン」を押してください。\n\nパスワードが分からない場合は「パスワードを忘れた方」からリセットできます。',
+      );
+      return;
+    }
     if (error) {
       infoAlert(mode === 'signin' ? 'ログイン失敗' : '登録失敗', error);
       return;
