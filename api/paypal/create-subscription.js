@@ -332,15 +332,6 @@ module.exports = async (req, res) => {
       subscriptionId: subscription.id,
       approvalUrl: approveLink.href,
       status: subscription.status,
-      // [2026-05-22 緊急デバッグ] 実際に使われた planId と受信した billingCycle を返す
-      _debug: {
-        receivedBody: req.body,
-        resolvedBillingCycle: billingCycle,
-        resolvedPlanIdPrefix: planId?.substring(0, 14) + '...',
-        planMonthlySet: !!process.env.PAYPAL_PLAN_MONTHLY,
-        planAnnualSet: !!process.env.PAYPAL_PLAN_ANNUAL,
-        planIdFallbackSet: !!process.env.PAYPAL_PLAN_ID,
-      },
     });
   } catch (e) {
     console.error('[paypal.create] Error:', e.message, e.data);

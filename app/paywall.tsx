@@ -236,7 +236,10 @@ export default function PaywallScreen() {
       await infoAlert('通信エラー', err.message || 'ネットワーク接続を確認してください');
       setLoading(false);
     }
-  }, [user, session, router, verifySubscription]);
+    // [2026-05-22] billingCycle を依存配列に追加 (stale closure バグ修正)
+    // タブ切替で setBillingCycle しても useCallback の memo が古い値を保持し、
+    // 月額選択で API に 'annual' が送られて年額サブスクが作成される問題があった。
+  }, [user, session, router, verifySubscription, billingCycle]);
 
   const handleRestore = useCallback(async () => {
     if (!session?.access_token) {
