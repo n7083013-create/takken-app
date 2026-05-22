@@ -397,7 +397,20 @@ module.exports = async (req, res) => {
       route: '/api/paypal/create-subscription',
     });
     await flushSentry();
-    return res.status(500).json({ error: 'サブスクリプション作成に失敗しました', detail: e.message });
+    // [2026-05-22] 診断容易化: PayPal API のエラー本文 + 使用した planId / cycle を返す。
+    // detail / paypalError は機密ではない (plan ID 先頭のみ) のでフロント表示してOK。
+    const paypalErrorName = e?.data?.name;
+    const paypalErrorDetails = Array.isArray(e?.data?.details)
+      ? e.data.details.map((d) => d.issue + (d.description ? `: ${d.description}` : '')).join(' / ')
+      : undefined;
+    return res.status(500).json({
+      error: 'サブスクリプション作成に失敗しました',
+      detail: e.message,
+      paypalError: paypalErrorName || undefined,
+      paypalDetails: paypalErrorDetails || undefined,
+      diagPlanId: typeof planId === 'string' ? planId.substring(0, 14) + '...' : null,
+      diagCycle: billingCycle,
+    });
   }
 };
 

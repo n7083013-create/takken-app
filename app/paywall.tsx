@@ -224,7 +224,15 @@ export default function PaywallScreen() {
             '登録メールアドレスに確認リンクを送信しました。リンクをクリックしてから再度お試しください。',
           );
         } else {
-          await infoAlert('エラー', data.error || 'サブスクリプション作成に失敗しました');
+          // [2026-05-22] detail を含めて表示 (診断容易化)。PayPal API のエラーが
+          // ここに来るので「決済できない原因」をユーザー/サポートに見せられる。
+          const msg = data.error || 'サブスクリプション作成に失敗しました';
+          const parts: string[] = [msg];
+          if (data.paypalError) parts.push(`PayPal: ${data.paypalError}`);
+          if (data.paypalDetails) parts.push(data.paypalDetails);
+          if (data.detail && !data.paypalError) parts.push(String(data.detail).substring(0, 200));
+          if (data.diagPlanId) parts.push(`(plan=${data.diagPlanId} cycle=${data.diagCycle})`);
+          await infoAlert('エラー', parts.join('\n'));
         }
         setLoading(false);
         return;
