@@ -9,14 +9,18 @@ const { paypalFetch } = require('../_paypal-utils');
 const PAYPAL_PLAN_MONTHLY = process.env.PAYPAL_PLAN_MONTHLY || process.env.PAYPAL_PLAN_ID;
 const PAYPAL_PLAN_ANNUAL = process.env.PAYPAL_PLAN_ANNUAL;
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
+// [2026-05-22] 一時診断用トークン — PayPal プランステータス確認のために発行
+// 確認後は Vercel env から削除すること
+const PAYPAL_DIAG_TOKEN = process.env.PAYPAL_DIAG_TOKEN;
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // 管理者認証
+  // 管理者認証 (ADMIN_SECRET or PAYPAL_DIAG_TOKEN のいずれかを受け付ける)
   const secret = req.headers['x-admin-secret'] || req.query.secret;
-  if (!ADMIN_SECRET || secret !== ADMIN_SECRET) {
+  const validSecrets = [ADMIN_SECRET, PAYPAL_DIAG_TOKEN].filter(Boolean);
+  if (validSecrets.length === 0 || !validSecrets.includes(secret)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
