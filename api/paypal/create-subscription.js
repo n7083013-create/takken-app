@@ -332,6 +332,8 @@ module.exports = async (req, res) => {
       subscriptionId: subscription.id,
       approvalUrl: approveLink.href,
       status: subscription.status,
+      // [2026-05-22 一時デバッグ] 使用した planId と billingCycle を確認用に返す
+      _debug: { planId: planId?.substring(0, 12) + '...', billingCycle },
     });
   } catch (e) {
     console.error('[paypal.create] Error:', e.message, e.data);
