@@ -264,6 +264,27 @@ module.exports = async (req, res) => {
       });
     }
 
+    // [2026-05-22] プランステータス確認 + 自動アクティベート
+    // PayPal Dashboard で手動作成したプランは CREATED 状態から始まるため、
+    // ACTIVE でない場合は自動的にアクティベートを試みる。
+    try {
+      const planData = await paypalFetch(`/v1/billing/plans/${planId}`, { method: 'GET' });
+      console.log(`[paypal.create] plan=${planId} status=${planData.status}`);
+      if (planData.status === 'CREATED' || planData.status === 'INACTIVE') {
+        console.log(`[paypal.create] Plan is ${planData.status}, activating...`);
+        await paypalFetch(`/v1/billing/plans/${planId}/activate`, { method: 'POST' });
+        console.log('[paypal.create] Plan activated.');
+      } else if (planData.status !== 'ACTIVE') {
+        return res.status(500).json({
+          error: `PayPal プランが利用できない状態です (status: ${planData.status})。管理者にお問い合わせください。`,
+          code: 'plan_unavailable',
+        });
+      }
+    } catch (planErr) {
+      // プランチェック失敗は致命的ではないので続行するが、ログに残す
+      console.error('[paypal.create] plan status check failed:', planErr.message);
+    }
+
     // PayPal Subscription 作成
     // custom_id にユーザーIDと billingCycle を埋め込み、Webhook で識別 + 課金サイクル復元する
     const subscription = await paypalFetch('/v1/billing/subscriptions', {
