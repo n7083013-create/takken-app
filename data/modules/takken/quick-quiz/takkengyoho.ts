@@ -13,6 +13,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法第3条第1項により、1都道府県内のみは知事免許、2以上なら国土交通大臣免許。',
     relatedQuestionId: 'takkengyoho-001',
     tags: ['免許', '知事免許'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_002',
@@ -23,26 +24,29 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '2以上の都道府県に事務所を置く場合は国土交通大臣免許を受ける（宅建業法3条1項）。',
     relatedQuestionId: 'takkengyoho-001',
     tags: ['免許', '大臣免許'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_003',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業の免許の有効期間は5年である。',
-    isCorrect: true,
-    explanation: '宅建業法第3条第2項により、免許の有効期間は5年。',
+    statement: '宅建業の免許の有効期間は3年である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法第3条第2項により、免許の有効期間は5年である。',
     relatedQuestionId: 'takkengyoho-001',
     tags: ['免許', '有効期間'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_004',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '免許の更新の申請は、有効期間満了の日の90日前から30日前までの間に行う。',
-    isCorrect: true,
-    explanation: '宅建業法施行規則第3条により、更新申請期間は満了90日前から30日前まで。',
+    statement: '免許の更新の申請は、有効期間満了の日の60日前から14日前までの間に行う。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法施行規則第3条により、更新申請期間は満了90日前から30日前までである。',
     relatedQuestionId: 'takkengyoho-021',
     tags: ['免許', '更新'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_005',
@@ -53,6 +57,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法11条1項1号により、相続人は死亡を知った日から30日以内に届け出る。',
     relatedQuestionId: 'takkengyoho-001',
     tags: ['免許', '廃業届'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_006',
@@ -63,6 +68,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法第3条第4項により、従前の免許は処分がされるまで効力を有する。',
     relatedQuestionId: 'takkengyoho-021',
     tags: ['免許', '更新'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_007',
@@ -73,6 +79,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法第3条第3項により、更新後の起算点は従前の満了日の翌日。',
     relatedQuestionId: 'takkengyoho-021',
     tags: ['免許', '更新'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_008',
@@ -83,16 +90,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法5条1項により、復権を得れば欠格事由に該当しない。',
     relatedQuestionId: 'takkengyoho-002',
     tags: ['免許', '欠格事由'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_009',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '拘禁刑以上の刑に処せられ、刑の執行終了から5年を経過しない者は免許を受けられない。',
-    isCorrect: true,
-    explanation: '宅建業法第5条第1項により、拘禁刑以上の刑終了から5年は欠格事由（令和7年刑法改正で「禁錮」は「拘禁刑」に一本化）。',
+    statement: '拘禁刑以上の刑に処せられ、刑の執行終了から3年を経過しない者は免許を受けられない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法第5条第1項により、拘禁刑以上の刑終了から5年を経過しない者が欠格事由（令和7年刑法改正で「禁錮」は「拘禁刑」に一本化）。',
     relatedQuestionId: 'takkengyoho-002',
     tags: ['免許', '欠格事由'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_010',
@@ -103,6 +112,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法5条1項により、罰金刑も5年経過が必要。',
     relatedQuestionId: 'takkengyoho-002',
     tags: ['免許', '欠格事由'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_011',
@@ -113,6 +123,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法5条1項により、暴力的犯罪（傷害・暴行等）による罰金も欠格事由。',
     relatedQuestionId: 'takkengyoho-002',
     tags: ['免許', '欠格事由'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_012',
@@ -123,6 +134,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法78条の3により、主たる事務所所在地の知事経由で大臣に免許換え申請。',
     relatedQuestionId: 'takkengyoho-022',
     tags: ['免許', '免許換え'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_013',
@@ -133,6 +145,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法第7条第1項により、新免許により従前免許は失効。',
     relatedQuestionId: 'takkengyoho-022',
     tags: ['免許', '免許換え'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_014',
@@ -143,6 +156,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '免許換えは届出ではなく新たな免許の申請・取得が必要（宅建業法7条）。',
     relatedQuestionId: 'takkengyoho-022',
     tags: ['免許', '免許換え'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -157,6 +171,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '登録自体に有効期間はなく更新不要。有効期間があるのは宅建士証（5年）。',
     relatedQuestionId: 'takkengyoho-003',
     tags: ['宅建士', '登録'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_016',
@@ -167,16 +182,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法22条の2第4項により、取引士証は5年・更新可。',
     relatedQuestionId: 'takkengyoho-003',
     tags: ['宅建士証', '有効期間'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_017',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建士証の交付には、交付申請前6か月以内の知事指定講習の受講が必要である。',
-    isCorrect: true,
-    explanation: '宅建業法22条の2第2項により、申請前6か月以内の法定講習が必要（試験合格後1年以内は免除）。',
+    statement: '宅建士証の交付には、交付申請前3か月以内の知事指定講習の受講が必要である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法22条の2第2項により、申請前6か月以内の法定講習が必要（試験合格後1年以内は免除）。',
     relatedQuestionId: 'takkengyoho-025',
     tags: ['宅建士証', '法定講習'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_018',
@@ -187,16 +204,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法31条の3第1項により、5人に1人以上の割合が正しい。',
     relatedQuestionId: 'takkengyoho-027',
     tags: ['専任宅建士', '設置義務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_019',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '専任宅建士の数が不足したとき、2週間以内に補充等の措置をとる必要がある。',
-    isCorrect: true,
-    explanation: '宅建業法31条の3第3項により、2週間以内に補充等を要する。',
+    statement: '専任宅建士の数が不足したとき、1か月以内に補充等の措置をとる必要がある。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法31条の3第3項により、2週間以内に補充等を要する。',
     relatedQuestionId: 'takkengyoho-027',
     tags: ['専任宅建士', '補充'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_020',
@@ -207,6 +226,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法18条1項により、試験地の都道府県知事に登録申請。',
     relatedQuestionId: 'takkengyoho-024',
     tags: ['宅建士', '登録'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_021',
@@ -217,6 +237,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '登録申請に期限はなく、いつでも申請できる。',
     relatedQuestionId: 'takkengyoho-024',
     tags: ['宅建士', '登録'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_022',
@@ -227,6 +248,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法20条により、登録事項の変更は遅滞なく申請。',
     relatedQuestionId: 'takkengyoho-023',
     tags: ['宅建士', '変更登録'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_023',
@@ -237,6 +259,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法22条の2第7項により、事務禁止処分時は速やかに取引士証を提出。',
     relatedQuestionId: 'takkengyoho-026',
     tags: ['宅建士証', '事務禁止'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_024',
@@ -247,6 +270,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法35条4項により、重要事項説明時は請求の有無にかかわらず提示義務あり。',
     relatedQuestionId: 'takkengyoho-026',
     tags: ['宅建士証', '提示義務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_025',
@@ -257,6 +281,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法施行規則により、発見した旧取引士証は速やかに返納する。',
     relatedQuestionId: 'takkengyoho-026',
     tags: ['宅建士証', '再交付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_026',
@@ -267,6 +292,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '住所は取引士証の記載事項であり、書換え交付申請が必要。',
     relatedQuestionId: 'takkengyoho-026',
     tags: ['宅建士証', '書換え'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -281,16 +307,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法第25条第1項により、主たる事務所の最寄りの供託所に供託。',
     relatedQuestionId: 'takkengyoho-004',
     tags: ['営業保証金', '供託'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_028',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '営業保証金の額は主たる事務所1,000万円、従たる事務所1か所につき500万円である。',
-    isCorrect: true,
-    explanation: '宅建業法施行令2条の4により、主1,000万、従500万/箇所。',
+    statement: '営業保証金の額は主たる事務所2,000万円、従たる事務所1か所につき1,000万円である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法施行令2条の4により、主たる事務所1,000万円・従たる事務所500万円/箇所である。',
     relatedQuestionId: 'takkengyoho-004',
     tags: ['営業保証金', '金額'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_029',
@@ -301,6 +329,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '従たる事務所1か所につき500万円が正しい。',
     relatedQuestionId: 'takkengyoho-004',
     tags: ['営業保証金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_030',
@@ -311,6 +340,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法25条3項により、国債・地方債等の有価証券でも供託可能。',
     relatedQuestionId: 'takkengyoho-004',
     tags: ['営業保証金', '有価証券'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_031',
@@ -321,6 +351,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法25条5項により、供託届出後でなければ事業開始不可。',
     relatedQuestionId: 'takkengyoho-004',
     tags: ['営業保証金', '事業開始'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -335,6 +366,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法64条の15により、社員は営業保証金供託が免除される。',
     relatedQuestionId: 'takkengyoho-005',
     tags: ['保証協会', '社員'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_033',
@@ -345,16 +377,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法64条の9第2項により、社員となる日までに納付（加入後ではない）。',
     relatedQuestionId: 'takkengyoho-005',
     tags: ['保証協会', '分担金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_034',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '保証協会は分担金納付を受けた日から1週間以内に弁済業務保証金を供託する。',
-    isCorrect: true,
-    explanation: '宅建業法64条の7第1項により、1週間以内の供託義務。',
+    statement: '保証協会は分担金納付を受けた日から2週間以内に弁済業務保証金を供託する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法64条の7第1項により、保証協会は分担金の納付を受けた日から1週間以内に供託する義務がある。',
     relatedQuestionId: 'takkengyoho-005',
     tags: ['保証協会', '弁済業務保証金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_035',
@@ -365,15 +399,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法64条の8第1項により、取引により生じた債権について弁済を受けられる。',
     relatedQuestionId: 'takkengyoho-005',
     tags: ['保証協会', '弁済'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_036',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '弁済業務保証金分担金の額は、主たる事務所につき60万円、従たる事務所1か所につき30万円である。',
-    isCorrect: true,
-    explanation: '宅建業法施行令7条により、主60万・従30万/箇所。',
+    statement: '弁済業務保証金分担金の額は、主たる事務所につき100万円、従たる事務所1か所につき50万円である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法施行令7条により、主たる事務所60万円・従たる事務所30万円/箇所である。',
     tags: ['保証協会', '分担金'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -388,6 +424,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条の2により、指定流通機構登録義務は専任・専属専任のみ。',
     relatedQuestionId: 'takkengyoho-006',
     tags: ['媒介契約', '一般媒介', 'レインズ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_038',
@@ -398,6 +435,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条の2第3項により、3か月を超えられない。',
     relatedQuestionId: 'takkengyoho-006',
     tags: ['媒介契約', '専任媒介'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_039',
@@ -408,6 +446,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条の2第9項により、専属専任は週1回以上。',
     relatedQuestionId: 'takkengyoho-006',
     tags: ['媒介契約', '専属専任', '報告'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_040',
@@ -418,26 +457,29 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条の2第9項により、専任は2週間に1回以上。',
     relatedQuestionId: 'takkengyoho-006',
     tags: ['媒介契約', '専任媒介', '報告'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_041',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '専任媒介契約は契約締結の日から7日以内（休業日を除く）に指定流通機構に登録する。',
-    isCorrect: true,
-    explanation: '宅建業法34条の2第5項により、専任は7日以内（休業日除く）の登録義務。',
+    statement: '専任媒介契約は契約締結の日から14日以内（休業日を除く）に指定流通機構に登録する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法34条の2第5項により、専任媒介契約は7日以内（休業日除く）の登録義務がある。',
     relatedQuestionId: 'takkengyoho-036',
     tags: ['媒介契約', '専任媒介', 'レインズ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_042',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '専属専任媒介契約は締結の日から5日以内（休業日を除く）に指定流通機構に登録する。',
-    isCorrect: true,
-    explanation: '宅建業法34条の2第5項により、専属専任は5日以内（休業日除く）。',
+    statement: '専属専任媒介契約は締結の日から7日以内（休業日を除く）に指定流通機構に登録する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法34条の2第5項により、専属専任媒介契約は5日以内（休業日除く）に登録する。',
     relatedQuestionId: 'takkengyoho-036',
     tags: ['媒介契約', '専属専任', 'レインズ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_043',
@@ -448,6 +490,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '専属専任媒介契約では自己発見取引は禁止される。',
     relatedQuestionId: 'takkengyoho-036',
     tags: ['媒介契約', '専属専任'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_044',
@@ -458,6 +501,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '専任媒介契約は自動更新不可で、更新には依頼者の申出が必要。',
     relatedQuestionId: 'takkengyoho-037',
     tags: ['媒介契約', '専任媒介', '更新'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_045',
@@ -468,6 +512,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条の2第1項により、一般でも書面交付義務あり。',
     relatedQuestionId: 'takkengyoho-037',
     tags: ['媒介契約', '一般媒介', '書面交付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_046',
@@ -478,6 +523,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条の2第1項4号により、依頼先明示の有無で2類型。',
     relatedQuestionId: 'takkengyoho-037',
     tags: ['媒介契約', '一般媒介', '明示型'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_047',
@@ -488,6 +534,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条の2第6項により、登録証明書面を遅滞なく引渡し。',
     relatedQuestionId: 'takkengyoho-037',
     tags: ['媒介契約', 'レインズ'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -502,6 +549,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法35条1項により、重要事項説明は宅建士が行う必要がある。',
     relatedQuestionId: 'takkengyoho-007',
     tags: ['重要事項説明', '35条書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_049',
@@ -512,6 +560,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法35条1項により、契約成立までに説明する。',
     relatedQuestionId: 'takkengyoho-007',
     tags: ['重要事項説明', '35条書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_050',
@@ -522,6 +571,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '重要事項説明は買主（取得者・借主）に対してのみ行えばよい。',
     relatedQuestionId: 'takkengyoho-007',
     tags: ['重要事項説明'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_051',
@@ -532,6 +582,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '改正宅建業法により、電磁的交付が認められ押印も不要になった。',
     relatedQuestionId: 'takkengyoho-007',
     tags: ['重要事項説明', '電子化'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_052',
@@ -542,6 +593,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法施行規則16条の4の3第3号により、土砂災害警戒区域は説明事項。',
     relatedQuestionId: 'takkengyoho-008',
     tags: ['重要事項説明', '土砂災害'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_053',
@@ -552,6 +604,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法35条1項6号の2により、インスペクション状況が説明事項。',
     relatedQuestionId: 'takkengyoho-008',
     tags: ['重要事項説明', 'インスペクション'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_054',
@@ -562,6 +615,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '代金の額・支払時期・方法は37条書面の記載事項であり、35条書面ではない。',
     relatedQuestionId: 'takkengyoho-008',
     tags: ['重要事項説明', '35条書面', '37条書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_055',
@@ -572,6 +626,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法施行規則16条の4の3第4号により、石綿調査結果は説明事項。',
     relatedQuestionId: 'takkengyoho-008',
     tags: ['重要事項説明', '石綿'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_056',
@@ -582,6 +637,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法35条1項6号、施行規則16条の2により、積立金の内容と既積立額を説明。',
     relatedQuestionId: 'takkengyoho-038',
     tags: ['重要事項説明', '区分所有', '修繕積立金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_057',
@@ -592,6 +648,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '施行規則16条の2第8号により、管理委託先の名称・住所は説明事項。',
     relatedQuestionId: 'takkengyoho-038',
     tags: ['重要事項説明', '区分所有'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_058',
@@ -602,6 +659,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法35条1項14号により、貸借は契約期間・更新事項が説明対象。',
     relatedQuestionId: 'takkengyoho-039',
     tags: ['重要事項説明', '貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_059',
@@ -612,6 +670,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '所有権移転登記の申請時期は売買の37条書面記載事項で、貸借では不要。',
     relatedQuestionId: 'takkengyoho-039',
     tags: ['重要事項説明', '貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_060',
@@ -622,6 +681,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法35条1項14号により、敷金等の精算事項は貸借特有の説明事項。',
     relatedQuestionId: 'takkengyoho-039',
     tags: ['重要事項説明', '貸借', '敷金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_061',
@@ -632,6 +692,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法78条2項により、業者間では説明義務は免除だが書面交付は必要。',
     relatedQuestionId: 'takkengyoho-019',
     tags: ['重要事項説明', '業者間取引'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -646,6 +707,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法37条により、37条書面は契約成立後遅滞なく交付する。',
     relatedQuestionId: 'takkengyoho-009',
     tags: ['37条書面', '交付時期'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_063',
@@ -656,6 +718,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法37条3項により、37条書面には宅建士の記名を要する。',
     relatedQuestionId: 'takkengyoho-009',
     tags: ['37条書面', '宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_064',
@@ -666,6 +729,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '37条書面の交付自体は宅建士でなくてもよい（記名は宅建士）。',
     relatedQuestionId: 'takkengyoho-009',
     tags: ['37条書面', '宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_065',
@@ -676,6 +740,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '37条書面には説明義務はない（説明義務があるのは35条書面）。',
     relatedQuestionId: 'takkengyoho-009',
     tags: ['37条書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_066',
@@ -686,6 +751,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法37条1項3号により、代金等の額は必要的記載事項。',
     relatedQuestionId: 'takkengyoho-041',
     tags: ['37条書面', '記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_067',
@@ -696,6 +762,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '媒介でも契約の各当事者に交付する必要がある。',
     relatedQuestionId: 'takkengyoho-041',
     tags: ['37条書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_068',
@@ -706,6 +773,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法37条により、危険負担の定めは任意的記載事項。',
     relatedQuestionId: 'takkengyoho-040',
     tags: ['37条書面', '任意的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_069',
@@ -716,6 +784,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法37条1項により、引渡し時期・登記申請時期は必要的記載事項。',
     relatedQuestionId: 'takkengyoho-040',
     tags: ['37条書面', '必要的記載事項'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -730,6 +799,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法78条2項により、業者間取引には8種制限は適用されない。',
     relatedQuestionId: 'takkengyoho-044',
     tags: ['8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_071',
@@ -740,6 +810,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '8種制限は自ら売主となる場合にのみ適用される。',
     relatedQuestionId: 'takkengyoho-044',
     tags: ['8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_072',
@@ -750,6 +821,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法37条の2により、事務所で申込みをした場合は適用外。',
     relatedQuestionId: 'takkengyoho-010',
     tags: ['クーリングオフ', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_073',
@@ -760,16 +832,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '土地に定着した建物内のモデルルームは事務所等に該当し、クーリング・オフ不可。',
     relatedQuestionId: 'takkengyoho-010',
     tags: ['クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_074',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: 'クーリング・オフについて書面で告げられた日から8日を経過するとクーリング・オフはできない。',
-    isCorrect: true,
-    explanation: '宅建業法37条の2第1項1号により、書面告知から8日経過で権利消滅。',
+    statement: 'クーリング・オフについて書面で告げられた日から14日を経過するとクーリング・オフはできない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法37条の2第1項1号により、書面告知から8日経過で権利が消滅する。',
     relatedQuestionId: 'takkengyoho-010',
     tags: ['クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_075',
@@ -780,16 +854,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法37条の2第1項2号により、全額支払・引渡後はクーリング・オフ不可。',
     relatedQuestionId: 'takkengyoho-010',
     tags: ['クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_076',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者が自ら売主となる場合、受領できる手付の額は代金の10分の2を超えてはならない。',
-    isCorrect: true,
-    explanation: '宅建業法39条1項により、手付は代金の20%が上限。',
+    statement: '宅建業者が自ら売主となる場合、受領できる手付の額は代金の10分の1を超えてはならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法39条1項により、手付は代金の10分の2（20%）が上限である。',
     relatedQuestionId: 'takkengyoho-011',
     tags: ['手付', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_077',
@@ -800,6 +876,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法39条2項により、自ら売主の場合は解約手付とみなされる。',
     relatedQuestionId: 'takkengyoho-011',
     tags: ['手付', '解約手付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_078',
@@ -810,16 +887,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '民法557条により、相手方が履行に着手した後は手付解除できない。',
     relatedQuestionId: 'takkengyoho-011',
     tags: ['手付', '解約手付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_079',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '損害賠償額の予定と違約金の合計額は、代金の10分の2を超えてはならない。',
-    isCorrect: true,
-    explanation: '宅建業法38条1項により、20%が上限。',
+    statement: '損害賠償額の予定と違約金の合計額は、代金の10分の3を超えてはならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法38条1項により、損害賠償額の予定と違約金の合計は代金の10分の2（20%）が上限である。',
     relatedQuestionId: 'takkengyoho-012',
     tags: ['損害賠償額の予定', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_080',
@@ -830,6 +909,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法38条2項により、20%を超える部分のみ無効。',
     relatedQuestionId: 'takkengyoho-012',
     tags: ['損害賠償額の予定'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_081',
@@ -840,16 +920,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法78条2項により、業者間取引では8種制限は不適用。',
     relatedQuestionId: 'takkengyoho-012',
     tags: ['8種制限', '損害賠償額の予定'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_082',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '契約不適合責任について、通知期間を引渡しから2年以上とする特約は有効である。',
-    isCorrect: true,
-    explanation: '宅建業法40条により、引渡しから2年以上の通知期間特約は有効。',
+    statement: '契約不適合責任について、通知期間を引渡しから1年以上とする特約は有効である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法40条により、通知期間は引渡しから2年以上とする特約のみが有効である。',
     relatedQuestionId: 'takkengyoho-013',
     tags: ['契約不適合責任', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_083',
@@ -860,26 +942,29 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法40条により、引渡しから2年未満の特約は無効。',
     relatedQuestionId: 'takkengyoho-013',
     tags: ['契約不適合責任'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_084',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '未完成物件の場合、手付金等の保全措置は代金の5%又は1,000万円を超える場合に必要である。',
-    isCorrect: true,
-    explanation: '宅建業法41条1項により、未完成物件の保全基準は5%又は1,000万円超。',
+    statement: '未完成物件の場合、手付金等の保全措置は代金の10%又は1,000万円を超える場合に必要である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法41条1項により、未完成物件の保全基準は代金の5%又は1,000万円超である（10%は完成物件の基準）。',
     relatedQuestionId: 'takkengyoho-020',
     tags: ['手付金等の保全措置', '未完成物件'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_085',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '完成物件の場合、手付金等の保全措置は代金の10%又は1,000万円を超える場合に必要である。',
-    isCorrect: true,
-    explanation: '宅建業法41条の2により、完成物件の保全基準は10%又は1,000万円超。',
+    statement: '完成物件の場合、手付金等の保全措置は代金の5%又は500万円を超える場合に必要である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法41条の2により、完成物件の保全基準は代金の10%又は1,000万円超である。',
     relatedQuestionId: 'takkengyoho-016',
     tags: ['手付金等の保全措置', '完成物件'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_086',
@@ -890,6 +975,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '指定保管機関による保管は完成物件のみ利用可（41条の2）。',
     relatedQuestionId: 'takkengyoho-042',
     tags: ['手付金等の保全措置'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_087',
@@ -900,6 +986,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法41条の2により、完成物件は3方法利用可。',
     relatedQuestionId: 'takkengyoho-016',
     tags: ['手付金等の保全措置', '完成物件'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_088',
@@ -910,6 +997,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法41条の2第1項により、登記具備後は保全措置不要。',
     relatedQuestionId: 'takkengyoho-043',
     tags: ['手付金等の保全措置'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_089',
@@ -920,6 +1008,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法36条により、建築確認等の処分後でなければ契約締結不可。',
     relatedQuestionId: 'takkengyoho-020',
     tags: ['契約締結時期', '未完成物件'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -934,16 +1023,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法46条により、報酬限度額は絶対的な上限。',
     relatedQuestionId: 'takkengyoho-014',
     tags: ['報酬'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_091',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代金400万円超の売買媒介の報酬限度額（税抜）は、代金×3%＋6万円である。',
-    isCorrect: true,
-    explanation: '国土交通大臣告示による報酬計算式。',
+    statement: '代金400万円超の売買媒介の報酬限度額（税抜）は、代金×4%＋2万円である。',
+    isCorrect: false,
+    explanation: '誤り。国土交通大臣告示により、代金400万円超の売買媒介の報酬限度額（税抜）は代金×3%＋6万円である。',
     relatedQuestionId: 'takkengyoho-014',
     tags: ['報酬', '計算'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_092',
@@ -954,6 +1045,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '原則は0.55か月分以内（依頼者の承諾があれば1.1か月分まで）。',
     relatedQuestionId: 'takkengyoho-014',
     tags: ['報酬', '賃貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_093',
@@ -964,6 +1056,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '告示により、依頼者の承諾があれば1.1か月分まで可能。',
     relatedQuestionId: 'takkengyoho-034',
     tags: ['報酬', '賃貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_094',
@@ -974,26 +1067,29 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '告示により、合計は借賃の1.1か月分が限度。',
     relatedQuestionId: 'takkengyoho-034',
     tags: ['報酬', '賃貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_095',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代金3,000万円の売買媒介では、一方からの報酬限度額は税込105万6,000円である。',
-    isCorrect: true,
-    explanation: '(3,000×3%+6)×1.1=105.6万円。',
+    statement: '代金3,000万円の売買媒介では、一方からの報酬限度額は税込96万円である。',
+    isCorrect: false,
+    explanation: '誤り。報酬限度額は(3,000×3%+6)×1.1=105万6,000円である。',
     relatedQuestionId: 'takkengyoho-033',
     tags: ['報酬', '計算'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_096',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '低廉な空家等（400万円以下）の売買媒介では、売主から最大19万8,000円まで受領できる。',
-    isCorrect: true,
-    explanation: '2018年告示改正により、税込19万8,000円が上限。',
+    statement: '低廉な空家等（400万円以下）の売買媒介では、売主から最大30万円まで受領できる。',
+    isCorrect: false,
+    explanation: '誤り。2018年告示改正により、税込19万8,000円が上限である。',
     relatedQuestionId: 'takkengyoho-035',
     tags: ['報酬', '低廉な空家'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -1003,21 +1099,23 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_097',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者の帳簿は、各事業年度の末日に閉鎖し、閉鎖後5年間保存する。',
-    isCorrect: true,
-    explanation: '宅建業法49条により、原則閉鎖後5年保存。',
+    statement: '宅建業者の帳簿は、各事業年度の末日に閉鎖し、閉鎖後3年間保存する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法49条により、原則として閉鎖後5年間保存する。',
     relatedQuestionId: 'takkengyoho-015',
     tags: ['帳簿', '保存期間'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_098',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '自ら売主として新築住宅を販売した帳簿は、閉鎖後10年間保存する必要がある。',
-    isCorrect: true,
-    explanation: '施行規則18条3項により、自ら売主の新築住宅は10年保存。',
+    statement: '自ら売主として新築住宅を販売した帳簿は、閉鎖後5年間保存すれば足りる。',
+    isCorrect: false,
+    explanation: '誤り。施行規則18条3項により、自ら売主の新築住宅に関する帳簿は10年間保存する必要がある。',
     relatedQuestionId: 'takkengyoho-031',
     tags: ['帳簿', '保存期間'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_099',
@@ -1028,16 +1126,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法49条により、事務所ごとに備える必要がある。',
     relatedQuestionId: 'takkengyoho-031',
     tags: ['帳簿'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_100',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '従業者名簿は、最終記載の日から10年間保存しなければならない。',
-    isCorrect: true,
-    explanation: '施行規則17条の2第4項により、10年間保存。',
+    statement: '従業者名簿は、最終記載の日から5年間保存しなければならない。',
+    isCorrect: false,
+    explanation: '誤り。施行規則17条の2第4項により、従業者名簿は最終記載の日から10年間保存する必要がある。',
     relatedQuestionId: 'takkengyoho-030',
     tags: ['従業者名簿', '保存期間'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_101',
@@ -1048,6 +1148,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '施行規則17条の2により、住所は記載事項ではない。',
     relatedQuestionId: 'takkengyoho-030',
     tags: ['従業者名簿'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_102',
@@ -1058,6 +1159,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法48条4項により、閲覧義務あり。',
     relatedQuestionId: 'takkengyoho-030',
     tags: ['従業者名簿', '閲覧'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_103',
@@ -1068,6 +1170,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法50条1項により、案内所等にも標識掲示義務あり。',
     relatedQuestionId: 'takkengyoho-015',
     tags: ['標識'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_104',
@@ -1078,6 +1181,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法50条1項により、分譲現地も掲示場所。',
     relatedQuestionId: 'takkengyoho-032',
     tags: ['標識'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_105',
@@ -1088,16 +1192,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '施行規則19条2項により、代理・媒介業者も自社標識を掲示。',
     relatedQuestionId: 'takkengyoho-032',
     tags: ['標識', '案内所'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_106',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '案内所で契約締結等を行う場合、業務開始の10日前までに届出を要する。',
-    isCorrect: true,
-    explanation: '宅建業法50条2項により、10日前までに免許権者・所在地知事へ届出。',
+    statement: '案内所で契約締結等を行う場合、業務開始の30日前までに届出を要する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法50条2項により、業務開始の10日前までに免許権者及び所在地知事へ届出を要する。',
     relatedQuestionId: 'takkengyoho-028',
     tags: ['案内所', '届出'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_107',
@@ -1108,16 +1214,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '契約締結・申込受付をしなければ届出不要。',
     relatedQuestionId: 'takkengyoho-028',
     tags: ['案内所', '届出'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_108',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '契約締結・申込を受ける案内所には、専任宅建士を1人以上設置する必要がある。',
-    isCorrect: true,
-    explanation: '宅建業法31条の3第1項により、案内所に1人以上の専任宅建士設置。',
+    statement: '契約締結・申込を受ける案内所には、専任宅建士を2人以上設置する必要がある。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法31条の3第1項により、案内所には1人以上の専任宅建士を設置すれば足りる。',
     relatedQuestionId: 'takkengyoho-028',
     tags: ['案内所', '専任宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_109',
@@ -1128,6 +1236,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法33条により、広告開始時期は許可等の処分後。',
     relatedQuestionId: 'takkengyoho-018',
     tags: ['広告', '広告開始時期'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_110',
@@ -1138,6 +1247,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法32条違反は損害の有無に関わらず監督処分の対象。',
     relatedQuestionId: 'takkengyoho-018',
     tags: ['広告', '誇大広告'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_111',
@@ -1148,6 +1258,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法34条により、広告時と注文受領時の双方で明示義務。',
     relatedQuestionId: 'takkengyoho-018',
     tags: ['広告', '取引態様'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_112',
@@ -1158,6 +1269,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: 'おとり広告は宅建業法違反として罰則の対象。',
     relatedQuestionId: 'takkengyoho-018',
     tags: ['広告', 'おとり広告'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -1172,6 +1284,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法66条1項8号により、業務停止違反は免許取消事由。',
     relatedQuestionId: 'takkengyoho-017',
     tags: ['監督処分', '免許取消'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_114',
@@ -1182,6 +1295,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法84条の両罰規定により、業者も罰則の対象。',
     relatedQuestionId: 'takkengyoho-017',
     tags: ['罰則', '両罰規定'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_115',
@@ -1192,6 +1306,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法79条により、3年以下の拘禁刑又は300万円以下の罰金。',
     relatedQuestionId: 'takkengyoho-017',
     tags: ['罰則'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_116',
@@ -1202,16 +1317,18 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法47条の2第3項により、判断時間を拒む行為は禁止。',
     relatedQuestionId: 'takkengyoho-019',
     tags: ['業務規制', '禁止行為'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_117',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '買主の手付放棄による契約解除を正当な理由なく拒む行為は、宅建業法に違反する。',
-    isCorrect: true,
-    explanation: '宅建業法47条の2により、手付解除を妨げる行為は禁止。',
+    statement: '買主の手付放棄による契約解除を拒む行為は、宅建業者の正当な業務行為として宅建業法に違反しない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法47条の2により、正当な理由なく手付解除を妨げる行為は禁止されている。',
     relatedQuestionId: 'takkengyoho-019',
     tags: ['業務規制', '手付解除'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_118',
@@ -1222,6 +1339,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '行政手続法により、免許取消処分には聴聞が必要。',
     relatedQuestionId: 'takkengyoho-017',
     tags: ['監督処分', '聴聞'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -1236,6 +1354,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法18条により、成年者同一の行為能力者は登録可能。',
     relatedQuestionId: 'takkengyoho-024',
     tags: ['宅建士', '登録', '未成年者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_120',
@@ -1246,6 +1365,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '登録と取引士証は別であり、取引士証失効でも登録は存続。',
     relatedQuestionId: 'takkengyoho-025',
     tags: ['宅建士', '登録'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_121',
@@ -1256,15 +1376,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法22条の2第2項により、合格後1年以内は講習免除。',
     relatedQuestionId: 'takkengyoho-003',
     tags: ['宅建士証', '法定講習'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_122',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者は自らの営業保証金について、還付があった場合に不足額を供託する必要がある。',
-    isCorrect: true,
-    explanation: '宅建業法28条により、還付による不足は通知から2週間以内に補充供託。',
+    statement: '宅建業者は自らの営業保証金について還付があった場合、通知から1か月以内に不足額を供託しなければならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法28条により、還付による不足は通知から2週間以内に補充供託する。',
     tags: ['営業保証金', '還付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_123',
@@ -1274,24 +1396,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法27条により、還付請求権者から宅建業者は除外される。',
     tags: ['営業保証金', '還付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_124',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '保証協会の社員は、社員たる地位を失ったときは、1週間以内に営業保証金を供託しなければならない。',
-    isCorrect: true,
-    explanation: '宅建業法64条の15により、社員の地位喪失後1週間以内に供託。',
+    statement: '保証協会の社員は、社員たる地位を失ったときは、2週間以内に営業保証金を供託しなければならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法64条の15により、社員の地位喪失後1週間以内に営業保証金を供託する必要がある。',
     tags: ['保証協会', '社員'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_125',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '指定流通機構に物件を登録した宅建業者は、契約が成立したときは遅滞なく指定流通機構に通知する。',
-    isCorrect: true,
-    explanation: '宅建業法34条の2第7項により、成約時の通知義務。',
+    statement: '指定流通機構に物件を登録した宅建業者は、契約が成立したときは1週間以内に指定流通機構に通知する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法34条の2第7項により、成約時は遅滞なく通知する義務がある（1週間以内ではない）。',
     tags: ['媒介契約', 'レインズ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_126',
@@ -1301,24 +1426,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '自ら貸借は宅建業に該当しない。',
     tags: ['宅建業', '自ら貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_127',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者は、事務所の名称・所在地を変更したときは30日以内に免許権者に届け出る。',
-    isCorrect: true,
-    explanation: '宅建業法9条により、変更の届出は30日以内。',
+    statement: '宅建業者は、事務所の名称・所在地を変更したときは2週間以内に免許権者に届け出る。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法9条により、変更の届出は30日以内に行う必要がある。',
     tags: ['免許', '変更届出'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_128',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者が廃業した場合、廃業の日から30日以内に免許権者に届け出る。',
-    isCorrect: true,
-    explanation: '宅建業法11条1項により、廃業は30日以内に届出。',
+    statement: '宅建業者が廃業した場合、廃業の日から60日以内に免許権者に届け出る。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法11条1項により、廃業は30日以内に届け出る必要がある。',
     tags: ['免許', '廃業届'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_129',
@@ -1328,6 +1456,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法10条により、名簿は閲覧対象。',
     tags: ['宅建業者名簿'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_130',
@@ -1337,6 +1466,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条5項により、宅建士の記名が必要。',
     tags: ['重要事項説明', '宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_131',
@@ -1346,6 +1476,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '35条と37条の記名宅建士が別人でもよい。',
     tags: ['35条書面', '37条書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_132',
@@ -1355,24 +1486,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正宅建業法により、押印不要・記名のみでよい。',
     tags: ['重要事項説明', '37条書面', '電子化'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_133',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代金400万円以下の売買媒介（通常物件）の報酬計算では、金額区分に応じて料率が変わる。',
-    isCorrect: true,
-    explanation: '告示により、200万円以下5%、200万〜400万円4%＋2万、400万円超3%＋6万。',
+    statement: '代金400万円以下の売買媒介（通常物件）の報酬計算では、金額にかかわらず一律3%の料率である。',
+    isCorrect: false,
+    explanation: '誤り。告示により、200万円以下5%、200万〜400万円4%＋2万、400万円超3%＋6万と金額区分に応じて料率が変わる。',
     tags: ['報酬', '計算'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_134',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代理契約では、一方の依頼者から媒介の2倍（6%＋12万等）まで報酬を受領できる。',
-    isCorrect: true,
-    explanation: '告示により、代理は媒介の2倍が上限（ただし双方合計は2倍以内）。',
+    statement: '代理契約では、一方の依頼者から媒介の3倍まで報酬を受領できる。',
+    isCorrect: false,
+    explanation: '誤り。告示により、代理は媒介の2倍が上限である（ただし双方合計も2倍以内）。',
     tags: ['報酬', '代理'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_135',
@@ -1382,6 +1516,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法45条により、守秘義務あり（廃業後も継続）。',
     tags: ['守秘義務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_136',
@@ -1391,6 +1526,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法45条により、廃業後も守秘義務は継続。',
     tags: ['守秘義務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_137',
@@ -1400,15 +1536,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法47条1号により、重要事実の不告知・不実告知は禁止。',
     tags: ['業務規制', '禁止行為'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_138',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者は、手付貸与その他信用の供与により契約締結を誘引してはならない。',
-    isCorrect: true,
-    explanation: '宅建業法47条3号により、手付貸与による誘引は禁止。',
+    statement: '宅建業者は、手付貸与その他信用の供与により契約締結を誘引することは、依頼者の利益となる限り認められる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法47条3号により、手付貸与その他信用の供与による契約締結の誘引は一律禁止である。',
     tags: ['業務規制', '禁止行為'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_139',
@@ -1418,6 +1556,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '手付貸与による契約締結の誘引自体が禁止（契約成立は不要）。',
     tags: ['業務規制'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_140',
@@ -1428,6 +1567,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     explanation: '宅建業法40条により、買主に不利な特約は無効（全面免除は無効）。',
     relatedQuestionId: 'takkengyoho-013',
     tags: ['契約不適合責任', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_141',
@@ -1437,6 +1577,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法33条の2により、取得契約済みなら他人物売買可。',
     tags: ['他人物売買', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_142',
@@ -1446,15 +1587,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法33条の2により、停止条件付契約の場合は売買不可。',
     tags: ['他人物売買'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_143',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: 'クーリング・オフは、その効力は書面を発した時に生ずる。',
-    isCorrect: true,
-    explanation: '宅建業法37条の2第2項により、発信主義。',
+    statement: 'クーリング・オフは、その効力は書面が宅建業者に到達した時に生ずる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法37条の2第2項により、クーリング・オフの効力は書面を発した時に生ずる（発信主義）。',
     tags: ['クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_144',
@@ -1464,6 +1607,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法37条の2第1項により、損害賠償等は請求できない。',
     tags: ['クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_145',
@@ -1473,6 +1617,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条の2第4項により、不利な特約は無効。',
     tags: ['クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_146',
@@ -1482,6 +1627,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法46条4項により、事務所ごとに報酬額の掲示義務。',
     tags: ['事務所', '報酬額掲示'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_147',
@@ -1491,15 +1637,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法22条の2第6項により、登録消除時は速やかに返納。',
     tags: ['宅建士証', '返納'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_148',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者は、従業者に従業者証明書を携帯させなければならない。',
-    isCorrect: true,
-    explanation: '宅建業法48条1項により、従業者証明書の携帯義務。',
+    statement: '宅建業者は、専任宅建士に限り従業者証明書を携帯させなければならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法48条1項により、宅建業者はすべての従業者に従業者証明書を携帯させなければならない。',
     tags: ['従業者証明書'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_149',
@@ -1509,6 +1657,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '重要事項説明時は宅建士証の提示が必要（従業者証明書では不可）。',
     tags: ['宅建士証', '重要事項説明'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_150',
@@ -1518,6 +1667,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法48条2項により、関係者の請求時は提示義務あり。',
     tags: ['従業者証明書', '提示義務'],
+    needsReview: true,
   },
   // ===== 2026年法改正対応 =====
   {
@@ -1528,6 +1678,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法5条。令和7年6月の刑法改正により「懲役・禁錮」が「拘禁刑」に一本化。',
     tags: ['免許', '欠格事由', '法改正2026', '拘禁刑'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_2026_02',
@@ -1537,6 +1688,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法18条。拘禁刑の欠格事由に該当し登録消除。',
     tags: ['宅建士', '登録', '法改正2026', '拘禁刑'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_2026_03',
@@ -1546,6 +1698,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法施行規則改正。A3サイズへの変更。',
     tags: ['業者票', '標識', '法改正2026'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_2026_04',
@@ -1555,6 +1708,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '管理業者による利益相反を防止する趣旨で追加。',
     tags: ['重要事項説明', '管理業者', '法改正2026'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -1564,10 +1718,11 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_155',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '法人が宅建業の免許を申請する場合、役員全員が欠格事由に該当しないことが必要である。',
-    isCorrect: true,
-    explanation: '宅建業法5条1項により、法人の役員に欠格事由該当者がいれば免許を受けられない。',
+    statement: '法人が宅建業の免許を申請する場合、代表取締役のみが欠格事由に該当しないことが必要である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法5条1項により、法人の役員全員が欠格事由に該当しないことが必要である。',
     tags: ['免許', '欠格事由', '法人'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_156',
@@ -1577,15 +1732,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法66条1項3号により、暴力団員等は必要的取消事由。',
     tags: ['免許', '欠格事由', '暴力団'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_157',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業の免許を受けていない者が宅建業を営んだ場合、3年以下の拘禁刑又は300万円以下の罰金に処せられる。',
-    isCorrect: true,
-    explanation: '宅建業法79条により、無免許営業は3年以下の拘禁刑又は300万円以下の罰金。',
+    statement: '宅建業の免許を受けていない者が宅建業を営んだ場合、1年以下の拘禁刑又は100万円以下の罰金に処せられる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法79条により、無免許営業は3年以下の拘禁刑又は300万円以下の罰金である。',
     tags: ['免許', '無免許営業', '罰則'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_158',
@@ -1595,6 +1752,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法5条1項により、政令で定める使用人の欠格事由も免許拒否事由となる。',
     tags: ['免許', '欠格事由', '政令使用人'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_159',
@@ -1604,24 +1762,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法5条1項により、暴力的犯罪による罰金刑は欠格事由に該当する。',
     tags: ['免許', '欠格事由', '暴力犯罪'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_160',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '業務停止処分に違反したことを理由に免許を取り消された場合、取消しの日から5年間は免許を受けられない。',
-    isCorrect: true,
-    explanation: '宅建業法5条1項により、不正等で免許取消しされた場合は取消日から5年が欠格期間。',
+    statement: '業務停止処分に違反したことを理由に免許を取り消された場合、取消しの日から3年間は免許を受けられない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法5条1項により、不正等で免許取消しされた場合は取消日から5年間が欠格期間である。',
     tags: ['免許', '欠格事由', '免許取消'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_161',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '免許取消処分の聴聞公示日前60日以内に法人の役員であった者は、取消日から5年間免許を受けられない。',
-    isCorrect: true,
-    explanation: '宅建業法5条1項により、聴聞公示日前60日以内の役員は5年間の欠格事由。',
+    statement: '免許取消処分の聴聞公示日前30日以内に法人の役員であった者は、取消日から5年間免許を受けられない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法5条1項により、聴聞公示日前60日以内の役員が5年間の欠格事由に該当する。',
     tags: ['免許', '欠格事由', '聴聞'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_162',
@@ -1631,6 +1792,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法5条1項により、処分逃れの廃業は届出日から5年が欠格期間。',
     tags: ['免許', '欠格事由', '廃業届'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_163',
@@ -1640,6 +1802,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法3条1項により、1つの都道府県内のみに事務所を置く場合は知事免許。',
     tags: ['免許', '知事免許'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_164',
@@ -1649,6 +1812,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '個人と法人は別人格であるため、法人として新たに免許を取得する必要がある。',
     tags: ['免許', '法人成り'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_165',
@@ -1658,6 +1822,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法11条1項2号により、合併消滅の届出義務はあるが免許は承継されない。存続法人が新規に免許を取得する必要がある。',
     tags: ['免許', '廃業届', '合併'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_166',
@@ -1667,15 +1832,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法11条1項2号により、届出義務者は消滅法人の代表役員であった者。',
     tags: ['免許', '廃業届', '合併'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_167',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '法人が破産手続開始の決定を受けた場合、届出義務者は破産管財人である。',
-    isCorrect: true,
-    explanation: '宅建業法11条1項3号により、届出義務者は破産管財人。',
+    statement: '法人が破産手続開始の決定を受けた場合、届出義務者は当該法人の代表者である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法11条1項3号により、法人破産の場合の届出義務者は破産管財人である。',
     tags: ['免許', '廃業届', '破産'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_168',
@@ -1685,6 +1852,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法8条2項により、事務所の名称・所在地は名簿登載事項。',
     tags: ['免許', '宅建業者名簿'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_169',
@@ -1694,6 +1862,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法9条により、変更届出は30日以内に行う必要がある。',
     tags: ['免許', '変更届出'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_170',
@@ -1703,6 +1872,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法78条の3により、大臣免許の届出等は知事経由。',
     tags: ['免許', '変更届出', '大臣免許'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -1716,6 +1886,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '登録の欠格事由（宅建業法18条）と免許の欠格事由（5条）は類似するが完全に同一ではない。',
     tags: ['宅建士', '登録', '欠格事由'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_172',
@@ -1725,6 +1896,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '事務禁止処分は登録消除ではなく、一定期間の事務禁止であるため登録自体は有効。',
     tags: ['宅建士', '事務禁止処分'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_173',
@@ -1734,6 +1906,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法68条の2第1項により、不正手段による登録は消除事由。',
     tags: ['宅建士', '登録消除'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_174',
@@ -1743,6 +1916,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法19条の2により、登録の移転は現登録先の知事経由で移転先に申請。',
     tags: ['宅建士', '登録の移転'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_175',
@@ -1752,6 +1926,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法19条の2により、事務禁止処分期間中は登録の移転不可。',
     tags: ['宅建士', '登録の移転', '事務禁止処分'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_176',
@@ -1761,6 +1936,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '登録の移転は勤務先の変更等があった場合に任意で申請するものであり義務ではない。',
     tags: ['宅建士', '登録の移転'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_177',
@@ -1770,6 +1946,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法22条の2第5項により、移転先の知事が新たに取引士証を交付する。',
     tags: ['宅建士', '登録の移転', '宅建士証'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_178',
@@ -1779,15 +1956,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法22条の3により、更新時には法定講習の受講が必要。',
     tags: ['宅建士証', '更新', '法定講習'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_179',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建士が死亡した場合、相続人は死亡を知った日から30日以内に登録消除を申請する。',
-    isCorrect: true,
-    explanation: '宅建業法21条により、死亡の届出は相続人が知った日から30日以内。',
+    statement: '宅建士が死亡した場合、相続人は死亡を知った日から60日以内に登録消除を申請する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法21条により、死亡の届出は相続人が知った日から30日以内である。',
     tags: ['宅建士', '登録消除', '死亡届'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_180',
@@ -1797,6 +1976,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法21条により、成年被後見人の届出義務者は成年後見人。',
     tags: ['宅建士', '登録消除', '成年被後見人'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_181',
@@ -1806,6 +1986,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法20条により、勤務先は登録事項であり変更があれば遅滞なく変更登録を申請。',
     tags: ['宅建士', '変更登録'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_182',
@@ -1815,6 +1996,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法22条の4により、関係者の請求時は宅建士証を提示する義務がある。従業者証明書では代替できない。',
     tags: ['宅建士証', '提示義務'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -1828,6 +2010,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法25条3項により、国債証券は額面金額の100%で評価。',
     tags: ['営業保証金', '有価証券', '国債'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_184',
@@ -1837,6 +2020,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法施行規則により、地方債証券は額面金額の90%で評価される。',
     tags: ['営業保証金', '有価証券', '地方債'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_185',
@@ -1846,15 +2030,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法27条1項により、宅建業に関する取引により生じた債権が還付対象。',
     tags: ['営業保証金', '還付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_186',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '営業保証金の還付により不足が生じた場合、免許権者から通知を受けた日から2週間以内に不足額を供託する。',
-    isCorrect: true,
-    explanation: '宅建業法28条1項により、通知から2週間以内に不足額の供託義務。',
+    statement: '営業保証金の還付により不足が生じた場合、免許権者から通知を受けた日から1か月以内に不足額を供託する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法28条1項により、通知から2週間以内に不足額の供託義務がある。',
     tags: ['営業保証金', '還付', '不足額'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_187',
@@ -1864,6 +2050,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法28条2項及び65条により、不足額を供託しない場合は業務停止処分の対象。',
     tags: ['営業保証金', '不足額', '業務停止'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_188',
@@ -1873,24 +2060,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法25条5項により、供託の届出をした後でなければ事業を開始できない。',
     tags: ['営業保証金', '事業開始'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_189',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '免許を受けた後、3か月以内に営業保証金を供託した届出をしない場合、免許権者はその届出をすべき旨の催告をしなければならない。',
-    isCorrect: true,
-    explanation: '宅建業法25条6項により、3か月以内に届出がなければ催告する。',
+    statement: '免許を受けた後、6か月以内に営業保証金を供託した届出をしない場合、免許権者はその届出をすべき旨の催告をしなければならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法25条6項により、3か月以内に届出がなければ催告する必要がある。',
     tags: ['営業保証金', '催告'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_190',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '催告が届いた日から1か月以内に届出がない場合、免許権者は免許を取り消すことができる。',
-    isCorrect: true,
-    explanation: '宅建業法25条7項により、催告後1か月以内に届出なければ免許取消可。',
+    statement: '催告が届いた日から3か月以内に届出がない場合、免許権者は免許を取り消すことができる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法25条7項により、催告後1か月以内に届出がなければ免許取消可。',
     tags: ['営業保証金', '免許取消'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_191',
@@ -1900,6 +2090,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '取戻しは事務所の廃止や免許失効等の場合に認められるもので、新設の場合は該当しない。',
     tags: ['営業保証金', '取戻し'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_192',
@@ -1909,6 +2100,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法26条により、主たる事務所の移転で供託所が変わった場合は保管替え又は新たな供託が必要。',
     tags: ['営業保証金', '保管替え'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_193',
@@ -1918,6 +2110,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法26条により、金銭のみの場合は保管替え請求が可能。',
     tags: ['営業保証金', '保管替え'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_194',
@@ -1927,6 +2120,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '有価証券を含む場合は保管替えができず、新供託・旧取戻しの方法による。',
     tags: ['営業保証金', '保管替え', '有価証券'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_195',
@@ -1936,6 +2130,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法25条1項により、営業保証金は主たる事務所の最寄りの供託所に供託する。',
     tags: ['営業保証金', '供託', '事務所新設'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -1949,6 +2144,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法64条の4第2項により、1つの保証協会にのみ加入できる。',
     tags: ['保証協会', '社員'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_197',
@@ -1958,6 +2154,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の7第1項により、法務大臣及び国土交通大臣の定める供託所に供託。',
     tags: ['保証協会', '弁済業務保証金', '供託'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_198',
@@ -1967,15 +2164,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の10により、保証協会が還付充当金を供託し、社員に通知する。',
     tags: ['保証協会', '還付充当金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_199',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '保証協会から還付充当金の通知を受けた社員は、通知を受けた日から2週間以内に還付充当金を保証協会に納付しなければならない。',
-    isCorrect: true,
-    explanation: '宅建業法64条の10第2項により、通知から2週間以内に納付義務。',
+    statement: '保証協会から還付充当金の通知を受けた社員は、通知を受けた日から1か月以内に還付充当金を保証協会に納付しなければならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法64条の10第2項により、通知から2週間以内に納付する義務がある。',
     tags: ['保証協会', '還付充当金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_200',
@@ -1985,6 +2184,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の10第3項により、納付しなければ社員の地位を喪失。',
     tags: ['保証協会', '社員', '地位喪失'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_201',
@@ -1994,6 +2194,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の8第1項により、還付には保証協会の認証が必要。',
     tags: ['保証協会', '弁済', '認証'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_202',
@@ -2003,6 +2204,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '還付限度額は営業保証金に相当する額が基準であり、分担金の額ではない。',
     tags: ['保証協会', '弁済', '還付限度額'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_203',
@@ -2012,6 +2214,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の5第1項2号により、苦情の解決は保証協会の必須業務。',
     tags: ['保証協会', '苦情解決'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_204',
@@ -2021,6 +2224,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法64条の5第1項3号により、研修業務は保証協会の必須業務。',
     tags: ['保証協会', '研修'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_205',
@@ -2030,15 +2234,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の2により、保証協会は国土交通大臣の指定を受けた一般社団法人。',
     tags: ['保証協会', '指定'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_206',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '保証協会に加入した宅建業者が従たる事務所を新設した場合、新設分の分担金を保証協会に納付する。',
-    isCorrect: true,
-    explanation: '宅建業法64条の9第2項により、新設分の分担金を納付する義務がある。',
+    statement: '保証協会に加入した宅建業者が従たる事務所を新設した場合、新設の日から1か月以内に分担金を保証協会に納付する。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法64条の9第2項により、従たる事務所の新設の日から2週間以内に分担金を納付する必要がある。',
     tags: ['保証協会', '分担金', '事務所新設'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_207',
@@ -2048,6 +2254,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の9第1項により、分担金は金銭のみで納付（有価証券は不可）。',
     tags: ['保証協会', '分担金'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2061,6 +2268,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法34条の2第1項2号により、価額又は評価額は書面記載事項。',
     tags: ['媒介契約', '書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_209',
@@ -2070,6 +2278,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '媒介契約書面には宅建士の記名は不要。宅建士の記名が必要なのは35条書面と37条書面。',
     tags: ['媒介契約', '書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_210',
@@ -2079,6 +2288,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '専任媒介契約は自己発見取引が可能。禁止されるのは専属専任媒介契約のみ。',
     tags: ['媒介契約', '専任媒介', '自己発見取引'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_211',
@@ -2088,15 +2298,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法34条の2第3項の有効期間制限は専任・専属専任のみ。一般媒介には法律上の制限なし。',
     tags: ['媒介契約', '一般媒介', '有効期間'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_212',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '専属専任媒介契約の有効期間は3か月を超えることができず、超える定めをしたときは3か月となる。',
-    isCorrect: true,
-    explanation: '宅建業法34条の2第4項により、3か月超の定めは3か月に短縮される。',
+    statement: '専属専任媒介契約の有効期間は6か月を超えることができず、超える定めをしたときは6か月となる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法34条の2第4項により、有効期間は3か月を超えることができず、超える定めをしたときは3か月となる。',
     tags: ['媒介契約', '専属専任', '有効期間'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_213',
@@ -2106,6 +2318,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法34条の2第1項により、書面記載の報酬額は告示の限度額以内でなければならない。',
     tags: ['媒介契約', '報酬', '書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_214',
@@ -2115,6 +2328,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '特別に依頼された広告費等を除き、成約しなかった場合に報酬以外の費用を当然には請求できない。',
     tags: ['媒介契約', '費用'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_215',
@@ -2124,6 +2338,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法34条の2第1項により、媒介契約締結時は遅滞なく書面交付義務。',
     tags: ['媒介契約', '書面交付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_216',
@@ -2133,6 +2348,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '報告義務は専任（2週間に1回以上）・専属専任（1週間に1回以上）のみ。一般媒介には法律上の報告義務なし。',
     tags: ['媒介契約', '一般媒介', '報告'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2146,6 +2362,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項1号により、登記された権利は重要事項説明の記載事項。',
     tags: ['重要事項説明', '35条書面', '登記'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_218',
@@ -2155,6 +2372,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項2号により、法令上の制限は売買・貸借のいずれでも説明対象。',
     tags: ['重要事項説明', '法令上の制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_219',
@@ -2164,6 +2382,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項3号により、私道負担の説明は売買・交換のみで貸借は対象外。',
     tags: ['重要事項説明', '私道負担'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_220',
@@ -2173,6 +2392,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項4号により、ライフラインの整備状況は説明事項。',
     tags: ['重要事項説明', 'ライフライン'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_221',
@@ -2182,6 +2402,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項5号により、未完成物件の場合に完了時の形状等を説明する。',
     tags: ['重要事項説明', '未完成物件'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_222',
@@ -2191,6 +2412,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法施行規則16条の4の3第2号により、造成宅地防災区域は説明事項。',
     tags: ['重要事項説明', '造成宅地防災区域'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_223',
@@ -2200,6 +2422,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法施行規則16条の4の3第3号の2により、津波災害警戒区域は説明事項。',
     tags: ['重要事項説明', '津波災害警戒区域'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_224',
@@ -2209,6 +2432,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '施行規則16条の4の3第5号により、昭和56年5月31日以前の旧耐震建物で耐震診断を受けていない場合、その旨を説明する必要がある。',
     tags: ['重要事項説明', '耐震診断'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_225',
@@ -2218,6 +2442,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法施行規則16条の4の3第6号により、住宅性能評価を受けた場合はその旨を説明。',
     tags: ['重要事項説明', '住宅性能評価'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_226',
@@ -2227,6 +2452,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項11号により、保全措置の概要は説明事項（自ら売主の場合）。',
     tags: ['重要事項説明', '手付金等の保全措置'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_227',
@@ -2236,6 +2462,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項7号により、代金以外の金銭（手付金・敷金等）は説明事項。',
     tags: ['重要事項説明', '金銭'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_228',
@@ -2245,6 +2472,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法35条1項8号により、契約の解除に関する事項は説明対象。',
     tags: ['重要事項説明', '契約解除'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_229',
@@ -2254,6 +2482,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項9号により、損害賠償額の予定・違約金は説明事項。',
     tags: ['重要事項説明', '損害賠償額'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_230',
@@ -2263,6 +2492,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項12号により、ローンのあっせん及び不成立時の措置は説明事項。',
     tags: ['重要事項説明', 'ローン'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_231',
@@ -2272,6 +2502,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法35条1項10号により、割賦販売の場合の現金販売価格等は説明事項。',
     tags: ['重要事項説明', '割賦販売'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_232',
@@ -2281,6 +2512,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項6号により、管理規約の定め（案含む）は説明事項。',
     tags: ['重要事項説明', '区分所有', '管理規約'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_233',
@@ -2290,6 +2522,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '施行規則16条の2により、専有部分の用途制限は説明事項。',
     tags: ['重要事項説明', '区分所有', '用途制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_234',
@@ -2299,6 +2532,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '修繕積立金等の説明は売買・交換のみ。貸借の場合は対象外。',
     tags: ['重要事項説明', '区分所有', '修繕積立金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_235',
@@ -2308,6 +2542,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法施行規則16条の4の3第11号により、建物貸借では設備の整備状況を説明。',
     tags: ['重要事項説明', '貸借', '設備'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_236',
@@ -2317,15 +2552,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '施行規則16条の4の3第13号により、宅地貸借では利用制限を説明。',
     tags: ['重要事項説明', '貸借', '利用制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_237',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '定期建物賃貸借の場合、その旨を重要事項として説明する必要がある。',
-    isCorrect: true,
-    explanation: '施行規則16条の4の3第9号により、定期借家の場合はその旨を説明。',
+    statement: '定期建物賃貸借の場合は普通借家契約と同様であるため、その旨を重要事項として説明する必要はない。',
+    isCorrect: false,
+    explanation: '誤り。施行規則16条の4の3第9号により、定期借家の場合はその旨を重要事項として説明する必要がある。',
     tags: ['重要事項説明', '定期借家'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_238',
@@ -2335,15 +2572,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '施行規則16条の4の3第3号の2により、水害ハザードマップでの所在地は説明事項。',
     tags: ['重要事項説明', '水害ハザードマップ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_239',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '重要事項説明はテレビ会議等のIT環境を利用して行うことも認められている。',
-    isCorrect: true,
-    explanation: '国土交通省ガイドラインにより、一定の要件を満たせばIT重説が可能。',
+    statement: '重要事項説明は必ず対面で行わなければならず、テレビ会議等のIT環境を利用することは認められない。',
+    isCorrect: false,
+    explanation: '誤り。国土交通省ガイドラインにより、一定の要件を満たせばIT重説が認められている。',
     tags: ['重要事項説明', 'IT重説'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2357,6 +2596,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項1号により、当事者の氏名・住所は必要的記載事項。',
     tags: ['37条書面', '必要的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_241',
@@ -2366,6 +2606,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項2号により、物件の所在等の表示は必要的記載事項。',
     tags: ['37条書面', '必要的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_242',
@@ -2375,6 +2616,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項3号により、代金の額・支払時期・方法は必要的記載事項。',
     tags: ['37条書面', '必要的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_243',
@@ -2384,6 +2626,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項7号により、契約解除の定めは任意的記載事項。',
     tags: ['37条書面', '任意的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_244',
@@ -2393,6 +2636,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '損害賠償額の予定・違約金の定めは任意的記載事項である。',
     tags: ['37条書面', '任意的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_245',
@@ -2402,6 +2646,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項11号により、契約不適合責任の定めは任意的記載事項として記載。',
     tags: ['37条書面', '任意的記載事項', '契約不適合責任'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_246',
@@ -2411,6 +2656,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項12号により、公課の負担の定めは任意的記載事項。',
     tags: ['37条書面', '任意的記載事項', '公課'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_247',
@@ -2420,6 +2666,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項により、契約の各当事者に交付義務。',
     tags: ['37条書面', '交付'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_248',
@@ -2429,6 +2676,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '37条書面の交付義務は業者間取引でも免除されない。',
     tags: ['37条書面', '業者間取引'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_249',
@@ -2438,6 +2686,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '代金以外の金銭（手付金等）の定めは任意的記載事項であり、定めがある場合のみ記載。',
     tags: ['37条書面', '任意的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_250',
@@ -2447,6 +2696,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条2項により、貸借の場合も借賃の額等は必要的記載事項。',
     tags: ['37条書面', '貸借', '必要的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_251',
@@ -2456,6 +2706,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正宅建業法により、37条書面の電磁的交付が認められている。',
     tags: ['37条書面', '電子化'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2469,15 +2720,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法37条の2第1項により、クーリング・オフの告知は書面で行う必要がある。',
     tags: ['クーリングオフ', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_253',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: 'クーリング・オフの書面による告知がなされていない場合、8日を経過してもクーリング・オフできる。',
-    isCorrect: true,
-    explanation: '宅建業法37条の2第1項により、書面告知がなければ8日の起算点がないためいつでも可能。',
+    statement: 'クーリング・オフの書面による告知がなされていない場合でも、契約締結日から8日を経過するとクーリング・オフはできなくなる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法37条の2第1項により、書面告知がなければ8日の起算点がないため、契約締結日から8日を経過してもクーリング・オフ可能。',
     tags: ['クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_254',
@@ -2487,6 +2740,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法施行規則16条の5第2号により、買主の自宅又は勤務先で申込みした場合はクーリング・オフ不可。',
     tags: ['クーリングオフ', '申込場所'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_255',
@@ -2496,6 +2750,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '施行規則16条の5第2号により、買主が申し出た自宅又は勤務先はクーリング・オフ不可。',
     tags: ['クーリングオフ', '申込場所'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_256',
@@ -2505,6 +2760,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条の2第3項により、受領済みの手付金等は速やかに返還義務。',
     tags: ['クーリングオフ', '返還'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_257',
@@ -2514,6 +2770,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地に定着しない案内所は「事務所等」に該当しないため、クーリング・オフの対象。',
     tags: ['クーリングオフ', '案内所'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_258',
@@ -2523,15 +2780,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条の2第1項により、売主以外の宅建業者の事務所も「事務所等」に該当し、クーリング・オフ不可。',
     tags: ['クーリングオフ', '媒介業者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_259',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '喫茶店で買受けの申込みをした場合、クーリング・オフの対象となる。',
-    isCorrect: true,
-    explanation: '喫茶店は事務所等に該当しないため、クーリング・オフの対象。',
+    statement: '喫茶店で買受けの申込みをした場合、クーリング・オフの対象外となる。',
+    isCorrect: false,
+    explanation: '誤り。喫茶店は事務所等に該当しないため、クーリング・オフの対象となる。',
     tags: ['クーリングオフ', '申込場所'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2545,6 +2804,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法39条2項は解約手付の推定規定であり、買主に不利でない限り違約手付の合意も有効。ただし買主からの手付解除の権利は奪えない。',
     tags: ['手付', '解約手付', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_261',
@@ -2554,15 +2814,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '手付金等の保全措置違反は宅建業法違反であり、監督処分の対象。',
     tags: ['手付金等の保全措置', '監督処分'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_262',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代金5,000万円の完成物件の売買で、手付金300万円を受領する場合、保全措置は不要である。',
-    isCorrect: true,
-    explanation: '完成物件の保全措置基準は代金の10%又は1,000万円超。300万円は5,000万円の6%であり基準以下のため不要。',
+    statement: '代金5,000万円の完成物件の売買で、手付金300万円を受領する場合、保全措置を講じなければならない。',
+    isCorrect: false,
+    explanation: '誤り。完成物件の保全措置基準は代金の10%又は1,000万円超であり、300万円は5,000万円の6%（10%以下）かつ1,000万円以下のため保全措置は不要である。',
     tags: ['手付金等の保全措置', '完成物件'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_263',
@@ -2572,6 +2834,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '未完成物件の基準は5%又は1,000万円超。合計300万円は4,000万円の7.5%で5%超のため保全措置必要。',
     tags: ['手付金等の保全措置', '未完成物件'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_264',
@@ -2581,15 +2844,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法39条1項により、20%超部分は無効であり買主は超過分の返還を請求可能。',
     tags: ['手付', '手付額の制限', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_265',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '未完成物件の手付金等の保全措置の方法は、銀行等の保証又は保険事業者による保証保険の2つである。',
-    isCorrect: true,
-    explanation: '宅建業法41条1項により、未完成物件は銀行等保証か保証保険の2方法のみ。',
+    statement: '未完成物件の手付金等の保全措置の方法は、銀行等の保証、保険事業者による保証保険、指定保管機関による保管の3つである。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法41条1項により、未完成物件は銀行等保証か保証保険の2方法のみ（指定保管機関による保管は完成物件のみ可能）。',
     tags: ['手付金等の保全措置', '未完成物件'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2603,6 +2868,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法38条は予定額・違約金を定めた場合の制限であり、定めがなければ実損額の請求は制限されない。',
     tags: ['損害賠償額の予定', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_267',
@@ -2612,6 +2878,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法40条により、引渡しから2年以上であれば民法より不利でも有効。',
     tags: ['契約不適合責任', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_268',
@@ -2621,6 +2888,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法40条の「2年以上」は引渡しの日からの起算であり、契約締結日からでは不可。',
     tags: ['契約不適合責任', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_269',
@@ -2630,15 +2898,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法78条2項により、業者間取引では8種制限が適用されないため全部免除の特約も有効。',
     tags: ['契約不適合責任', '業者間取引'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_270',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '損害賠償額の予定が代金の15%、違約金が代金の10%の場合、合計が20%を超えているので20%を超える部分のみ無効となる。',
-    isCorrect: true,
-    explanation: '宅建業法38条により、合計25%のうち20%超の5%部分が無効となる。',
+    statement: '損害賠償額の予定が代金の15%、違約金が代金の10%の場合、合計が20%を超えるため定め全体が無効となる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法38条2項により、20%を超える部分のみ無効となる（合計25%のうち5%部分のみ無効）。',
     tags: ['損害賠償額の予定', '8種制限'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2652,6 +2922,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法33条の2第1項により、他人物売買は原則禁止。',
     tags: ['他人物売買', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_272',
@@ -2661,6 +2932,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法78条2項により、業者間取引では他人物売買の制限は不適用。',
     tags: ['他人物売買', '業者間取引'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_273',
@@ -2670,24 +2942,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法42条により、30日以上の書面催告後でなければ解除できない。',
     tags: ['割賦販売', '8種制限'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_274',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '割賦販売とは、代金の全部又は一部について、引渡後1年以上の期間にわたり2回以上に分割して受領する売買をいう。',
-    isCorrect: true,
-    explanation: '宅建業法35条1項10号により、引渡後1年以上・2回以上分割の売買。',
+    statement: '割賦販売とは、代金の全部又は一部について、引渡後6か月以上の期間にわたり2回以上に分割して受領する売買をいう。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法35条1項10号により、引渡後1年以上・2回以上に分割して受領する売買である。',
     tags: ['割賦販売'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_275',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '割賦販売において所有権を留保する場合でも、代金の30%超を受領した後は所有権を移転しなければならない。',
-    isCorrect: true,
-    explanation: '宅建業法43条1項により、代金の30%超受領又は買主の登記移転請求時には所有権移転義務。',
+    statement: '割賦販売において所有権を留保する場合でも、代金の50%超を受領した後は所有権を移転しなければならない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法43条1項により、代金の30%超受領又は買主の登記移転請求時に所有権移転義務が生じる。',
     tags: ['割賦販売', '所有権留保'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2697,19 +2972,21 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_276',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代金200万円以下の売買媒介の報酬限度額（税抜）は、代金×5%である。',
-    isCorrect: true,
-    explanation: '告示により、200万円以下の部分は5%の料率が適用される。',
+    statement: '代金200万円以下の売買媒介の報酬限度額（税抜）は、代金×4%である。',
+    isCorrect: false,
+    explanation: '誤り。告示により、200万円以下の部分は5%の料率が適用される。',
     tags: ['報酬', '計算'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_277',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代金200万円超400万円以下の売買媒介の報酬限度額（税抜）は、代金×4%＋2万円である。',
-    isCorrect: true,
-    explanation: '告示の速算式により、200万超400万以下は4%＋2万円。',
+    statement: '代金200万円超400万円以下の売買媒介の報酬限度額（税抜）は、代金×3%＋6万円である。',
+    isCorrect: false,
+    explanation: '誤り。告示の速算式により、200万超400万以下は4%＋2万円である（3%＋6万円は400万超）。',
     tags: ['報酬', '計算'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_278',
@@ -2719,6 +2996,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '非居住用建物（店舗等）の貸借媒介では、告示により一方から1.1か月分まで受領可能（居住用の原則0.55か月分の制限がない）。',
     tags: ['報酬', '賃貸借', '非居住用'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_279',
@@ -2728,6 +3006,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅地の貸借は居住用建物の制限とは異なり、依頼者一方から借賃の1.1か月分まで受領可能。',
     tags: ['報酬', '賃貸借', '宅地'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_280',
@@ -2737,6 +3016,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '告示により、代理の報酬は一方から2倍まで、双方合計も2倍以内。',
     tags: ['報酬', '代理'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_281',
@@ -2746,6 +3026,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '一つの取引で複数業者が関与しても、依頼者一方から受領する報酬の合計は限度額以内でなければならない。',
     tags: ['報酬', '複数業者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_282',
@@ -2755,6 +3036,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '告示の報酬限度額は税込額で判断する。',
     tags: ['報酬', '消費税'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_283',
@@ -2764,6 +3046,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '告示により、権利金の授受がある場合はそれを売買代金とみなして計算可能（貸借報酬との高い方を選択可）。',
     tags: ['報酬', '権利金', '賃貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_284',
@@ -2773,15 +3056,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '低廉な空家等の特例は売主（又は交換の依頼者）からの報酬についてのみ適用。買主からは通常の限度額まで。',
     tags: ['報酬', '低廉な空家'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_285',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '低廉な空家等の売買媒介の特例では、現地調査等の費用を含めて売主から最大19万8,000円（税込）まで受領できる。',
-    isCorrect: true,
-    explanation: '2018年告示改正により、通常報酬＋現地調査費用等の合計で税込19万8,000円が上限。',
+    statement: '低廉な空家等の売買媒介の特例では、現地調査等の費用を含めて売主から最大22万円（税込）まで受領できる。',
+    isCorrect: false,
+    explanation: '誤り。2018年告示改正により、通常報酬＋現地調査費用等の合計で税込19万8,000円が上限である。',
     tags: ['報酬', '低廉な空家'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_286',
@@ -2791,6 +3076,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '告示により、交換の場合は高い方の価額を基準とする。',
     tags: ['報酬', '交換'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2804,6 +3090,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法32条・33条の広告規制は媒体を問わず適用される。',
     tags: ['広告', '規制'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_288',
@@ -2813,6 +3100,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法32条により、物件の所在・規模等について著しく事実と異なる表示等が禁止。',
     tags: ['広告', '誇大広告'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_289',
@@ -2822,6 +3110,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '広告開始時期の制限は8種制限とは異なり、業者間取引にも適用される。',
     tags: ['広告', '広告開始時期', '業者間取引'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_290',
@@ -2831,6 +3120,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法34条により、取引態様の明示は自ら当事者・代理・媒介のいずれの場合も必要。',
     tags: ['広告', '取引態様'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_291',
@@ -2840,6 +3130,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法34条2項により、注文を受けた際の取引態様の明示は口頭でも可。',
     tags: ['広告', '取引態様'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_292',
@@ -2849,6 +3140,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法34条2項により、広告時と注文受領時それぞれに明示義務がある。',
     tags: ['広告', '取引態様'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2862,6 +3154,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法49条、施行規則18条により、帳簿には取引の詳細を記載。',
     tags: ['帳簿', '記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_294',
@@ -2871,6 +3164,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '施行規則17条の2により、宅建士であるか否かは従業者名簿の記載事項。',
     tags: ['従業者名簿', '記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_295',
@@ -2880,6 +3174,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '施行規則により、従業者証明書には有効期間が定められている。',
     tags: ['従業者証明書'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_296',
@@ -2889,6 +3184,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法により、事務所には標識の掲示、帳簿・従業者名簿の備え付け、報酬額の掲示が必要。',
     tags: ['事務所', '設置義務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_297',
@@ -2898,6 +3194,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '帳簿・従業者名簿は事務所に備え付ける義務であり、案内所には不要。',
     tags: ['案内所', '帳簿', '従業者名簿'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_298',
@@ -2907,6 +3204,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法50条2項により、免許権者及び案内所所在地の知事の両方への届出が必要。',
     tags: ['案内所', '届出'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -2920,6 +3218,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法65条により、国土交通大臣はすべての宅建業者に対して指示処分・業務停止処分が可能。',
     tags: ['監督処分', '大臣'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_300',
@@ -2929,6 +3228,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法65条3項により、業務地の知事も指示処分・業務停止処分が可能。',
     tags: ['監督処分', '知事'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_301',
@@ -2938,6 +3238,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法66条により、免許取消処分は免許権者のみが行える。',
     tags: ['監督処分', '免許取消'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_302',
@@ -2947,15 +3248,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法65条2項により、指示処分違反は業務停止処分の事由。',
     tags: ['監督処分', '指示処分', '業務停止'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_303',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '業務停止処分の期間は、最長1年以内である。',
-    isCorrect: true,
-    explanation: '宅建業法65条2項により、業務停止期間は1年以内の期間。',
+    statement: '業務停止処分の期間は、最長6か月以内である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法65条2項により、業務停止期間は1年以内である。',
     tags: ['監督処分', '業務停止'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_304',
@@ -2965,6 +3268,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法68条・68条の2により、宅建士への監督処分は3種類。',
     tags: ['監督処分', '宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_305',
@@ -2974,15 +3278,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法68条1項により、事務禁止処分の期間は最長1年以内。',
     tags: ['監督処分', '事務禁止処分', '宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_306',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '登録消除処分を受けた宅建士は、処分の日から5年間は再登録を受けることができない。',
-    isCorrect: true,
-    explanation: '宅建業法18条1項により、登録消除処分から5年は欠格事由。',
+    statement: '登録消除処分を受けた宅建士は、処分の日から3年間は再登録を受けることができない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法18条1項により、登録消除処分から5年間は欠格事由となる。',
     tags: ['監督処分', '登録消除', '宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_307',
@@ -2992,6 +3298,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法70条により、監督処分をしたときは公告義務がある。',
     tags: ['監督処分', '公告'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_308',
@@ -3001,6 +3308,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法70条により、宅建士に対する処分の公告義務は規定されていない。',
     tags: ['監督処分', '公告', '宅建士'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3010,28 +3318,31 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_309',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '無免許営業をさせた者も、3年以下の拘禁刑又は300万円以下の罰金に処せられる。',
-    isCorrect: true,
-    explanation: '宅建業法79条2号により、無免許営業をさせた者も同等の罰則。',
+    statement: '無免許営業をさせた者は、1年以下の拘禁刑又は100万円以下の罰金に処せられる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法79条2号により、無免許営業をさせた者も3年以下の拘禁刑又は300万円以下の罰金である。',
     tags: ['罰則', '無免許営業'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_310',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '重要事項の不告知等を行った場合、2年以下の拘禁刑又は300万円以下の罰金に処せられる。',
-    isCorrect: true,
-    explanation: '宅建業法79条の2により、重要事項の不告知・不実告知には2年以下の拘禁刑又は300万円以下の罰金。',
+    statement: '重要事項の不告知等を行った場合、5年以下の拘禁刑又は500万円以下の罰金に処せられる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法79条の2により、重要事項の不告知・不実告知には2年以下の拘禁刑又は300万円以下の罰金が科される。',
     tags: ['罰則', '重要事項不告知'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_311',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '業務停止処分に違反して業務を行った場合、3年以下の拘禁刑又は300万円以下の罰金に処せられる。',
-    isCorrect: true,
-    explanation: '宅建業法79条により、業務停止処分違反は3年以下の拘禁刑又は300万円以下の罰金。',
+    statement: '業務停止処分に違反して業務を行った場合、2年以下の拘禁刑又は200万円以下の罰金に処せられる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法79条により、業務停止処分違反は3年以下の拘禁刑又は300万円以下の罰金である。',
     tags: ['罰則', '業務停止違反'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_312',
@@ -3041,6 +3352,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法79条により、名義貸し（13条1項違反）は3年以下の拘禁刑又は300万円以下の罰金。',
     tags: ['罰則', '名義貸し'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_313',
@@ -3050,15 +3362,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法84条の両罰規定により、行為者のほか法人にも罰金刑が科される。',
     tags: ['罰則', '両罰規定'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_314',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '両罰規定による法人に対する罰金は、最高1億円である。',
-    isCorrect: true,
-    explanation: '宅建業法84条により、法人に対しては最高1億円の罰金が科される場合がある。',
+    statement: '両罰規定による法人に対する罰金は、最高5,000万円である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法84条により、法人に対しては最高1億円の罰金が科される場合がある。',
     tags: ['罰則', '両罰規定', '法人'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3072,6 +3386,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法2条2号により、自ら売買・交換、代理・媒介（売買・交換・貸借）が宅建業。',
     tags: ['宅建業', '定義'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_316',
@@ -3081,6 +3396,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法78条1項により、国・地方公共団体等は宅建業法の適用が除外される。',
     tags: ['免許', '適用除外'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_317',
@@ -3090,6 +3406,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法77条により、信託会社等は免許不要で大臣への届出のみ。',
     tags: ['免許', '信託会社'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_318',
@@ -3099,6 +3416,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法施行令1条の2により、本店・支店・契約締結権限者設置の施設が事務所。',
     tags: ['事務所', '定義'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_319',
@@ -3108,6 +3426,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法上、本店は常に事務所に該当する（宅建業を営んでいなくても）。',
     tags: ['事務所', '本店'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_320',
@@ -3117,6 +3436,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法上、商号・名称に「宅建業」の文字を含める義務はない。',
     tags: ['免許', '商号'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_321',
@@ -3126,6 +3446,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法5条1項により、欠格となる罰金刑は宅建業法違反・暴力的犯罪等に限られ、背任罪は対象外。',
     tags: ['免許', '欠格事由', '罰金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_322',
@@ -3135,6 +3456,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '欠格事由となるのは暴力的犯罪（傷害・暴行等の故意犯）の罰金であり、過失傷害は対象外。',
     tags: ['免許', '欠格事由'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3148,15 +3470,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法16条の2により、知事は指定試験機関に試験事務を行わせることができる。',
     tags: ['宅建士', '試験'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_324',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建士の登録を受けるには、2年以上の実務経験又は国土交通大臣の登録を受けた実務講習の修了が必要である。',
-    isCorrect: true,
-    explanation: '宅建業法18条1項により、2年以上の実務経験又は登録実務講習が登録要件。',
+    statement: '宅建士の登録を受けるには、3年以上の実務経験又は国土交通大臣の登録を受けた実務講習の修了が必要である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法18条1項により、2年以上の実務経験又は登録実務講習が登録要件である。',
     tags: ['宅建士', '登録', '実務経験'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_325',
@@ -3166,6 +3490,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法20条により、本籍は登録事項であり変更があれば遅滞なく変更登録。',
     tags: ['宅建士', '変更登録', '本籍'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_326',
@@ -3175,6 +3500,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '住所は宅建士証の記載事項でもあるため、変更登録に加えて書換え交付も必要。',
     tags: ['宅建士', '変更登録', '書換え'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_327',
@@ -3184,6 +3510,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法22条の2により、宅建士証の交付を受けなければ宅建士としての事務を行えない。',
     tags: ['宅建士証', '事務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_328',
@@ -3193,6 +3520,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法22条の3により、更新には申請前6か月以内の法定講習の受講が必要。',
     tags: ['宅建士証', '更新', '法定講習'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3206,6 +3534,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項1号により、登記された権利（抵当権含む）は説明事項。',
     tags: ['重要事項説明', '抵当権'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_330',
@@ -3215,6 +3544,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法35条1項により、重要事項説明は契約成立前に行わなければならない。',
     tags: ['重要事項説明', '時期'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_331',
@@ -3224,6 +3554,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条により、取引に関与するすべての宅建業者に説明義務がある。',
     tags: ['重要事項説明', '複数業者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_332',
@@ -3233,6 +3564,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '重要事項説明の相手方は取引の相手方（買主・借主等）であり、代理の依頼者は対象外。',
     tags: ['重要事項説明', '代理'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_333',
@@ -3242,6 +3574,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項2号により、法令上の制限として開発行為の制限を説明。',
     tags: ['重要事項説明', '法令上の制限', '市街化調整区域'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_334',
@@ -3251,6 +3584,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条1項6号の2により、調査を実施していない場合はその旨の説明で足りる。',
     tags: ['重要事項説明', 'インスペクション'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_335',
@@ -3260,6 +3594,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '施行規則16条の2第9号により、維持修繕の実施状況は説明事項。',
     tags: ['重要事項説明', '区分所有', '維持修繕'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3273,6 +3608,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条2項により、貸借でも引渡しの時期は必要的記載事項。',
     tags: ['37条書面', '貸借', '必要的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_337',
@@ -3282,6 +3618,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項4号により、移転登記の申請時期は売買・交換のみの必要的記載事項。',
     tags: ['37条書面', '移転登記', '必要的記載事項'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_338',
@@ -3291,6 +3628,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条1項9号により、ローンあっせんの定めは任意的記載事項。',
     tags: ['37条書面', '任意的記載事項', 'ローン'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_339',
@@ -3300,6 +3638,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条により、契約成立後遅滞なく交付であり、同時交付も可能。',
     tags: ['37条書面', '交付時期'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3313,6 +3652,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '8種制限は買主保護の規定であり、買主に不利な特約のみが無効。',
     tags: ['8種制限', '特約'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_341',
@@ -3322,6 +3662,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法78条2項により、業者間取引では8種制限は適用されない。',
     tags: ['8種制限', '業者間取引', 'クーリングオフ'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_342',
@@ -3331,6 +3672,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '8種制限は「宅建業者が自ら売主」の場合に適用。売主が業者でなければ適用なし。',
     tags: ['8種制限', '適用範囲'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_343',
@@ -3340,6 +3682,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法36条により、開発許可・建築確認等の処分前は契約締結不可。',
     tags: ['契約締結時期', '未完成物件'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_344',
@@ -3349,6 +3692,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法36条は8種制限ではなく一般規定であり、業者間取引にも適用。',
     tags: ['契約締結時期', '業者間取引'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3358,10 +3702,11 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_345',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者は、正当な理由なく業務上の秘密を他に漏らしてはならず、この義務は退職後も継続する。',
-    isCorrect: true,
-    explanation: '宅建業法45条により、守秘義務は宅建業者の使用人等にも適用され、退職後も継続。',
+    statement: '宅建業者は、正当な理由なく業務上の秘密を他に漏らしてはならないが、この義務は退職後には及ばない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法45条により、守秘義務は宅建業者の使用人等にも適用され、退職後も継続する。',
     tags: ['守秘義務', '業務規制'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_346',
@@ -3371,6 +3716,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法47条の2第3項により、判断のための時間を確保する義務。',
     tags: ['業務規制', '禁止行為'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_347',
@@ -3380,6 +3726,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法47条の2第2項により、威迫による勧誘は禁止。',
     tags: ['業務規制', '禁止行為', '威迫'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_348',
@@ -3389,15 +3736,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法47条の2第3項により、預り金の返還拒否は禁止。',
     tags: ['業務規制', '禁止行為'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_349',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者は、勧誘に先立ち、宅建業者の商号又は名称及び勧誘を行う者の氏名並びに勧誘の目的を告げなければならない。',
-    isCorrect: true,
-    explanation: '宅建業法施行規則16条の12により、勧誘に先立つ告知義務。',
+    statement: '宅建業者は、勧誘に先立ち、勧誘を行う者の氏名のみを告げれば足り、商号や勧誘の目的の告知は不要である。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法施行規則16条の12により、勧誘に先立ち、商号又は名称、勧誘者の氏名、勧誘目的のすべてを告げる義務がある。',
     tags: ['業務規制', '勧誘'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_350',
@@ -3407,6 +3756,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '施行規則16条の12第1号のニにより、拒否した相手への継続勧誘は禁止。',
     tags: ['業務規制', '禁止行為', '勧誘'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_351',
@@ -3416,6 +3766,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法75条の3により、従業者自身も秘密を漏らしてはならない義務がある。',
     tags: ['守秘義務', '従業者'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3425,10 +3776,11 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_352',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業法の「宅地」には、都市計画法に規定する用途地域内の土地が含まれる。',
-    isCorrect: true,
-    explanation: '宅建業法2条1号により、用途地域内の土地は道路・公園等を除き「宅地」に該当。',
+    statement: '宅建業法の「宅地」には、都市計画法に規定する用途地域内の道路・公園・河川等もすべて含まれる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法2条1号により、用途地域内の土地でも道路・公園・河川等は「宅地」から除外される。',
     tags: ['宅地', '定義'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_353',
@@ -3438,6 +3790,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法2条1号により、建物の敷地に供する目的の土地は現況にかかわらず「宅地」。',
     tags: ['宅地', '定義', '農地'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_354',
@@ -3447,6 +3800,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '免許証の掲示義務はない。事務所に掲示するのは標識（業者票）と報酬額。',
     tags: ['免許', '免許証'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_355',
@@ -3456,6 +3810,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法76条により、取引を結了する目的の範囲内では宅建業者とみなされる。',
     tags: ['免許', 'みなし業者'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3465,10 +3820,11 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_356',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '保証協会の社員の地位を失った宅建業者は、1週間以内に営業保証金を供託しなければ事業を継続できない。',
-    isCorrect: true,
-    explanation: '宅建業法64条の15により、社員の地位喪失後1週間以内に営業保証金を供託する必要がある。',
+    statement: '保証協会の社員の地位を失った宅建業者は、1か月以内に営業保証金を供託しなければ事業を継続できない。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法64条の15により、社員の地位喪失後1週間以内に営業保証金を供託する必要がある。',
     tags: ['保証協会', '社員', '地位喪失'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_357',
@@ -3478,6 +3834,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法64条の8第1項により、宅建業者は弁済業務保証金からの弁済を受けることができない。',
     tags: ['保証協会', '弁済', '宅建業者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_358',
@@ -3487,6 +3844,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '弁済業務保証金は有価証券での供託も可能（64条の7第2項）。分担金は金銭のみ。',
     tags: ['保証協会', '弁済業務保証金', '分担金'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_359',
@@ -3496,6 +3854,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の10により、保証協会は還付があった場合に大臣に届出義務がある。',
     tags: ['保証協会', '還付', '届出'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3509,6 +3868,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法46条4項により、事務所ごとに報酬額を掲示する義務がある。',
     tags: ['報酬', '掲示'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_361',
@@ -3518,6 +3878,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法46条2項により、報酬以外の経費は原則請求不可（特別の依頼による広告費等は例外）。',
     tags: ['報酬', '経費'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_362',
@@ -3527,15 +3888,17 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '告示により、依頼者の特別の依頼による広告費用は報酬とは別に受領可能。',
     tags: ['報酬', '広告費'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_363',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '代金1,000万円（税抜）の売買の媒介報酬は、一方から最大39万6,000円（税込）である。',
-    isCorrect: true,
-    explanation: '(1,000万×3%+6万)×1.1=39.6万円。',
+    statement: '代金1,000万円（税抜）の売買の媒介報酬は、一方から最大36万円（税込）である。',
+    isCorrect: false,
+    explanation: '誤り。報酬限度額は(1,000万×3%+6万)×1.1=39万6,000円である。',
     tags: ['報酬', '計算'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3545,10 +3908,11 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     id: 'qq_takkengyoho_364',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: 'ホテルのロビーで買受けの申込みをした場合、クーリング・オフの対象となる。',
-    isCorrect: true,
-    explanation: 'ホテルのロビーは事務所等に該当しないため、クーリング・オフの対象。',
+    statement: 'ホテルのロビーで買受けの申込みをした場合、事務所等に類似する施設であるためクーリング・オフの対象外となる。',
+    isCorrect: false,
+    explanation: '誤り。ホテルのロビーは事務所等に該当しないため、クーリング・オフの対象となる。',
     tags: ['クーリングオフ', '申込場所'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_365',
@@ -3558,6 +3922,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条の2第1項により、クーリング・オフの意思表示は書面で行う。',
     tags: ['クーリングオフ', '書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_366',
@@ -3567,6 +3932,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '申込みの場所が基準であるため、申込みが事務所外であればクーリング・オフ可能。',
     tags: ['クーリングオフ', '申込場所'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3580,6 +3946,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法41条により、保全措置を講じた後でなければ受領不可。',
     tags: ['手付金等の保全措置'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_368',
@@ -3589,6 +3956,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法41条の「手付金等」は代金に充当されるすべての金銭を含み、中間金・内金も対象。',
     tags: ['手付金等の保全措置'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_369',
@@ -3598,6 +3966,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '手付金等の保全措置は、手付金・中間金等の合計額で基準を判断する。',
     tags: ['手付金等の保全措置', '基準額'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3611,6 +3980,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法65条1項により、不正又は不当な行為は指示処分事由。',
     tags: ['監督処分', '指示処分'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_371',
@@ -3620,6 +3990,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '免許取消処分は免許権者のみが行える。業務地の知事は指示処分・業務停止処分まで。',
     tags: ['監督処分', '免許取消', '知事'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_372',
@@ -3629,6 +4000,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法65条により、業務に関し他の法令に違反した場合も指示処分等の対象。',
     tags: ['監督処分', '他法令違反'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_373',
@@ -3638,24 +4010,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法76条により、免許が取り消された場合でも取引結了目的の範囲内では宅建業者とみなされる。',
     tags: ['監督処分', 'みなし業者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_374',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '重要事項説明義務違反は、50万円以下の罰金に処せられる。',
-    isCorrect: true,
-    explanation: '宅建業法83条により、35条違反は50万円以下の罰金。',
+    statement: '重要事項説明義務違反は、100万円以下の罰金に処せられる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法83条により、35条違反は50万円以下の罰金である。',
     tags: ['罰則', '重要事項説明'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_375',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '37条書面の交付義務違反は、50万円以下の罰金に処せられる。',
-    isCorrect: true,
-    explanation: '宅建業法83条により、37条書面の交付義務違反は50万円以下の罰金。',
+    statement: '37条書面の交付義務違反は、100万円以下の罰金に処せられる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法83条により、37条書面の交付義務違反は50万円以下の罰金である。',
     tags: ['罰則', '37条書面'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3669,6 +4044,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '自ら貸借は宅建業に該当しないため、宅建業法上の重要事項説明義務は適用されない。',
     tags: ['重要事項説明', '自ら貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_377',
@@ -3678,6 +4054,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法37条により、自ら当事者となる場合も37条書面の交付義務がある。',
     tags: ['37条書面', '自ら売主'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_378',
@@ -3687,6 +4064,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法78条2項により、業者間でも35条書面の交付義務は免除されない（説明は不要だが書面交付は必要）。',
     tags: ['35条書面', '業者間取引'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_379',
@@ -3696,6 +4074,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建士の資格と宅建業の免許は別であり、業として行うには免許が必要。',
     tags: ['免許', '宅建士'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_380',
@@ -3705,24 +4084,27 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '例えば契約の解除に関する事項は、35条書面にも37条書面にも記載される場合がある。',
     tags: ['35条書面', '37条書面'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_381',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者が免許を受けた後、正当な理由がないのに6か月以内に事業を開始しない場合、免許取消事由となる。',
-    isCorrect: true,
-    explanation: '宅建業法66条1項6号により、6か月以内に事業を開始せず、又は引き続き1年以上休止は免許取消事由。',
+    statement: '宅建業者が免許を受けた後、正当な理由がないのに3か月以内に事業を開始しない場合、免許取消事由となる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法66条1項6号により、6か月以内に事業を開始せず、又は引き続き1年以上休止した場合が免許取消事由となる。',
     tags: ['免許', '免許取消'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_382',
     moduleId: 'takken',
     category: 'takkengyoho',
-    statement: '宅建業者が引き続き1年以上事業を休止した場合、免許取消の対象となりうる。',
-    isCorrect: true,
-    explanation: '宅建業法66条1項6号により、1年以上の事業休止は免許取消事由。',
+    statement: '宅建業者が引き続き6か月以上事業を休止した場合、免許取消の対象となりうる。',
+    isCorrect: false,
+    explanation: '誤り。宅建業法66条1項6号により、1年以上の事業休止が免許取消事由となる。',
     tags: ['免許', '免許取消', '事業休止'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_383',
@@ -3732,6 +4114,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業者は営業保証金を供託するか、保証協会に加入して分担金を納付するかのいずれかを選択する。',
     tags: ['営業保証金', '保証協会'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_384',
@@ -3741,6 +4124,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業者は営業保証金制度か保証協会のいずれかに加入するため、両方から弁済を受けることはできない。',
     tags: ['営業保証金', '保証協会', '弁済'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3754,6 +4138,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法5条1項により、心身の故障により適正に営めない者は欠格事由。',
     tags: ['免許', '欠格事由'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_386',
@@ -3763,6 +4148,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法5条1項により、営業に関し成年者と同一の行為能力を有しない未成年者は、法定代理人の欠格事由とは別にそれ自体が欠格事由。',
     tags: ['免許', '欠格事由', '未成年者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_387',
@@ -3772,6 +4158,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法5条1項により、未成年者の法定代理人が欠格事由に該当しなければ免許を受けられる。',
     tags: ['免許', '欠格事由', '未成年者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_388',
@@ -3781,6 +4168,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '執行猶予期間満了で刑の言渡しの効力が失われるため、5年を待たずに免許を受けられる。',
     tags: ['免許', '欠格事由', '執行猶予'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3794,6 +4182,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '記名する宅建士は専任でなくてもよい。',
     tags: ['重要事項説明', '宅建士', '記名'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_390',
@@ -3803,6 +4192,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '重要事項説明の場所について法律上の制限はなく、事務所以外でも可能。',
     tags: ['重要事項説明', '場所'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_391',
@@ -3812,6 +4202,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法35条の2により、供託所等の説明は契約成立までに行えばよく、重要事項説明と同時でなくてよい。',
     tags: ['重要事項説明', '供託所等'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_392',
@@ -3821,6 +4212,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法35条の2の供託所等の説明は宅建士でなくても行える。',
     tags: ['供託所等', '宅建士'],
+    needsReview: true,
   },
 
   // ============================================================
@@ -3834,6 +4226,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法47条3号により、手付の分割払いは信用の供与に該当し禁止。',
     tags: ['業務規制', '手付貸与'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_394',
@@ -3843,6 +4236,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '手付の一部でも貸付は信用の供与に該当し、宅建業法47条3号違反。',
     tags: ['業務規制', '手付貸与'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_395',
@@ -3852,6 +4246,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法47条2号により、不当に高額の報酬を「要求」すること自体が禁止。受領の有無は問わない。',
     tags: ['業務規制', '報酬', '禁止行為'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_396',
@@ -3861,6 +4256,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '宅建業法48条1項により、従業者証明書の携帯義務があり口頭説明では不可。',
     tags: ['従業者証明書', '携帯義務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_397',
@@ -3870,6 +4266,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '代表者も従業者に含まれ、従業者証明書の交付を受け携帯する義務がある。',
     tags: ['従業者証明書', '代表者'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_398',
@@ -3879,6 +4276,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宅建業法64条の13及び施行規則により、預り金等は分別管理の義務がある。',
     tags: ['業務規制', '分別管理'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_399',
@@ -3888,6 +4286,7 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '専任の宅建士は、当該事務所に常勤し専ら職務に従事する者であるため、他の事務所との兼務は不可。',
     tags: ['専任宅建士', '兼務'],
+    needsReview: true,
   },
   {
     id: 'qq_takkengyoho_400',
@@ -3897,5 +4296,6 @@ export const takkengyohoQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '催告なしの解除特約は8種制限の対象外であり、民法の特約として有効。8種制限で制限されるのは手付・損害賠償額の予定・契約不適合責任等の特定事項のみ。',
     tags: ['8種制限', '契約解除', '特約'],
+    needsReview: true,
   },
 ];

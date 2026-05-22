@@ -11,6 +11,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '相続（包括遺贈含む）は形式的移転で非課税。',
     relatedQuestionId: 'tax_other-001',
     tags: ['不動産取得税', '非課税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_002',
@@ -21,6 +22,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '都道府県税。住宅・土地は特例で3%。',
     relatedQuestionId: 'tax_other-001',
     tags: ['不動産取得税', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_003',
@@ -31,16 +33,18 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地方税法73条の13、固定資産税評価額が基礎。',
     relatedQuestionId: 'tax_other-002',
     tags: ['不動産取得税', '課税標準'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_004',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '新築住宅の取得では1,200万円を価格から控除できる特例がある。',
-    isCorrect: true,
-    explanation: '床面積50㎡以上240㎡以下等の要件あり。',
+    statement: '新築住宅の取得では2,000万円を価格から控除できる特例がある。',
+    isCorrect: false,
+    explanation: '誤り。地方税法73条の14により、新築住宅の課税標準控除額は1,200万円である（床面積50㎡以上240㎡以下等の要件あり）。',
     relatedQuestionId: 'tax_other-002',
     tags: ['不動産取得税', '住宅特例'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_005',
@@ -51,6 +55,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '贈与でも課税対象。ただし相続は非課税。',
     relatedQuestionId: 'tax_other-003',
     tags: ['不動産取得税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_006',
@@ -61,6 +66,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '増加分は取得とみなし課税される（地方税法73条の2）。',
     relatedQuestionId: 'tax_other-003',
     tags: ['不動産取得税', '改築'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_007',
@@ -71,16 +77,18 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地方税法73条の17、納税通知書で納付。',
     relatedQuestionId: 'tax_other-004',
     tags: ['不動産取得税', '徴収'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_008',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '宅地の課税標準は固定資産税評価額の2分の1とされる特例がある。',
-    isCorrect: true,
-    explanation: '令和9年3月31日まで適用される特例措置。',
+    statement: '宅地の課税標準は固定資産税評価額の3分の1とされる特例がある。',
+    isCorrect: false,
+    explanation: '誤り。地方税法附則により、宅地の課税標準は固定資産税評価額の2分の1とされる（令和9年3月31日まで）。',
     relatedQuestionId: 'tax_other-004',
     tags: ['不動産取得税', '宅地特例'],
+    needsReview: true,
   },
 
   // ===== 固定資産税 (009-016) =====
@@ -93,6 +101,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地方税法343条、賦課期日主義。',
     relatedQuestionId: 'tax_other-005',
     tags: ['固定資産税', '納税義務者'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_010',
@@ -103,26 +112,29 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '標準1.4%だが制限税率は現在設けられていない。',
     relatedQuestionId: 'tax_other-005',
     tags: ['固定資産税', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_011',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '住宅用地のうち200㎡以下の部分は課税標準が6分の1となる。',
-    isCorrect: true,
-    explanation: '小規模住宅用地の特例（地方税法349条の3の2）。',
+    statement: '住宅用地のうち200㎡以下の部分は課税標準が3分の1となる。',
+    isCorrect: false,
+    explanation: '誤り。地方税法349条の3の2により、200㎡以下の小規模住宅用地は課税標準が6分の1となる（3分の1は200㎡超の部分）。',
     relatedQuestionId: 'tax_other-006',
     tags: ['固定資産税', '住宅用地'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_012',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '固定資産の評価は3年ごとに評価替えが行われる。',
-    isCorrect: true,
-    explanation: '地方税法409条、基準年度方式。',
+    statement: '固定資産の評価は5年ごとに評価替えが行われる。',
+    isCorrect: false,
+    explanation: '誤り。地方税法409条により、固定資産の評価替えは3年ごとに行われる（基準年度方式）。',
     relatedQuestionId: 'tax_other-006',
     tags: ['固定資産税', '評価替え'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_013',
@@ -133,26 +145,29 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '質権・100年超地上権の設定者は納税義務者となる。',
     relatedQuestionId: 'tax_other-007',
     tags: ['固定資産税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_014',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '免税点は土地30万円、家屋20万円、償却資産150万円である。',
-    isCorrect: true,
-    explanation: '地方税法351条の免税点規定。',
+    statement: '固定資産税の免税点は土地50万円、家屋30万円、償却資産200万円である。',
+    isCorrect: false,
+    explanation: '誤り。地方税法351条により、免税点は土地30万円・家屋20万円・償却資産150万円である。',
     relatedQuestionId: 'tax_other-007',
     tags: ['固定資産税', '免税点'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_015',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '新築住宅の税額は3年度分（中高層は5年度分）2分の1に減額される。',
-    isCorrect: true,
-    explanation: '床面積50㎡以上280㎡以下等の要件がある。',
+    statement: '新築住宅の税額は5年度分（中高層は7年度分）2分の1に減額される。',
+    isCorrect: false,
+    explanation: '誤り。新築住宅の固定資産税の減額は、原則3年度分（中高層耐火建築物は5年度分）が2分の1に減額される。',
     relatedQuestionId: 'tax_other-008',
     tags: ['固定資産税', '新築住宅'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_016',
@@ -163,6 +178,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地方税法362条、条例で変更可能。',
     relatedQuestionId: 'tax_other-008',
     tags: ['固定資産税', '納期'],
+    needsReview: true,
   },
 
   // ===== 登録免許税 (017-023) =====
@@ -175,6 +191,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '複数人が受ける場合は連帯納付義務。',
     relatedQuestionId: 'tax_other-009',
     tags: ['登録免許税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_018',
@@ -185,26 +202,29 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '固定資産課税台帳登録価格が基礎となる。',
     relatedQuestionId: 'tax_other-009',
     tags: ['登録免許税', '課税標準'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_019',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '住宅用家屋の所有権保存登記の税率軽減には床面積50㎡以上が必要。',
-    isCorrect: true,
-    explanation: '租税特別措置法72条の2、個人の自己居住用。',
+    statement: '住宅用家屋の所有権保存登記の税率軽減には床面積40㎡以上が必要。',
+    isCorrect: false,
+    explanation: '誤り。租税特別措置法72条の2により、住宅用家屋の所有権保存登記の軽減税率には床面積50㎡以上が必要である。',
     relatedQuestionId: 'tax_other-010',
     tags: ['登録免許税', '住宅軽減'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_020',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '登録免許税は、現金納付が原則だが3万円以下は印紙納付も可能。',
-    isCorrect: true,
-    explanation: '登録免許税法22条、23条。',
+    statement: '登録免許税は、現金納付が原則だが5万円以下は印紙納付も可能。',
+    isCorrect: false,
+    explanation: '誤り。登録免許税法22条・23条により、印紙納付が可能なのは3万円以下である。',
     relatedQuestionId: 'tax_other-010',
     tags: ['登録免許税', '納付'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_021',
@@ -215,6 +235,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '取得後1年以内要件がある。',
     relatedQuestionId: 'tax_other-011',
     tags: ['登録免許税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_022',
@@ -225,16 +246,18 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '登録免許税法4条、国等は非課税。',
     relatedQuestionId: 'tax_other-011',
     tags: ['登録免許税', '非課税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_023',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '抵当権設定登記の課税標準は債権金額である（登録免許税法別表第一）。',
-    isCorrect: true,
-    explanation: '税率は1000分の4（本則）。',
+    statement: '抵当権設定登記の課税標準は不動産の固定資産税評価額である（登録免許税法別表第一）。',
+    isCorrect: false,
+    explanation: '誤り。登録免許税法別表第一により、抵当権設定登記の課税標準は債権金額である（税率は1000分の4）。',
     relatedQuestionId: 'tax_other-012',
     tags: ['登録免許税', '抵当権'],
+    needsReview: true,
   },
 
   // ===== 印紙税 (024-030) =====
@@ -247,6 +270,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '建物賃貸借は不課税。土地賃貸借は課税。',
     relatedQuestionId: 'tax_other-012',
     tags: ['印紙税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_025',
@@ -257,6 +281,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '複数作成者は連帯納付義務を負う。',
     relatedQuestionId: 'tax_other-013',
     tags: ['印紙税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_026',
@@ -267,6 +292,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '記載金額のない契約書も200円課税される。',
     relatedQuestionId: 'tax_other-013',
     tags: ['印紙税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_027',
@@ -277,6 +303,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '減額変更は記載金額なし、200円課税。',
     relatedQuestionId: 'tax_other-014',
     tags: ['印紙税', '変更契約'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_028',
@@ -287,6 +314,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '貼付不足は3倍、消印忘れは同額の過怠税。',
     relatedQuestionId: 'tax_other-014',
     tags: ['印紙税', '過怠税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_029',
@@ -297,6 +325,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '印紙税法5条、国等は非課税。',
     relatedQuestionId: 'tax_other-015',
     tags: ['印紙税', '非課税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_030',
@@ -307,6 +336,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '各通ごとに課税文書として印紙が必要。',
     relatedQuestionId: 'tax_other-015',
     tags: ['印紙税'],
+    needsReview: true,
   },
 
   // ===== 所得税（譲渡・住宅ローン控除・買換） (031-040) =====
@@ -319,6 +349,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '分離課税。長期・短期で税率が異なる。',
     relatedQuestionId: 'tax_other-016',
     tags: ['所得税', '譲渡所得'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_032',
@@ -329,6 +360,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '譲渡年1月1日時点で5年超は長期譲渡。',
     relatedQuestionId: 'tax_other-016',
     tags: ['所得税', '長期譲渡'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_033',
@@ -339,16 +371,18 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '租税特別措置法35条、所有期間要件なし。',
     relatedQuestionId: 'tax_other-017',
     tags: ['所得税', '3000万控除'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_034',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '居住用財産の軽減税率特例は所有期間10年超が要件である。',
-    isCorrect: true,
-    explanation: '租税特別措置法31条の3、6,000万以下14%。',
+    statement: '居住用財産の軽減税率特例は所有期間5年超が要件である。',
+    isCorrect: false,
+    explanation: '誤り。租税特別措置法31条の3により、居住用財産の軽減税率特例は所有期間10年超が要件である（6,000万円以下14%）。',
     relatedQuestionId: 'tax_other-017',
     tags: ['所得税', '軽減税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_035',
@@ -359,16 +393,18 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '特別関係者への譲渡は適用除外。',
     relatedQuestionId: 'tax_other-018',
     tags: ['所得税', '3000万控除'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_036',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '住宅ローン控除は、合計所得金額2,000万円超の年は適用されない。',
-    isCorrect: true,
-    explanation: '租税特別措置法41条、所得要件あり。',
+    statement: '住宅ローン控除は、合計所得金額3,000万円超の年は適用されない。',
+    isCorrect: false,
+    explanation: '誤り。租税特別措置法41条により、住宅ローン控除は合計所得金額2,000万円超の年は適用されない。',
     relatedQuestionId: 'tax_other-018',
     tags: ['所得税', '住宅ローン控除'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_037',
@@ -379,6 +415,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '原則50㎡以上、所得要件緩和時は40㎡可。',
     relatedQuestionId: 'tax_other-019',
     tags: ['所得税', '住宅ローン控除'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_038',
@@ -389,6 +426,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '買換え特例と3,000万円控除は選択適用。',
     relatedQuestionId: 'tax_other-019',
     tags: ['所得税', '買換え'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_039',
@@ -399,6 +437,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '将来譲渡時に取得費が引き継がれる。',
     relatedQuestionId: 'tax_other-020',
     tags: ['所得税', '買換え'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_040',
@@ -409,6 +448,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '併用可能。ただし贈与額は取得対価から控除。',
     relatedQuestionId: 'tax_other-020',
     tags: ['所得税', '贈与税'],
+    needsReview: true,
   },
 
   // ===== 贈与税 (041-044) =====
@@ -421,6 +461,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '父母・祖父母等の直系尊属が対象。',
     relatedQuestionId: 'tax_other-021',
     tags: ['贈与税', '非課税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_042',
@@ -431,16 +472,18 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '受贈者は18歳以上の推定相続人・孫。',
     relatedQuestionId: 'tax_other-021',
     tags: ['贈与税', '相続時精算'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_043',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '暦年課税の贈与税の基礎控除は年間110万円である。',
-    isCorrect: true,
-    explanation: '受贈者1人あたり年110万円まで非課税。',
+    statement: '暦年課税の贈与税の基礎控除は年間60万円である。',
+    isCorrect: false,
+    explanation: '誤り。相続税法21条の5により、暦年課税の基礎控除は受贈者1人あたり年間110万円である。',
     relatedQuestionId: 'tax_other-022',
     tags: ['贈与税', '基礎控除'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_044',
@@ -451,6 +494,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '累計2,500万円までが特別控除額。',
     relatedQuestionId: 'tax_other-022',
     tags: ['贈与税'],
+    needsReview: true,
   },
 
   // ===== 地価公示 (045-050) =====
@@ -463,6 +507,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '毎年1月1日時点の正常価格を判定。',
     relatedQuestionId: 'tax_other-001',
     tags: ['地価公示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_046',
@@ -473,6 +518,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地価公示法2条、2人以上の鑑定評価が必要。',
     relatedQuestionId: 'tax_other-002',
     tags: ['地価公示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_047',
@@ -483,6 +529,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地価公示法1条の2。',
     relatedQuestionId: 'tax_other-003',
     tags: ['地価公示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_048',
@@ -493,6 +540,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地価公示法9条、規準義務がある。',
     relatedQuestionId: 'tax_other-004',
     tags: ['地価公示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_049',
@@ -503,6 +551,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '都市計画区域外の公示区域からも選定可能。',
     relatedQuestionId: 'tax_other-005',
     tags: ['地価公示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_050',
@@ -513,6 +562,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地価公示法2条2項、建物等がないものとして算定。',
     relatedQuestionId: 'tax_other-006',
     tags: ['地価公示', '正常価格'],
+    needsReview: true,
   },
 
   // ===== 不動産鑑定評価 (051-055) =====
@@ -525,6 +575,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '不動産鑑定評価基準、3手法の併用が原則。',
     relatedQuestionId: 'tax_other-007',
     tags: ['鑑定評価'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_052',
@@ -535,6 +586,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '再調達原価把握困難な土地は適用不可が原則。',
     relatedQuestionId: 'tax_other-008',
     tags: ['鑑定評価', '原価法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_053',
@@ -545,6 +597,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '投機的取引事例は排除しなければならない。',
     relatedQuestionId: 'tax_other-009',
     tags: ['鑑定評価', '取引事例'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_054',
@@ -555,6 +608,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '自用不動産も賃貸を想定して適用可能。',
     relatedQuestionId: 'tax_other-010',
     tags: ['鑑定評価', '収益還元'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_055',
@@ -565,6 +619,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '市場性を有する不動産の典型的な価格。',
     relatedQuestionId: 'tax_other-011',
     tags: ['鑑定評価', '正常価格'],
+    needsReview: true,
   },
 
   // ===== フラット35・機構法 (056-059) =====
@@ -577,6 +632,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '証券化支援（買取型）が主業務。',
     relatedQuestionId: 'tax_other-012',
     tags: ['機構法', 'フラット35'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_057',
@@ -587,6 +643,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '機構法13条1項、災害関連は例外的直接融資。',
     relatedQuestionId: 'tax_other-013',
     tags: ['機構法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_058',
@@ -597,6 +654,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '証券化支援事業（買取型）の仕組み。',
     relatedQuestionId: 'tax_other-014',
     tags: ['フラット35'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_059',
@@ -607,6 +665,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '取扱金融機関が独自に決定する。',
     relatedQuestionId: 'tax_other-015',
     tags: ['フラット35', '金利'],
+    needsReview: true,
   },
 
   // ===== 景品表示法 (060-063) =====
@@ -614,11 +673,12 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     id: 'qq_tax_other_060',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '徒歩による所要時間は、道路距離80mにつき1分として算出する。',
-    isCorrect: true,
-    explanation: '公正競争規約、端数は切り上げ。',
+    statement: '徒歩による所要時間は、道路距離100mにつき1分として算出する。',
+    isCorrect: false,
+    explanation: '誤り。不動産の表示に関する公正競争規約により、徒歩所要時間は道路距離80mにつき1分として算出する（端数切り上げ）。',
     relatedQuestionId: 'tax_other-016',
     tags: ['景表法', '徒歩時間'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_061',
@@ -629,6 +689,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '建築後1年未満かつ未使用のもの。',
     relatedQuestionId: 'tax_other-017',
     tags: ['景表法', '新築'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_062',
@@ -639,6 +700,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '存在しない物件・取引不可物件の広告は禁止。',
     relatedQuestionId: 'tax_other-018',
     tags: ['景表法', 'おとり広告'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_063',
@@ -649,6 +711,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '「宅地の造成及び建物の建築ができない」旨明示。',
     relatedQuestionId: 'tax_other-019',
     tags: ['景表法', '市街化調整区域'],
+    needsReview: true,
   },
 
   // ===== 土地・建物の知識 (064-067) =====
@@ -661,6 +724,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '水はけ良好だが土石流に注意が必要。',
     relatedQuestionId: 'tax_other-020',
     tags: ['土地', '扇状地'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_065',
@@ -671,6 +735,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '干拓地は海面以下が多く、埋立地より危険。',
     relatedQuestionId: 'tax_other-021',
     tags: ['土地'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_066',
@@ -681,6 +746,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '鉄筋は引張、コンクリートは圧縮に強い。',
     relatedQuestionId: 'tax_other-022',
     tags: ['建物', 'RC造'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_067',
@@ -691,6 +757,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '建築基準法施行令46条、壁量計算が必要。',
     relatedQuestionId: 'tax_other-001',
     tags: ['建物', '木造'],
+    needsReview: true,
   },
 
   // ===== 統計 (068-070) =====
@@ -703,6 +770,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '地価公示は毎年3月公表だが土地白書とは別。',
     relatedQuestionId: 'tax_other-002',
     tags: ['統計', '地価公示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_069',
@@ -713,6 +781,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '新設住宅着工戸数は試験頻出項目。',
     relatedQuestionId: 'tax_other-003',
     tags: ['統計', '着工'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_070',
@@ -723,6 +792,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     explanation: '不動産業は全産業売上高の相応の割合を占める。',
     relatedQuestionId: 'tax_other-004',
     tags: ['統計', '法人企業統計'],
+    needsReview: true,
   },
   // ===== 2026年法改正対応 =====
   {
@@ -733,6 +803,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和6年度税制改正で延長。',
     tags: ['贈与税', '非課税', '税制改正2026'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_2026_02',
@@ -742,6 +813,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '成年年齢引き下げに連動。',
     tags: ['贈与税', '税制改正2026'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_2026_03',
@@ -751,6 +823,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '住宅ローン控除の子育て特例。',
     tags: ['住宅ローン控除', '税制改正2026'],
+    needsReview: true,
   },
 
   // ===== 不動産取得税（追加） (074-085) =====
@@ -762,6 +835,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '等価交換であっても不動産の取得であるため課税される（地方税法73条の2）。',
     tags: ['不動産取得税', '課税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_075',
@@ -771,6 +845,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都道府県税であり、不動産の所在地の都道府県が課税する。',
     tags: ['不動産取得税', '課税主体'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_076',
@@ -780,6 +855,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '現実の取得が課税要件であり、登記は不要（地方税法73条の2）。',
     tags: ['不動産取得税', '登記'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_077',
@@ -789,6 +865,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '法人の合併による取得は形式的移転であり非課税（地方税法73条の7）。',
     tags: ['不動産取得税', '非課税', '合併'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_078',
@@ -798,6 +875,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '普通徴収の方法によって徴収される（地方税法73条の17）。',
     tags: ['不動産取得税', '徴収方法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_079',
@@ -807,15 +885,17 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '持分超過部分のみ課税される（地方税法73条の7第2号の3）。',
     tags: ['不動産取得税', '共有物分割'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_080',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '不動産取得税の標準税率は本則4%であるが、住宅及び土地は3%の特例がある。',
-    isCorrect: true,
-    explanation: '令和9年3月31日まで住宅・土地は3%に軽減されている。',
+    statement: '不動産取得税の標準税率は本則4%であるが、住宅及び土地は2%の特例がある。',
+    isCorrect: false,
+    explanation: '誤り。住宅及び土地は3%に軽減されている（令和9年3月31日まで）。',
     tags: ['不動産取得税', '税率', '特例'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_081',
@@ -825,6 +905,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '中古住宅は新築年月日に応じて控除額が異なり、自己居住用等の要件もある。',
     tags: ['不動産取得税', '中古住宅', '課税標準の特例'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_082',
@@ -834,6 +915,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '包括遺贈は相続に含まれ非課税。ただし特定遺贈は課税される（地方税法73条の7）。',
     tags: ['不動産取得税', '遺贈', '非課税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_083',
@@ -843,15 +925,17 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '特定遺贈は形式的移転とはいえず課税される。',
     tags: ['不動産取得税', '特定遺贈'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_084',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '不動産取得税の免税点は、土地10万円、家屋の新築23万円、その他12万円である。',
-    isCorrect: true,
-    explanation: '課税標準となるべき額がこれらの金額未満の場合は課税されない（地方税法73条の15の2）。',
+    statement: '不動産取得税の免税点は、土地30万円、家屋の新築50万円、その他25万円である。',
+    isCorrect: false,
+    explanation: '誤り。地方税法73条の15の2により、不動産取得税の免税点は土地10万円・家屋新築23万円・その他12万円である。',
     tags: ['不動産取得税', '免税点'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_085',
@@ -861,6 +945,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和8年3月31日までに取得した場合、通常の1,200万円に代えて1,300万円控除。',
     tags: ['不動産取得税', '長期優良住宅', '課税標準の特例'],
+    needsReview: true,
   },
 
   // ===== 固定資産税（追加） (086-097) =====
@@ -872,6 +957,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '固定資産税は市町村税である（地方税法342条）。東京23区は都が課税。',
     tags: ['固定資産税', '課税主体'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_087',
@@ -881,15 +967,17 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '賦課期日（1月1日）の所有者に課税され、死亡の場合は相続人が承継する。',
     tags: ['固定資産税', '納税義務'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_088',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '住宅用地のうち200㎡超の部分（一般住宅用地）は、課税標準が3分の1となる。',
-    isCorrect: true,
-    explanation: '小規模住宅用地（200㎡以下）は6分の1、一般住宅用地（200㎡超）は3分の1（地方税法349条の3の2）。',
+    statement: '住宅用地のうち200㎡超の部分（一般住宅用地）は、課税標準が2分の1となる。',
+    isCorrect: false,
+    explanation: '誤り。地方税法349条の3の2により、一般住宅用地（200㎡超の部分）は課税標準が3分の1となる（小規模住宅用地は6分の1）。',
     tags: ['固定資産税', '住宅用地', '課税標準'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_089',
@@ -899,6 +987,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地方税法432条、市町村に設置された評価審査委員会に申出する。',
     tags: ['固定資産税', '不服申立て'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_090',
@@ -908,6 +997,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地方税法352条、共用部分の按分を含め専有面積割合で算定。',
     tags: ['固定資産税', '区分所有'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_091',
@@ -917,6 +1007,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '床面積50㎡以上280㎡以下（貸家住宅は40㎡以上280㎡以下）が要件である。',
     tags: ['固定資産税', '新築住宅', '床面積'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_092',
@@ -926,6 +1017,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '賦課期日は毎年1月1日である（地方税法359条）。',
     tags: ['固定資産税', '賦課期日'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_093',
@@ -935,6 +1027,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '法律上の義務はなく、当事者間の慣行による精算にすぎない。1月1日の所有者が全額納付義務を負う。',
     tags: ['固定資産税', '売買', '精算'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_094',
@@ -944,6 +1037,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地方税法416条、縦覧帳簿により所有者等が確認できる。',
     tags: ['固定資産税', '縦覧'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_095',
@@ -953,15 +1047,17 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '1.4%は標準税率であり、市町村は条例で異なる税率を定めることができる。',
     tags: ['固定資産税', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_096',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '都市計画税は固定資産税と併せて課税され、税率の上限は0.3%である。',
-    isCorrect: true,
-    explanation: '地方税法702条の4、制限税率0.3%。市街化区域内の土地・家屋が対象。',
+    statement: '都市計画税は固定資産税と併せて課税され、税率の上限は0.5%である。',
+    isCorrect: false,
+    explanation: '誤り。地方税法702条の4により、都市計画税の制限税率は0.3%である（市街化区域内の土地・家屋が対象）。',
     tags: ['固定資産税', '都市計画税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_097',
@@ -971,6 +1067,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画税の小規模住宅用地は3分の1、一般住宅用地は3分の2に軽減される。',
     tags: ['固定資産税', '都市計画税', '住宅用地'],
+    needsReview: true,
   },
 
   // ===== 登録免許税（追加） (098-107) =====
@@ -978,10 +1075,11 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     id: 'qq_tax_other_098',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '土地の所有権移転登記の本則税率は1000分の20である（登録免許税法別表第一）。',
-    isCorrect: true,
-    explanation: '売買による所有権移転の本則は2%。令和8年3月31日まで1.5%に軽減。',
+    statement: '土地の所有権移転登記の本則税率は1000分の40である（登録免許税法別表第一）。',
+    isCorrect: false,
+    explanation: '誤り。登録免許税法別表第一により、売買による土地の所有権移転登記の本則税率は1000分の20（2%）である（令和8年3月31日まで1.5%に軽減）。',
     tags: ['登録免許税', '税率', '所有権移転'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_099',
@@ -991,6 +1089,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '登録免許税法別表第一、住宅用家屋の軽減後は1000分の1.5。',
     tags: ['登録免許税', '税率', '保存登記'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_100',
@@ -1000,15 +1099,17 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '個人が自己の居住用として取得した場合に限り適用される（租税特別措置法73条）。',
     tags: ['登録免許税', '住宅軽減', '個人'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_101',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '相続による所有権移転登記の税率は1000分の4である。',
-    isCorrect: true,
-    explanation: '登録免許税法別表第一、相続は売買より低い税率。',
+    statement: '相続による所有権移転登記の税率は1000分の20である。',
+    isCorrect: false,
+    explanation: '誤り。登録免許税法別表第一により、相続による所有権移転登記の税率は1000分の4である（売買より低い税率）。',
     tags: ['登録免許税', '相続', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_102',
@@ -1018,15 +1119,17 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '贈与は売買と同じ本則税率。遺贈（相続人以外）も同様。',
     tags: ['登録免許税', '贈与', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_103',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '住宅用家屋の軽減税率の適用を受けるには、床面積が50㎡以上でなければならない。',
-    isCorrect: true,
-    explanation: '個人の自己居住用で床面積50㎡以上が要件（租税特別措置法72条の2等）。',
+    statement: '住宅用家屋の軽減税率の適用を受けるには、床面積が40㎡以上でなければならない。',
+    isCorrect: false,
+    explanation: '誤り。租税特別措置法72条の2等により、住宅用家屋の軽減税率の要件は床面積50㎡以上（個人の自己居住用）である。',
     tags: ['登録免許税', '住宅軽減', '床面積'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_104',
@@ -1036,6 +1139,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '固定資産課税台帳登録価格が課税標準となる（登録免許税法10条）。',
     tags: ['登録免許税', '課税標準'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_105',
@@ -1045,15 +1149,17 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '仮登記は本登記の半額の税率が適用される（登録免許税法別表第一）。',
     tags: ['登録免許税', '仮登記'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_106',
     moduleId: 'takken',
     category: 'tax_other',
-    statement: '住宅用家屋の抵当権設定登記の軽減税率は1000分の1である。',
-    isCorrect: true,
-    explanation: '本則は1000分の4だが、住宅用家屋の軽減で1000分の1に軽減。',
+    statement: '住宅用家屋の抵当権設定登記の軽減税率は1000分の2である。',
+    isCorrect: false,
+    explanation: '誤り。本則は1000分の4だが、住宅用家屋の軽減で1000分の1に軽減される。',
     tags: ['登録免許税', '抵当権', '軽減税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_107',
@@ -1063,6 +1169,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '表題登記には登録免許税は課されない。権利の登記に課税される。',
     tags: ['登録免許税', '表題登記', '非課税'],
+    needsReview: true,
   },
 
   // ===== 印紙税（追加） (108-117) =====
@@ -1074,6 +1181,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地の賃借権の設定に関する契約書は第1号文書。建物賃貸借は不課税。',
     tags: ['印紙税', '課税文書', '土地賃貸借'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_109',
@@ -1083,6 +1191,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '契約当事者が証明目的で作成した写しは課税文書に該当する。',
     tags: ['印紙税', '課税文書', '写し'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_110',
@@ -1092,6 +1201,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '媒介契約書は委任状に類するもので、印紙税法上の課税文書に該当しない。',
     tags: ['印紙税', '非課税', '媒介契約'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_111',
@@ -1101,6 +1211,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '印紙税法8条、印紙の消印が必要。税務署長の承認で印紙税納付計器も可。',
     tags: ['印紙税', '納付方法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_112',
@@ -1110,6 +1221,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '一の文書が2以上の号に該当する場合、高い方の税額による（印紙税法別表第一、通則）。',
     tags: ['印紙税', '複数号該当'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_113',
@@ -1119,6 +1231,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '営業に関しない金銭の受取書は非課税（印紙税法別表第一、第17号文書の非課税規定）。',
     tags: ['印紙税', '非課税', '領収書'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_114',
@@ -1128,6 +1241,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '印紙税法20条。ただし自主的に申告すれば1.1倍に軽減。',
     tags: ['印紙税', '過怠税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_115',
@@ -1137,6 +1251,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '印紙税の納付は公法上の義務であり、契約の私法上の効力とは無関係。',
     tags: ['印紙税', '契約の効力'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_116',
@@ -1146,6 +1261,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '印紙税は「文書」に課税されるため、電磁的記録には課されない。',
     tags: ['印紙税', '電子契約', '非課税'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_117',
@@ -1155,6 +1271,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '増額変更は増加額が記載金額となる。減額変更は記載金額なし（200円）。',
     tags: ['印紙税', '変更契約'],
+    needsReview: true,
   },
 
   // ===== 所得税（追加） (118-132) =====
@@ -1166,6 +1283,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '所有期間5年超（譲渡年の1月1日時点）は長期譲渡所得として20%課税。',
     tags: ['所得税', '長期譲渡', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_119',
@@ -1175,6 +1293,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '所有期間5年以下は短期譲渡所得として39%課税（租税特別措置法32条）。',
     tags: ['所得税', '短期譲渡', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_120',
@@ -1184,6 +1303,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '取得日から譲渡した年の1月1日までの期間で判定する。',
     tags: ['所得税', '所有期間'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_121',
@@ -1193,6 +1313,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '租税特別措置法35条、取壊し後の敷地譲渡にも一定要件で適用。',
     tags: ['所得税', '3000万控除', '取壊し'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_122',
@@ -1202,6 +1323,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '住まなくなった日から3年を経過する日の属する年の12月31日までに譲渡する必要がある。',
     tags: ['所得税', '3000万控除', '期限'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_123',
@@ -1211,6 +1333,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '租税特別措置法31条の3、6,000万円超の部分は通常の長期譲渡税率（20%）。',
     tags: ['所得税', '軽減税率', '居住用'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_124',
@@ -1220,6 +1343,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '3,000万円控除後の譲渡益に軽減税率を適用可能（租税特別措置法31条の3）。',
     tags: ['所得税', '3000万控除', '軽減税率', '併用'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_125',
@@ -1229,6 +1353,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '前年・前々年にこの特例の適用を受けている場合は適用できない（3年に1回の制限）。',
     tags: ['所得税', '3000万控除', '適用制限'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_126',
@@ -1238,6 +1363,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '取得費＝取得価額－減価償却費相当額。土地は減価償却しない。',
     tags: ['所得税', '取得費', '減価償却'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_127',
@@ -1247,6 +1373,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '収入金額の5%が概算取得費（租税特別措置法31条の4）。',
     tags: ['所得税', '概算取得費'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_128',
@@ -1256,6 +1383,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '租税特別措置法36条の2、居住期間10年以上・所有期間10年超が要件。',
     tags: ['所得税', '買換え', '所有期間'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_129',
@@ -1265,6 +1393,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '租税特別措置法41条、居住要件。',
     tags: ['所得税', '住宅ローン控除', '居住要件'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_130',
@@ -1274,6 +1403,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '3,000万円控除等を適用した場合、その年以後一定期間は住宅ローン控除の適用不可。',
     tags: ['所得税', '住宅ローン控除', '併用不可'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_131',
@@ -1283,6 +1413,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '償還期間10年以上が要件（租税特別措置法41条）。',
     tags: ['所得税', '住宅ローン控除', '償還期間'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_132',
@@ -1292,6 +1423,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '居住用財産の買換え等の場合の譲渡損失の損益通算・繰越控除の特例（租税特別措置法41条の5）。',
     tags: ['所得税', '譲渡損失', '損益通算'],
+    needsReview: true,
   },
 
   // ===== 贈与税（追加） (133-140) =====
@@ -1303,6 +1435,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '贈与税に独立した法律はなく、相続税法の中で規定されている。',
     tags: ['贈与税', '根拠法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_134',
@@ -1312,6 +1445,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '相続税法21条の6、基礎控除110万円と合わせて最大2,110万円まで非課税。',
     tags: ['贈与税', '配偶者控除'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_135',
@@ -1321,6 +1455,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '一度選択すると撤回不可。以後その贈与者からの贈与はすべて精算課税が適用される。',
     tags: ['贈与税', '相続時精算', '撤回不可'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_136',
@@ -1330,6 +1465,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '相続税法21条の13、超過部分は20%課税。相続時に精算。',
     tags: ['贈与税', '相続時精算', '税率'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_137',
@@ -1339,6 +1475,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '租税特別措置法70条の2、所得要件がある。',
     tags: ['贈与税', '非課税', '所得要件'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_138',
@@ -1348,6 +1485,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '直系尊属（父母・祖父母等）からの贈与に限られ、配偶者は対象外。',
     tags: ['贈与税', '非課税', '直系尊属'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_139',
@@ -1357,6 +1495,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和5年度税制改正で令和6年1月1日以降の贈与に適用。110万円以下の贈与は申告不要。',
     tags: ['贈与税', '相続時精算', '基礎控除'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_140',
@@ -1366,6 +1505,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '相続税法28条、2月1日から3月15日までに申告書を提出。',
     tags: ['贈与税', '申告期限'],
+    needsReview: true,
   },
 
   // ===== 不動産鑑定評価基準（追加） (141-152) =====
@@ -1377,6 +1517,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産鑑定評価基準、できるだけ複数の手法を適用すべきとされる。',
     tags: ['鑑定評価', '3手法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_142',
@@ -1386,6 +1527,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産鑑定評価基準、積算価格＝再調達原価－減価額。',
     tags: ['鑑定評価', '原価法', '積算価格'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_143',
@@ -1395,6 +1537,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産鑑定評価基準、取引事例に地域要因・個別的要因の比較も行う。',
     tags: ['鑑定評価', '取引事例比較法', '比準価格'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_144',
@@ -1404,6 +1547,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '直接還元法とDCF法がある。不動産鑑定評価基準。',
     tags: ['鑑定評価', '収益還元法', '収益価格'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_145',
@@ -1413,6 +1557,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '正常な取引を基準とするため、特殊事情を排除して補正する。',
     tags: ['鑑定評価', '取引事例比較法', '事情補正'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_146',
@@ -1422,6 +1567,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '取引時点が古すぎるものは排除し、時点修正が可能なものを選択する。',
     tags: ['鑑定評価', '取引事例比較法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_147',
@@ -1431,6 +1577,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産鑑定評価基準、両方法を併用することが望ましい。',
     tags: ['鑑定評価', '原価法', '減価修正'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_148',
@@ -1440,6 +1587,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '収益価格＝純収益÷還元利回り。最も基本的な収益還元法。',
     tags: ['鑑定評価', '収益還元法', '直接還元法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_149',
@@ -1449,6 +1597,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: 'Discounted Cash Flow法。直接還元法より精緻な手法。',
     tags: ['鑑定評価', '収益還元法', 'DCF法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_150',
@@ -1458,6 +1607,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '正常価格のほか、限定価格・特定価格・特殊価格を求めることもある。',
     tags: ['鑑定評価', '価格の種類'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_151',
@@ -1467,6 +1617,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '限定価格は、隣接不動産の併合や借地権者の底地購入など市場が限定される場合の価格。特殊な関係がある場合は特定価格ではない。',
     tags: ['鑑定評価', '限定価格'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_152',
@@ -1476,6 +1627,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産鑑定評価基準、最有効使用の判定が鑑定評価の基本。',
     tags: ['鑑定評価', '最有効使用'],
+    needsReview: true,
   },
 
   // ===== 地価公示法（追加） (153-162) =====
@@ -1487,6 +1639,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地価公示法3条、標準地は一定の地域内で土地の利用状況等が通常の土地を選定。',
     tags: ['地価公示', '標準地'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_154',
@@ -1496,6 +1649,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '更地としての価格を求める。建物等がないものとして算定（地価公示法2条2項）。',
     tags: ['地価公示', '正常価格', '更地'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_155',
@@ -1505,6 +1659,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地価公示法4条、3手法（取引事例比較法・収益還元法・原価法）に対応する。',
     tags: ['地価公示', '鑑定評価'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_156',
@@ -1514,6 +1669,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地価公示法6条、官報で公示し、書面・図面を市町村に送付。',
     tags: ['地価公示', '公示方法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_157',
@@ -1523,6 +1679,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地価公示法8条、不動産鑑定士は公示価格を規準とする義務がある。',
     tags: ['地価公示', '規準義務', '鑑定士'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_158',
@@ -1532,6 +1689,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '公示価格を指標とする努力義務にとどまり、拘束力はない（地価公示法1条の2）。',
     tags: ['地価公示', '努力義務'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_159',
@@ -1541,6 +1699,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '地価公示の基準日は毎年1月1日。7月1日は都道府県地価調査の基準日。',
     tags: ['地価公示', '基準日'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_160',
@@ -1550,6 +1709,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '国土利用計画法施行令9条、毎年7月1日時点の基準地価格。',
     tags: ['地価公示', '都道府県地価調査'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_161',
@@ -1559,6 +1719,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地価公示は2人以上だが、都道府県地価調査は1人以上の鑑定士で足りる。',
     tags: ['地価公示', '都道府県地価調査', '鑑定士'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_162',
@@ -1568,6 +1729,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '地価公示法2条、公示区域は都市計画区域等に限られず取引が見込まれる区域も含む。',
     tags: ['地価公示', '公示区域'],
+    needsReview: true,
   },
 
   // ===== 住宅金融支援機構・フラット35（追加） (163-174) =====
@@ -1579,6 +1741,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '投資用物件は対象外。自己居住用または親族居住用住宅が対象。',
     tags: ['フラット35', '融資対象'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_164',
@@ -1588,6 +1751,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '申込時ではなく、資金受取時の金利が適用される。',
     tags: ['フラット35', '金利', '実行時'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_165',
@@ -1597,6 +1761,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'フラット35は全期間固定金利型の住宅ローンである。',
     tags: ['フラット35', '固定金利'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_166',
@@ -1606,6 +1771,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '融資率が9割を超える場合は金利が高くなる。',
     tags: ['フラット35', '融資限度額'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_167',
@@ -1615,6 +1781,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '一戸建て70㎡以上、マンション30㎡以上が要件。',
     tags: ['フラット35', '床面積'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_168',
@@ -1624,6 +1791,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '機構は原則として直接融資を行わない。災害復興等の例外を除き証券化支援業務が中心（機構法13条）。',
     tags: ['機構法', '直接融資'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_169',
@@ -1633,6 +1801,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '機構法13条1項7号、マンション管理組合への直接融資が認められている。',
     tags: ['機構法', 'マンション共用部分'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_170',
@@ -1642,6 +1811,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '金融機関の住宅ローンについて保険引受けを行う業務。',
     tags: ['機構法', '住宅融資保険'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_171',
@@ -1651,6 +1821,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '元利均等返済と元金均等返済のいずれかを選択できる。',
     tags: ['フラット35', '返済方法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_172',
@@ -1660,6 +1831,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'フラット35は保証人不要・保証料不要である。',
     tags: ['フラット35', '保証人不要'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_173',
@@ -1669,6 +1841,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '質の高い住宅の取得を支援するため金利を引下げ。',
     tags: ['フラット35', 'フラット35S'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_174',
@@ -1678,6 +1851,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '機構の買取型フラット35では、原則として機構団信（新機構団信）への加入が求められる。',
     tags: ['フラット35', '団信'],
+    needsReview: true,
   },
 
   // ===== 景品表示法（追加） (175-186) =====
@@ -1689,6 +1863,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '道路距離80mにつき1分で計算し、信号待ち・坂道は考慮しない（不動産の表示に関する公正競争規約）。',
     tags: ['景表法', '徒歩時間'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_176',
@@ -1698,6 +1873,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産の表示に関する公正競争規約施行規則に基づく表示基準。',
     tags: ['景表法', 'LDK'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_177',
@@ -1707,6 +1883,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産の表示に関する公正競争規約21条、おとり広告の禁止。',
     tags: ['景表法', 'おとり広告'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_178',
@@ -1716,6 +1893,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '「完全」「絶対」「日本一」等と同様に、合理的根拠の有無にかかわらず原則使用禁止。',
     tags: ['景表法', '不当表示', '誇大広告'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_179',
@@ -1725,6 +1903,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築条件付であること、条件が成就しない場合は契約解除できる旨等を明示。',
     tags: ['景表法', '建築条件付土地'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_180',
@@ -1734,6 +1913,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '景品表示法5条、優良誤認表示・有利誤認表示の禁止。',
     tags: ['景表法', '不当表示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_181',
@@ -1743,6 +1923,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '売主が直接販売する場合は仲介手数料が発生しないため、事実であれば不当表示ではない。',
     tags: ['景表法', '仲介手数料'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_182',
@@ -1752,6 +1933,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '複数の交通機関が利用可能な場合でも、表示する駅等からの所要時間は正確に記載。利便性を誤認させる表示は不可。',
     tags: ['景表法', '交通アクセス'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_183',
@@ -1761,6 +1943,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '公正競争規約、インターネット広告は情報の適正管理が求められる。',
     tags: ['景表法', 'インターネット広告'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_184',
@@ -1770,6 +1953,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '物件の最も近い地点から施設の最も近い地点までの道路距離で算出する。',
     tags: ['景表法', '距離表示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_185',
@@ -1779,6 +1963,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '面積はメートル法で表示するが、畳数との併記等の規定があり、切捨て表示には規定に従う必要がある。',
     tags: ['景表法', '面積表示'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_186',
@@ -1788,6 +1973,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産公正取引協議会は、違反事業者に対し警告・違約金等の措置を講じる。',
     tags: ['景表法', '公正取引協議会'],
+    needsReview: true,
   },
 
   // ===== 土地の知識（追加） (187-193) =====
@@ -1799,6 +1985,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '台地は洪水や地震に対して比較的安全。ただし崖縁部は注意。',
     tags: ['土地', '台地', '宅地適性'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_188',
@@ -1808,6 +1995,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '周辺の低地（後背湿地）より地盤が良好。',
     tags: ['土地', '自然堤防'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_189',
@@ -1817,6 +2005,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '後背湿地は排水が悪く軟弱地盤が多いため、宅地には不適切。',
     tags: ['土地', '後背湿地'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_190',
@@ -1826,6 +2015,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '河口部の低湿地で、水害や液状化のリスクがある。',
     tags: ['土地', '三角州'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_191',
@@ -1835,6 +2025,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '切土と盛土の地盤の強度差により不同沈下が生じやすい。',
     tags: ['土地', '造成地', '不同沈下'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_192',
@@ -1844,6 +2035,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '旧河道は軟弱地盤で洪水や地震時の液状化リスクが高く、宅地には不適切。',
     tags: ['土地', '旧河道'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_193',
@@ -1853,6 +2045,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '崖錐は不安定な堆積物で、豪雨時の崩壊リスクがあり宅地には不適切。',
     tags: ['土地', '崖錐'],
+    needsReview: true,
   },
 
   // ===== 建物の知識（追加） (194-200) =====
@@ -1864,6 +2057,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '鉄骨は約500℃で強度が約半分に低下するため、耐火被覆で保護する。',
     tags: ['建物', '鉄骨造', '耐火'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_195',
@@ -1873,6 +2067,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: 'コンクリートのpHは約12～13で鉄筋を不動態化し防錆効果がある。中性化が進むと防食効果が低下。',
     tags: ['建物', 'RC造', 'アルカリ性'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_196',
@@ -1882,6 +2077,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '日本の伝統的な建築工法。建築基準法施行令46条の壁量計算が必要。',
     tags: ['建物', '木造', '軸組工法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_197',
@@ -1891,6 +2087,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '枠組壁工法は壁（面）で建物を支える工法。柱と梁の軸組で支えるのは在来工法。',
     tags: ['建物', 'ツーバイフォー', '壁工法'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_198',
@@ -1900,6 +2097,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '積層ゴム等の免震装置により地震動を吸収する。',
     tags: ['建物', '免震構造'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_199',
@@ -1909,6 +2107,7 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建物を頑丈にして倒壊を防ぐが、揺れは直接伝わる。免震構造・制震構造とは異なる。',
     tags: ['建物', '耐震構造'],
+    needsReview: true,
   },
   {
     id: 'qq_tax_other_200',
@@ -1918,5 +2117,6 @@ export const taxOtherQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '軟弱地盤では支持層まで杭を打設して建物を支える杭基礎が適切。',
     tags: ['建物', '基礎', '杭基礎'],
+    needsReview: true,
   },
 ];
