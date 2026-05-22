@@ -1,0 +1,17 @@
+node_modules
+.expo
+coverage
+ios
+android
+*.log
+.DS_Store
+.env.local
+.env.production
+.env.vercel.local
+vault
+docs
+scripts
+__tests__
+data/exam-topics-master.md
+assets/store
+playstore_icon_512x512.png
