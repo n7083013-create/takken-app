@@ -17,13 +17,42 @@ const supabaseAdmin = createClient(
 // [2026-05] 月額 / 年額の 2 プラン構成。
 // 既存の PAYPAL_PLAN_ID は後方互換のため monthly のエイリアスとして残置。
 // PayPal Dashboard で年額プランを作成し、PAYPAL_PLAN_ANNUAL に Plan ID をセットすること。
-const PAYPAL_PLAN_MONTHLY = process.env.PAYPAL_PLAN_MONTHLY || process.env.PAYPAL_PLAN_ID;
-const PAYPAL_PLAN_ANNUAL = process.env.PAYPAL_PLAN_ANNUAL;
+//
+// [2026-05-22] 元は module 読込時に env 値を確定していたため、テスト時に env を切替えても
+// 反映されない設計だった。env 切替テスト + デプロイ後の env 変更を即時反映するため
+// 関数内で都度 process.env を読むよう変更。
 
-/** リクエストの billingCycle から PayPal Plan ID を解決 */
+/**
+ * リクエストの billingCycle から PayPal Plan ID を解決。
+ * env vars は呼び出し時に都度読み取る。
+ */
 function resolvePlanId(billingCycle) {
-  if (billingCycle === 'annual') return PAYPAL_PLAN_ANNUAL;
-  return PAYPAL_PLAN_MONTHLY; // default: monthly
+  if (billingCycle === 'annual') return process.env.PAYPAL_PLAN_ANNUAL;
+  return process.env.PAYPAL_PLAN_MONTHLY || process.env.PAYPAL_PLAN_ID;
+}
+
+/**
+ * 任意の値を BillingCycle ('monthly' | 'annual') に正規化。
+ * 'annual' 以外は全て 'monthly' に倒す (デフォルト安全)。
+ */
+function parseBillingCycle(value) {
+  return value === 'annual' ? 'annual' : 'monthly';
+}
+
+/**
+ * PayPal subscription の custom_id (JSON 文字列) を安全に復元。
+ * 失敗時は { uid: undefined, cycle: undefined } を返す。
+ */
+function parseCustomId(customIdStr) {
+  if (!customIdStr || typeof customIdStr !== 'string') return {};
+  try {
+    const obj = JSON.parse(customIdStr);
+    if (obj && typeof obj === 'object') return obj;
+  } catch {
+    // 旧形式 (uid のみの文字列) 互換
+    return { uid: customIdStr };
+  }
+  return {};
 }
 
 // フロントに戻る URL（承認後）
@@ -44,8 +73,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   // [2026-05] billingCycle を受け取り、PayPal Plan ID を解決
-  const requestedCycle = (req.body && req.body.billingCycle) || 'monthly';
-  const billingCycle = requestedCycle === 'annual' ? 'annual' : 'monthly';
+  const billingCycle = parseBillingCycle(req.body && req.body.billingCycle);
   const planId = resolvePlanId(billingCycle);
 
   // [2026-05-22] action="revise" の場合は既存サブスクのプラン変更フローに分岐
@@ -209,6 +237,10 @@ module.exports = async (req, res) => {
     // [再開フロー] ロックが取れない = 直前の試行で承認待ちサブスクが PayPal 側に残っている可能性。
     //   PayPal にクエリして APPROVAL_PENDING ならそのまま同じ approval URL を返却（ユーザーが続きから承認できる）。
     //   ACTIVE なら既に有効化済み。CANCELLED/EXPIRED/SUSPENDED ならクリーンアップして新規作成。
+    //
+    // [2026-05-22] cycle mismatch を考慮: 既存 subscription が要求と違う cycle なら破棄して新規。
+    //   例: 過去に annual を試して APPROVAL_PENDING 状態のまま放置 → 月額を試す
+    //       → 古い annual approval URL を返すと「月額選んだのに年額決済画面」になる。
     if (!lockAcquired && profile?.paypal_subscription_id) {
       try {
         const existing = await paypalFetch(
@@ -216,7 +248,12 @@ module.exports = async (req, res) => {
           { method: 'GET' },
         );
 
-        if (existing.status === 'APPROVAL_PENDING') {
+        // 既存 subscription の cycle を custom_id から復元 (新規作成時に埋め込んでいる)
+        const existingCustom = parseCustomId(existing.custom_id);
+        const existingCycle = parseBillingCycle(existingCustom.cycle);
+        const cycleMismatch = existingCycle !== billingCycle;
+
+        if (existing.status === 'APPROVAL_PENDING' && !cycleMismatch) {
           const approveLink = existing.links?.find((l) => l.rel === 'approve');
           if (approveLink) {
             return res.status(200).json({
@@ -236,8 +273,28 @@ module.exports = async (req, res) => {
           });
         }
 
-        // 終了済みなら状態をリセットして新規作成へフォールスルー
-        if (['CANCELLED', 'EXPIRED', 'SUSPENDED'].includes(existing.status)) {
+        // ── cycle mismatch の APPROVAL_PENDING、または CANCELLED/EXPIRED/SUSPENDED ──
+        // 古い subscription をキャンセルしてリセット → ロックを再取得して新規作成へ
+        const needsCleanup =
+          (existing.status === 'APPROVAL_PENDING' && cycleMismatch) ||
+          ['CANCELLED', 'EXPIRED', 'SUSPENDED'].includes(existing.status);
+
+        if (needsCleanup) {
+          // APPROVAL_PENDING の場合は PayPal にキャンセル指示を出す (cycle mismatch のケース)
+          if (existing.status === 'APPROVAL_PENDING') {
+            try {
+              await paypalFetch(
+                `/v1/billing/subscriptions/${existing.id}/cancel`,
+                {
+                  method: 'POST',
+                  body: { reason: 'User changed billing cycle before approval' },
+                },
+              );
+            } catch (cancelErr) {
+              console.warn('[paypal.create] cancel pending sub failed (continuing):', cancelErr.message);
+            }
+          }
+
           await supabaseAdmin
             .from('profiles')
             .update({
@@ -343,3 +400,8 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'サブスクリプション作成に失敗しました', detail: e.message });
   }
 };
+
+// [2026-05-22] テスト用 export (ハンドラ本体は default export を維持)
+module.exports.resolvePlanId = resolvePlanId;
+module.exports.parseBillingCycle = parseBillingCycle;
+module.exports.parseCustomId = parseCustomId;

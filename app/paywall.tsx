@@ -230,6 +230,21 @@ export default function PaywallScreen() {
         return;
       }
 
+      // [2026-05-22] 既存サブスクが ACTIVE で resume された場合: approvalUrl なし。
+      // 静かに失敗してボタンが押せないままになるのを防ぐ。
+      if (data.alreadyActive) {
+        await verifySubscription(session.access_token);
+        await infoAlert('登録済みです', '既に有効なサブスクリプションが見つかりました。');
+        router.replace('/(tabs)');
+        return;
+      }
+
+      if (!data.approvalUrl) {
+        await infoAlert('エラー', '承認URLを取得できませんでした。再度お試しください。');
+        setLoading(false);
+        return;
+      }
+
       // 同じタブで開く（戻ってきた時に activate-subscription が動く）
       window.location.href = data.approvalUrl;
     } catch (err: any) {
