@@ -31,9 +31,9 @@ export type OfferType =
   | 'pause_subscription'     // [非推奨 2026-05-22] 一時停止 - 手動運用負担で廃止
   | 'free_extension_14days'  // [非推奨 2026-05-22] 14日延長 - 手動運用負担で廃止
   | 'pause_short'            // [非推奨 2026-05-22] 短期一時停止 - 手動運用負担で廃止
-  | 'upgrade_to_annual'      // 月額 → 年額アップグレード (自動・Spotify trade-up パターン)
+  | 'upgrade_to_annual'      // [非推奨 2026-05-22 v2] 月額が高い人に年額一括は逆効果のため廃止
   | 'support_form'           // 問題報告フォーム
-  | 'no_offer';              // オファーなし (= 即最終確認へ)
+  | 'no_offer';              // オファーなし (= 価値リフレーミング + graceful exit)
 
 export interface ReasonChoice {
   reason: CancellationReason;
@@ -132,15 +132,19 @@ export function getCounterOffer(
           declineCta: 'それでも解約する',
         };
       }
-      // [2026-05-22] 月額契約者には「年額アップグレード」を提案 (Spotify trade-up パターン)。
-      // ¥980/月 → ¥498/月相当 で実質半額、自動切替 (PayPal Revise API 経由) で運用コストゼロ。
+      // [2026-05-22 v2] 月額 ¥980 を「高い」と感じる人に年額 ¥5,980 一括は逆効果。
+      // 世界基準 (Notion / Linear / Stripe) の「値引きしない・価値で語る」パターン:
+      //   - 1日 ¥33 = コンビニコーヒー 1/3
+      //   - 講座比較: 市販 ¥3,000 / 大手 ¥30,000-50,000
+      //   - 宅建士手当 ROI: 月 5,000-30,000円・数ヶ月で元取れる
+      //   - graceful exit: 残り期間 Premium + 解約後は無料プラン
       return {
-        offerType: 'upgrade_to_annual',
-        emoji: '💎',
-        title: '年額プランなら ¥498/月相当 (約 49% OFF)',
+        offerType: 'no_offer',
+        emoji: '💡',
+        title: '1日わずか ¥33 — コーヒー1杯の 1/3',
         subtitle:
-          '月額 ¥980 → 年額 ¥5,980 (月換算 ¥498) に変更すると、\nほぼ半額で同じ機能をご利用いただけます。\n変更は次の画面でワンタップ完了。',
-        acceptCta: '年額に切替えてお得に続ける',
+          '・市販テキスト1冊 ¥3,000 (3ヶ月分)\n・大手講座 ¥30,000-50,000 (3-5年分)\n・宅建士の月手当 5,000-30,000円 (合格すれば数ヶ月で元取れる)\n\n次回更新日まで Premium をお使いいただけます。\n解約後は無料プランで継続利用可。',
+        acceptCta: 'もう少し試してみる',
         declineCta: 'それでも解約する',
       };
 

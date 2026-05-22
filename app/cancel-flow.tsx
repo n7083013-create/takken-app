@@ -82,8 +82,8 @@ export default function CancelFlowScreen() {
       custom_label: offerEventLabel(offer.offerType),
     });
 
-    // [2026-05-22] 年額アップグレード offer (自動・PayPal Revise API 経由)
-    // 月額契約者で「料金が高い」を選んだ場合の trade-up パターン
+    // [2026-05-22 v2] upgrade_to_annual は廃止 (¥980 が高い人に ¥5,980 一括は逆効果)。
+    // 旧分岐は後方互換のため残置 — 万が一返ってきたら paywall へ。
     if (offer.offerType === 'upgrade_to_annual') {
       router.replace('/paywall?cycle=annual' as any);
       return;

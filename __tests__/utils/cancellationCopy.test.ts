@@ -77,13 +77,17 @@ describe('getCounterOffer - 理由別 counter-offer 生成', () => {
   // 文言の方向性: ドメイン文脈が反映されている
   // ----------------------------------------------------------
 
-  test('too_expensive (monthly) は年額アップグレード提案 (Spotify trade-up)', () => {
-    // [2026-05-22] 1ヶ月半額 は手動運用負担で廃止。
-    // 代わりに「年額にアップグレード ¥498/月相当」を自動提案する世界基準パターン。
+  test('too_expensive (monthly) は no_offer + 価値リフレーミング (2026-05-22 v2)', () => {
+    // [2026-05-22 v2] 月額が高い人に年額一括¥5,980は逆効果のため、年額提案を廃止。
+    // 世界基準 (Notion/Linear/Stripe) の「値引きしない・価値で語る」パターンに変更:
+    //   - 1日 ¥33 (コンビニコーヒー 1/3)
+    //   - 講座比較・宅建士手当 ROI
+    //   - graceful exit (残り期間使える)
     const o = getCounterOffer('too_expensive');
-    expect(o.offerType).toBe('upgrade_to_annual');
-    const text = `${o.title} ${o.subtitle} ${o.acceptCta}`;
-    expect(text).toMatch(/年額|¥498|49%/);
+    expect(o.offerType).toBe('no_offer');
+    const text = `${o.title} ${o.subtitle}`;
+    expect(text).toMatch(/¥33|33円|コーヒー/);
+    expect(text).toMatch(/講座|テキスト|宅建士.*手当|月手当/);
   });
 
   test('exam_done (monthly) は no_offer + 残り期間案内 (一時停止廃止)', () => {
@@ -218,11 +222,11 @@ describe('getCounterOffer - 年額/月額 で分岐 (2026-05 追加)', () => {
     expect(o.title).toMatch(/最大割引|割引|49%/);
   });
 
-  test('monthly + too_expensive は年額アップグレード (Spotify trade-up)', () => {
-    // [2026-05-22] 半額 (手動運用) → 年額アップグレード (自動・PayPal Revise) に変更
+  test('monthly + too_expensive は no_offer + 価値リフレーミング (2026-05-22 v2)', () => {
+    // ¥980 が高いと感じる人に ¥5,980 一括は逆効果のため、年額提案も廃止。
+    // 「1日¥33・コーヒー1/3・宅建士手当 ROI」で価値訴求する世界基準パターン。
     const o = getCounterOffer('too_expensive', 'monthly');
-    expect(o.offerType).toBe('upgrade_to_annual');
-    expect(o.title).toMatch(/年額|49%/);
+    expect(o.offerType).toBe('no_offer');
   });
 
   // ----------------------------------------------------------
