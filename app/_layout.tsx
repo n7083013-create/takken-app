@@ -24,6 +24,7 @@ import {
   scheduleDailyReminder,
   scheduleWeeklySummary,
 } from '../services/notifications';
+import { pushProgressToCloud, pushStatsToCloud } from '../services/cloudSync';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { OfflineBanner } from '../components/OfflineBanner';
 import { SyncErrorBanner } from '../components/SyncErrorBanner';
@@ -138,7 +139,35 @@ export default function RootLayout() {
       }
       appState.current = next;
     });
-    return () => sub.remove();
+
+    // [Web 専用] タブを離れた瞬間にクラウドへ push
+    // PC で解答 → そのままモバイルを開くと push が走っていない状態になるため、
+    // visibilitychange (hidden) のタイミングで強制的に push する。
+    // React Native の AppState は "active→background" でしか push しないが、
+    // Web SPA では "hidden" = ユーザーがタブから離脱 = 今すぐ push すべきタイミング。
+    let webVisibilityHandler: (() => void) | null = null;
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      const uid = user.id;
+      webVisibilityHandler = () => {
+        if (document.visibilityState === 'hidden') {
+          const cur = useProgressStore.getState();
+          if (cur.progress && Object.keys(cur.progress).length > 0) {
+            Promise.allSettled([
+              pushProgressToCloud(uid, cur.progress),
+              pushStatsToCloud(uid, cur.stats, cur.quickQuizStats),
+            ]).catch(() => {});
+          }
+        }
+      };
+      document.addEventListener('visibilitychange', webVisibilityHandler);
+    }
+
+    return () => {
+      sub.remove();
+      if (webVisibilityHandler) {
+        document.removeEventListener('visibilitychange', webVisibilityHandler);
+      }
+    };
   }, [user?.id]);
 
   // 通知スケジュールの自動更新

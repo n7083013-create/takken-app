@@ -36,6 +36,8 @@ const UPSERT_CHUNK_SIZE = 200;
 interface PullResult {
   progress: Record<string, QuestionProgress>;
   stats: StudyStats | null;
+  /** study_stats.quick_quiz_stats カラムのまま返す（型は store 側で解釈）*/
+  quickQuizStats: unknown;
 }
 
 /**
@@ -106,7 +108,7 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
     lastSyncTimestamp = new Date().toISOString();
     syncOwnerUserId = userId;
 
-    return { progress, stats };
+    return { progress, stats, quickQuizStats: statsRow?.quick_quiz_stats ?? null };
   } catch (e) {
     logError(e, { context: 'cloudSync.pull' });
     return null;

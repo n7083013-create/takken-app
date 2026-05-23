@@ -17,6 +17,32 @@ import { logError } from '../services/errorLogger';
 
 const STORAGE_KEY = '@takken_progress';
 
+// ── 解答後のクラウド即時プッシュ（デバウンス 1 秒） ──────────────────
+// 解答するたびにクラウドへ Push することで、別デバイスが pull したとき
+// 最新データが取得できる。1秒間の操作をまとめて1回の API 呼び出しに集約する。
+// 循環依存を避けるため useAuthStore は動的 import (setTimeout 内=実行時) で読む。
+let _cloudPushTimer: ReturnType<typeof setTimeout> | null = null;
+
+function scheduleCloudPush(): void {
+  if (_cloudPushTimer) clearTimeout(_cloudPushTimer);
+  _cloudPushTimer = setTimeout(() => {
+    _cloudPushTimer = null;
+    import('./useAuthStore')
+      .then(({ useAuthStore }) => {
+        const userId = useAuthStore.getState().user?.id;
+        if (!userId) return;
+        const cur = useProgressStore.getState();
+        // 空ローカルは絶対 push しない (クラウド保護)
+        if (!cur.progress || Object.keys(cur.progress).length === 0) return;
+        return Promise.allSettled([
+          pushProgressToCloud(userId, cur.progress),
+          pushStatsToCloud(userId, cur.stats, cur.quickQuizStats),
+        ]);
+      })
+      .catch(() => {});
+  }, 1000);
+}
+
 // SM-2 アルゴリズム定数
 const INITIAL_EASE_FACTOR = 2.5;
 const MIN_EASE_FACTOR = 1.3;
@@ -293,6 +319,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
     set({ quickQuizStats: updatedQuickQuizStats });
     get().saveProgress();
+    // クラウドに即時反映（1秒デバウンス）
+    scheduleCloudPush();
   },
 
   /** 今日の一問一答解答数 */
@@ -388,6 +416,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
     // 非同期で保存
     get().saveProgress();
+    // クラウドに即時反映（1秒デバウンス）
+    scheduleCloudPush();
 
     // [Phase 1.3] アクティベーション (初回正解) を Google Ads / GA4 に通知
     if (isFirstCorrect) {
@@ -828,9 +858,15 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
           (!state.stats.lastStudyAt ||
             (remote.stats.lastStudyAt &&
               new Date(remote.stats.lastStudyAt) > new Date(state.stats.lastStudyAt)));
+        // quickQuizStats: リモートが新しければリモート採用
+        // （quick_quiz_stats カラムが null の場合はローカルを維持）
+        const remoteQQ = remote.quickQuizStats as QuickQuizStats | null;
         set({
           progress: merged,
           stats: useRemoteStats ? remote.stats! : state.stats,
+          quickQuizStats: useRemoteStats && remoteQQ
+            ? remoteQQ
+            : state.quickQuizStats,
         });
         await get().saveProgress();
       }
