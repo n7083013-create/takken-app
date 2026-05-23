@@ -140,16 +140,18 @@ export default function RootLayout() {
       appState.current = next;
     });
 
-    // [Web 専用] タブを離れた瞬間にクラウドへ push
-    // PC で解答 → そのままモバイルを開くと push が走っていない状態になるため、
-    // visibilitychange (hidden) のタイミングで強制的に push する。
-    // React Native の AppState は "active→background" でしか push しないが、
-    // Web SPA では "hidden" = ユーザーがタブから離脱 = 今すぐ push すべきタイミング。
+    // [Web 専用] タブの可視性 / ウィンドウのフォーカスでクラウド同期
+    // - hidden → push (PC で解答後にスマホへ移るケース)
+    // - visible / window focus → full sync (スマホで解答後に PC へ戻るケース)
+    //   AppState の background→active だけでは別ウィンドウからの focus 復帰を
+    //   取りこぼすため、window.focus も併用する。
     let webVisibilityHandler: (() => void) | null = null;
+    let webFocusHandler: (() => void) | null = null;
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       const uid = user.id;
       webVisibilityHandler = () => {
         if (document.visibilityState === 'hidden') {
+          // タブを離れる → 今のローカル状態をクラウドに push
           const cur = useProgressStore.getState();
           if (cur.progress && Object.keys(cur.progress).length > 0) {
             Promise.allSettled([
@@ -157,15 +159,30 @@ export default function RootLayout() {
               pushStatsToCloud(uid, cur.stats, cur.quickQuizStats),
             ]).catch(() => {});
           }
+        } else if (document.visibilityState === 'visible') {
+          // タブが再表示 → 別デバイスでの変更を pull するため full sync
+          syncAll().catch(() => {});
         }
       };
       document.addEventListener('visibilitychange', webVisibilityHandler);
+
+      if (typeof window !== 'undefined') {
+        webFocusHandler = () => {
+          // ウィンドウフォーカス復帰 → full sync
+          // (例: PC で別アプリから戻ってきた / 別ブラウザウィンドウから戻ってきた)
+          syncAll().catch(() => {});
+        };
+        window.addEventListener('focus', webFocusHandler);
+      }
     }
 
     return () => {
       sub.remove();
       if (webVisibilityHandler) {
         document.removeEventListener('visibilitychange', webVisibilityHandler);
+      }
+      if (webFocusHandler && typeof window !== 'undefined') {
+        window.removeEventListener('focus', webFocusHandler);
       }
     };
   }, [user?.id]);
