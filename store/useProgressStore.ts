@@ -211,6 +211,110 @@ export function calculateSM2(
   return { interval, easeFactor };
 }
 
+/**
+ * 統計マージ: フィールドごとに保守的な最大値マージ
+ *
+ * 旧実装の Last-Write-Wins (lastStudyAt 比較) では、PC のローカルクロックが
+ * 数秒進んでいるだけで「PC が新しい」と判定されてモバイルの dailyLog 更新が
+ * 反映されない問題があった。
+ *
+ * 新戦略:
+ *  - 累積カウンタ (totalQuestions/Correct, streak など) → MAX (片方デバイスだけの
+ *    回答を失わない)
+ *  - dailyLog → 日付ごとに MAX (PC とモバイル両方で別問題を解いた日に
+ *    どちらかの記録を失わない)
+ *  - categoryStats → カテゴリごとに MAX
+ *  - lastStudyAt → 新しい方
+ *  - streakFreeze 系 → 「より進んだ状態」優先
+ *
+ * 注意: 同じ問題を両デバイスで解いた場合は二重カウントになる可能性があるが、
+ * 「反映されない」よりは「やや多めにカウントされる」方が UX として良い。
+ */
+function mergeDailyLog(
+  a: Record<string, number> | undefined,
+  b: Record<string, number> | undefined,
+): Record<string, number> {
+  const merged: Record<string, number> = { ...(a || {}) };
+  const other = b || {};
+  for (const k of Object.keys(other)) {
+    merged[k] = Math.max(merged[k] ?? 0, other[k] ?? 0);
+  }
+  return merged;
+}
+
+function mergeCategoryStats(
+  a: StudyStats['categoryStats'],
+  b: StudyStats['categoryStats'],
+): StudyStats['categoryStats'] {
+  const cats = Object.keys({ ...a, ...b }) as Array<keyof StudyStats['categoryStats']>;
+  const out = { ...a } as StudyStats['categoryStats'];
+  for (const c of cats) {
+    const la = a?.[c] ?? { total: 0, correct: 0 };
+    const lb = b?.[c] ?? { total: 0, correct: 0 };
+    out[c] = {
+      total: Math.max(la.total, lb.total),
+      correct: Math.max(la.correct, lb.correct),
+    };
+  }
+  return out;
+}
+
+function mergeStats(local: StudyStats, remote: StudyStats): StudyStats {
+  const localTime = local.lastStudyAt ? new Date(local.lastStudyAt).getTime() : 0;
+  const remoteTime = remote.lastStudyAt ? new Date(remote.lastStudyAt).getTime() : 0;
+  return {
+    totalQuestions: Math.max(local.totalQuestions, remote.totalQuestions),
+    totalCorrect: Math.max(local.totalCorrect, remote.totalCorrect),
+    totalStudyTime: Math.max(local.totalStudyTime, remote.totalStudyTime),
+    streak: Math.max(local.streak, remote.streak),
+    longestStreak: Math.max(local.longestStreak, remote.longestStreak),
+    lastStudyAt: remoteTime > localTime ? remote.lastStudyAt : local.lastStudyAt,
+    categoryStats: mergeCategoryStats(local.categoryStats, remote.categoryStats),
+    dailyLog: mergeDailyLog(local.dailyLog, remote.dailyLog),
+    streakFreezeCount: Math.max(local.streakFreezeCount ?? 0, remote.streakFreezeCount ?? 0),
+    streakFreezeUsedAt: remoteTime > localTime ? remote.streakFreezeUsedAt : local.streakFreezeUsedAt,
+    streakFreezeRefilledAt: remoteTime > localTime ? remote.streakFreezeRefilledAt : local.streakFreezeRefilledAt,
+  };
+}
+
+function mergeQuickQuizStats(
+  local: QuickQuizStats,
+  remote: QuickQuizStats | null,
+): QuickQuizStats {
+  if (!remote) return local;
+  const todayLocal = local.todayDate;
+  const todayRemote = remote.todayDate;
+  const today = getDateKey();
+  // todayCount は今日のものだけ MAX。日付が違うなら無視。
+  let todayCount = 0;
+  if (todayLocal === today) todayCount = Math.max(todayCount, local.todayCount ?? 0);
+  if (todayRemote === today) todayCount = Math.max(todayCount, remote.todayCount ?? 0);
+  return {
+    total: Math.max(local.total, remote.total),
+    correct: Math.max(local.correct, remote.correct),
+    categoryStats: {
+      kenri: {
+        total: Math.max(local.categoryStats.kenri.total, remote.categoryStats.kenri.total),
+        correct: Math.max(local.categoryStats.kenri.correct, remote.categoryStats.kenri.correct),
+      },
+      takkengyoho: {
+        total: Math.max(local.categoryStats.takkengyoho.total, remote.categoryStats.takkengyoho.total),
+        correct: Math.max(local.categoryStats.takkengyoho.correct, remote.categoryStats.takkengyoho.correct),
+      },
+      horei_seigen: {
+        total: Math.max(local.categoryStats.horei_seigen.total, remote.categoryStats.horei_seigen.total),
+        correct: Math.max(local.categoryStats.horei_seigen.correct, remote.categoryStats.horei_seigen.correct),
+      },
+      tax_other: {
+        total: Math.max(local.categoryStats.tax_other.total, remote.categoryStats.tax_other.total),
+        correct: Math.max(local.categoryStats.tax_other.correct, remote.categoryStats.tax_other.correct),
+      },
+    },
+    todayCount,
+    todayDate: today,
+  };
+}
+
 /** 日付キー "YYYY-MM-DD" を取得 */
 function getDateKey(date?: Date): string {
   const d = date ?? new Date();
@@ -856,23 +960,18 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       const state = get();
       if (remote) {
         const merged = mergeProgress(state.progress, remote.progress);
-        // 統計は lastStudyAt が新しい方を採用
-        const useRemoteStats =
-          remote.stats &&
-          (!state.stats.lastStudyAt ||
-            (remote.stats.lastStudyAt &&
-              new Date(remote.stats.lastStudyAt) > new Date(state.stats.lastStudyAt)));
-        // quickQuizStats: リモートが新しければリモート採用
-        // （quick_quiz_stats カラムが null の場合はローカルを維持）
+        // [Bugfix 2026-05-23] LWW を廃止し、フィールドごとの保守的マージに変更
+        // 旧実装は lastStudyAt 比較で「PC が最新」と誤判定 → モバイル更新が失われる事故が
+        // 発生していた (クロック差 / PC で何か触っただけで反映停止)
+        const mergedStats = remote.stats ? mergeStats(state.stats, remote.stats) : state.stats;
         const remoteQQ = remote.quickQuizStats as QuickQuizStats | null;
+        const mergedQQ = mergeQuickQuizStats(state.quickQuizStats, remoteQQ);
         // onboardingDone: once true, stays true (論理 OR)
         const cloudOnboardingDone = remote.onboardingDone || state.cloudOnboardingDone;
         set({
           progress: merged,
-          stats: useRemoteStats ? remote.stats! : state.stats,
-          quickQuizStats: useRemoteStats && remoteQQ
-            ? remoteQQ
-            : state.quickQuizStats,
+          stats: mergedStats,
+          quickQuizStats: mergedQQ,
           cloudOnboardingDone,
         });
         await get().saveProgress();

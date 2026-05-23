@@ -246,10 +246,11 @@ function HomeScreen() {
   // [2026-05-22] getTodayAnswered は 4択 + 一問一答×0.2 の float を返す。
   // 目標判定 / 進捗バーは float のまま使う (滑らかな進捗表示)。
   // 数値カードや「X/Y問」表記は丸めて整数表示する。
-  // deps に quickQuizStats を含めること: 一問一答を解いた直後の再計算をトリガする。
+  // deps に stats / quickQuizStats を含めること: クラウド同期で stats.dailyLog が
+  // 更新された時にも再計算する (Issue: PC で別デバイスの解答が反映されない原因)。
   const todayAnsweredRaw = useMemo(
     () => getTodayAnswered(),
-    [progress, quickQuizStats, getTodayAnswered],
+    [stats, progress, quickQuizStats, getTodayAnswered],
   );
   const todayAnswered = useMemo(() => Math.round(todayAnsweredRaw), [todayAnsweredRaw]);
   const dailyGoalPct = useMemo(
