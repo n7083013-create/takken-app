@@ -147,6 +147,7 @@ export default function RootLayout() {
     //   取りこぼすため、window.focus も併用する。
     let webVisibilityHandler: (() => void) | null = null;
     let webFocusHandler: (() => void) | null = null;
+    let webPollInterval: ReturnType<typeof setInterval> | null = null;
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       const uid = user.id;
       webVisibilityHandler = () => {
@@ -174,6 +175,16 @@ export default function RootLayout() {
         };
         window.addEventListener('focus', webFocusHandler);
       }
+
+      // [Safety Net] 20秒ごとの定期同期
+      // PC とスマホを並べて使うケース (PC のフォーカス/可視性が変化しない) でも、
+      // 一定間隔で pull することで「いつのまにか反映されている」体験を保証する。
+      // 可視時のみ実行 → 裏タブで無駄なリクエストを撃たない。
+      webPollInterval = setInterval(() => {
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          syncAll().catch(() => {});
+        }
+      }, 20 * 1000);
     }
 
     return () => {
@@ -184,6 +195,7 @@ export default function RootLayout() {
       if (webFocusHandler && typeof window !== 'undefined') {
         window.removeEventListener('focus', webFocusHandler);
       }
+      if (webPollInterval) clearInterval(webPollInterval);
     };
   }, [user?.id]);
 
