@@ -16,6 +16,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useQuestStore } from '../store/useQuestStore';
 import { useAchievementStore } from '../store/useAchievementStore';
 import { useExamStore } from '../store/useExamStore';
+import { useSessionStore } from '../store/useSessionStore';
 import { installGlobalErrorHandler } from '../services/errorLogger';
 import { initializeIAP, retryPendingPurchases } from '../services/iap';
 import { useThemeColors, useIsDark } from '../hooks/useThemeColors';
@@ -38,6 +39,7 @@ export default function RootLayout() {
   const loadQuest = useQuestStore((s) => s.loadQuest);
   const loadAchievements = useAchievementStore((s) => s.loadAchievements);
   const loadExamHistory = useExamStore((s) => s.loadHistory);
+  const loadCelebrated = useSessionStore((s) => s.loadCelebrated);
   const settings = useSettingsStore((s) => s.settings);
   const getDueForReview = useProgressStore((s) => s.getDueForReview);
   const colors = useThemeColors();
@@ -56,6 +58,7 @@ export default function RootLayout() {
         loadReports(),
         loadAchievements(),
         loadExamHistory(),
+        loadCelebrated(),
       ]);
       // Auth は他ストアの後に初期化（セッション復元後にsync等が走るため）
       await initAuth();
