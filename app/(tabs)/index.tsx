@@ -29,6 +29,7 @@ import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievemen
 import { useExamStore } from '../../store/useExamStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { decideOnboardingState, ONBOARDING_KEYS } from '../../utils/onboarding';
+import { markOnboardingComplete } from '../../services/cloudSync';
 import { setAiQueue } from '../../utils/aiQueue';
 import { infoAlert } from '../../services/alert';
 import {
@@ -130,17 +131,21 @@ export default function HomeScreenWrapper() {
     // [Bugfix v2] ユーザー固有キーに変更 (Web/Native 共通: 別ユーザー切替時の干渉防止)
     // 旧キー @takken_onboarding_done もマイグレーションして引継ぎ
     // ロジック本体は utils/onboarding.ts でユニットテスト済み (Race Condition 回避)
+    // [Bugfix v3] user オブジェクトではなく user.id を dep にし、参照変化による無駄な再実行を防止
+    // [Bugfix v3] getCloudOnboardingDone を追加: 別デバイスでオンボーディング済みなら即スキップ
+    const uid = user.id;
     (async () => {
       const decision = await decideOnboardingState({
-        userId: user.id,
+        userId: uid,
         storageGet: (k) => AsyncStorage.getItem(k),
         storageSet: (k, v) => AsyncStorage.setItem(k, v),
-        syncWithCloud: () => useProgressStore.getState().syncWithCloud(user.id),
+        syncWithCloud: () => useProgressStore.getState().syncWithCloud(uid),
         getProgress: () => useProgressStore.getState().progress,
+        getCloudOnboardingDone: () => useProgressStore.getState().cloudOnboardingDone,
       });
       setOnboardingDone(decision === 'done');
     })();
-  }, [user]);
+  }, [user?.id]);
 
   // [Native] 未ログイン時はログイン画面に直接遷移（ストアアプリの標準動線）
   // Web では LP 表示（広告・SEO 経由の新規ユーザー獲得用）
@@ -172,8 +177,11 @@ export default function HomeScreenWrapper() {
       <Onboarding
         onComplete={async () => {
           // [Bugfix v2] ユーザー固有キーで完了マーク (Onboarding.tsx 側の旧キーは互換性のため残す)
+          // [Bugfix v3] クラウドにも即時記録（別デバイスへの再表示防止）
           if (user) {
             await AsyncStorage.setItem(ONBOARDING_KEYS.forUser(user.id), 'true').catch(() => {});
+            // 非同期で cloud に書き込む (失敗してもローカルキーで救済される)
+            markOnboardingComplete(user.id).catch(() => {});
           }
           setOnboardingDone(true);
         }}

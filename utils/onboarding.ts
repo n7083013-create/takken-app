@@ -31,6 +31,13 @@ export interface OnboardingDeps {
   syncWithCloud: () => Promise<void>;
   /** ローカル progress 取得: ストア state からそのまま返す */
   getProgress: () => Record<string, unknown>;
+  /**
+   * [オプション] クラウドの onboarding_done フラグを読む。
+   * syncWithCloud() 後に store に反映されている値を返す想定。
+   * 別デバイスで完了済みのユーザーが新デバイスで再表示されないための判定に使う。
+   * 未指定の場合は false として扱う（後方互換）。
+   */
+  getCloudOnboardingDone?: () => boolean;
 }
 
 /**
@@ -60,10 +67,11 @@ export async function decideOnboardingState(
     // ignore - 同期失敗してもアプリは継続
   }
 
-  // 4. 同期後の progress 有無を判定
+  // 4. 同期後の progress 有無 または クラウドの onboarding_done フラグを確認
   const progress = deps.getProgress();
   const hasProgress = Object.keys(progress || {}).length > 0;
-  if (hasProgress) {
+  const cloudDone = deps.getCloudOnboardingDone?.() ?? false;
+  if (hasProgress || cloudDone) {
     await deps.storageSet(userKey, 'true').catch(() => {});
     return 'done';
   }

@@ -306,6 +306,48 @@ describe('decideOnboardingState - Race Condition 解消', () => {
   });
 
   // ----------------------------------------------------------
+  // ケース8: クラウドの onboarding_done フラグ (クロスデバイス再表示防止)
+  // ----------------------------------------------------------
+
+  test('getCloudOnboardingDone が true を返すなら progress なしでも done', async () => {
+    const storage = makeStorage();
+    let cloudFlag = false;
+    const syncMock = jest.fn().mockImplementation(async () => {
+      cloudFlag = true; // sync 後にフラグが立つ想定
+    });
+
+    const result = await decideOnboardingState({
+      userId: 'cross-device-user',
+      storageGet: storage.get,
+      storageSet: storage.set,
+      syncWithCloud: syncMock,
+      getProgress: () => ({}), // progress なし
+      getCloudOnboardingDone: () => cloudFlag,
+    });
+
+    expect(syncMock).toHaveBeenCalledTimes(1);
+    expect(result).toBe('done');
+    // userKey に書き込まれた (次回は sync なしで即 done)
+    expect(storage.map.get(ONBOARDING_KEYS.forUser('cross-device-user'))).toBe('true');
+  });
+
+  test('getCloudOnboardingDone 未指定でも既存テストが壊れない (後方互換)', async () => {
+    const storage = makeStorage();
+    const syncMock = jest.fn().mockResolvedValue(undefined);
+
+    const result = await decideOnboardingState({
+      userId: 'no-cloud-dep-user',
+      storageGet: storage.get,
+      storageSet: storage.set,
+      syncWithCloud: syncMock,
+      getProgress: () => ({}),
+      // getCloudOnboardingDone: 未指定
+    });
+
+    expect(result).toBe('show'); // progress なし + cloud フラグなし → show
+  });
+
+  // ----------------------------------------------------------
   // ONBOARDING_KEYS ヘルパー
   // ----------------------------------------------------------
 

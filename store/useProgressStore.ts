@@ -73,6 +73,8 @@ interface ProgressState {
   progress: Record<string, QuestionProgress>;
   stats: StudyStats;
   quickQuizStats: QuickQuizStats;
+  /** クラウド DB の study_stats.onboarding_done — クロスデバイス再表示防止用 */
+  cloudOnboardingDone: boolean;
 
   // Actions
   /** confidence: 'high'=簡単, 'low'=普通(default), 'none'=難しい */
@@ -293,6 +295,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   progress: {},
   stats: { ...initialStats },
   quickQuizStats: { ...initialQuickQuizStats },
+  cloudOnboardingDone: false,
   syncError: null,
 
   clearSyncError() {
@@ -839,6 +842,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
           progress: data.progress ?? {},
           stats: data.stats ?? { ...initialStats },
           quickQuizStats: data.quickQuizStats ?? { ...initialQuickQuizStats },
+          cloudOnboardingDone: data.cloudOnboardingDone ?? false,
         });
       }
     } catch (e) {
@@ -861,12 +865,15 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         // quickQuizStats: リモートが新しければリモート採用
         // （quick_quiz_stats カラムが null の場合はローカルを維持）
         const remoteQQ = remote.quickQuizStats as QuickQuizStats | null;
+        // onboardingDone: once true, stays true (論理 OR)
+        const cloudOnboardingDone = remote.onboardingDone || state.cloudOnboardingDone;
         set({
           progress: merged,
           stats: useRemoteStats ? remote.stats! : state.stats,
           quickQuizStats: useRemoteStats && remoteQQ
             ? remoteQQ
             : state.quickQuizStats,
+          cloudOnboardingDone,
         });
         await get().saveProgress();
       }
@@ -903,8 +910,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   async saveProgress() {
     try {
-      const { progress, stats, quickQuizStats } = get();
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ progress, stats, quickQuizStats }));
+      const { progress, stats, quickQuizStats, cloudOnboardingDone } = get();
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ progress, stats, quickQuizStats, cloudOnboardingDone }));
     } catch (e) {
       logError(e, { context: 'progress.save' });
     }

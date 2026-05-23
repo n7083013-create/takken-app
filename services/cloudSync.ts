@@ -38,6 +38,8 @@ interface PullResult {
   stats: StudyStats | null;
   /** study_stats.quick_quiz_stats カラムのまま返す（型は store 側で解釈）*/
   quickQuizStats: unknown;
+  /** study_stats.onboarding_done — クロスデバイス再表示防止フラグ */
+  onboardingDone: boolean;
 }
 
 /**
@@ -108,7 +110,12 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
     lastSyncTimestamp = new Date().toISOString();
     syncOwnerUserId = userId;
 
-    return { progress, stats, quickQuizStats: statsRow?.quick_quiz_stats ?? null };
+    return {
+      progress,
+      stats,
+      quickQuizStats: statsRow?.quick_quiz_stats ?? null,
+      onboardingDone: !!statsRow?.onboarding_done,
+    };
   } catch (e) {
     logError(e, { context: 'cloudSync.pull' });
     return null;
@@ -214,6 +221,30 @@ export async function pushStatsToCloud(
     return true;
   } catch (e) {
     logError(e, { context: 'cloudSync.pushStats' });
+    return false;
+  }
+}
+
+/**
+ * オンボーディング完了をクラウドに記録（クロスデバイス再表示防止）
+ * - study_stats 行がなければ作成、あれば onboarding_done を true に更新するだけ
+ * - 他の統計列は触らない（空ガード不要。専用 upsert）
+ */
+export async function markOnboardingComplete(userId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  try {
+    const { error } = await supabase.from('study_stats').upsert(
+      {
+        user_id: userId,
+        onboarding_done: true,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id' },
+    );
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    logError(e, { context: 'cloudSync.markOnboardingComplete' });
     return false;
   }
 }
