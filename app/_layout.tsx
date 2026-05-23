@@ -129,6 +129,31 @@ export default function RootLayout() {
         useQuestStore.getState().syncWithCloud(uid),
       ]);
     };
+    // [DEBUG] ブラウザ console から手動で同期できるグローバル関数を公開
+    // 使い方: ブラウザの devtools → Console で `__takkenSync()` と打つ
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      (window as unknown as { __takkenSync?: () => Promise<void> }).__takkenSync = async () => {
+        console.log('[sync] Manual __takkenSync() invoked');
+        await syncAll();
+        console.log('[sync] Manual __takkenSync() done');
+      };
+      (window as unknown as { __takkenState?: () => unknown }).__takkenState = () => {
+        const p = useProgressStore.getState();
+        const todayKey = new Date().toISOString().slice(0, 10);
+        return {
+          userId: user?.id,
+          totalQuestions: p.stats.totalQuestions,
+          totalCorrect: p.stats.totalCorrect,
+          dailyLogToday: p.stats.dailyLog?.[todayKey],
+          lastStudyAt: p.stats.lastStudyAt,
+          progressRows: Object.keys(p.progress).length,
+          quickQuizTotal: p.quickQuizStats.total,
+          quickQuizTodayCount: p.quickQuizStats.todayCount,
+          syncError: p.syncError,
+        };
+      };
+    }
+
     // ログイン直後に1回同期
     syncAll().catch(() => {});
     // フォアグラウンド復帰時にも同期

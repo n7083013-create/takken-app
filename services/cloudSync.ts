@@ -46,8 +46,12 @@ interface PullResult {
  * クラウドからすべての学習データを取得
  */
 export async function pullFromCloud(userId: string): Promise<PullResult | null> {
-  if (!isSupabaseConfigured()) return null;
+  if (!isSupabaseConfigured()) {
+    console.warn('[sync] pullFromCloud: Supabase not configured');
+    return null;
+  }
   try {
+    console.log('[sync] pullFromCloud: start', { userId: userId.slice(0, 8) + '…' });
     // ── Paginated fetch for question_progress ──
     const PAGE_SIZE = 1000;
     let allProgressRows: any[] = [];
@@ -110,13 +114,23 @@ export async function pullFromCloud(userId: string): Promise<PullResult | null> 
     lastSyncTimestamp = new Date().toISOString();
     syncOwnerUserId = userId;
 
-    return {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const result = {
       progress,
       stats,
       quickQuizStats: statsRow?.quick_quiz_stats ?? null,
       onboardingDone: !!statsRow?.onboarding_done,
     };
+    console.log('[sync] pullFromCloud: ok', {
+      progressRows: Object.keys(progress).length,
+      hasStats: !!stats,
+      totalQuestions: stats?.totalQuestions,
+      dailyLogToday: stats?.dailyLog?.[todayKey],
+      lastStudyAt: stats?.lastStudyAt,
+    });
+    return result;
   } catch (e) {
+    console.error('[sync] pullFromCloud: ERROR', e);
     logError(e, { context: 'cloudSync.pull' });
     return null;
   }
@@ -166,6 +180,11 @@ export async function pushProgressToCloud(
     }));
     if (rows.length === 0) return true;
 
+    console.log('[sync] pushProgressToCloud: start', {
+      userId: userId.slice(0, 8) + '…',
+      rowsToPush: rows.length,
+      dirtyCount: dirtyIds.size,
+    });
     // Batch upsert in chunks of UPSERT_CHUNK_SIZE to avoid oversized requests
     for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
       const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
@@ -177,8 +196,10 @@ export async function pushProgressToCloud(
     dirtyIds.clear();
     lastSyncTimestamp = new Date().toISOString();
     syncOwnerUserId = userId;
+    console.log('[sync] pushProgressToCloud: ok');
     return true;
   } catch (e) {
+    console.error('[sync] pushProgressToCloud: ERROR', e);
     logError(e, { context: 'cloudSync.pushProgress' });
     return false;
   }
@@ -201,6 +222,13 @@ export async function pushStatsToCloud(
     return true;
   }
   try {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    console.log('[sync] pushStatsToCloud: start', {
+      userId: userId.slice(0, 8) + '…',
+      totalQuestions: stats.totalQuestions,
+      dailyLogToday: stats.dailyLog?.[todayKey],
+      lastStudyAt: stats.lastStudyAt,
+    });
     const { error } = await supabase.from('study_stats').upsert({
       user_id: userId,
       total_questions: stats.totalQuestions,
@@ -218,8 +246,10 @@ export async function pushStatsToCloud(
       updated_at: new Date().toISOString(),
     });
     if (error) throw error;
+    console.log('[sync] pushStatsToCloud: ok');
     return true;
   } catch (e) {
+    console.error('[sync] pushStatsToCloud: ERROR', e);
     logError(e, { context: 'cloudSync.pushStats' });
     return false;
   }
