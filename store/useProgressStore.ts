@@ -59,7 +59,7 @@ const MIN_EASE_FACTOR = 1.3;
  */
 export const QUICK_QUIZ_WEIGHT = 0.2;
 
-interface QuickQuizStats {
+export interface QuickQuizStats {
   total: number;
   correct: number;
   categoryStats: Record<Category, { total: number; correct: number }>;
@@ -230,7 +230,7 @@ export function calculateSM2(
  * 注意: 同じ問題を両デバイスで解いた場合は二重カウントになる可能性があるが、
  * 「反映されない」よりは「やや多めにカウントされる」方が UX として良い。
  */
-function mergeDailyLog(
+export function mergeDailyLog(
   a: Record<string, number> | undefined,
   b: Record<string, number> | undefined,
 ): Record<string, number> {
@@ -242,7 +242,7 @@ function mergeDailyLog(
   return merged;
 }
 
-function mergeCategoryStats(
+export function mergeCategoryStats(
   a: StudyStats['categoryStats'],
   b: StudyStats['categoryStats'],
 ): StudyStats['categoryStats'] {
@@ -259,7 +259,7 @@ function mergeCategoryStats(
   return out;
 }
 
-function mergeStats(local: StudyStats, remote: StudyStats): StudyStats {
+export function mergeStats(local: StudyStats, remote: StudyStats): StudyStats {
   const localTime = local.lastStudyAt ? new Date(local.lastStudyAt).getTime() : 0;
   const remoteTime = remote.lastStudyAt ? new Date(remote.lastStudyAt).getTime() : 0;
   return {
@@ -277,7 +277,7 @@ function mergeStats(local: StudyStats, remote: StudyStats): StudyStats {
   };
 }
 
-function mergeQuickQuizStats(
+export function mergeQuickQuizStats(
   local: QuickQuizStats,
   remote: QuickQuizStats | null,
 ): QuickQuizStats {

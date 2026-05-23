@@ -385,4 +385,139 @@ describe('cloudSync', () => {
       expect(mockUpsert).toHaveBeenCalledTimes(1);
     });
   });
+
+  // ============================================================
+  // 🚨 CRITICAL リグレッション: 欠落カラム検知
+  // ============================================================
+  // ユーザー報告 (2026-05-23):「PC で同期されない」
+  // 原因: study_stats テーブルに daily_log / streak_freeze_* / onboarding_done
+  //       カラムが存在せず、push が PGRST204 で全て silent fail していた。
+  // 修正: migration 015 で IF NOT EXISTS カラム追加。
+  // 本テスト: pushStatsToCloud が書き込もうとするカラム名と、
+  //         pullFromCloud が読もうとするカラム名が一致することを保証。
+  describe('🚨 リグレッション: push/pull の study_stats カラム整合性', () => {
+    it('pushStatsToCloud は必須の全カラムを payload に含める', async () => {
+      const { pushStatsToCloud } = require('../../services/cloudSync');
+      const stats = {
+        totalQuestions: 5,
+        totalCorrect: 3,
+        totalStudyTime: 100,
+        streak: 1,
+        longestStreak: 1,
+        lastStudyAt: '2026-05-23T10:00:00Z',
+        categoryStats: { kenri: { total: 5, correct: 3 } },
+        dailyLog: { '2026-05-23': 5 },
+        streakFreezeCount: 1,
+        streakFreezeUsedAt: '2026-05-22',
+        streakFreezeRefilledAt: '2026-05-15T00:00:00Z',
+      };
+      const qq = { total: 2, correct: 1, categoryStats: {} };
+
+      await pushStatsToCloud('user1', stats, qq);
+
+      expect(mockUpsert).toHaveBeenCalledTimes(1);
+      const payload = mockUpsert.mock.calls[0][0];
+      // study_stats スキーマで必須なカラムが全て payload に存在することを検証。
+      // ここに列挙したいずれかが Supabase 側に無いと PGRST204 が発生する。
+      const requiredColumns = [
+        'user_id',
+        'total_questions',
+        'total_correct',
+        'total_study_time',
+        'streak',
+        'longest_streak',
+        'last_study_at',
+        'category_stats',
+        'daily_log',                  // ← 旧 schema に無かった (バグの根本原因)
+        'streak_freeze_count',        // ← 同上
+        'streak_freeze_used_at',      // ← 同上
+        'streak_freeze_refilled_at',  // ← 同上
+        'quick_quiz_stats',
+        'updated_at',
+      ];
+      for (const col of requiredColumns) {
+        expect(payload).toHaveProperty(col);
+      }
+    });
+
+    it('pullFromCloud は study_stats の全カラムを QQ stats と onboarding_done 含めて読む', async () => {
+      mockSelectRange.mockResolvedValueOnce({ data: [], error: null });
+      mockMaybeSingle.mockResolvedValueOnce({
+        data: {
+          total_questions: 5,
+          total_correct: 3,
+          total_study_time: 100,
+          streak: 2,
+          longest_streak: 5,
+          last_study_at: '2026-05-23T10:00:00Z',
+          category_stats: { kenri: { total: 5, correct: 3 } },
+          daily_log: { '2026-05-23': 5 },
+          streak_freeze_count: 1,
+          streak_freeze_used_at: '2026-05-22',
+          streak_freeze_refilled_at: '2026-05-15T00:00:00Z',
+          quick_quiz_stats: { total: 2, correct: 1 },
+          onboarding_done: true,
+        },
+        error: null,
+      });
+
+      const r = await pullFromCloud('user1');
+      expect(r).not.toBeNull();
+      expect(r!.stats?.dailyLog).toEqual({ '2026-05-23': 5 });
+      expect(r!.stats?.streakFreezeCount).toBe(1);
+      expect(r!.stats?.streakFreezeUsedAt).toBe('2026-05-22');
+      expect(r!.quickQuizStats).toEqual({ total: 2, correct: 1 });
+      expect(r!.onboardingDone).toBe(true);
+    });
+
+    it('pullFromCloud: onboarding_done が無い (=旧 schema) でも false で安全に動く', async () => {
+      mockSelectRange.mockResolvedValueOnce({ data: [], error: null });
+      mockMaybeSingle.mockResolvedValueOnce({
+        data: {
+          total_questions: 5,
+          total_correct: 3,
+          // onboarding_done なし
+        },
+        error: null,
+      });
+      const r = await pullFromCloud('user1');
+      expect(r!.onboardingDone).toBe(false);
+    });
+
+    it('markOnboardingComplete は study_stats を user_id + onboarding_done=true で upsert', async () => {
+      const { markOnboardingComplete } = require('../../services/cloudSync');
+      const result = await markOnboardingComplete('user-X');
+      expect(result).toBe(true);
+      expect(mockUpsert).toHaveBeenCalledTimes(1);
+      const payload = mockUpsert.mock.calls[0][0];
+      expect(payload.user_id).toBe('user-X');
+      expect(payload.onboarding_done).toBe(true);
+      // 他のカラム (total_questions 等) は触らない (副作用なし)
+      expect(payload.total_questions).toBeUndefined();
+    });
+
+    it('🔥 回帰: PGRST204 (column not found) シミュレーション → false かつ logError', async () => {
+      const { pushStatsToCloud } = require('../../services/cloudSync');
+      mockUpsert.mockResolvedValueOnce({
+        error: {
+          code: 'PGRST204',
+          message: "Could not find the 'daily_log' column of 'study_stats' in the schema cache",
+        },
+      });
+      const stats = {
+        totalQuestions: 5,
+        totalCorrect: 3,
+        totalStudyTime: 0,
+        streak: 0,
+        longestStreak: 0,
+        lastStudyAt: '2026-05-23T10:00:00Z',
+        categoryStats: {},
+        dailyLog: { '2026-05-23': 5 },
+      };
+      const result = await pushStatsToCloud('user1', stats, {});
+      expect(result).toBe(false); // 失敗は false で返る (例外を投げない)
+      const { logError } = require('../../services/errorLogger');
+      expect(logError).toHaveBeenCalled();
+    });
+  });
 });
