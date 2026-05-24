@@ -334,4 +334,89 @@ describe('useAuthStore', () => {
       expect(r.error).toBe('Googleログインに失敗しました');
     });
   });
+
+  // ----------------------------------------------------------
+  // init() PKCE OAuth callback (Web)
+  // 背景: 2026-05-24 ユーザー報告
+  //   「Google ログインで vercel に戻るが未ログインのまま LP に戻される」
+  // 根本原因: Supabase JS v2 の detectSessionInUrl は implicit flow しか
+  //   自動検出しない。PKCE (?code=xxx) は exchangeCodeForSession が必須。
+  // ----------------------------------------------------------
+  describe('init - PKCE OAuth callback', () => {
+    let originalPlatformOS: string;
+    let originalWindow: any;
+
+    beforeEach(() => {
+      // react-native の Platform mock は OS=ios 固定。本テストでは web に上書き
+      const RN = require('react-native');
+      originalPlatformOS = RN.Platform.OS;
+      RN.Platform.OS = 'web';
+
+      // jest testEnvironment=node のため window は未定義。最小モック作成
+      originalWindow = (global as any).window;
+      (global as any).window = {
+        location: { href: 'https://app.example.com/?code=abc123&state=xyz' },
+        history: { replaceState: jest.fn() },
+      };
+
+      // exchangeCodeForSession を有効化（テスト毎にリセット）
+      supaAuth.exchangeCodeForSession = jest.fn(() =>
+        Promise.resolve({ data: { session: null }, error: null }),
+      );
+    });
+
+    afterEach(() => {
+      const RN = require('react-native');
+      RN.Platform.OS = originalPlatformOS;
+      if (originalWindow === undefined) {
+        delete (global as any).window;
+      } else {
+        (global as any).window = originalWindow;
+      }
+    });
+
+    it('URL に ?code=xxx があれば exchangeCodeForSession が呼ばれる', async () => {
+      await useAuthStore.getState().init();
+      expect(supaAuth.exchangeCodeForSession).toHaveBeenCalledWith('abc123');
+    });
+
+    it('交換成功後、URL から ?code= と ?state= が除去される', async () => {
+      await useAuthStore.getState().init();
+      const replaceState = (global as any).window.history.replaceState as jest.Mock;
+      expect(replaceState).toHaveBeenCalled();
+      const cleanUrl = replaceState.mock.calls[0][2];
+      expect(cleanUrl).not.toContain('code=');
+      expect(cleanUrl).not.toContain('state=');
+    });
+
+    it('URL に ?code= がなければ exchangeCodeForSession は呼ばれない', async () => {
+      (global as any).window.location.href = 'https://app.example.com/';
+      await useAuthStore.getState().init();
+      expect(supaAuth.exchangeCodeForSession).not.toHaveBeenCalled();
+    });
+
+    it('exchangeCodeForSession 失敗時も init は完了する (無限ローディング防止)', async () => {
+      supaAuth.exchangeCodeForSession.mockResolvedValueOnce({
+        data: { session: null },
+        error: { message: 'invalid_grant' },
+      });
+      await useAuthStore.getState().init();
+      expect(useAuthStore.getState().initialized).toBe(true);
+    });
+
+    it('Native (iOS) では exchangeCodeForSession を呼ばない', async () => {
+      const RN = require('react-native');
+      RN.Platform.OS = 'ios';
+      await useAuthStore.getState().init();
+      expect(supaAuth.exchangeCodeForSession).not.toHaveBeenCalled();
+    });
+
+    it('交換成功後、cleanUrl は pathname を保持する', async () => {
+      (global as any).window.location.href = 'https://app.example.com/dashboard?code=abc&state=x';
+      await useAuthStore.getState().init();
+      const replaceState = (global as any).window.history.replaceState as jest.Mock;
+      const cleanUrl = replaceState.mock.calls[0][2];
+      expect(cleanUrl).toBe('/dashboard');
+    });
+  });
 });

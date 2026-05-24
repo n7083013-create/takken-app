@@ -109,6 +109,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
     try {
+      // PKCE OAuth callback: ?code=xxx を session に交換
+      // Supabase JS v2 の detectSessionInUrl は implicit flow (#access_token=) のみ自動検出するため、
+      // PKCE フロー (?code=) は明示的に exchangeCodeForSession を呼ぶ必要がある (公式 docs 既知のハマりどころ)
+      if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
+        try {
+          const url = new URL(window.location.href);
+          const code = url.searchParams.get('code');
+          if (code) {
+            const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+            if (exchangeError) {
+              logError(exchangeError, { context: 'auth.init.exchangeCodeForSession' });
+            } else {
+              // URL から ?code= と ?state= を除去 (履歴汚染防止 / リロード時の二重交換防止)
+              url.searchParams.delete('code');
+              url.searchParams.delete('state');
+              const cleanUrl = url.pathname + (url.search || '') + (url.hash || '');
+              window.history.replaceState({}, '', cleanUrl);
+            }
+          }
+        } catch (e) {
+          // 交換失敗でも init は完了させる (無限ローディング防止)
+          logError(e, { context: 'auth.init.pkceExchange' });
+        }
+      }
+
       const { data } = await supabase.auth.getSession();
 
       // 既存セッションがある場合、JWTをリフレッシュして最新のmetadataを取得
