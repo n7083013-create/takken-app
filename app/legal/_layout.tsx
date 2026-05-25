@@ -1,4 +1,7 @@
 import { Stack } from 'expo-router';
+import { useThemeColors } from '../../hooks/useThemeColors';
+
 export default function LegalLayout() {
-  return <Stack screenOptions={{ headerTintColor: '#2E7D32' }} />;
+  const colors = useThemeColors();
+  return <Stack screenOptions={{ headerTintColor: colors.primary }} />;
 }

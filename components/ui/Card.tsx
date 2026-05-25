@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Pressable,
@@ -6,8 +6,9 @@ import {
   ViewStyle,
   GestureResponderEvent,
 } from 'react-native';
-
-type CardVariant = 'default' | 'elevated' | 'outlined' | 'flat';
+import { BorderRadius, Spacing } from '../../constants/theme';
+import { useThemeColors } from '../../hooks/useThemeColors';
+import { resolveCardVariantStyle, CardVariant } from './variantStyles';
 
 interface CardProps {
   children: React.ReactNode;
@@ -17,22 +18,19 @@ interface CardProps {
   style?: ViewStyle;
 }
 
-const COLORS = {
-  background: '#FFFFFF',
-  surface: '#F8FAF8',
-  border: '#E0E0E0',
-};
-
 const Card: React.FC<CardProps> = ({
   children,
   variant = 'default',
-  padding = 16,
+  padding = Spacing.lg,
   onPress,
   style,
 }) => {
+  const colors = useThemeColors();
+  const variantStyle = useMemo(() => resolveCardVariantStyle(variant, colors), [variant, colors]);
+
   const cardStyle: ViewStyle[] = [
     styles.base,
-    variantStyles[variant],
+    variantStyle,
     { padding },
     style,
   ].filter(Boolean) as ViewStyle[];
@@ -57,40 +55,12 @@ const Card: React.FC<CardProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 16,
-    backgroundColor: COLORS.background,
+    borderRadius: BorderRadius.xl,
     overflow: 'hidden',
   },
   pressed: {
     opacity: 0.9,
     transform: [{ scale: 0.99 }],
-  },
-});
-
-const variantStyles = StyleSheet.create({
-  default: {
-    backgroundColor: COLORS.background,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  elevated: {
-    backgroundColor: COLORS.background,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  outlined: {
-    backgroundColor: COLORS.background,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  flat: {
-    backgroundColor: COLORS.surface,
   },
 });
 

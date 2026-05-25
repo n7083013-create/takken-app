@@ -11,29 +11,62 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1B5E20"
+      "backgroundColor": "#1B7A3D"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.takken.app",
+      "supportsTablet": false,
+      "bundleIdentifier": "com.takkenkanzen.app",
       "usesAppleSignIn": true,
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "CFBundleDisplayName": "宅建士 完全対策",
+        "CFBundleLocalizations": [
+          "ja",
+          "en"
+        ],
+        "CFBundleDevelopmentRegion": "ja",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false
         },
         "NSUserNotificationsUsageDescription": "学習リマインダーや復習通知をお送りするために使用します",
-        "ITSAppUsesNonExemptEncryption": false
-      }
+        "NSMicrophoneUsageDescription": "AI解説チャットで音声入力を使う際にマイクへのアクセスが必要です",
+        "NSSpeechRecognitionUsageDescription": "AI解説チャットで音声を認識するために使用します",
+        "ITSAppUsesNonExemptEncryption": false,
+        "LSApplicationQueriesSchemes": [
+          "https",
+          "mailto"
+        ]
+      },
+      "associatedDomains": [
+        "applinks:app.takkenkanzen.com",
+        "applinks:takkenkanzen.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1B5E20"
+        "backgroundColor": "#1B7A3D"
       },
-      "package": "com.takken.app",
+      "package": "com.takkenkanzen.app",
       "versionCode": 1,
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "VIBRATE",
+        "POST_NOTIFICATIONS",
+        "com.android.vending.BILLING"
+      ],
+      "blockedPermissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_CONTACTS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -42,7 +75,8 @@
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 5000
+      "fallbackToCacheTimeout": 5000,
+      "url": "https://u.expo.dev/620754b9-23be-4b41-bc59-1c976b0d48a1"
     },
     "runtimeVersion": {
       "policy": "appVersion"
@@ -51,14 +85,16 @@
       "expo-router",
       "expo-font",
       "expo-secure-store",
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-web-browser",
+      "expo-iap"
     ],
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "05b417d4-feb6-4ef1-aff0-888d2e0a377e"
+        "projectId": "620754b9-23be-4b41-bc59-1c976b0d48a1"
       }
     },
-    "owner": "naoyataira"
+    "owner": "2023kakeru"
   }
 }

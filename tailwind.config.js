@@ -5,30 +5,32 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      // 値だけは theme.ts (Forest Green #1B7A3D) と一致させ、ブランド分裂を防ぐ。
+      // semantic 色は constants/theme.ts の Colors.{success,warning,error,accent,surface} と完全一致。
       colors: {
         primary: {
-          50:  '#e8f5e9',
-          100: '#c8e6c9',
-          200: '#a5d6a7',
-          300: '#81c784',
-          400: '#66bb6a',
-          500: '#4caf50',
-          600: '#43a047',
-          700: '#388e3c',
-          800: '#2e7d32',
-          900: '#1b5e20',
-          DEFAULT: '#2E7D32',
-          dark: '#1B5E20',
+          50:  '#E8F5EC',
+          100: '#C8E6CF',
+          200: '#A5D6B0',
+          300: '#7CC68F',
+          400: '#52B370',
+          500: '#34A853',  // = Brand.green500 (light variant)
+          600: '#1B7A3D',  // = Brand.green600 (canonical)
+          700: '#145C2E',  // = Brand.green700 (dark variant)
+          800: '#0E4621',
+          900: '#082E16',
+          DEFAULT: '#1B7A3D',
+          dark: '#145C2E',
         },
         accent: {
-          DEFAULT: '#FF8F00',
-          light: '#FFB300',
-          dark: '#E65100',
+          DEFAULT: '#E8860C',
+          light: '#F5A623',
+          dark: '#C2690A',
         },
-        success: '#22C55E',
-        warning: '#F59E0B',
-        error: '#EF4444',
-        surface: '#F8FAF8',
+        success: '#0F9D58',
+        warning: '#F29D0B',
+        error: '#D93025',
+        surface: '#F5F6F3',
         card: '#FFFFFF',
       },
       fontFamily: {

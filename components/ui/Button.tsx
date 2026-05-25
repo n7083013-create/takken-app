@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Pressable,
   Text,
@@ -8,8 +8,16 @@ import {
   TextStyle,
   View,
 } from 'react-native';
+import {
+  BorderRadius,
+  FontSize,
+  FontWeight,
+  LineHeight,
+  Spacing,
+} from '../../constants/theme';
+import { useThemeColors } from '../../hooks/useThemeColors';
+import { resolveButtonVariantStyle, ButtonVariant } from './variantStyles';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -24,21 +32,6 @@ interface ButtonProps {
   iconPosition?: 'left' | 'right';
 }
 
-const COLORS = {
-  primary: '#2E7D32',
-  primaryDark: '#1B5E20',
-  secondary: '#558B2F',
-  secondaryDark: '#33691E',
-  danger: '#D32F2F',
-  dangerDark: '#B71C1C',
-  white: '#FFFFFF',
-  gray100: '#F5F5F5',
-  gray300: '#E0E0E0',
-  gray500: '#9E9E9E',
-  gray700: '#616161',
-  transparent: 'transparent',
-};
-
 const Button: React.FC<ButtonProps> = ({
   title,
   onPress,
@@ -50,12 +43,15 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   iconPosition = 'left',
 }) => {
+  const colors = useThemeColors();
   const isDisabled = disabled || loading;
+
+  const variantStyle = useMemo(() => resolveButtonVariantStyle(variant, colors), [variant, colors]);
 
   const containerStyle: ViewStyle[] = [
     styles.base,
     sizeStyles[size],
-    variantStyles[variant],
+    variantStyle.container,
     fullWidth && styles.fullWidth,
     isDisabled && styles.disabled,
   ].filter(Boolean) as ViewStyle[];
@@ -63,12 +59,9 @@ const Button: React.FC<ButtonProps> = ({
   const textStyle: TextStyle[] = [
     styles.textBase,
     textSizeStyles[size],
-    variantTextStyles[variant],
+    variantStyle.text,
     isDisabled && styles.disabledText,
   ].filter(Boolean) as TextStyle[];
-
-  const indicatorColor =
-    variant === 'outline' || variant === 'ghost' ? COLORS.primary : COLORS.white;
 
   const handlePress = useCallback(() => {
     if (!isDisabled && onPress) onPress();
@@ -86,7 +79,7 @@ const Button: React.FC<ButtonProps> = ({
       accessibilityState={{ disabled: isDisabled, busy: loading }}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={indicatorColor} />
+        <ActivityIndicator size="small" color={variantStyle.indicator} />
       ) : (
         <View style={styles.content}>
           {icon && iconPosition === 'left' && (
@@ -104,7 +97,7 @@ const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -128,47 +121,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconLeft: {
-    marginRight: 8,
+    marginRight: Spacing.sm,
   },
   iconRight: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
   },
   textBase: {
-    fontWeight: '700',
+    fontWeight: FontWeight.bold,
     textAlign: 'center',
   },
 });
 
 const sizeStyles = StyleSheet.create({
-  sm: { paddingVertical: 8, paddingHorizontal: 16, minHeight: 36 },
-  md: { paddingVertical: 12, paddingHorizontal: 24, minHeight: 48 },
-  lg: { paddingVertical: 16, paddingHorizontal: 32, minHeight: 56 },
+  sm: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.lg, minHeight: 36 },
+  md: { paddingVertical: Spacing.md, paddingHorizontal: Spacing.xxl, minHeight: 48 },
+  lg: { paddingVertical: Spacing.lg, paddingHorizontal: Spacing.xxxl, minHeight: 56 },
 });
 
 const textSizeStyles = StyleSheet.create({
-  sm: { fontSize: 13, lineHeight: 18 },
-  md: { fontSize: 15, lineHeight: 20 },
-  lg: { fontSize: 17, lineHeight: 24 },
-});
-
-const variantStyles = StyleSheet.create({
-  primary: { backgroundColor: COLORS.primary },
-  secondary: { backgroundColor: COLORS.secondary },
-  outline: {
-    backgroundColor: COLORS.transparent,
-    borderWidth: 1.5,
-    borderColor: COLORS.primary,
-  },
-  ghost: { backgroundColor: COLORS.transparent },
-  danger: { backgroundColor: COLORS.danger },
-});
-
-const variantTextStyles = StyleSheet.create({
-  primary: { color: COLORS.white },
-  secondary: { color: COLORS.white },
-  outline: { color: COLORS.primary },
-  ghost: { color: COLORS.primary },
-  danger: { color: COLORS.white },
+  sm: { fontSize: FontSize.footnote, lineHeight: LineHeight.footnote },
+  md: { fontSize: FontSize.subhead, lineHeight: LineHeight.subhead },
+  lg: { fontSize: FontSize.callout, lineHeight: LineHeight.callout },
 });
 
 export default React.memo(Button);

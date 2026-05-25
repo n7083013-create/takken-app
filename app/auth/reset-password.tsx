@@ -53,7 +53,7 @@ export default function ResetPasswordScreen() {
   if (done) {
     return (
       <SafeAreaView style={s.safe}>
-        <Stack.Screen options={{ title: 'パスワード変更完了', headerTintColor: '#2E7D32' }} />
+        <Stack.Screen options={{ title: 'パスワード変更完了', headerTintColor: colors.primary }} />
         <View style={s.center}>
           <Text style={s.doneIcon}>✅</Text>
           <Text style={s.doneTitle}>パスワードを変更しました</Text>
@@ -67,7 +67,7 @@ export default function ResetPasswordScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
-      <Stack.Screen options={{ title: '新しいパスワード', headerTintColor: '#2E7D32' }} />
+      <Stack.Screen options={{ title: '新しいパスワード', headerTintColor: colors.primary }} />
       <View style={s.container}>
         <Text style={s.title}>新しいパスワードを設定</Text>
         <Text style={s.sub}>8文字以上で入力してください</Text>

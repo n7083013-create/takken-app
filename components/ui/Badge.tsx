@@ -1,5 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { BorderRadius, FontSize, FontWeight, LineHeight, Spacing } from '../../constants/theme';
+import { useThemeColors } from '../../hooks/useThemeColors';
+import { hexToRgba } from './variantStyles';
 
 type BadgeSize = 'sm' | 'md';
 
@@ -10,25 +13,17 @@ interface BadgeProps {
   size?: BadgeSize;
 }
 
-/**
- * Converts a hex color to rgba with the given opacity.
- */
-function hexToRgba(hex: string, opacity: number): string {
-  const cleaned = hex.replace('#', '');
-  const r = parseInt(cleaned.substring(0, 2), 16);
-  const g = parseInt(cleaned.substring(2, 4), 16);
-  const b = parseInt(cleaned.substring(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
-
 const Badge: React.FC<BadgeProps> = ({
   label,
-  color = '#2E7D32',
+  color,
   textColor,
   size = 'md',
 }) => {
-  const resolvedTextColor = textColor ?? color;
-  const backgroundColor = hexToRgba(color, 0.22);
+  const colors = useThemeColors();
+  // 引数未指定時はテーマの primary にフォールバック (ダーク/ライト追従)
+  const resolvedColor = color ?? colors.primary;
+  const resolvedTextColor = textColor ?? resolvedColor;
+  const backgroundColor = hexToRgba(resolvedColor, 0.22);
 
   return (
     <View
@@ -55,10 +50,10 @@ const Badge: React.FC<BadgeProps> = ({
 const styles = StyleSheet.create({
   base: {
     alignSelf: 'flex-start',
-    borderRadius: 999,
+    borderRadius: BorderRadius.full,
   },
   textBase: {
-    fontWeight: '600',
+    fontWeight: FontWeight.semibold,
     textAlign: 'center',
   },
 });
@@ -66,22 +61,22 @@ const styles = StyleSheet.create({
 const sizeStyles = StyleSheet.create({
   sm: {
     paddingVertical: 2,
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing.sm,
   },
   md: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
   },
 });
 
 const textSizeStyles = StyleSheet.create({
   sm: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: FontSize.caption2,
+    lineHeight: LineHeight.caption,
   },
   md: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: FontSize.footnote,
+    lineHeight: LineHeight.footnote,
   },
 });
 

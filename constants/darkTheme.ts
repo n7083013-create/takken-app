@@ -8,18 +8,21 @@
 // - カード ↔ 背景のコントラストは控えめ（2:1程度）
 
 export const DarkColors = {
-  primary: '#3DBA5E',          // 明るめグリーン
-  primaryDark: '#1B7A3D',
+  primary: '#3DBA5E',          // 明るめグリーン (OLED視認性確保のため Brand.green600 より明るく)
+  primaryDark: '#1B7A3D',      // Brand.green600 と一致 (ダーク用 dark variant)
   primaryLight: '#6FCF7F',
   primarySurface: '#1A2E1F',   // primary の暗い背景用
+  onPrimary: '#0A1410',        // primary 上に乗る色 (ダークは黒寄りでコントラスト確保)
 
   accent: '#F5A623',
   accentLight: '#FFC947',
   accentDark: '#E8860C',
+  onAccent: '#0A1410',         // accent 上に乗る色 (Dark accent は黄寄りなので黒寄りで 9.25:1)
 
   success: '#34C759',          // iOS system green dark
   warning: '#FFD60A',          // iOS system yellow dark
   error: '#FF453A',            // iOS system red dark
+  onError: '#0A1410',          // error 上に乗る色 (Dark error は明るい赤なので黒寄りで AA 達成)
 
   background: '#111312',       // ほんのり暖色の黒
   surface: '#111312',

@@ -7,22 +7,34 @@
 // - 長時間学習でも疲れにくい中間コントラスト
 // - iOS Human Interface Guidelines / Material Design 3 準拠のスケール
 
+// ─── Brand: ストア/Web/ネイティブ全レイヤーで参照される単一の真実 ───
+// アイコン・スプラッシュ・通知LED・theme.ts primary が同じ色を指すための token。
+// 過去 #2E7D32 / #1B5E20 / #199353 が混在していた歴史を一本化（2026-05 UI監査）。
+export const Brand = {
+  green600: '#1B7A3D',  // canonical brand green (Forest Green)
+  green700: '#145C2E',  // dark variant
+  green500: '#34A853',  // light variant
+} as const;
+
 export const Colors = {
   // Primary (Forest Green - 落ち着いた深緑)
-  primary: '#1B7A3D',
-  primaryDark: '#145C2E',
-  primaryLight: '#34A853',
+  primary: Brand.green600,
+  primaryDark: Brand.green700,
+  primaryLight: Brand.green500,
   primarySurface: '#E8F5EC',   // primary の薄い背景用
+  onPrimary: '#FFFFFF',        // primary 上に乗るテキスト/アイコン色 (Button.tsx 等で参照)
 
   // Accent (Warm Amber)
   accent: '#E8860C',
   accentLight: '#F5A623',
   accentDark: '#C2690A',
+  onAccent: '#1D1D1F',         // accent 上に乗る色 (白だと 2.68:1 で AA FAIL → 黒寄り 6.29:1)
 
   // Semantic（やや彩度を抑えて目に優しく）
   success: '#0F9D58',
   warning: '#F29D0B',
   error: '#D93025',
+  onError: '#FFFFFF',          // error 上に乗る色 (4.77:1 で AA 達成)
 
   // Backgrounds & Surfaces（微暖色系でブルーライト軽減）
   background: '#F5F6F3',      // ほんのり暖色グレー（純白より目に優しい）
@@ -50,7 +62,7 @@ export const Colors = {
   white: '#FFFFFF',
 
   // Category colors（彩度を統一、視認性重視）
-  kenri: '#1B7A3D',           // 深緑（民法）
+  kenri: Brand.green600,      // 深緑（民法）
   takkengyoho: '#1A6DC2',     // ロイヤルブルー（業法）
   horei_seigen: '#C75A1A',    // テラコッタ（法令制限）
   tax_other: '#7B3FA0',       // ロイヤルパープル（税その他）

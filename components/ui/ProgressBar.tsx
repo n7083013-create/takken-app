@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
+import { FontSize, FontWeight, Spacing } from '../../constants/theme';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 interface ProgressBarProps {
   progress: number; // 0 to 1
@@ -12,12 +14,17 @@ interface ProgressBarProps {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
-  color = '#2E7D32',
-  trackColor = '#E8F5E9',
+  color,
+  trackColor,
   height = 10,
   showLabel = false,
   labelPosition = 'right',
 }) => {
+  const colors = useThemeColors();
+  // 未指定時はテーマ primary / primarySurface にフォールバック (ダーク追従)
+  const resolvedColor = color ?? colors.primary;
+  const resolvedTrack = trackColor ?? colors.primarySurface;
+
   const clampedProgress = Math.min(1, Math.max(0, progress));
   const animatedWidth = useRef(new Animated.Value(clampedProgress)).current;
 
@@ -37,14 +44,14 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       <View
         style={[
           styles.track,
-          { backgroundColor: trackColor, height, borderRadius: height / 2 },
+          { backgroundColor: resolvedTrack, height, borderRadius: height / 2 },
         ]}
       >
         <Animated.View
           style={[
             styles.fill,
             {
-              backgroundColor: color,
+              backgroundColor: resolvedColor,
               borderRadius: height / 2,
               height,
               width: animatedWidth.interpolate({
@@ -55,13 +62,17 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
           ]}
         >
           {showInsideLabel && (
-            <Text style={styles.insideLabel}>{percentText}</Text>
+            <Text style={[styles.insideLabel, { color: colors.onPrimary }]}>
+              {percentText}
+            </Text>
           )}
         </Animated.View>
       </View>
 
       {showLabel && labelPosition === 'right' && (
-        <Text style={styles.rightLabel}>{percentText}</Text>
+        <Text style={[styles.rightLabel, { color: colors.textSecondary }]}>
+          {percentText}
+        </Text>
       )}
     </View>
   );
@@ -82,16 +93,14 @@ const styles = StyleSheet.create({
     minWidth: 2,
   },
   insideLabel: {
-    color: '#FFFFFF',
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: FontWeight.bold,
     paddingRight: 6,
   },
   rightLabel: {
-    marginLeft: 8,
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#424242',
+    marginLeft: Spacing.sm,
+    fontSize: FontSize.footnote,
+    fontWeight: FontWeight.semibold,
     minWidth: 36,
   },
 });
