@@ -395,6 +395,46 @@ function HomeScreen() {
           );
         })()}
 
+        {/* ── 今日やること: 開いた直後に迷わず押せる最優先アクション ── */}
+        <Pressable
+          style={[s.mainCTA, Shadow.lg]}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isEvening ? '就寝前復習を始める'
+              : dueCount > 0 ? `復習${dueCount}問を解く`
+              : weakCount > 3 ? '弱点を克服する'
+              : '今日の学習を始める'
+          }
+          onPress={() => {
+            if (isEvening) { router.push('/pre-sleep-review'); }
+            else if (dueCount > 0) { router.push('/(tabs)/review'); }
+            else if (weakCount > 3) { router.push('/weak-drill'); }
+            else { startSmartQuestion(); }
+          }}
+        >
+          <Text style={s.mainCTALabel}>今日やること</Text>
+          <View style={s.mainCTAContent}>
+            <Text style={s.mainCTAIcon}>
+              {isEvening ? '🌙' : dueCount > 0 ? '⏰' : weakCount > 3 ? '💪' : '📝'}
+            </Text>
+            <View style={{ flex: 1 }}>
+              <Text style={s.mainCTATitle}>
+                {isEvening ? '就寝前復習を始める'
+                  : dueCount > 0 ? `復習${dueCount}問を解く`
+                  : weakCount > 3 ? '弱点を克服する'
+                  : '今日の学習を始める'}
+              </Text>
+              <Text style={s.mainCTASub}>
+                {isEvening ? '睡眠中の記憶固定を最大化'
+                  : dueCount > 0 ? '忘れる前に記憶を定着'
+                  : weakCount > 3 ? `${weakCount}問の苦手問題を集中攻撃`
+                  : `今日 ${todayAnswered}/${dailyGoal}問完了 — AIが最適な問題を選択`}
+              </Text>
+            </View>
+            <Text style={s.mainCTAArrow}>→</Text>
+          </View>
+        </Pressable>
+
         {/* ── 今日の進捗（コンパクトダッシュボード） ── */}
         <View style={[s.dashCard, Shadow.md]}>
           {/* デイリーゴール + ミニ統計 */}
@@ -488,45 +528,6 @@ function HomeScreen() {
             </ScrollView>
           </View>
         )}
-
-        {/* ── メインCTA: 状況に応じて最適なアクションを1つ提示 ── */}
-        <Pressable
-          style={[s.mainCTA, Shadow.lg]}
-          accessibilityRole="button"
-          accessibilityLabel={
-            isEvening ? '就寝前復習を始める'
-              : dueCount > 0 ? `復習${dueCount}問を解く`
-              : weakCount > 3 ? '弱点を克服する'
-              : '今日の学習を始める'
-          }
-          onPress={() => {
-            if (isEvening) { router.push('/pre-sleep-review'); }
-            else if (dueCount > 0) { router.push('/(tabs)/review'); }
-            else if (weakCount > 3) { router.push('/weak-drill'); }
-            else { startSmartQuestion(); }
-          }}
-        >
-          <View style={s.mainCTAContent}>
-            <Text style={s.mainCTAIcon}>
-              {isEvening ? '🌙' : dueCount > 0 ? '⏰' : weakCount > 3 ? '💪' : '📝'}
-            </Text>
-            <View style={{ flex: 1 }}>
-              <Text style={s.mainCTATitle}>
-                {isEvening ? '就寝前復習を始める'
-                  : dueCount > 0 ? `復習${dueCount}問を解く`
-                  : weakCount > 3 ? '弱点を克服する'
-                  : '今日の学習を始める'}
-              </Text>
-              <Text style={s.mainCTASub}>
-                {isEvening ? '睡眠中の記憶固定を最大化'
-                  : dueCount > 0 ? '忘れる前に記憶を定着'
-                  : weakCount > 3 ? `${weakCount}問の苦手問題を集中攻撃`
-                  : `今日 ${todayAnswered}/${dailyGoal}問完了 — AIが最適な問題を選択`}
-              </Text>
-            </View>
-            <Text style={s.mainCTAArrow}>→</Text>
-          </View>
-        </Pressable>
 
         {/* ── クイックアクション（厳選4つ・横スクロール風） ── */}
         <View style={s.quickGrid}>
@@ -1159,6 +1160,13 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     backgroundColor: C.primary,
     borderRadius: BorderRadius.xl,
     padding: 20,
+  },
+  mainCTALabel: {
+    fontSize: FontSize.caption2,
+    fontWeight: '800',
+    color: 'rgba(255,255,255,0.72)',
+    letterSpacing: LetterSpacing.wide,
+    marginBottom: 10,
   },
   mainCTAContent: {
     flexDirection: 'row',

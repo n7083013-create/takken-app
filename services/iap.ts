@@ -108,7 +108,7 @@ export async function retryPendingPurchases(): Promise<number> {
 //   2. getProductId(billingCycle) で月額/年額を切替
 //   3. purchaseSubscription(billingCycle) も同様に
 //   4. App Store Connect / Play Console で 年額 SKU 登録 (¥5,980/年・7日トライアル)
-//   詳細手順: takken-knowledge/04-roadmap/store-release-playbook.md
+//   詳細手順: ObsidianVault/10_Projects/資格アプリ開発/ストア提出プレイブック.md
 // ────────────────────────────────────────────────────────────
 export const IAP_PRODUCTS = {
   // Google Play では短い ID 推奨（Play Console で同じ ID を作成）
