@@ -10,6 +10,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     explanation: '都市計画法7条2項の定義どおりで正しい。',
     relatedQuestionId: 'horei_seigen-001',
     tags: ['都市計画法', '市街化区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_002',
@@ -20,6 +21,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     explanation: '許可を受ければ開発行為は可能（都市計画法29条）。',
     relatedQuestionId: 'horei_seigen-001',
     tags: ['都市計画法', '市街化調整区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_003',
@@ -29,6 +31,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法5条の2により都市計画区域外に定める。',
     tags: ['都市計画法', '準都市計画区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_004',
@@ -38,6 +41,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '非線引き区域でも用途地域を定めることができる。',
     tags: ['都市計画法', '用途地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_005',
@@ -48,6 +52,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     explanation: '都市計画法29条1項・施行令19条により原則許可不要。',
     relatedQuestionId: 'horei_seigen-002',
     tags: ['開発許可', '都市計画法29条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_006',
@@ -58,6 +63,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     explanation: '都市計画法29条1項2号により許可不要。',
     relatedQuestionId: 'horei_seigen-002',
     tags: ['開発許可', '市街化調整区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_007',
@@ -67,6 +73,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法29条2項により10,000㎡以上で許可必要。',
     tags: ['開発許可', '都市計画区域外'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_008',
@@ -76,6 +83,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画法37条により原則建築できない。',
     tags: ['開発許可', '都市計画法37条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_009',
@@ -85,6 +93,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法施行令19条により3,000㎡以上で必要。',
     tags: ['開発許可', '準都市計画区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_010',
@@ -94,6 +103,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '公益上必要な建築物として許可不要（29条1項3号）。',
     tags: ['開発許可', '公益施設'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_011',
@@ -104,6 +114,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     explanation: '建築基準法別表第二により小学校は建築可能。',
     relatedQuestionId: 'horei_seigen-003',
     tags: ['用途制限', '第一種低層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_012',
@@ -114,6 +125,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     explanation: '診療所は全用途地域で建築可能。',
     relatedQuestionId: 'horei_seigen-003',
     tags: ['用途制限', '診療所'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_013',
@@ -123,6 +135,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '工業専用地域では病院は建築できない。',
     tags: ['用途制限', '工業専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_014',
@@ -132,6 +145,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '住宅は工業専用地域では建築不可。',
     tags: ['用途制限', '住宅'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_015',
@@ -141,6 +155,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '大学は第一種・第二種低層住居専用地域では建築不可。',
     tags: ['用途制限', '大学'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_016',
@@ -150,6 +165,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '宗教施設は全用途地域で建築可能。',
     tags: ['用途制限', '宗教施設'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_017',
@@ -159,6 +175,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法91条による過半主義。',
     tags: ['用途制限', '建築基準法91条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_018',
@@ -168,6 +185,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '第一種住居地域ではカラオケボックスは建築不可。',
     tags: ['用途制限', 'カラオケボックス'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_019',
@@ -177,6 +195,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法53条の定義どおり。',
     tags: ['建ぺい率', '建築基準法53条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_020',
@@ -186,6 +205,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法53条6項により建ぺい率制限なし。',
     tags: ['建ぺい率', '防火地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_021',
@@ -195,6 +215,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法53条3項による緩和。',
     tags: ['建ぺい率', '角地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_022',
@@ -204,6 +225,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '加算対象は防火地域内の耐火建築物等のみ。',
     tags: ['建ぺい率', '防火地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_023',
@@ -213,6 +235,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法52条の定義どおり。',
     tags: ['容積率', '建築基準法52条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_024',
@@ -222,6 +245,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法52条2項による前面道路幅員制限。',
     tags: ['容積率', '前面道路'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_025',
@@ -231,6 +255,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法52条3項による緩和。',
     tags: ['容積率', '地下室'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_026',
@@ -240,6 +265,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '建築基準法52条6項により不算入。',
     tags: ['容積率', '共同住宅'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_027',
@@ -249,6 +275,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法43条の接道義務。',
     tags: ['接道義務', '建築基準法43条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_028',
@@ -258,6 +285,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法42条1項の道路の定義。',
     tags: ['道路', '建築基準法42条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_029',
@@ -267,6 +295,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法42条2項のセットバック規定。',
     tags: ['道路', '2項道路', 'セットバック'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_030',
@@ -276,6 +305,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '公衆便所・派出所等は例外的に建築可能（44条）。',
     tags: ['道路', '建築基準法44条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_031',
@@ -285,6 +315,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法45条により制限可能。',
     tags: ['道路', '私道'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_032',
@@ -294,6 +325,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法61条による制限。',
     tags: ['防火地域', '建築基準法61条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_033',
@@ -303,6 +335,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '地上4階以上は耐火建築物等とする必要がある。',
     tags: ['準防火地域', '建築基準法61条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_034',
@@ -312,6 +345,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法64条の規定。',
     tags: ['防火地域', '看板'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_035',
@@ -321,6 +355,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法65条により防火地域の規制が全体に適用。',
     tags: ['防火地域', '準防火地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_036',
@@ -330,6 +365,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法55条の絶対高さ制限。',
     tags: ['高さ制限', '第一種低層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_037',
@@ -339,6 +375,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法56条の2により対象外。',
     tags: ['日影規制', '建築基準法56条の2'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_038',
@@ -348,6 +385,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '低層住居専用地域と田園住居・中高層住居専用地域のみ。',
     tags: ['北側斜線', '建築基準法56条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_039',
@@ -357,6 +395,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法6条により事前確認が必要。',
     tags: ['建築確認', '建築基準法6条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_040',
@@ -366,6 +405,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '契約締結日から起算して2週間以内に届出。',
     tags: ['国土利用計画法', '事後届出'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_041',
@@ -375,6 +415,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '国土利用計画法23条の面積要件。',
     tags: ['国土利用計画法', '市街化区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_042',
@@ -384,6 +425,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '市街化調整区域・非線引き区域は5,000㎡以上。',
     tags: ['国土利用計画法', '市街化調整区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_043',
@@ -393,6 +435,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '国土利用計画法23条の面積要件。',
     tags: ['国土利用計画法', '都市計画区域外'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_044',
@@ -402,6 +445,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '権利取得者（買主）のみが届出義務者。',
     tags: ['国土利用計画法', '届出義務者'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_045',
@@ -411,6 +455,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '対価を伴わない取引のため届出不要。',
     tags: ['国土利用計画法', '相続'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_046',
@@ -420,6 +465,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '対価性がないため届出不要。',
     tags: ['国土利用計画法', '贈与'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_047',
@@ -429,6 +475,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '国土利用計画法27条の4の規定。',
     tags: ['国土利用計画法', '注視区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_048',
@@ -438,6 +485,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '監視区域は都道府県知事がより小さい面積を指定できる。',
     tags: ['国土利用計画法', '監視区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_049',
@@ -447,6 +495,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '6月以下の拘禁刑又は100万円以下の罰金。',
     tags: ['国土利用計画法', '罰則'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_050',
@@ -456,6 +505,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '買いの一団は合算して面積判定する。',
     tags: ['国土利用計画法', '一団の土地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_051',
@@ -465,6 +515,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '権利移動は農業委員会の許可。',
     tags: ['農地法', '農地法3条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_052',
@@ -474,6 +525,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '自己所有農地の転用に関する規定。',
     tags: ['農地法', '農地法4条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_053',
@@ -483,6 +535,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '原則として都道府県知事等の許可。',
     tags: ['農地法', '許可権者'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_054',
@@ -492,6 +545,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '転用+権利移動の場合は5条許可。',
     tags: ['農地法', '農地法5条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_055',
@@ -501,6 +555,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '4条・5条ともに届出で許可不要。',
     tags: ['農地法', '市街化区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_056',
@@ -510,6 +565,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '相続の場合は許可不要だが農業委員会への届出は必要。',
     tags: ['農地法', '相続'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_057',
@@ -519,6 +575,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '採草放牧地の自己転用は4条の対象外。',
     tags: ['農地法', '採草放牧地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_058',
@@ -528,6 +585,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '許可は効力発生要件で無許可契約は無効。',
     tags: ['農地法', '効力'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_059',
@@ -537,6 +595,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '農地法の適用除外規定がある。',
     tags: ['農地法', '国・都道府県'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_060',
@@ -546,6 +605,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '賃借権設定も権利移動にあたる。',
     tags: ['農地法', '賃借'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_061',
@@ -555,6 +615,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '農地かどうかは現況で判断される。',
     tags: ['農地法', '現況主義'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_062',
@@ -564,6 +625,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法10条により指定される。',
     tags: ['盛土規制法', '規制区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_063',
@@ -573,6 +635,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '工事着手前に都道府県知事等の許可が必要。',
     tags: ['盛土規制法', '許可'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_064',
@@ -582,6 +645,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法施行令の規模要件。',
     tags: ['盛土規制法', '盛土'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_065',
@@ -591,6 +655,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法施行令の規模要件。',
     tags: ['盛土規制法', '切土'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_066',
@@ -600,6 +665,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法17条による完了検査。',
     tags: ['盛土規制法', '完了検査'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_067',
@@ -609,6 +675,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '指定日から21日以内に届出が必要。',
     tags: ['盛土規制法', '届出'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_068',
@@ -618,6 +685,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法26条により指定可能。',
     tags: ['盛土規制法', '特定盛土等規制区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_069',
@@ -627,6 +695,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '必要な条件を付すことができる。',
     tags: ['盛土規制法', '許可条件'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_070',
@@ -636,6 +705,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法の施行者の類型。',
     tags: ['土地区画整理法', '施行者'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_071',
@@ -645,6 +715,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法14条の規定。',
     tags: ['土地区画整理法', '組合'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_072',
@@ -654,6 +725,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法99条の効果。',
     tags: ['土地区画整理法', '仮換地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_073',
@@ -663,6 +735,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '所有権は換地処分まで移転しない。',
     tags: ['土地区画整理法', '仮換地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_074',
@@ -672,6 +745,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法104条による効力。',
     tags: ['土地区画整理法', '換地処分'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_075',
@@ -681,6 +755,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法104条11項。',
     tags: ['土地区画整理法', '保留地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_076',
@@ -690,6 +765,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法76条の建築行為制限。',
     tags: ['土地区画整理法', '建築制限'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_077',
@@ -699,6 +775,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '準工業地域は規制が緩やか。',
     tags: ['用途制限', '準工業地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_078',
@@ -708,6 +785,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '平成30年施行で用途地域に追加。',
     tags: ['用途地域', '田園住居地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_079',
@@ -717,6 +795,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '一定の要件下で用途地域外でも定められる。',
     tags: ['都市計画法', '地区計画'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_080',
@@ -726,6 +805,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画区域外でも必要に応じて定めることができる。',
     tags: ['都市計画法', '都市施設'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_081',
@@ -735,6 +815,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法35条の2の変更許可。',
     tags: ['開発許可', '変更許可'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_082',
@@ -744,6 +825,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '2階以下・500㎡以下の店舗が建築可能。',
     tags: ['用途制限', '第一種中高層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_083',
@@ -753,6 +835,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '特定行政庁が都市計画で定める。',
     tags: ['容積率', '用途地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_084',
@@ -762,6 +845,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法70条による全員合意要件。',
     tags: ['建築協定', '建築基準法70条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_085',
@@ -771,6 +855,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法9条14項により用途地域内に限る。',
     tags: ['都市計画法', '特別用途地区'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_086',
@@ -780,6 +865,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '最高限度又は最低限度を定められる。',
     tags: ['都市計画法', '高度地区'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_087',
@@ -789,6 +875,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '市街化区域又は非線引き区域に定める。',
     tags: ['都市計画法', '市街地開発事業'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_088',
@@ -798,6 +885,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'そのようなみなし規定は存在しない。',
     tags: ['開発許可', '用途地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_089',
@@ -807,6 +895,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法94条の清算金。',
     tags: ['土地区画整理法', '清算金'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_090',
@@ -816,6 +905,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '事後届出では利用目的のみ勧告対象。',
     tags: ['国土利用計画法', '勧告'],
+    needsReview: true,
   },
   // ===== 2026年法改正対応 =====
   {
@@ -826,6 +916,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正建築基準法6条の4。省エネ基準義務化に伴う審査範囲拡大。',
     tags: ['建築基準法', '法改正2026', '4号特例'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_2026_02',
@@ -835,6 +926,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築物省エネ法改正。従来の中規模以上限定から全建築物に拡大。',
     tags: ['建築物省エネ法', '法改正2026', '省エネ基準'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_2026_03',
@@ -844,6 +936,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '4号特例縮小後も、新3号建築物については審査省略が維持。',
     tags: ['建築基準法', '法改正2026', '新3号'],
+    needsReview: true,
   },
   // ===== qq_horei_094〜 都市計画法（都市計画区域・区域区分） =====
   {
@@ -854,6 +947,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画区域は市町村の区域にとどまることも、複数にまたがることもある（都市計画法5条）。',
     tags: ['都市計画法', '都市計画区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_095',
@@ -863,6 +957,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画区域は都道府県が指定する（2以上の都府県にわたる場合は国土交通大臣）（都市計画法5条1項）。',
     tags: ['都市計画法', '都市計画区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_096',
@@ -872,6 +967,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区域区分は必ずしも定める必要はなく、非線引き区域も存在する（都市計画法7条1項）。',
     tags: ['都市計画法', '区域区分'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_097',
@@ -881,6 +977,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法7条3項の定義どおり。',
     tags: ['都市計画法', '市街化調整区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_098',
@@ -890,6 +987,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '準都市計画区域では区域区分は定めることができない（都市計画法8条2項）。',
     tags: ['都市計画法', '準都市計画区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_099',
@@ -899,6 +997,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画法6条の2によりマスタープラン（都市計画区域の整備等の方針）をあらかじめ定める必要がある。',
     tags: ['都市計画法', 'マスタープラン'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_100',
@@ -908,6 +1007,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法13条1項7号により市街化区域には用途地域を定める。',
     tags: ['都市計画法', '市街化区域', '用途地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_101',
@@ -917,6 +1017,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画法13条1項7号により市街化調整区域には原則として用途地域を定めない。',
     tags: ['都市計画法', '市街化調整区域', '用途地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_102',
@@ -926,6 +1027,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '準都市計画区域内でも用途地域を定めることができる（都市計画法8条2項）。',
     tags: ['都市計画法', '準都市計画区域', '用途地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_103',
@@ -935,6 +1037,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '縦覧期間は2週間である（都市計画法17条）。',
     tags: ['都市計画法', '都市計画の決定手続'],
+    needsReview: true,
   },
   // ===== 用途地域13種 =====
   {
@@ -945,6 +1048,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '田園住居地域を含めて13種類（都市計画法8条1項1号）。',
     tags: ['都市計画法', '用途地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_105',
@@ -954,6 +1058,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '第一種低層住居専用地域では店舗の建築は原則不可（建築基準法別表第二(い)）。',
     tags: ['用途制限', '第一種低層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_106',
@@ -963,6 +1068,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '第二種低層住居専用地域では150㎡以内かつ2階以下の日用品販売店舗等のみ建築可能（建築基準法別表第二(ろ)）。',
     tags: ['用途制限', '第二種低層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_107',
@@ -972,6 +1078,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '第一種中高層住居専用地域以上の用途地域で大学は建築可能。',
     tags: ['用途制限', '第一種中高層住居専用地域', '大学'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_108',
@@ -981,6 +1088,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '第二種中高層住居専用地域では1,500㎡以下かつ2階以下の店舗のみ建築可能（建築基準法別表第二(に)）。',
     tags: ['用途制限', '第二種中高層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_109',
@@ -990,6 +1098,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法別表第二(ほ)により3,000㎡以下のホテル・旅館は建築可能。',
     tags: ['用途制限', '第一種住居地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_110',
@@ -999,6 +1108,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'パチンコ店は第二種住居地域以上で建築可能。第一種住居地域では建築不可。',
     tags: ['用途制限', '第一種住居地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_111',
@@ -1008,6 +1118,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '準住居地域では作業場の床面積150㎡以下の自動車修理工場のみ建築可能。',
     tags: ['用途制限', '準住居地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_112',
@@ -1017,6 +1128,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'キャバレー等は商業地域でのみ建築可能。',
     tags: ['用途制限', '近隣商業地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_113',
@@ -1026,6 +1138,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '商業地域でも危険性の高い工場等は建築不可（建築基準法別表第二）。',
     tags: ['用途制限', '商業地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_114',
@@ -1035,6 +1148,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '工業地域ではホテル・旅館は建築不可。',
     tags: ['用途制限', '工業地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_115',
@@ -1044,6 +1158,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '工業専用地域では老人ホームは建築不可。',
     tags: ['用途制限', '工業専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_116',
@@ -1053,6 +1168,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法52条の規定により市町村長の許可が必要。',
     tags: ['用途地域', '田園住居地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_117',
@@ -1062,6 +1178,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '保育所は公益施設であり、工業専用地域を含む全用途地域で建築可能。',
     tags: ['用途制限', '保育所'],
+    needsReview: true,
   },
   // ===== 地区計画 =====
   {
@@ -1072,6 +1189,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '許可ではなく、行為着手の30日前までに市町村長への届出が必要（都市計画法58条の2）。',
     tags: ['都市計画法', '地区計画'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_119',
@@ -1081,6 +1199,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '地区整備計画において建築物の用途の制限、容積率の制限、建ぺい率の制限等を定めることができる（都市計画法12条の5第7項）。',
     tags: ['都市計画法', '地区計画'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_120',
@@ -1090,6 +1209,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法58条の2第3項により、地区計画に適合しない場合は設計変更等の勧告が可能。',
     tags: ['都市計画法', '地区計画', '勧告'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_121',
@@ -1099,6 +1219,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '地区計画は市町村が定める都市計画である（都市計画法15条1項6号）。',
     tags: ['都市計画法', '地区計画'],
+    needsReview: true,
   },
   // ===== 開発許可の基準・許可不要 =====
   {
@@ -1109,6 +1230,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法施行令19条により3,000㎡以上で許可必要。',
     tags: ['開発許可', '非線引き区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_123',
@@ -1118,6 +1240,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '市街化調整区域には面積要件による適用除外がない（都市計画法29条1項）。',
     tags: ['開発許可', '市街化調整区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_124',
@@ -1127,6 +1250,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '医療施設（病院等）は公益施設に含まれず、規模に応じて開発許可が必要（都市計画法29条1項3号・施行令21条参照）。',
     tags: ['開発許可', '公益施設'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_125',
@@ -1136,6 +1260,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法29条1項4号により許可不要。',
     tags: ['開発許可', '都市計画事業'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_126',
@@ -1145,6 +1270,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '開発行為に関係がある公共施設の管理者とは協議し「同意」を得なければならない（都市計画法32条）。',
     tags: ['開発許可', '公共施設管理者の同意'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_127',
@@ -1154,6 +1280,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '開発許可の申請書には工事施行者を記載する必要がある（都市計画法30条1項3号）。',
     tags: ['開発許可', '申請'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_128',
@@ -1163,6 +1290,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法33条に加え34条の立地基準も満たす必要がある。',
     tags: ['開発許可', '市街化調整区域', '許可基準'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_129',
@@ -1172,6 +1300,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '開発行為は建築物の建築又は特定工作物の建設の用に供する目的で行う土地の区画形質の変更をいう（都市計画法4条12項）。',
     tags: ['開発許可', '開発行為の定義'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_130',
@@ -1181,6 +1310,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'ゴルフコースは第一種特定工作物である（都市計画法4条11項）。規模要件なし。',
     tags: ['開発許可', '特定工作物'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_131',
@@ -1190,6 +1320,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法4条11項・施行令1条2項により1ha以上の運動・レジャー施設は第二種特定工作物。',
     tags: ['開発許可', '第二種特定工作物'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_132',
@@ -1199,6 +1330,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '公告後も原則として予定建築物等以外は建築できない（都市計画法42条1項）。',
     tags: ['開発許可', '建築制限'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_133',
@@ -1208,6 +1340,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '開発審査会に審査請求ができる（都市計画法50条1項）。裁判所への出訴は審査請求に対する裁決後。',
     tags: ['開発許可', '審査請求'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_134',
@@ -1217,6 +1350,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '土地所有者の同意があれば、所有者以外も許可を受けることができる（都市計画法33条1項14号）。',
     tags: ['開発許可', '申請者'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_135',
@@ -1226,6 +1360,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '自己居住用と自己業務用では緩和される基準の範囲が異なる。自己居住用の方がより広く緩和される（都市計画法33条）。',
     tags: ['開発許可', '自己居住用'],
+    needsReview: true,
   },
   // ===== 建築確認 =====
   {
@@ -1236,6 +1371,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法7条により完了検査が義務付けられている。',
     tags: ['建築確認', '完了検査'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_137',
@@ -1245,6 +1381,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '確認済証の交付を受けた後でなければ工事に着手できない（建築基準法6条5項）。',
     tags: ['建築確認', '建築基準法6条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_138',
@@ -1254,6 +1391,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法6条1項1号の規定。',
     tags: ['建築確認', '特殊建築物'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_139',
@@ -1263,6 +1401,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画区域等内では、新築の場合は規模にかかわらず建築確認が必要（建築基準法6条1項4号）。',
     tags: ['建築確認', '木造'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_140',
@@ -1272,6 +1411,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '建築主事のほか、指定確認検査機関（民間機関）も審査を行える（建築基準法6条の2）。',
     tags: ['建築確認', '指定確認検査機関'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_141',
@@ -1281,6 +1421,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法87条1項により用途変更でも確認が必要。',
     tags: ['建築確認', '用途変更'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_142',
@@ -1290,6 +1431,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '大規模建築物（1号〜3号）は35日以内、4号建築物は7日以内である（建築基準法6条4項）。',
     tags: ['建築確認', '審査期間'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_143',
@@ -1299,6 +1441,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '大規模建築物（1号〜3号）の大規模修繕・大規模模様替えは建築確認が必要（建築基準法6条1項）。',
     tags: ['建築確認', '大規模修繕'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_144',
@@ -1308,6 +1451,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法6条2項により防火・準防火地域外の10㎡以内の増築等は確認不要。',
     tags: ['建築確認', '10㎡以内'],
+    needsReview: true,
   },
   // ===== 建ぺい率（追加） =====
   {
@@ -1318,6 +1462,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '用途地域外でも特定行政庁が建ぺい率を定める（建築基準法53条1項6号）。',
     tags: ['建ぺい率', '用途地域外'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_146',
@@ -1327,6 +1472,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '準防火地域内の耐火建築物等・準耐火建築物等の加算は1/10である（建築基準法53条3項1号イ）。',
     tags: ['建ぺい率', '準防火地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_147',
@@ -1336,6 +1482,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '防火地域内の耐火建築物で建ぺい率8/10の場合はそれだけで制限なし（建築基準法53条6項）。',
     tags: ['建ぺい率', '防火地域', '角地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_148',
@@ -1345,6 +1492,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法53条2項により加重平均で算定。',
     tags: ['建ぺい率', '複数地域'],
+    needsReview: true,
   },
   // ===== 容積率（追加） =====
   {
@@ -1355,6 +1503,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '前面道路幅員12m以上の場合に指定容積率がそのまま適用される。12m未満は道路幅員制限を受ける（建築基準法52条2項）。',
     tags: ['容積率', '前面道路'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_150',
@@ -1364,6 +1513,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '住居系用途地域では4/10を乗ずる（建築基準法52条2項1号）。',
     tags: ['容積率', '住居系', '前面道路'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_151',
@@ -1373,6 +1523,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法52条2項2号により非住居系は6/10を乗ずる。',
     tags: ['容積率', '非住居系', '前面道路'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_152',
@@ -1382,6 +1533,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '幅員の広い方の道路を前面道路として容積率を計算する（建築基準法52条2項）。',
     tags: ['容積率', '前面道路'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_153',
@@ -1391,6 +1543,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'エレベーターの昇降路の部分は延べ面積に算入しない（建築基準法52条6項）。',
     tags: ['容積率', 'エレベーター'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_154',
@@ -1400,6 +1553,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法施行令2条3項により延べ面積の1/5まで不算入。',
     tags: ['容積率', '自動車車庫'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_155',
@@ -1409,6 +1563,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '容積率は建ぺい率と同様に加重平均で算定する（建築基準法52条7項）。',
     tags: ['容積率', '複数地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_156',
@@ -1418,6 +1573,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '特定道路からの緩和は70m以内の敷地に適用される（建築基準法52条9項）。',
     tags: ['容積率', '特定道路'],
+    needsReview: true,
   },
   // ===== 高さ制限・斜線制限 =====
   {
@@ -1428,6 +1584,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法55条により第一種・第二種低層住居専用地域及び田園住居地域に適用。',
     tags: ['高さ制限', '第二種低層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_158',
@@ -1437,6 +1594,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '田園住居地域にも10mまたは12mの絶対高さ制限が適用される（建築基準法55条1項）。',
     tags: ['高さ制限', '田園住居地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_159',
@@ -1446,6 +1604,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '道路斜線制限は全用途地域及び用途地域無指定区域に適用される（建築基準法56条1項1号）。',
     tags: ['斜線制限', '道路斜線'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_160',
@@ -1455,6 +1614,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '絶対高さ制限があるため、低層住居専用地域・田園住居地域には隣地斜線制限は不適用。',
     tags: ['斜線制限', '隣地斜線'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_161',
@@ -1464,6 +1624,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法56条1項3号による適用範囲。',
     tags: ['斜線制限', '北側斜線'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_162',
@@ -1473,6 +1634,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '天空率による検討で斜線制限の適用を除外できる（建築基準法56条7項）。',
     tags: ['斜線制限', '天空率'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_163',
@@ -1482,6 +1644,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法56条2項のセットバック緩和。',
     tags: ['斜線制限', '道路斜線', 'セットバック'],
+    needsReview: true,
   },
   // ===== 日影規制 =====
   {
@@ -1492,6 +1655,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '日影規制の対象区域は地方公共団体が条例で指定する（建築基準法56条の2第1項）。',
     tags: ['日影規制', '条例'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_165',
@@ -1501,6 +1665,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '低層住居専用地域・田園住居地域では平均地盤面から1.5mの高さで測定（建築基準法56条の2・別表第四）。',
     tags: ['日影規制', '測定面'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_166',
@@ -1510,6 +1675,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法別表第四により4mまたは6.5mで条例で定める。',
     tags: ['日影規制', '測定面'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_167',
@@ -1519,6 +1685,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '商業地域・工業地域・工業専用地域は対象外。ただし対象区域外にある建築物でも対象区域に日影を生じさせる場合は規制対象。',
     tags: ['日影規制', '商業地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_168',
@@ -1528,6 +1695,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法56条の2第1項・別表第四の規定。',
     tags: ['日影規制', '冬至日'],
+    needsReview: true,
   },
   // ===== 防火地域・準防火地域（追加） =====
   {
@@ -1538,6 +1706,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法61条により、防火地域内でも階数2以下・延べ面積100㎡以下なら準耐火建築物等でよい。',
     tags: ['防火地域', '建築基準法61条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_170',
@@ -1547,6 +1716,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '延べ面積500㎡超の木造建築物は準耐火建築物等以上としなければならない（建築基準法61条）。',
     tags: ['準防火地域', '木造'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_171',
@@ -1556,6 +1726,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '準防火地域内の地上3階建ては準耐火建築物等でよい。耐火建築物等が必要なのは地上4階以上。',
     tags: ['準防火地域', '建築基準法61条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_172',
@@ -1565,6 +1736,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法61条により、防火地域内で100㎡超または3階以上は耐火建築物等。',
     tags: ['防火地域', '建築基準法61条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_173',
@@ -1574,6 +1746,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法62条の規定。',
     tags: ['防火地域', '準防火地域', '屋根'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_174',
@@ -1583,6 +1756,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '外壁が耐火構造の場合は隣地境界線に接して建築可能（建築基準法63条）。',
     tags: ['防火地域', '外壁', '隣地境界'],
+    needsReview: true,
   },
   // ===== 接道義務・セットバック（追加） =====
   {
@@ -1593,6 +1767,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '条例で制限を付加（強化）することもできる（建築基準法43条3項）。',
     tags: ['接道義務', '条例'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_176',
@@ -1602,6 +1777,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法42条2項ただし書により、一方が川・崖等の場合は反対側から4m後退。',
     tags: ['セットバック', '2項道路'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_177',
@@ -1611,6 +1787,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: 'セットバック部分は道路とみなされ、敷地面積に算入できない。',
     tags: ['セットバック', '敷地面積'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_178',
@@ -1620,6 +1797,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法43条2項2号により特定行政庁が許可する場合がある。',
     tags: ['接道義務', '例外許可'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_179',
@@ -1629,6 +1807,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '位置指定道路は特定行政庁が位置を指定する（建築基準法42条1項5号）。',
     tags: ['道路', '位置指定道路'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_180',
@@ -1638,6 +1817,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '接道義務は都市計画区域及び準都市計画区域内のみ適用（集団規定）。',
     tags: ['接道義務', '都市計画区域外'],
+    needsReview: true,
   },
   // ===== 建築基準法その他 =====
   {
@@ -1648,6 +1828,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '単体規定は全国適用、集団規定は都市計画区域・準都市計画区域内で適用。',
     tags: ['建築基準法', '単体規定', '集団規定'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_182',
@@ -1657,6 +1838,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '集団規定は都市計画区域及び準都市計画区域内においてのみ適用される（建築基準法41条の2）。',
     tags: ['建築基準法', '集団規定'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_183',
@@ -1666,6 +1848,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '既存不適格建築物は、増改築等を行わない限り現行法に適合させる必要はない（建築基準法3条2項）。',
     tags: ['建築基準法', '既存不適格'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_184',
@@ -1675,6 +1858,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '是正命令は特定行政庁が行う（建築基準法9条）。建築主事ではない。',
     tags: ['建築基準法', '違反建築物'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_185',
@@ -1684,6 +1868,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法65条2項により、防火壁で区画された場合は各区域ごとの規制。',
     tags: ['防火地域', '建築基準法65条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_186',
@@ -1693,6 +1878,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法54条により、低層住居専用地域・田園住居地域では都市計画で1mまたは1.5mの外壁後退を定められる。',
     tags: ['建築基準法', '外壁後退', '第一種低層住居専用地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_187',
@@ -1702,6 +1888,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '建築協定は特定行政庁の認可が必要（都道府県知事ではない）（建築基準法70条）。',
     tags: ['建築協定', '建築基準法70条'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_188',
@@ -1711,6 +1898,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '建築基準法76条の3により一人協定も認められ、認可後3年以内に2人以上になれば効力を生ずる。',
     tags: ['建築協定', '一人協定'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_189',
@@ -1720,6 +1908,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '建築基準法75条により認可の公告後に土地所有者等となった者にも効力が及ぶ。',
     tags: ['建築協定', '承継効'],
+    needsReview: true,
   },
   // ===== 国土利用計画法（追加） =====
   {
@@ -1730,6 +1919,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '市町村長を経由して都道府県知事に届出する（国土利用計画法23条1項）。',
     tags: ['国土利用計画法', '届出先'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_191',
@@ -1739,6 +1929,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '勧告期間は届出日から3週間以内である（国土利用計画法24条1項）。6週間ではない。',
     tags: ['国土利用計画法', '勧告期間'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_192',
@@ -1748,6 +1939,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '勧告に従わなくても契約は有効。従わなかった旨の公表がされるのみ。',
     tags: ['国土利用計画法', '勧告', '契約の効力'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_193',
@@ -1757,6 +1949,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '対価を得て行う土地に関する権利の移転・設定が対象であり、抵当権設定は該当しない。',
     tags: ['国土利用計画法', '抵当権'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_194',
@@ -1766,6 +1959,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '予約完結権の行使も権利の移転に該当し届出対象。',
     tags: ['国土利用計画法', '予約完結権'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_195',
@@ -1775,6 +1969,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '停止条件付きでも契約締結時に届出が必要。',
     tags: ['国土利用計画法', '停止条件付き契約'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_196',
@@ -1784,6 +1979,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '個々の契約ごとに取引面積で判定する（ただし買いの一団は合算）。',
     tags: ['国土利用計画法', '面積要件'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_197',
@@ -1793,6 +1989,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '当事者の意思に基づかない取得（裁判所の関与するもの等）は届出不要。',
     tags: ['国土利用計画法', '届出不要'],
+    needsReview: true,
   },
   // ===== 農地法（追加） =====
   {
@@ -1803,6 +2000,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '許可基準として、全部効率利用等の要件があり農業経営能力が必要（農地法3条2項）。',
     tags: ['農地法', '農地法3条', '許可基準'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_199',
@@ -1812,6 +2010,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '農地法16条により、許可を受けた時点で第三者対抗力を有する（登記不要）。',
     tags: ['農地法', '農地法3条', '対抗力'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_200',
@@ -1821,6 +2020,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '3条の権利移動は市街化区域内であっても届出ではなく許可が必要。届出で足りるのは4条・5条。',
     tags: ['農地法', '農地法3条', '市街化区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_201',
@@ -1830,6 +2030,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '農地の賃貸借の解約等には原則として都道府県知事等の許可が必要（農地法18条）。',
     tags: ['農地法', '賃貸借', '解約'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_202',
@@ -1839,6 +2040,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '農地法施行規則29条により2アール未満の農業用施設は許可不要。',
     tags: ['農地法', '農地法4条', '農業用施設'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_203',
@@ -1848,6 +2050,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '採草放牧地は農地ではないため、農地から採草放牧地への転用は4条許可が必要。',
     tags: ['農地法', '農地法4条', '採草放牧地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_204',
@@ -1857,6 +2060,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '採草放牧地の転用目的権利移動は5条許可の対象。',
     tags: ['農地法', '農地法5条', '採草放牧地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_205',
@@ -1866,6 +2070,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '農地法の許可は効力発生要件であり、無許可契約は無効。',
     tags: ['農地法', '農地法5条', '効力'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_206',
@@ -1875,6 +2080,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '農地法3条2項2号により、農地所有適格法人以外の法人は所有権取得不可（賃借は可能な場合あり）。',
     tags: ['農地法', '法人', '農地所有適格法人'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_207',
@@ -1884,6 +2090,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '競売による取得も権利移動に該当し3条許可が必要。',
     tags: ['農地法', '農地法3条', '競売'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_208',
@@ -1893,6 +2100,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '相続・遺産分割等は許可不要だが、農業委員会への届出義務がある（農地法3条の3）。',
     tags: ['農地法', '遺産分割', '届出'],
+    needsReview: true,
   },
   // ===== 土地区画整理法（追加） =====
   {
@@ -1903,6 +2111,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法18条により所有者及び借地権者の各2/3以上の同意。',
     tags: ['土地区画整理法', '組合', '設立同意'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_210',
@@ -1912,6 +2121,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '仮換地の指定は施行者が行う（土地区画整理法98条）。都道府県知事ではない。',
     tags: ['土地区画整理法', '仮換地'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_211',
@@ -1921,6 +2131,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法99条により使用収益権は仮換地に移り、従前地は使用収益不可。',
     tags: ['土地区画整理法', '仮換地', '使用収益'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_212',
@@ -1930,6 +2141,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '所有者の同意は不要。意見を聴く必要はあるが同意は要件ではない。',
     tags: ['土地区画整理法', '仮換地', '同意'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_213',
@@ -1939,6 +2151,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '換地処分は関係権利者に通知して行う（土地区画整理法103条）。',
     tags: ['土地区画整理法', '換地処分', '通知'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_214',
@@ -1948,6 +2161,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法103条4項の届出義務。',
     tags: ['土地区画整理法', '換地処分', '届出'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_215',
@@ -1957,6 +2171,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法104条により、従前の宅地にあった権利は換地に移行。',
     tags: ['土地区画整理法', '換地処分', '抵当権'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_216',
@@ -1966,6 +2181,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法85条により未登記の権利は届出が必要。',
     tags: ['土地区画整理法', '未登記権利'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_217',
@@ -1975,6 +2191,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '組合の設立には都道府県知事の認可が必要（土地区画整理法21条）。市町村長ではない。',
     tags: ['土地区画整理法', '組合', '認可'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_218',
@@ -1984,6 +2201,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '一筆の宅地等について所有権又は借地権を有する者は個人施行可能（全部の所有権は不要）（土地区画整理法3条1項）。',
     tags: ['土地区画整理法', '個人施行'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_219',
@@ -1993,6 +2211,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土地区画整理法106条により原則として市町村の管理に属する。',
     tags: ['土地区画整理法', '公共施設', '管理'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_220',
@@ -2002,6 +2221,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '減価補償金は施行者が宅地所有者に支払うものである（土地区画整理法109条）。',
     tags: ['土地区画整理法', '減価補償金'],
+    needsReview: true,
   },
   // ===== 盛土規制法（追加） =====
   {
@@ -2012,6 +2232,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和4年の法改正により宅地造成等規制法が盛土規制法に改題・改正された。',
     tags: ['盛土規制法', '沿革'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_222',
@@ -2021,6 +2242,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '盛土規制法は宅地のみならず森林・農地を含む土地全般を規制対象とする。',
     tags: ['盛土規制法', '規制対象'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_223',
@@ -2030,6 +2252,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '盛土の場合は1mを超える崖を生ずるもので許可が必要。2mを超えるのは切土の場合（盛土規制法施行令）。',
     tags: ['盛土規制法', '盛土', '許可'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_224',
@@ -2039,6 +2262,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法施行令により切盛合計で2mを超える崖を生ずる場合は規制対象。',
     tags: ['盛土規制法', '切盛同時'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_225',
@@ -2048,6 +2272,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '崖の高さに関わらず、500㎡超の盛土・切土は規制対象（盛土規制法施行令）。',
     tags: ['盛土規制法', '面積要件'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_226',
@@ -2057,6 +2282,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '軽微な変更を除き再度許可が必要（盛土規制法16条）。届出のみでは足りない。',
     tags: ['盛土規制法', '変更許可'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_227',
@@ -2066,6 +2292,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法22条により宅地の保全義務が課されている。',
     tags: ['盛土規制法', '保全義務'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_228',
@@ -2075,6 +2302,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都道府県知事等は勧告のほか、災害防止のために必要な措置を命ずることもできる（盛土規制法22条・23条）。',
     tags: ['盛土規制法', '勧告', '命令'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_229',
@@ -2084,6 +2312,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '特定盛土等規制区域は農地・森林等を含む広域を対象とし、厳格な規制がある（盛土規制法26条以下）。',
     tags: ['盛土規制法', '特定盛土等規制区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_230',
@@ -2093,6 +2322,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '盛土規制法17条により完了検査合格時に検査済証が交付される。',
     tags: ['盛土規制法', '検査済証'],
+    needsReview: true,
   },
   // ===== その他の法令 =====
   {
@@ -2103,6 +2333,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '景観計画区域内では許可ではなく景観行政団体の長への届出が必要（景観法16条）。',
     tags: ['景観法', '届出'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_232',
@@ -2112,6 +2343,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '生産緑地法8条により建築物の建築等は原則制限される。',
     tags: ['生産緑地法', '建築制限'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_233',
@@ -2121,6 +2353,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '自然公園法20条により許可が必要。',
     tags: ['自然公園法', '特別地域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_234',
@@ -2130,6 +2363,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '河川区域内では届出ではなく河川管理者の許可が必要（河川法26条等）。',
     tags: ['河川法', '河川区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_235',
@@ -2139,6 +2373,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '急傾斜地法7条により都道府県知事の許可が必要。',
     tags: ['急傾斜地法', '危険区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_236',
@@ -2148,6 +2383,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '土砂災害防止法10条により特定開発行為は許可必要。',
     tags: ['土砂災害防止法', 'レッドゾーン'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_237',
@@ -2157,6 +2393,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '開発行為の許可が必要なのは津波災害「特別」警戒区域（オレンジゾーン・レッドゾーン）であり、警戒区域（イエローゾーン）では開発許可は不要。',
     tags: ['津波防災地域づくり法', '警戒区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_238',
@@ -2166,6 +2403,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '文化財保護法125条により文化庁長官の許可が必要。',
     tags: ['文化財保護法', '史跡名勝天然記念物'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_239',
@@ -2175,6 +2413,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '道路予定区域内で建築物を建築するには道路管理者の許可が必要（道路法91条）。',
     tags: ['道路法', '道路予定区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_240',
@@ -2184,6 +2423,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市緑地法14条により許可が必要。',
     tags: ['都市緑地法', '特別緑地保全地区'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_241',
@@ -2193,6 +2433,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '港湾法37条により港湾管理者の許可が必要。',
     tags: ['港湾法', '港湾区域'],
+    needsReview: true,
   },
   // ===== 都市計画法（追加・都市施設・都市計画決定権者等） =====
   {
@@ -2203,6 +2444,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法13条1項11号により市街化区域には道路・公園・下水道を必ず定める。',
     tags: ['都市計画法', '都市施設', '市街化区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_243',
@@ -2212,6 +2454,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '住居系用途地域には義務教育施設を定めなければならない（都市計画法13条1項11号）。',
     tags: ['都市計画法', '都市施設', '義務教育施設'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_244',
@@ -2221,6 +2464,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法53条により都市計画施設の区域内の建築は許可が必要。',
     tags: ['都市計画法', '都市計画施設', '建築制限'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_245',
@@ -2230,6 +2474,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法52条の2により予定区域内の建築は許可必要。',
     tags: ['都市計画法', '予定区域', '建築制限'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_246',
@@ -2239,6 +2484,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都市計画法15条により、都道府県と市町村に決定権限が分かれている。',
     tags: ['都市計画法', '決定権者'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_247',
@@ -2248,6 +2494,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法15条1項により用途地域は市町村が決定。',
     tags: ['都市計画法', '用途地域', '決定権者'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_248',
@@ -2257,6 +2504,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区域区分は都道府県が定める都市計画である（都市計画法15条1項1号）。市町村ではない。',
     tags: ['都市計画法', '区域区分', '決定権者'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_249',
@@ -2266,6 +2514,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '都道府県は国土交通大臣に協議し同意を得る必要はあるが、許可ではない（都市計画法18条3項）。',
     tags: ['都市計画法', '都市計画の決定手続'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_250',
@@ -2275,6 +2524,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法10条の2により市街化区域又は区域区分未設定区域に定める。',
     tags: ['都市計画法', '促進区域'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_251',
@@ -2284,6 +2534,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法58条・条例により都道府県知事（政令指定都市は市長）の許可。',
     tags: ['都市計画法', '風致地区'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_252',
@@ -2293,6 +2544,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法9条19項により容積率の最高限度・最低限度、建ぺい率の最高限度等を定める。',
     tags: ['都市計画法', '高度利用地区'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_253',
@@ -2302,6 +2554,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '特定街区では容積率・高さの最高限度及び壁面の位置の制限が定められる（都市計画法9条20項）。',
     tags: ['都市計画法', '特定街区'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_254',
@@ -2311,6 +2564,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法65条1項により事業地内の建築等は許可が必要。',
     tags: ['都市計画法', '都市計画事業', '建築制限'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_255',
@@ -2320,6 +2574,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '許可又は不許可のいずれの処分でも文書で通知しなければならない（都市計画法35条）。',
     tags: ['開発許可', '通知'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_256',
@@ -2329,6 +2584,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法43条1項により市街化調整区域では開発許可区域以外の建築には知事等の許可が必要。',
     tags: ['開発許可', '市街化調整区域', '建築制限'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_257',
@@ -2338,6 +2594,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '特定承継人は都道府県知事の承認を受けて地位を承継する（都市計画法45条）。届出ではなく承認が必要。',
     tags: ['開発許可', '地位の承継'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_258',
@@ -2347,6 +2604,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '都市計画法44条により一般承継人は当然に地位を承継する。',
     tags: ['開発許可', '一般承継'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_259',
@@ -2356,6 +2614,7 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '国土利用計画法23条により都市計画区域（市街化区域以外）は5,000㎡以上で届出必要。',
     tags: ['国土利用計画法', '非線引き区域', '面積要件'],
+    needsReview: true,
   },
   {
     id: 'qq_horei_seigen_260',
@@ -2365,5 +2624,6 @@ export const horeiSeigenQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '農地法51条により無許可転用には原状回復等の命令が可能。',
     tags: ['農地法', '農地法4条', '原状回復'],
+    needsReview: true,
   },
 ];

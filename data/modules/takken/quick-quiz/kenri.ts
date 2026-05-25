@@ -11,6 +11,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     explanation: '民法5条2項。法定代理人の同意を得ずにした行為は取消し可能。',
     relatedQuestionId: 'kenri-001',
     tags: ['制限行為能力者', '未成年者', '民法5条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_002',
@@ -20,6 +21,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法9条ただし書。日用品の購入その他日常生活に関する行為は取消しできない。',
     tags: ['成年被後見人', '民法9条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_003',
@@ -29,6 +31,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法13条1項3号。重要財産の処分は保佐人の同意が必要。',
     tags: ['被保佐人', '民法13条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_004',
@@ -38,6 +41,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法21条。詐術を用いた場合は取消し権を失う。',
     tags: ['制限行為能力者', '詐術', '民法21条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_005',
@@ -47,6 +51,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法17条。補助人の同意を要する旨の審判がされて初めて制限される。',
     tags: ['被補助人', '民法17条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_006',
@@ -56,6 +61,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '改正民法により成年年齢が18歳となり、成年擬制規定は削除された。18歳未満は婚姻不可。',
     tags: ['未成年者', '成年年齢'],
+    needsReview: true,
   },
 
   // ===== 意思表示 =====
@@ -67,6 +73,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法93条1項。相手方が善意無過失の場合は有効、悪意・有過失なら無効。',
     tags: ['心裡留保', '民法93条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_008',
@@ -76,6 +83,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法94条2項。善意の第三者に対しては無効を対抗できない。',
     tags: ['虚偽表示', '民法94条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_009',
@@ -85,6 +93,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法95条4項。錯誤取消しは善意無過失の第三者に対抗不可。',
     tags: ['錯誤', '民法95条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_010',
@@ -95,6 +104,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     explanation: '民法96条2項。相手方が詐欺の事実を知り又は知ることができたときに限り取消し可能。',
     relatedQuestionId: 'kenri-001',
     tags: ['詐欺', '民法96条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_011',
@@ -104,6 +114,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法96条3項は詐欺のみを規定。強迫は第三者保護規定なく対抗可。',
     tags: ['強迫', '民法96条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_012',
@@ -113,6 +124,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法95条2項。動機が法律行為の基礎とされていることが表示されていなければならない。',
     tags: ['錯誤', '動機', '民法95条'],
+    needsReview: true,
   },
 
   // ===== 代理 =====
@@ -124,6 +136,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法100条本文（顕名主義）。',
     tags: ['代理', '顕名', '民法100条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_014',
@@ -133,6 +146,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法102条。制限行為能力者も代理人となれる。',
     tags: ['代理', '民法102条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_015',
@@ -142,6 +156,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法104条。任意代理人の復代理選任要件。',
     tags: ['代理', '復代理', '民法104条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_016',
@@ -151,6 +166,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法105条。自由選任はできるが、原則全責任を負う。',
     tags: ['法定代理', '復代理', '民法105条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_017',
@@ -160,6 +176,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法108条。無権代理行為とみなされる。',
     tags: ['代理', '自己契約', '民法108条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_018',
@@ -169,6 +186,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法113条。本人の追認により契約時に遡って有効となる。',
     tags: ['無権代理', '民法113条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_019',
@@ -178,6 +196,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法115条。善意の相手方は取消可能。',
     tags: ['無権代理', '民法115条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_020',
@@ -187,6 +206,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。表見代理の主張は相手方の選択による。',
     tags: ['表見代理', '民法117条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_021',
@@ -196,6 +216,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法109条。相手方が善意無過失であることが要件。',
     tags: ['表見代理', '民法109条'],
+    needsReview: true,
   },
 
   // ===== 物権変動・登記 =====
@@ -208,6 +229,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     explanation: '民法177条。対抗要件は登記。',
     relatedQuestionId: 'kenri-002',
     tags: ['物権変動', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_023',
@@ -217,6 +239,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '判例。背信的悪意者は第三者に該当せず保護されない。',
     tags: ['背信的悪意者', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_024',
@@ -226,6 +249,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法96条3項・判例。取消し後は対抗問題となる。',
     tags: ['取消しと登記', '民法96条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_025',
@@ -235,6 +259,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '令和3年改正民法899条の2。法定相続分を超える部分は登記なく対抗不可。',
     tags: ['相続', '対抗要件'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_026',
@@ -244,6 +269,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。時効完成後は対抗問題。',
     tags: ['時効取得', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_027',
@@ -253,6 +279,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法178条・183条。',
     tags: ['動産', '民法178条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_028',
@@ -262,6 +289,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法545条1項ただし書・判例。解除前の第三者は登記があれば保護される。',
     tags: ['解除', '第三者', '民法545条'],
+    needsReview: true,
   },
 
   // ===== 抵当権 =====
@@ -273,6 +301,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法369条。占有移転なく設定。',
     tags: ['抵当権', '民法369条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_030',
@@ -282,6 +311,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法370条。付加一体物にも及ぶ。',
     tags: ['抵当権', '付加一体物', '民法370条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_031',
@@ -291,6 +321,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法375条。',
     tags: ['抵当権', '民法375条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_032',
@@ -300,6 +331,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法374条2項。順位変更は登記が効力発生要件。',
     tags: ['抵当権', '順位変更', '民法374条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_033',
@@ -309,6 +341,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法388条。',
     tags: ['法定地上権', '民法388条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_034',
@@ -318,6 +351,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '判例。抵当権設定時に建物が存在していなければ成立しない。',
     tags: ['法定地上権', '民法388条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_035',
@@ -327,6 +361,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '付従性。被担保債権が消滅すれば抵当権も消滅。',
     tags: ['抵当権', '付従性'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_036',
@@ -336,6 +371,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法398条の4。元本確定前は変更可能。',
     tags: ['根抵当権', '民法398条の4'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_037',
@@ -345,6 +381,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法379条。',
     tags: ['抵当権消滅請求', '民法379条'],
+    needsReview: true,
   },
 
   // ===== 債権 =====
@@ -356,6 +393,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '改正民法441条。履行請求は相対効（絶対効は更改・相殺・混同のみ）。',
     tags: ['連帯債務', '民法441条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_039',
@@ -365,6 +403,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法446条2項。',
     tags: ['保証', '民法446条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_040',
@@ -374,6 +413,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法454条。連帯保証人は両抗弁権を有しない。',
     tags: ['連帯保証', '民法454条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_041',
@@ -383,6 +423,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法467条1項。',
     tags: ['債権譲渡', '民法467条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_042',
@@ -392,6 +433,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '改正民法466条2項。譲渡自体は有効。',
     tags: ['債権譲渡', '民法466条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_043',
@@ -401,6 +443,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法492条。',
     tags: ['弁済', '民法492条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_044',
@@ -410,6 +453,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法505条。自働債権が弁済期にあれば、受働債権の期限利益を放棄して相殺可能。',
     tags: ['相殺', '民法505条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_045',
@@ -419,6 +463,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法416条1項。',
     tags: ['債務不履行', '民法416条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_046',
@@ -428,6 +473,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法419条3項。金銭債務は不可抗力でも免責されない。',
     tags: ['金銭債務', '民法419条'],
+    needsReview: true,
   },
 
   // ===== 契約総論・売買 =====
@@ -439,6 +485,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法533条（同時履行の抗弁権）。',
     tags: ['同時履行', '民法533条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_048',
@@ -448,6 +495,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法542条。履行不能の場合は催告不要で解除可能。',
     tags: ['解除', '民法542条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_049',
@@ -457,6 +505,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法557条。',
     tags: ['手付', '民法557条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_050',
@@ -466,6 +515,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法557条1項ただし書。相手方が履行着手後は不可。',
     tags: ['手付', '民法557条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_051',
@@ -475,6 +525,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法562条（契約不適合責任）。',
     tags: ['契約不適合', '民法562条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_052',
@@ -484,6 +535,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法566条。',
     tags: ['契約不適合', '民法566条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_053',
@@ -493,6 +545,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '改正民法536条1項。債権者は反対給付の履行を拒むことができる。',
     tags: ['危険負担', '民法536条'],
+    needsReview: true,
   },
 
   // ===== 賃貸借 =====
@@ -504,6 +557,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法604条。',
     tags: ['賃貸借', '民法604条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_055',
@@ -513,6 +567,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法612条1項。賃貸人の承諾が必要。',
     tags: ['賃貸借', '民法612条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_056',
@@ -522,6 +577,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例（信頼関係破壊の法理）。',
     tags: ['賃貸借', '無断転貸'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_057',
@@ -531,6 +587,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法608条1項。',
     tags: ['必要費', '民法608条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_058',
@@ -540,6 +597,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法608条2項。有益費は賃貸借終了時に償還請求可。',
     tags: ['有益費', '民法608条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_059',
@@ -549,6 +607,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法605条。',
     tags: ['賃借権', '対抗要件', '民法605条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_060',
@@ -558,6 +617,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法605条の2。対抗要件を備えた賃借人がいる場合、所有権移転に伴い賃貸人の地位も移転する。',
     tags: ['賃貸人の地位', '民法605条の2'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_061',
@@ -567,6 +627,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法622条の2。明渡しと敷金返還は先履行関係。',
     tags: ['敷金', '民法622条の2'],
+    needsReview: true,
   },
 
   // ===== 借地借家法 =====
@@ -578,6 +639,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法3条。',
     tags: ['借地権', '借地借家法3条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_063',
@@ -587,6 +649,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法4条。最初の更新後は20年、以降は10年。',
     tags: ['借地権', '借地借家法4条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_064',
@@ -596,6 +659,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法10条1項。',
     tags: ['借地権', '対抗要件', '借地借家法10条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_065',
@@ -605,6 +669,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法22条。50年以上。',
     tags: ['定期借地権', '借地借家法22条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_066',
@@ -614,6 +679,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法23条3項。',
     tags: ['事業用定期借地権', '借地借家法23条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_067',
@@ -623,6 +689,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法27条。賃貸人からは6ヶ月前（正当事由必要）。賃借人からは3ヶ月前。',
     tags: ['借家', '借地借家法27条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_068',
@@ -632,6 +699,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法31条。',
     tags: ['借家', '対抗要件', '借地借家法31条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_069',
@@ -641,6 +709,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法38条。書面（公正証書等）による契約が必要。',
     tags: ['定期借家', '借地借家法38条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_070',
@@ -650,6 +719,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法38条3項。',
     tags: ['定期借家', '借地借家法38条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_071',
@@ -659,6 +729,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法32条。減額しない特約は無効。',
     tags: ['借家', '賃料増減', '借地借家法32条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_072',
@@ -668,6 +739,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法33条・37条反対解釈。造作買取は任意規定。',
     tags: ['造作買取請求権', '借地借家法33条'],
+    needsReview: true,
   },
 
   // ===== 不法行為 =====
@@ -679,6 +751,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法724条1号（人身侵害は5年）。',
     tags: ['不法行為', '消滅時効', '民法724条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_074',
@@ -688,6 +761,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法715条。被用者の不法行為成立が前提。',
     tags: ['使用者責任', '民法715条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_075',
@@ -697,6 +771,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法717条1項。所有者は無過失責任。',
     tags: ['工作物責任', '民法717条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_076',
@@ -706,6 +781,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法719条。連帯責任を負う。',
     tags: ['共同不法行為', '民法719条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_077',
@@ -715,6 +791,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。催告不要で不法行為時から遅滞。',
     tags: ['不法行為', '遅延損害金'],
+    needsReview: true,
   },
 
   // ===== 相続 =====
@@ -726,6 +803,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法890条。',
     tags: ['相続', '民法890条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_079',
@@ -735,6 +813,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法900条1号。配偶者2分の1、子2分の1。',
     tags: ['相続分', '民法900条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_080',
@@ -744,6 +823,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法900条2号。',
     tags: ['相続分', '民法900条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_081',
@@ -753,6 +833,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法887条2項・939条。放棄の場合は代襲相続不可。',
     tags: ['相続放棄', '代襲相続', '民法939条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_082',
@@ -762,6 +843,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法915条1項。',
     tags: ['相続', '熟慮期間', '民法915条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_083',
@@ -771,6 +853,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法1042条。兄弟姉妹に遺留分なし。',
     tags: ['遺留分', '民法1042条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_084',
@@ -780,6 +863,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法961条。',
     tags: ['遺言', '民法961条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_085',
@@ -789,6 +873,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法968条2項。財産目録はパソコン作成可（ただし各頁に署名押印）。',
     tags: ['自筆証書遺言', '民法968条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_086',
@@ -798,6 +883,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法1048条。',
     tags: ['遺留分', '民法1048条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_087',
@@ -807,6 +893,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法905条反対解釈・判例。共有持分の譲渡は可能。',
     tags: ['相続', '遺産分割'],
+    needsReview: true,
   },
 
   // ===== 区分所有法 =====
@@ -818,6 +905,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法22条1項。',
     tags: ['区分所有', '分離処分禁止', '区分所有法22条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_089',
@@ -827,6 +915,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和8年改正区分所有法31条。母数が「全員」→「出席者」に変更。',
     tags: ['規約', '区分所有法31条', '法改正2026'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_090',
@@ -836,6 +925,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和8年改正区分所有法17条。規約で過半数まで減軽可。',
     tags: ['共用部分', '区分所有法17条', '法改正2026'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_091',
@@ -845,6 +935,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和8年改正区分所有法62条。例外ケースが創設された。',
     tags: ['建替え', '区分所有法62条', '法改正2026'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_092',
@@ -854,6 +945,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法25条1項。',
     tags: ['管理者', '区分所有法25条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_093',
@@ -863,6 +955,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区分所有法34条2項。毎年1回以上。',
     tags: ['集会', '区分所有法34条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_094',
@@ -872,6 +965,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法30条5項。',
     tags: ['規約', '区分所有法30条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_095',
@@ -881,6 +975,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法14条1項。',
     tags: ['共用部分', '区分所有法14条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_096',
@@ -890,6 +985,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区分所有法35条1項。1週間前（規約で伸縮可）。',
     tags: ['集会', '区分所有法35条'],
+    needsReview: true,
   },
 
   // ===== 時効 =====
@@ -901,6 +997,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法167条反対解釈・判例。',
     tags: ['時効', '所有権'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_098',
@@ -910,6 +1007,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法162条2項。善意無過失なら10年。',
     tags: ['取得時効', '民法162条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_099',
@@ -919,6 +1017,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法162条1項。',
     tags: ['取得時効', '民法162条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_100',
@@ -928,6 +1027,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法166条1項。知った時から5年、行使できる時から10年。',
     tags: ['消滅時効', '民法166条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_101',
@@ -937,6 +1037,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法147条。',
     tags: ['時効', '民法147条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_102',
@@ -946,6 +1047,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法146条。時効完成前の放棄はできない。',
     tags: ['時効', '民法146条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_103',
@@ -955,6 +1057,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例（最判昭41.4.20）。',
     tags: ['時効', '信義則'],
+    needsReview: true,
   },
 
   // ===== 共有・用益物権・その他 =====
@@ -966,6 +1069,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法252条5項。',
     tags: ['共有', '民法252条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_105',
@@ -975,6 +1079,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法251条1項。',
     tags: ['共有', '民法251条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_106',
@@ -984,6 +1089,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法252条1項。持分価格の過半数で決する。',
     tags: ['共有', '民法252条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_107',
@@ -993,6 +1099,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法256条。',
     tags: ['共有', '分割請求', '民法256条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_108',
@@ -1002,6 +1109,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '物権であり自由に譲渡可能（賃借権との違い）。',
     tags: ['地上権'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_109',
@@ -1011,6 +1119,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法281条2項。随伴性。',
     tags: ['地役権', '民法281条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_110',
@@ -1020,6 +1129,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法295条。',
     tags: ['留置権', '民法295条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_111',
@@ -1029,6 +1139,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法303条。',
     tags: ['先取特権', '民法303条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_112',
@@ -1038,6 +1149,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法344条。引渡しが効力要件の要物契約。',
     tags: ['質権', '民法344条'],
+    needsReview: true,
   },
 
   // ===== 委任・請負・贈与 =====
@@ -1049,6 +1161,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法651条1項。',
     tags: ['委任', '民法651条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_114',
@@ -1058,6 +1171,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法648条1項。特約がなければ無償。',
     tags: ['委任', '民法648条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_115',
@@ -1067,6 +1181,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法633条（同時履行）。',
     tags: ['請負', '民法633条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_116',
@@ -1076,6 +1191,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法641条。損害賠償して解除可能。',
     tags: ['請負', '民法641条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_117',
@@ -1085,6 +1201,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法550条。',
     tags: ['贈与', '民法550条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_118',
@@ -1094,6 +1211,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法597条3項。借主の死亡により終了（貸主死亡では終了しない）。',
     tags: ['使用貸借', '民法597条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_119',
@@ -1103,6 +1221,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法597条3項。',
     tags: ['使用貸借', '民法597条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_120',
@@ -1112,6 +1231,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法423条。原則として債務者の無資力が要件。',
     tags: ['債権者代位権', '民法423条'],
+    needsReview: true,
   },
   // ===== 2026年法改正対応 =====
   {
@@ -1122,6 +1242,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法。従来の「全区分所有者」基準から「出席者」基準に変更された。',
     tags: ['区分所有法', '法改正2026', '決議要件'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_122',
@@ -1131,6 +1252,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法64条の7。老朽マンション対応のため新設。',
     tags: ['区分所有法', '法改正2026', '敷地売却'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_123',
@@ -1140,6 +1262,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法。所在不明者を母数から外すことで決議が可能になる。',
     tags: ['区分所有法', '法改正2026', '所在不明'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_124',
@@ -1149,6 +1272,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正不動産登記法76条の5。正当な理由なく怠ると5万円以下の過料。',
     tags: ['不動産登記法', '法改正2026', '住所変更登記'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_125',
@@ -1158,6 +1282,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正公証人法。Web会議等を用いた遺言作成が可能。',
     tags: ['民法', '法改正2026', '公正証書遺言'],
+    needsReview: true,
   },
 
   // ===== 意思表示（追加） =====
@@ -1169,6 +1294,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法93条2項。善意の第三者に対しては無効を対抗できない。',
     tags: ['心裡留保', '民法93条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_127',
@@ -1178,6 +1304,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法94条2項。差押債権者等も第三者に含まれる（判例）。',
     tags: ['虚偽表示', '第三者', '民法94条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_128',
@@ -1187,6 +1314,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法95条3項。ただし相手方が悪意・重過失、又は共通錯誤の場合は例外。',
     tags: ['錯誤', '民法95条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_129',
@@ -1196,6 +1324,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法96条3項。',
     tags: ['詐欺', '第三者', '民法96条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_130',
@@ -1205,6 +1334,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法96条1項。強迫は取消し得る意思表示であり、無効ではない。',
     tags: ['強迫', '民法96条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_131',
@@ -1214,6 +1344,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法97条1項。原則は到達主義であり、相手方に到達した時に効力を生ずる。',
     tags: ['意思表示', '到達主義', '民法97条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_132',
@@ -1223,6 +1354,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法97条2項。相手方が正当理由なく妨げたときは到達したものとみなす。',
     tags: ['意思表示', '民法97条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_133',
@@ -1232,6 +1364,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法98条の2。法定代理人が知った後でなければ対抗不可。',
     tags: ['意思表示', '民法98条の2'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_134',
@@ -1241,6 +1374,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法90条。公序良俗違反は無効であり、取消しではない。',
     tags: ['公序良俗', '民法90条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_135',
@@ -1250,6 +1384,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法121条。取消しにより初めから無効となる。',
     tags: ['取消し', '民法121条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_136',
@@ -1259,6 +1394,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法124条1項。取消しの原因となっていた状況が消滅し、かつ取消権を知った後でなければ効力を生じない。',
     tags: ['追認', '民法124条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_137',
@@ -1268,6 +1404,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法126条。追認可能時から5年、行為時から20年。',
     tags: ['取消権', '民法126条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_138',
@@ -1277,6 +1414,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法119条。無効行為の追認は新行為とみなす。',
     tags: ['無効', '追認', '民法119条'],
+    needsReview: true,
   },
 
   // ===== 代理（追加） =====
@@ -1288,6 +1426,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法101条1項。意思表示の効力は代理人を基準に判断する。',
     tags: ['代理', '民法101条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_140',
@@ -1297,6 +1436,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法101条3項。本人の悪意・過失は代理人の善意を覆す。',
     tags: ['代理', '民法101条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_141',
@@ -1306,6 +1446,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法103条。保存行為のほか、利用・改良行為もできる。',
     tags: ['代理', '民法103条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_142',
@@ -1315,6 +1456,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法114条。確答なければ追認拒絶とみなす。',
     tags: ['無権代理', '催告', '民法114条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_143',
@@ -1324,6 +1466,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法117条2項。相手方が善意無過失であることが要件。',
     tags: ['無権代理', '民法117条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_144',
@@ -1333,6 +1476,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法111条1項1号。本人の死亡は代理権の消滅事由である。',
     tags: ['代理', '消滅', '民法111条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_145',
@@ -1342,6 +1486,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法111条1項2号。代理人の破産により消滅する。',
     tags: ['代理', '消滅', '民法111条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_146',
@@ -1351,6 +1496,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。単独相続なら追認拒絶不可、共同相続なら他の相続人全員の追認がなければ無権代理行為は有効にならない。',
     tags: ['無権代理', '相続', '判例'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_147',
@@ -1360,6 +1506,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法109条2項。代理権授与の表示と権限外行為の表見代理の重畳適用を認めている。',
     tags: ['表見代理', '民法109条', '民法110条'],
+    needsReview: true,
   },
 
   // ===== 時効（追加） =====
@@ -1371,6 +1518,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法186条1項。占有者は善意・平穏・公然の占有が推定されるため、立証不要。',
     tags: ['取得時効', '占有', '民法186条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_149',
@@ -1380,6 +1528,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法187条。前主の占有を併せて主張する場合、瑕疵も承継。',
     tags: ['占有', '承継', '民法187条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_150',
@@ -1389,6 +1538,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法169条1項。確定判決で確定した権利は10年。',
     tags: ['消滅時効', '民法169条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_151',
@@ -1398,6 +1548,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法150条1項。催告から6ヶ月の猶予のみ。',
     tags: ['時効', '催告', '民法150条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_152',
@@ -1407,6 +1558,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法150条2項。催告による猶予中に再度催告しても猶予されない。',
     tags: ['時効', '催告', '民法150条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_153',
@@ -1416,6 +1568,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法151条1項。書面又は電磁的記録による合意が必要。',
     tags: ['時効', '協議', '民法151条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_154',
@@ -1425,6 +1578,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法145条。当事者が援用しなければ裁判所は時効を適用しない。',
     tags: ['時効', '援用', '民法145条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_155',
@@ -1434,6 +1588,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法145条。「当事者」には保証人・物上保証人・第三取得者等、正当な利益を有する者を含む（判例）。',
     tags: ['時効', '援用', '民法145条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_156',
@@ -1443,6 +1598,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法724条2号。除斥期間ではなく消滅時効と改正された。',
     tags: ['不法行為', '消滅時効', '民法724条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_157',
@@ -1452,6 +1608,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法724条の2。人の生命・身体侵害は知った時から5年。',
     tags: ['消滅時効', '人身損害', '民法724条の2'],
+    needsReview: true,
   },
 
   // ===== 物権変動（追加） =====
@@ -1463,6 +1620,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法176条。意思主義により、当事者の意思表示のみで効力を生ずる。登記等は対抗要件にすぎない。',
     tags: ['物権変動', '民法176条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_159',
@@ -1472,6 +1630,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '判例。不法占拠者は正当な利益を有しないため第三者に該当しない。',
     tags: ['物権変動', '第三者', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_160',
@@ -1481,6 +1640,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法899条の2。',
     tags: ['相続', '対抗要件', '民法899条の2'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_161',
@@ -1490,6 +1650,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。時効完成前の第三者とは当事者類似の関係であり、対抗問題ではない。',
     tags: ['時効取得', '物権変動', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_162',
@@ -1499,6 +1660,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法909条ただし書。遺産分割の遡及効は第三者の権利を害せない。',
     tags: ['相続', '遺産分割', '対抗要件'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_163',
@@ -1508,6 +1670,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。取消し後は対抗問題として処理。',
     tags: ['取消し', '登記', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_164',
@@ -1517,6 +1680,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。解除後の第三者とは対抗関係。',
     tags: ['解除', '登記', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_165',
@@ -1526,6 +1690,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '判例。不正に登記を妨げた者は第三者に該当しない。',
     tags: ['物権変動', '第三者', '民法177条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_166',
@@ -1535,6 +1700,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法192条・判例。占有改定では即時取得は成立しない。',
     tags: ['即時取得', '民法192条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_167',
@@ -1544,6 +1710,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法192条。善意かつ無過失であることが要件。',
     tags: ['即時取得', '民法192条'],
+    needsReview: true,
   },
 
   // ===== 抵当権（追加） =====
@@ -1555,6 +1722,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法369条。抵当権は非占有担保であるため、設定者は自由に使用収益可能。',
     tags: ['抵当権', '民法369条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_169',
@@ -1564,6 +1732,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法369条2項。不動産のほか地上権・永小作権にも設定可能。',
     tags: ['抵当権', '民法369条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_170',
@@ -1573,6 +1742,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法372条・304条。払渡し前に差押えをしなければならない。',
     tags: ['抵当権', '物上代位', '民法304条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_171',
@@ -1582,6 +1752,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法374条1項ただし書。利害関係を有する者の承諾が必要。',
     tags: ['抵当権', '順位変更', '民法374条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_172',
@@ -1591,6 +1762,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法388条。要件の一つとして同一所有者に属することが必要。',
     tags: ['法定地上権', '民法388条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_173',
@@ -1600,6 +1772,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法389条。ただし優先弁済は土地代金のみ。',
     tags: ['抵当権', '一括競売', '民法389条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_174',
@@ -1609,6 +1782,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。抵当権に基づく妨害排除請求権が認められる。',
     tags: ['抵当権', '妨害排除'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_175',
@@ -1618,6 +1792,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法380条。主たる債務者・保証人・連帯保証人等は消滅請求不可。第三取得者が行使可。',
     tags: ['抵当権消滅請求', '民法380条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_176',
@@ -1627,6 +1802,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法398条の7。元本確定後は普通抵当権に類似。',
     tags: ['根抵当権', '民法398条の7'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_177',
@@ -1636,6 +1812,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法398条の5。利害関係人の承諾が必要。',
     tags: ['根抵当権', '極度額', '民法398条の5'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_178',
@@ -1645,6 +1822,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法398条の6第3項。5年超の定めは無効。',
     tags: ['根抵当権', '民法398条の6'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_179',
@@ -1654,6 +1832,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法398条の19第1項。',
     tags: ['根抵当権', '民法398条の19'],
+    needsReview: true,
   },
 
   // ===== 質権・留置権・先取特権（追加） =====
@@ -1665,6 +1844,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法350条・298条1項。質権者は善良な管理者の注意義務を負う（自己の財産同一ではない）。',
     tags: ['質権', '善管注意義務', '民法350条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_181',
@@ -1674,6 +1854,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法360条。10年を超えることができず、更新は可能だが更新時から10年。',
     tags: ['不動産質権', '民法360条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_182',
@@ -1683,6 +1864,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法295条1項。物と債権の牽連性が要件。',
     tags: ['留置権', '牽連性', '民法295条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_183',
@@ -1692,6 +1874,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '留置権には優先弁済的効力はない。留置的効力のみ。',
     tags: ['留置権', '優先弁済'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_184',
@@ -1701,6 +1884,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法302条。占有喪失による消滅。',
     tags: ['留置権', '民法302条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_185',
@@ -1710,6 +1894,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法325条・337条以下。不動産の先取特権は登記が必要。',
     tags: ['先取特権', '不動産売買', '民法325条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_186',
@@ -1719,6 +1904,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法311条以下。動産の先取特権は法律上当然に成立する。',
     tags: ['先取特権', '動産', '民法311条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_187',
@@ -1728,6 +1914,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法306条。',
     tags: ['先取特権', '民法306条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_188',
@@ -1737,6 +1924,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法337条。保存行為完了後ただちに登記をしなければ効力を有しない。',
     tags: ['先取特権', '不動産保存', '民法337条'],
+    needsReview: true,
   },
 
   // ===== 債権（連帯債務・保証・連帯保証追加） =====
@@ -1748,6 +1936,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法441条（相対効の原則）。絶対効は更改・相殺・混同のみ。',
     tags: ['連帯債務', '相対効', '民法441条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_190',
@@ -1757,6 +1946,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法439条2項。',
     tags: ['連帯債務', '相殺', '民法439条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_191',
@@ -1766,6 +1956,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法442条1項。各自の負担部分に応じた求償のみ可能。',
     tags: ['連帯債務', '求償', '民法442条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_192',
@@ -1775,6 +1966,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法457条2項。保証債務の付従性。',
     tags: ['保証', '抗弁権', '民法457条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_193',
@@ -1784,6 +1976,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法454条。連帯保証人は催告の抗弁権・検索の抗弁権・分別の利益のいずれも有しない。',
     tags: ['連帯保証', '分別の利益', '民法454条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_194',
@@ -1793,6 +1986,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法465条の2第2項。極度額を定めなければ効力を生じない。',
     tags: ['根保証', '極度額', '民法465条の2'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_195',
@@ -1802,6 +1996,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法465条の6。公正証書による保証意思の確認が必要。',
     tags: ['保証', '事業用貸金', '民法465条の6'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_196',
@@ -1811,6 +2006,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法465条の10。債権者が情報不提供を知り又は知ることができたとき。',
     tags: ['保証', '情報提供義務', '民法465条の10'],
+    needsReview: true,
   },
 
   // ===== 債権総論（追加：弁済・相殺・債権者代位・詐害行為） =====
@@ -1822,6 +2018,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法474条2項。債務者の意思に反する場合は原則不可（正当な利益を有する者を除く）。',
     tags: ['弁済', '第三者弁済', '民法474条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_198',
@@ -1831,6 +2028,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法474条2項ただし書。正当な利益を有する第三者は、債務者の意思に反しても弁済できる。',
     tags: ['弁済', '第三者弁済', '民法474条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_199',
@@ -1840,6 +2038,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法509条。被害者保護の趣旨。',
     tags: ['相殺', '不法行為', '民法509条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_200',
@@ -1849,6 +2048,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法508条。',
     tags: ['相殺', '時効', '民法508条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_201',
@@ -1858,6 +2058,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法423条。債務者が自ら権利行使している場合は代位不可。',
     tags: ['債権者代位権', '民法423条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_202',
@@ -1867,6 +2068,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法424条1項。債務者が債権者を害することを知ってした行為であることが要件。',
     tags: ['詐害行為取消権', '民法424条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_203',
@@ -1876,6 +2078,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法424条1項。裁判所に対して請求する必要がある。',
     tags: ['詐害行為取消権', '民法424条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_204',
@@ -1885,6 +2088,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法426条。行為の時から10年の除斥期間もある。',
     tags: ['詐害行為取消権', '民法426条'],
+    needsReview: true,
   },
 
   // ===== 契約各論（売買追加） =====
@@ -1896,6 +2100,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法563条1項。追完の催告をしても売主が追完しないとき等に代金減額請求可。',
     tags: ['契約不適合', '代金減額', '民法563条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_206',
@@ -1905,6 +2110,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法562条2項。買主の帰責事由による場合は追完請求不可。',
     tags: ['契約不適合', '民法562条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_207',
@@ -1914,6 +2120,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法566条。通知義務を怠ると、追完・代金減額・損害賠償・解除いずれも不可。',
     tags: ['契約不適合', '通知', '民法566条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_208',
@@ -1923,6 +2130,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '消滅時効の一般規定（民法166条）の適用がある。通知期間とは別。',
     tags: ['契約不適合', '消滅時効'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_209',
@@ -1932,6 +2140,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法561条。他人物売買も有効。売主は所有権を取得して買主に移転する義務を負う。',
     tags: ['売買', '他人物売買', '民法561条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_210',
@@ -1941,6 +2150,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法579条。売買契約と同時の特約が必要。',
     tags: ['買戻し', '民法579条'],
+    needsReview: true,
   },
 
   // ===== 契約各論（賃貸借追加） =====
@@ -1952,6 +2162,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法400条。賃借人は善良な管理者の注意義務を負う（自己の財産同一では不十分）。',
     tags: ['賃貸借', '善管注意義務'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_212',
@@ -1961,6 +2172,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法607条の2。賃借人による修繕が認められる。',
     tags: ['賃貸借', '修繕', '民法607条の2'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_213',
@@ -1970,6 +2182,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法613条1項。賃貸人は転借人に対して直接賃料を請求できる。',
     tags: ['賃貸借', '転貸', '民法613条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_214',
@@ -1979,6 +2192,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法613条3項。合意解除は転借人に対抗不可。債務不履行解除の場合も通知が必要。',
     tags: ['賃貸借', '転貸', '民法613条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_215',
@@ -1988,6 +2202,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法621条。通常損耗・経年変化は原状回復義務の対象外。',
     tags: ['賃貸借', '原状回復', '民法621条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_216',
@@ -1997,6 +2212,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法619条1項。法定更新。',
     tags: ['賃貸借', '法定更新', '民法619条'],
+    needsReview: true,
   },
 
   // ===== 契約各論（請負・委任・贈与追加） =====
@@ -2008,6 +2224,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法559条・562条。売買の規定が準用される。',
     tags: ['請負', '契約不適合', '民法559条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_218',
@@ -2017,6 +2234,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法642条1項。',
     tags: ['請負', '破産', '民法642条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_219',
@@ -2026,6 +2244,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法634条。仕事が可分で既完成部分が注文者に利益を与える場合は、その部分の報酬を請求できる。',
     tags: ['請負', '報酬', '民法634条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_220',
@@ -2035,6 +2254,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法644条。善管注意義務を負うが、特約による軽減は認められる。',
     tags: ['委任', '善管注意義務', '民法644条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_221',
@@ -2044,6 +2264,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法646条1項。',
     tags: ['委任', '民法646条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_222',
@@ -2053,6 +2274,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法653条1号。委任者又は受任者の死亡は委任の終了事由。',
     tags: ['委任', '終了事由', '民法653条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_223',
@@ -2062,6 +2284,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法553条。負担付贈与は双務契約に準じて売買の規定を準用。',
     tags: ['贈与', '負担付贈与', '民法553条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_224',
@@ -2071,6 +2294,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法554条。遺贈の規定が準用されるが、遺言の方式は不要（判例）。',
     tags: ['贈与', '死因贈与', '民法554条'],
+    needsReview: true,
   },
 
   // ===== 不法行為（追加） =====
@@ -2082,6 +2306,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法714条1項。監督義務者が責任を負う（監督義務を怠らなかったことを立証しない限り）。',
     tags: ['不法行為', '監督義務者', '民法714条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_226',
@@ -2091,6 +2316,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法715条3項・判例。使用者の求償は信義則上制限される（求償制限の法理）。',
     tags: ['使用者責任', '求償', '民法715条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_227',
@@ -2100,6 +2326,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法716条。ただし注文又は指図に過失がある場合は責任を負う。',
     tags: ['不法行為', '注文者', '民法716条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_228',
@@ -2109,6 +2336,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法717条1項ただし書。占有者は中間責任。',
     tags: ['工作物責任', '占有者', '民法717条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_229',
@@ -2118,6 +2346,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法722条2項。不法行為の過失相殺は裁判所の裁量。債務不履行の418条と異なる。',
     tags: ['不法行為', '過失相殺', '民法722条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_230',
@@ -2127,6 +2356,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '判例。一般の債権と同様に譲渡可能。',
     tags: ['不法行為', '債権譲渡'],
+    needsReview: true,
   },
 
   // ===== 事務管理・不当利得 =====
@@ -2138,6 +2368,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法697条1項。法律上の義務がないのに他人のために事務管理を始めた場合に成立する。',
     tags: ['事務管理', '民法697条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_232',
@@ -2147,6 +2378,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法697条2項。本人の意思に従い、最も本人の利益に適合する方法で管理すべき。',
     tags: ['事務管理', '民法697条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_233',
@@ -2156,6 +2388,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法700条。管理継続義務。',
     tags: ['事務管理', '管理継続義務', '民法700条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_234',
@@ -2165,6 +2398,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法702条1項。必要費償還請求は可能だが報酬請求権は認められない。',
     tags: ['事務管理', '費用償還', '民法702条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_235',
@@ -2174,6 +2408,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法703条。法律上の原因のないことが要件であり、受益者の故意過失は不要。',
     tags: ['不当利得', '民法703条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_236',
@@ -2183,6 +2418,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法703条・704条。',
     tags: ['不当利得', '民法703条', '民法704条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_237',
@@ -2192,6 +2428,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法708条。ただし不法原因が受益者のみにある場合は返還請求可。',
     tags: ['不当利得', '不法原因給付', '民法708条'],
+    needsReview: true,
   },
 
   // ===== 相続（追加） =====
@@ -2203,6 +2440,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法887条2項。',
     tags: ['代襲相続', '民法887条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_239',
@@ -2212,6 +2450,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法889条2項。兄弟姉妹の代襲は甥姪まで。再代襲なし。',
     tags: ['代襲相続', '民法889条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_240',
@@ -2221,6 +2460,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法900条3号。配偶者4分の3、兄弟姉妹4分の1。',
     tags: ['相続分', '民法900条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_241',
@@ -2230,6 +2470,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法900条4号。平成25年改正により嫡出子と同等の相続分となった。',
     tags: ['相続分', '非嫡出子', '民法900条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_242',
@@ -2239,6 +2480,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法919条1項。ただし詐欺・強迫による場合は取消し可能。',
     tags: ['相続', '承認・放棄', '民法919条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_243',
@@ -2248,6 +2490,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法923条。限定承認は共同相続人の全員が共同してしなければならない。',
     tags: ['限定承認', '民法923条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_244',
@@ -2257,6 +2500,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法938条。家庭裁判所への申述が方式要件。',
     tags: ['相続放棄', '民法938条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_245',
@@ -2266,6 +2510,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法939条。遡及的効力。',
     tags: ['相続放棄', '民法939条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_246',
@@ -2275,6 +2520,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法909条本文。ただし第三者の権利を害することはできない。',
     tags: ['遺産分割', '民法909条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_247',
@@ -2284,6 +2530,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法969条。証人2人以上の立会いが必要。',
     tags: ['遺言', '公正証書遺言', '民法969条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_248',
@@ -2293,6 +2540,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法1004条1項。公正証書遺言・遺言書保管所保管の場合は不要だが、自筆証書遺言は原則検認が必要。',
     tags: ['遺言', '検認', '民法1004条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_249',
@@ -2302,6 +2550,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法1022条。遺言の全部又は一部を撤回可能。',
     tags: ['遺言', '撤回', '民法1022条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_250',
@@ -2311,6 +2560,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法1023条1項。抵触部分は後の遺言で前の遺言を撤回したものとみなす。',
     tags: ['遺言', '撤回', '民法1023条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_251',
@@ -2320,6 +2570,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法1042条1項1号。直系尊属のみが相続人のときは3分の1。',
     tags: ['遺留分', '民法1042条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_252',
@@ -2329,6 +2580,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '遺留分侵害額請求は裁判外の意思表示でも行使可能（判例）。',
     tags: ['遺留分', '侵害額請求'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_253',
@@ -2338,6 +2590,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法1046条1項。改正により金銭債権化。',
     tags: ['遺留分', '金銭債権', '民法1046条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_254',
@@ -2347,6 +2600,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法1028条・1031条2項。',
     tags: ['配偶者居住権', '民法1028条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_255',
@@ -2356,6 +2610,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法1032条2項。配偶者居住権は譲渡不可。',
     tags: ['配偶者居住権', '民法1032条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_256',
@@ -2365,6 +2620,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法1037条1項。',
     tags: ['配偶者短期居住権', '民法1037条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_257',
@@ -2374,6 +2630,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法1050条。相続人以外の被相続人の親族（例：長男の妻）が特別寄与者となりうる。',
     tags: ['特別寄与', '民法1050条'],
+    needsReview: true,
   },
 
   // ===== 借地借家法（借地権追加） =====
@@ -2385,6 +2642,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法10条2項。一定事項の掲示により2年間は対抗力を有する。',
     tags: ['借地権', '対抗要件', '借地借家法10条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_259',
@@ -2394,6 +2652,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法5条1項。',
     tags: ['借地権', '更新', '借地借家法5条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_260',
@@ -2403,6 +2662,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法19条1項。裁判所による代諾制度。',
     tags: ['借地権', '建物譲渡', '借地借家法19条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_261',
@@ -2412,6 +2672,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法7条。残存期間を超えて存続する建物の再築は承諾が必要。',
     tags: ['借地権', '建物再築', '借地借家法7条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_262',
@@ -2421,6 +2682,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法24条1項。',
     tags: ['借地権', '建物譲渡特約', '借地借家法24条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_263',
@@ -2430,6 +2692,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法22条。書面（公正証書でなくてもよい）。',
     tags: ['定期借地権', '借地借家法22条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_264',
@@ -2439,6 +2702,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法23条。10年以上50年未満。',
     tags: ['事業用定期借地権', '借地借家法23条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_265',
@@ -2448,6 +2712,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法23条。専ら事業の用に供する建物に限られ、居住用は不可。',
     tags: ['事業用定期借地権', '借地借家法23条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_266',
@@ -2457,6 +2722,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法11条1項ただし書。増額しない特約は有効。',
     tags: ['借地権', '地代増減', '借地借家法11条'],
+    needsReview: true,
   },
 
   // ===== 借地借家法（借家権追加） =====
@@ -2468,6 +2734,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法29条1項。1年未満の期間の定めは期間の定めのないものとみなされる。',
     tags: ['借家', '存続期間', '借地借家法29条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_268',
@@ -2477,6 +2744,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法28条。正当事由は賃貸人側のみ要求される。',
     tags: ['借家', '正当事由', '借地借家法28条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_269',
@@ -2486,6 +2754,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法617条1項2号。賃借人からは3ヶ月前の申入れで終了。',
     tags: ['借家', '解約申入れ'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_270',
@@ -2495,6 +2764,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法38条6項。',
     tags: ['定期借家', '終了通知', '借地借家法38条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_271',
@@ -2504,6 +2774,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法38条7項。',
     tags: ['定期借家', '中途解約', '借地借家法38条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_272',
@@ -2513,6 +2784,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法38条9項。定期借家では賃料減額しない特約も有効（普通借家と異なる）。',
     tags: ['定期借家', '賃料', '借地借家法38条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_273',
@@ -2522,6 +2794,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '借地借家法36条1項。',
     tags: ['借家', '賃借権承継', '借地借家法36条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_274',
@@ -2531,6 +2804,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '借地借家法30条・37条。強行規定に反する賃借人不利の特約のみ無効。全てではない。',
     tags: ['借家', '特約', '借地借家法'],
+    needsReview: true,
   },
 
   // ===== 区分所有法（追加） =====
@@ -2542,6 +2816,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法6条1項。区分所有者の義務。',
     tags: ['区分所有', '義務', '区分所有法6条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_276',
@@ -2551,6 +2826,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区分所有法19条。持分に応じて負担する（均等ではない）。',
     tags: ['共用部分', '費用負担', '区分所有法19条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_277',
@@ -2560,6 +2836,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区分所有法47条1項。区分所有者及び議決権の各4分の3以上の多数。ただし改正により出席者基準に変更。',
     tags: ['管理組合法人', '区分所有法47条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_278',
@@ -2569,6 +2846,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法33条1項。',
     tags: ['規約', '保管', '区分所有法33条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_279',
@@ -2578,6 +2856,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法31条1項後段。',
     tags: ['規約', '特別の影響', '区分所有法31条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_280',
@@ -2587,6 +2866,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法58条。',
     tags: ['区分所有', '義務違反', '区分所有法58条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_281',
@@ -2596,6 +2876,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区分所有法59条2項・58条3項。弁明の機会を与えなければならない。',
     tags: ['区分所有', '競売請求', '区分所有法59条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_282',
@@ -2605,6 +2886,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法39条1項。',
     tags: ['集会', '議決', '区分所有法39条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_283',
@@ -2614,6 +2896,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法39条2項。',
     tags: ['集会', '議決権行使', '区分所有法39条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_284',
@@ -2623,6 +2906,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法17条1項ただし書・18条。軽微変更は管理行為として過半数。',
     tags: ['共用部分', '軽微変更', '区分所有法17条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_285',
@@ -2632,6 +2916,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '区分所有法43条。管理者は毎年1回一定の時期に事務報告をしなければならない。',
     tags: ['管理者', '事務報告', '区分所有法43条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_286',
@@ -2641,6 +2926,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '区分所有法61条1項。建物価格の2分の1以下の滅失は単独復旧可能。',
     tags: ['区分所有', '復旧', '区分所有法61条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_287',
@@ -2650,6 +2936,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法61条5項。',
     tags: ['区分所有', '大規模滅失', '区分所有法61条'],
+    needsReview: true,
   },
 
   // ===== 不動産登記法（追加） =====
@@ -2661,6 +2948,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '日本の登記制度は公信力を認めていない。登記を信頼して取引しても保護されるとは限らない。',
     tags: ['不動産登記', '公信力'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_289',
@@ -2670,6 +2958,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法2条3号・4号。',
     tags: ['不動産登記', '分類'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_290',
@@ -2679,6 +2968,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '不動産登記法28条。表示に関する登記は登記官が職権ですることもできる。',
     tags: ['不動産登記', '表示登記', '不動産登記法28条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_291',
@@ -2688,6 +2978,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '権利に関する登記は原則として当事者の申請又は嘱託による。職権不可。',
     tags: ['不動産登記', '権利登記'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_292',
@@ -2697,6 +2988,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正不動産登記法76条の2。相続を知った日から3年以内に申請義務。',
     tags: ['不動産登記', '相続登記', '不動産登記法76条の2'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_293',
@@ -2706,6 +2998,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '不動産登記法106条。仮登記には対抗力はなく、順位保全効のみ。',
     tags: ['仮登記', '不動産登記法106条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_294',
@@ -2715,6 +3008,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法109条1項。利害関係人の承諾が必要。',
     tags: ['仮登記', '本登記', '不動産登記法109条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_295',
@@ -2724,6 +3018,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法60条。共同申請主義。',
     tags: ['不動産登記', '共同申請', '不動産登記法60条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_296',
@@ -2733,6 +3028,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法63条2項。相続は単独申請。',
     tags: ['不動産登記', '相続登記', '不動産登記法63条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_297',
@@ -2742,6 +3038,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '不動産登記法63条1項。確定判決による登記は単独申請可。',
     tags: ['不動産登記', '判決', '不動産登記法63条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_298',
@@ -2751,6 +3048,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '不動産登記法74条1項。所有権保存登記は表題部所有者等が単独で申請できる。',
     tags: ['不動産登記', '保存登記', '不動産登記法74条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_299',
@@ -2760,6 +3058,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法74条2項。区分建物の特則。',
     tags: ['不動産登記', '区分建物', '不動産登記法74条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_300',
@@ -2769,6 +3068,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法23条。',
     tags: ['不動産登記', '登記識別情報', '不動産登記法23条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_301',
@@ -2778,6 +3078,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '不動産登記法47条1項。1ヶ月以内に申請しなければならない。',
     tags: ['不動産登記', '表題登記', '不動産登記法47条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_302',
@@ -2787,6 +3088,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法57条。',
     tags: ['不動産登記', '滅失登記', '不動産登記法57条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_303',
@@ -2796,6 +3098,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '不動産登記法119条・21条。',
     tags: ['不動産登記', '登記事項証明書'],
+    needsReview: true,
   },
 
   // ===== 制限行為能力者（追加） =====
@@ -2807,6 +3110,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法13条4項。無効ではなく取り消すことができる。',
     tags: ['被保佐人', '民法13条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_305',
@@ -2816,6 +3120,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法9条。成年被後見人も自ら法律行為ができるが取消し可能。成年後見人は代理権も有する。',
     tags: ['成年被後見人', '民法9条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_306',
@@ -2825,6 +3130,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法5条1項ただし書。単に権利を得又は義務を免れる行為は同意不要。',
     tags: ['未成年者', '民法5条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_307',
@@ -2834,6 +3140,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法3条の2。意思能力を欠く状態でした法律行為は無効である。',
     tags: ['意思能力', '民法3条の2'],
+    needsReview: true,
   },
 
   // ===== 共有（追加） =====
@@ -2845,6 +3152,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法252条2項。所在等不明共有者がいる場合の裁判所の関与。',
     tags: ['共有', '所在不明', '民法252条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_309',
@@ -2854,6 +3162,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法249条1項。各共有者は持分に応じて共有物の全部について使用できる。',
     tags: ['共有', '使用', '民法249条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_310',
@@ -2863,6 +3172,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '各共有者は自由にその持分を処分できる（民法206条参照）。',
     tags: ['共有', '持分譲渡'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_311',
@@ -2872,6 +3182,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法258条1項。',
     tags: ['共有', '分割', '民法258条'],
+    needsReview: true,
   },
 
   // ===== 物権総論・用益物権（追加） =====
@@ -2883,6 +3194,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法175条。物権法定主義により、法律に定めたもの以外の物権は創設不可。',
     tags: ['物権法定主義', '民法175条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_313',
@@ -2892,6 +3204,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法206条。法令の制限内においてのみ自由にできる。',
     tags: ['所有権', '民法206条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_314',
@@ -2901,6 +3214,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法266条。地代は地上権の要素ではなく、無償の地上権もある。',
     tags: ['地上権', '地代', '民法266条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_315',
@@ -2910,6 +3224,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法270条。',
     tags: ['永小作権', '民法270条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_316',
@@ -2919,6 +3234,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '地役権は他人の土地を自己の便益に供する権利であり、承役地所有者の不作為が原則（民法280条）。',
     tags: ['地役権', '民法280条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_317',
@@ -2928,6 +3244,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法283条。',
     tags: ['地役権', '時効取得', '民法283条'],
+    needsReview: true,
   },
 
   // ===== 契約総論（追加） =====
@@ -2939,6 +3256,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法541条（催告解除）・542条（無催告解除）。',
     tags: ['解除', '民法541条', '民法542条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_319',
@@ -2948,6 +3266,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法541条。改正民法では解除に帰責事由は不要。',
     tags: ['解除', '帰責事由', '民法541条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_320',
@@ -2957,6 +3276,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法415条1項ただし書。債務者の帰責事由がなければ損害賠償請求は不可。',
     tags: ['債務不履行', '損害賠償', '民法415条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_321',
@@ -2966,6 +3286,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法545条2項。金銭の返還には受領時からの利息を付さなければならない。',
     tags: ['解除', '原状回復', '民法545条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_322',
@@ -2975,6 +3296,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法567条1項。引渡し後は買主が危険を負担する。',
     tags: ['危険負担', '民法567条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_323',
@@ -2984,6 +3306,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法533条。同一契約からの場合のほか、法律の規定や判例により認められる場合もある。',
     tags: ['同時履行', '民法533条'],
+    needsReview: true,
   },
 
   // ===== 債権譲渡・弁済（追加） =====
@@ -2995,6 +3318,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法467条2項。',
     tags: ['債権譲渡', '対抗要件', '民法467条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_325',
@@ -3004,6 +3328,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法493条ただし書。債権者があらかじめ受領を拒んでいるときは口頭の提供で足りる。',
     tags: ['弁済', '口頭の提供', '民法493条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_326',
@@ -3013,6 +3338,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法494条。',
     tags: ['弁済', '供託', '民法494条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_327',
@@ -3022,6 +3348,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法478条。',
     tags: ['弁済', '受領権者', '民法478条'],
+    needsReview: true,
   },
 
   // ===== 2026年法改正対応（追加） =====
@@ -3033,6 +3360,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '令和8年改正区分所有法39条。従来の全員基準から出席者基準に変更。',
     tags: ['区分所有法', '法改正2026', '普通決議'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_329',
@@ -3042,6 +3370,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '建替え決議は原則5分の4以上を維持。一定の要件を満たす場合にのみ4分の3以上の例外が設けられた。',
     tags: ['区分所有法', '法改正2026', '建替え決議'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_330',
@@ -3051,6 +3380,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正不動産登記法164条。10万円以下の過料。',
     tags: ['不動産登記法', '法改正2026', '相続登記義務化'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_331',
@@ -3060,6 +3390,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '改正不動産登記法76条の5。住所変更登記の義務違反は5万円以下の過料。',
     tags: ['不動産登記法', '法改正2026', '住所変更登記'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_332',
@@ -3069,6 +3400,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正不動産登記法76条の3。',
     tags: ['不動産登記法', '法改正2026', '相続人申告登記'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_333',
@@ -3078,6 +3410,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '改正区分所有法。管理不全マンション管理制度が新設。',
     tags: ['区分所有法', '法改正2026', '管理命令'],
+    needsReview: true,
   },
 
   // ===== 条件・期限・期間 =====
@@ -3089,6 +3422,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法127条1項。条件成就時から効力が生ずる（遡及しない。ただし当事者の意思表示で遡及させることは可能：民法127条3項）。',
     tags: ['条件', '停止条件', '民法127条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_335',
@@ -3098,6 +3432,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法127条2項。解除条件成就時から将来に向かって失効。遡及効はない（別段の意思表示がない限り）。',
     tags: ['条件', '解除条件', '民法127条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_336',
@@ -3107,6 +3442,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法136条1項。',
     tags: ['期限', '期限の利益', '民法136条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_337',
@@ -3116,6 +3452,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法137条2号。期限の利益の喪失事由。',
     tags: ['期限', '期限の利益喪失', '民法137条'],
+    needsReview: true,
   },
 
   // ===== 使用貸借・混合論点（追加） =====
@@ -3127,6 +3464,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '改正民法593条。改正により諾成契約化された。引渡しなくても合意のみで成立する。',
     tags: ['使用貸借', '民法593条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_339',
@@ -3136,6 +3474,7 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: true,
     explanation: '民法594条2項。貸主の承諾なく第三者使用不可。',
     tags: ['使用貸借', '民法594条'],
+    needsReview: true,
   },
   {
     id: 'qq_kenri_340',
@@ -3145,5 +3484,6 @@ export const kenriQuickQuizzes: QuickQuiz[] = [
     isCorrect: false,
     explanation: '民法587条・587条の2。要物契約としての消費貸借は書面不要。書面による消費貸借は諾成的に成立する。',
     tags: ['消費貸借', '民法587条'],
+    needsReview: true,
   },
 ];

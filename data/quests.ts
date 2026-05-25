@@ -160,13 +160,13 @@ const ch3Missions: QuestMission[] = [
   },
   {
     id: 'quest-ch3-m5',
-    title: '手付金と損害賠償',
-    description: '手付の額の制限・保全措置・損害賠償額の予定',
-    matchTags: ['手付', '解約手付', '手付金等の保全措置', '手付の額の制限', '損害賠償額の予定', '違約金', '契約不適合責任'],
-    questionCount: 8,
+    title: '8種制限の完全マスター',
+    description: '手付・保全措置・損害賠償・契約不適合・他人物・割賦販売',
+    matchTags: ['手付', '解約手付', '手付金等の保全措置', '手付の額の制限', '損害賠償額の予定', '違約金', '契約不適合責任', '8種制限', '自ら売主制限', '他人物売買', '宅建業法33条の2', '割賦販売', '所有権留保'],
+    questionCount: 10,
     passingRate: 0.7,
     category: 'takkengyoho',
-    difficulty: 2,
+    difficulty: 3,
     icon: '🛡️',
   },
 ];
@@ -364,6 +364,17 @@ const ch7Missions: QuestMission[] = [
     category: 'horei_seigen',
     difficulty: 2,
     icon: '🌾',
+  },
+  {
+    id: 'quest-ch7-m5',
+    title: 'その他の法令制限',
+    description: '自然公園法・河川法・海岸法・森林法・文化財保護法',
+    matchTags: ['自然公園法', '河川法', '河川区域', '海岸法', '森林法', '文化財保護法', '景観法', '景観地区'],
+    questionCount: 6,
+    passingRate: 0.7,
+    category: 'horei_seigen',
+    difficulty: 2,
+    icon: '🌳',
   },
 ];
 
@@ -726,7 +737,7 @@ const ch15Missions: QuestMission[] = [
   },
 ];
 
-// ── 第16章: その他 実戦 ── 住宅金融・景表法・総合
+// ── 第16章: 5問免除 実戦 ── 住宅金融・景表法・土地建物・統計・総合
 const ch16Missions: QuestMission[] = [
   {
     id: 'quest-ch16-m1',
@@ -752,9 +763,42 @@ const ch16Missions: QuestMission[] = [
   },
   {
     id: 'quest-ch16-m3',
+    title: '土地（地形・地盤）',
+    description: '低地・台地・山地・干拓地・軟弱地盤・液状化',
+    matchTags: ['土地', '台地', '扇状地', '三角州', '丘陵地', '後背湿地', '自然堤防', '埋立地', '液状化', '地盤'],
+    questionCount: 8,
+    passingRate: 0.7,
+    category: 'tax_other',
+    difficulty: 2,
+    icon: '⛰️',
+  },
+  {
+    id: 'quest-ch16-m4',
+    title: '建物（構造・材料）',
+    description: '木造・鉄骨・RC造・耐震免震・建築材料',
+    matchTags: ['建物', '木造', '鉄骨造', '鉄筋コンクリート造', '耐震構造', '免震構造', '制震構造', '基礎', 'かぶり厚さ', '構造'],
+    questionCount: 8,
+    passingRate: 0.7,
+    category: 'tax_other',
+    difficulty: 2,
+    icon: '🏗️',
+  },
+  {
+    id: 'quest-ch16-m5',
+    title: '不動産統計（最新データ）',
+    description: '地価公示・住宅着工・宅建業者数・土地取引動向',
+    matchTags: ['統計', '建築着工統計', '土地白書', '不動産価格指数', '国土交通省', '宅建業者数', '住宅着工'],
+    questionCount: 5,
+    passingRate: 0.7,
+    category: 'tax_other',
+    difficulty: 2,
+    icon: '📊',
+  },
+  {
+    id: 'quest-ch16-m6',
     title: '🏆 税・その他 総まとめ',
     description: '全範囲から出題！ここを突破すれば税・その他はバッチリ',
-    matchTags: ['不動産取得税', '固定資産税', '登録免許税', '印紙税', '譲渡所得', '住宅ローン控除', '不動産鑑定評価', '地価公示法', '住宅金融支援機構', '景品表示法'],
+    matchTags: ['不動産取得税', '固定資産税', '登録免許税', '印紙税', '譲渡所得', '住宅ローン控除', '不動産鑑定評価', '地価公示法', '住宅金融支援機構', '景品表示法', '土地', '建物', '統計'],
     questionCount: 12,
     passingRate: 0.75,
     category: 'tax_other',
@@ -787,7 +831,7 @@ export const QUEST_CHAPTERS: QuestChapter[] = [
   { id: 'quest-ch13', title: '第13章: 税 入門', description: '不動産にかかる税金の基本', category: 'tax_other', icon: '🏷️', missions: ch13Missions, order: 13 },
   { id: 'quest-ch14', title: '第14章: 税 基礎', description: '所得税・住宅ローン控除', category: 'tax_other', icon: '💹', missions: ch14Missions, order: 14 },
   { id: 'quest-ch15', title: '第15章: その他 応用', description: '鑑定評価・地価公示法', category: 'tax_other', icon: '🔍', missions: ch15Missions, order: 15 },
-  { id: 'quest-ch16', title: '第16章: その他 実戦', description: '住宅金融・景表法・総まとめ', category: 'tax_other', icon: '🏆', missions: ch16Missions, order: 16 },
+  { id: 'quest-ch16', title: '第16章: 5問免除 実戦', description: '住宅金融・景表法・土地建物・統計・総まとめ', category: 'tax_other', icon: '🏆', missions: ch16Missions, order: 16 },
 ];
 
 // ── 全ミッションをフラット化（順序通り） ──

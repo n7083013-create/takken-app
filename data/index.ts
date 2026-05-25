@@ -141,3 +141,56 @@ export function toWareki(year: number): string {
   if (year >= 2019) return `令和${year - 2018}年度`;
   return `平成${year - 1988}年度`;
 }
+
+// ============================================================
+// 模擬試験プリセット (年度を抽象化したラベル)
+// 顧客視点では「○○年度の問題」ではなく「模擬1」「模擬2」として提示する。
+// 内部的には sourceExamYear ベースのデータをそのまま使う。
+// ============================================================
+
+/** 利用可能な模擬試験プリセットの総数 */
+export function getMockPresetCount(): number {
+  return getAvailableExamYears().length;
+}
+
+/**
+ * 模擬試験プリセット番号 (1始まり) → 50問
+ * 1 = 最新年度ベース (法改正対応最新)、2 = その前、...
+ * UI には年度を露出せず「模擬1」「模擬2」として表示する想定。
+ */
+export function getMockPresetByNumber(n: number): Question[] {
+  const years = getAvailableExamYears(); // 新しい順
+  if (n < 1 || n > years.length) return [];
+  const year = years[n - 1];
+  return getExamByYear(year);
+}
+
+/**
+ * 全模擬を解き終えたユーザー向けのランダム模擬試験。
+ * 全問題プールから本試験と同じ配分で 50問を抽出してシャッフル返却。
+ * 配分: 権利関係 14・法令制限 8・税価格 3・宅建業法 20・5問免除 5
+ */
+export function getRandomMockExam(): Question[] {
+  const all = ALL_QUESTIONS;
+  const composition: { category: Category; count: number }[] = [
+    { category: 'kenri', count: 14 },
+    { category: 'horei_seigen', count: 8 },
+    { category: 'tax_other', count: 3 },
+    { category: 'takkengyoho', count: 25 }, // 業法20 + 5問免除5 を tax_other 以外でカバー
+  ];
+  const pickRandom = <T,>(arr: T[], n: number): T[] => {
+    const copy = [...arr];
+    const out: T[] = [];
+    for (let i = 0; i < n && copy.length > 0; i++) {
+      const idx = Math.floor(Math.random() * copy.length);
+      out.push(copy.splice(idx, 1)[0]);
+    }
+    return out;
+  };
+  const result: Question[] = [];
+  for (const { category, count } of composition) {
+    const pool = all.filter((q) => q.category === category);
+    result.push(...pickRandom(pool, count));
+  }
+  return result.slice(0, 50);
+}
