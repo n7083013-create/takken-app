@@ -1,10 +1,16 @@
 // ============================================================
 // エラーロガー
-// 将来Sentryに差し替え可能な薄いラッパー
+// Sentry + ローカル AsyncStorage の二層構成
 // 使い方: logError(err, { context: 'exam.session' })
+//
+// 重要:
+//  - 既存の logError 呼び出しシグネチャは絶対変えない（広範囲で使用中）
+//  - PII (email/token) は services/sentry.ts の sanitize 層で除去される
+//  - ローカルログ (AsyncStorage) は後方互換のため維持（debug 画面用）
 // ============================================================
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { captureSentryException } from './sentry';
 
 const STORAGE_KEY = '@takken_error_log';
 const MAX_LOGS = 100;
@@ -35,6 +41,13 @@ export async function logError(
     if (__DEV__) {
       console.error('[ErrorLogger]', log.context ?? '-', log.message);
     }
+
+    // Sentry へ送信（production のみ。dev は services/sentry.ts 内で握り潰し）
+    // sanitize は services/sentry.ts の beforeSend で行う
+    captureSentryException(error, {
+      context: meta?.context,
+      extra: meta?.extra,
+    });
 
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     const logs: ErrorLog[] = raw ? JSON.parse(raw) : [];

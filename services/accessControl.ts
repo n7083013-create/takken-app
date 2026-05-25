@@ -1,25 +1,46 @@
 // ============================================================
 // アクセス制御
-// フリーミアム制限のロジックを集約
+// フリーミアム制限のロジックを集約（1日N問方式）
 // ============================================================
 
-import { ALL_QUESTIONS, ALL_QUICK_QUIZZES } from '../data';
 import { FREE_LIMITS } from '../types';
 
-const FREE_QUESTION_IDS = new Set(
-  ALL_QUESTIONS.slice(0, FREE_LIMITS.questions).map((q) => q.id),
-);
-const FREE_QUICK_QUIZ_IDS = new Set(
-  ALL_QUICK_QUIZZES.slice(0, FREE_LIMITS.quickQuizzes).map((q) => q.id),
-);
-
-export function isQuestionFree(questionId: string): boolean {
-  return FREE_QUESTION_IDS.has(questionId);
+/** 今日の日付キー "YYYY-MM-DD" */
+function getTodayKey(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-export function isQuickQuizFree(quizId: string): boolean {
-  return FREE_QUICK_QUIZ_IDS.has(quizId);
+/**
+ * 今日の解答数が日次制限を超えているか判定
+ * @param todayAnsweredCount 今日の解答数
+ * @param type 'question'（4択問題）or 'quickQuiz'（一問一答）
+ */
+export function isDailyLimitReached(
+  todayAnsweredCount: number,
+  type: 'question' | 'quickQuiz',
+): boolean {
+  const limit = type === 'question'
+    ? FREE_LIMITS.questionsPerDay
+    : FREE_LIMITS.quickQuizzesPerDay;
+  return todayAnsweredCount >= limit;
 }
+
+/**
+ * 今日の残り解答可能数
+ */
+export function getDailyRemaining(
+  todayAnsweredCount: number,
+  type: 'question' | 'quickQuiz',
+): number {
+  const limit = type === 'question'
+    ? FREE_LIMITS.questionsPerDay
+    : FREE_LIMITS.quickQuizzesPerDay;
+  return Math.max(0, limit - todayAnsweredCount);
+}
+
+/** 今日のキー（進捗ストアで使う） */
+export { getTodayKey };
 
 export type FeatureKey =
   | 'question'
@@ -32,19 +53,19 @@ export type FeatureKey =
  * 機能アクセス可能かを判定
  * @param isPro 課金ユーザーか
  * @param feature 機能種別
- * @param resourceId 個別リソースID（問題ID等）
+ * @param todayAnsweredCount 今日の解答数（question / quickQuiz の場合に必要）
  */
 export function canAccess(
   isPro: boolean,
   feature: FeatureKey,
-  resourceId?: string,
+  todayAnsweredCount?: number,
 ): boolean {
   if (isPro) return true;
   switch (feature) {
     case 'question':
-      return resourceId ? isQuestionFree(resourceId) : false;
+      return (todayAnsweredCount ?? 0) < FREE_LIMITS.questionsPerDay;
     case 'quickQuiz':
-      return resourceId ? isQuickQuizFree(resourceId) : false;
+      return (todayAnsweredCount ?? 0) < FREE_LIMITS.quickQuizzesPerDay;
     case 'examMode':
       return FREE_LIMITS.examMode;
     case 'aiAnalysis':

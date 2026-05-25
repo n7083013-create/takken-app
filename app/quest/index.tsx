@@ -26,6 +26,7 @@ import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { CATEGORY_COLORS } from '../../types';
 import { QUEST_CHAPTERS } from '../../data/quests';
 import { useQuestStore } from '../../store/useQuestStore';
+import { WebBackButton } from '../../components/WebBackButton';
 
 export default function QuestMapScreen() {
   const router = useRouter();
@@ -48,6 +49,7 @@ export default function QuestMapScreen() {
           headerTintColor: colors.primary,
         }}
       />
+      <WebBackButton />
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* ── ヒーロー ── */}

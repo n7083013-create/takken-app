@@ -7,12 +7,17 @@
  * 環境変数で上書き可能（開発 / ステージング / 本番）
  */
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL || 'https://takken-app-olive.vercel.app/api';
+  process.env.EXPO_PUBLIC_API_BASE_URL || 'https://app.takkenkanzen.com/api';
 
 /**
- * アプリ公開URL
+ * アプリ公開URL（ログイン後のアプリ本体）
  */
-export const APP_URL = 'https://takken-app-olive.vercel.app';
+export const APP_URL = 'https://app.takkenkanzen.com';
+
+/**
+ * ブランドサイト（LP・マーケティング・特商法表示の出元）
+ */
+export const BRAND_URL = 'https://takkenkanzen.com';
 
 /**
  * アプリバージョン

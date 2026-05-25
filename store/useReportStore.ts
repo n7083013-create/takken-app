@@ -38,11 +38,17 @@ interface ReportState {
   addReport(questionId: string, reason: ReportReason, detail: string): void;
   loadReports(): Promise<void>;
   saveReports(): Promise<void>;
+  resetStore(): void;
   markSynced(id: string): void;
 }
 
 export const useReportStore = create<ReportState>((set, get) => ({
   reports: [],
+
+  resetStore() {
+    set({ reports: [] });
+    AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
+  },
 
   addReport(questionId, reason, detail) {
     const report: QuestionReport = {

@@ -4,21 +4,34 @@
 
 import { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSize, LineHeight, Spacing, BorderRadius, Shadow } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../store/useAchievementStore';
+import { useProgressStore } from '../store/useProgressStore';
+import { ALL_QUESTIONS } from '../data';
 
 export default function AchievementsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const unlocked = useAchievementStore((s) => s.unlocked);
+  const stats = useProgressStore((st) => st.stats);
   const s = useMemo(() => makeStyles(colors), [colors]);
 
   const unlockedCount = Object.keys(unlocked).length;
   const totalCount = ALL_ACHIEVEMENTS.length;
   const pct = Math.round((unlockedCount / totalCount) * 100);
+
+  // [UX改善 v2] 達成率 = 3回連続正解の問題数 / 全問題数 (まぐれ正解を排除)
+  const TOTAL_Q = ALL_QUESTIONS.length;
+  const masteredCount = useProgressStore((st) => st.getMasteredCount)();
+  const masteredPct = TOTAL_Q > 0
+    ? Math.round((Math.min(masteredCount, TOTAL_Q) / TOTAL_Q) * 100)
+    : 0;
+  const answeredPct = TOTAL_Q > 0
+    ? Math.round((Math.min(stats.totalQuestions, TOTAL_Q) / TOTAL_Q) * 100)
+    : 0;
 
   // グループ分け
   const groups = useMemo(() => {
@@ -41,9 +54,18 @@ export default function AchievementsScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <Stack.Screen options={{ headerShown: false }} />
       {/* Header */}
       <View style={s.header}>
-        <Pressable onPress={() => router.back()} style={s.backBtn}>
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace('/(tabs)');
+          }}
+          style={s.backBtn}
+          accessibilityRole="button"
+          accessibilityLabel="戻る"
+        >
           <Text style={s.backText}>‹ 戻る</Text>
         </Pressable>
         <Text style={s.headerTitle}>実績バッジ</Text>
@@ -61,6 +83,23 @@ export default function AchievementsScreen() {
           </View>
           <Text style={s.heroPct}>{pct}%</Text>
         </View>
+
+        {/* [UX改善 v2] 真の習得度を表示 (3回連続正解で「習得」とみなす) */}
+        <View style={s.statsRow}>
+          <View style={s.statCard}>
+            <Text style={s.statNum}>{masteredCount}<Text style={s.statDen}>/{TOTAL_Q}</Text></Text>
+            <Text style={s.statLabel}>習得済み問題</Text>
+            <Text style={s.statPct}>達成率 {masteredPct}%</Text>
+          </View>
+          <View style={s.statCard}>
+            <Text style={s.statNum}>{stats.totalQuestions}<Text style={s.statDen}>/{TOTAL_Q}</Text></Text>
+            <Text style={s.statLabel}>解答済み</Text>
+            <Text style={s.statPct}>進捗 {answeredPct}%</Text>
+          </View>
+        </View>
+        <Text style={s.masteredNote}>
+          ※「習得済み」とは 3 回連続正解した問題。間違えるとリセットされ再習得が必要。
+        </Text>
 
         {/* Badge Groups */}
         {groups.map(([groupName, badges]) => (
@@ -159,6 +198,52 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     fontWeight: '700',
     color: '#F59E0B',
     marginTop: 6,
+  },
+
+  // 全問題進捗カード
+  statsRow: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    marginBottom: Spacing.md,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: C.card,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: C.borderLight,
+  },
+  statNum: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: C.text,
+  },
+  statDen: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: C.textSecondary,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: C.textSecondary,
+    marginTop: 4,
+  },
+  statPct: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: C.primary,
+    marginTop: 6,
+  },
+  masteredNote: {
+    fontSize: 11,
+    color: C.textTertiary,
+    paddingHorizontal: Spacing.xl,
+    marginTop: -Spacing.xs,
+    marginBottom: Spacing.md,
+    lineHeight: 16,
   },
 
   // Group

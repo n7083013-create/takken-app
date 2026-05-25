@@ -2,21 +2,22 @@ import { useMemo } from 'react';
 import { ScrollView, Text, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
+import { WebBackButton } from '../../components/WebBackButton';
 
 const ROWS: [string, string][] = [
   ['販売事業者', '合同会社カケル'],
   ['代表者', '平良 直也'],
-  ['所在地', '沖縄県沖縄市美里仲原町18-7-303'],
+  ['所在地', '沖縄県沖縄市美里仲原町18-7 20世紀Mカマキチ303'],
   ['電話番号', '080-2741-6662'],
   ['メールアドレス', 'taira@2023kakeru.com'],
-  ['ウェブサイト', 'https://takken-app-olive.vercel.app'],
+  ['ウェブサイト', 'https://takkenkanzen.com'],
   [
     '販売商品',
     '宅建士 完全対策（デジタル学習サービス）\n宅地建物取引士資格試験の学習支援Webアプリケーション',
   ],
   [
     '販売価格',
-    'PREMIUMプラン: 月額980円（税込）\n初回7日間は無料トライアル',
+    'PREMIUMプラン: 月額980円（税込）\n初回7日間は無料トライアル（トライアル中の解約で料金は発生しません）',
   ],
   [
     '販売価格以外の費用',
@@ -24,7 +25,7 @@ const ROWS: [string, string][] = [
   ],
   [
     '支払方法',
-    'クレジットカード（Visa, Mastercard, JCB, American Express）\n決済はPAY株式会社（PAY.JP）を通じて安全に処理されます',
+    'PayPal（PayPalアカウント または クレジットカード: Visa / Mastercard / JCB / American Express）\n決済はPayPal Pte. Ltd.を通じて安全に処理されます',
   ],
   [
     '支払時期',
@@ -40,7 +41,7 @@ const ROWS: [string, string][] = [
   ],
   [
     'キャンセル・解約',
-    'いつでも解約可能です。次回更新日の24時間前までに、アプリ内の設定画面またはお問い合わせフォームからお手続きください。解約後も当月の残り期間は引き続きご利用いただけます。',
+    'いつでも解約可能です。アプリ内「記録」タブ→「サブスクリプション管理」→「解約する」ボタンから即時解約できます。解約後も当月の残り期間は引き続きご利用いただけます。違約金・解約手数料は一切かかりません。',
   ],
   [
     '返品・返金',
@@ -58,9 +59,10 @@ export default function TokushohoScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <WebBackButton />
       <ScrollView contentContainerStyle={s.scroll}>
         <Text style={s.h1}>特定商取引法に基づく表記</Text>
-        <Text style={s.meta}>最終更新日: 2026年4月15日</Text>
+        <Text style={s.meta}>最終更新日: 2026年5月3日</Text>
         <View style={s.table}>
           {ROWS.map(([k, v]) => (
             <View key={k} style={s.row}>

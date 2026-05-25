@@ -14,13 +14,13 @@ import {
   AppState,
   ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow, FontSize, LineHeight, Spacing, BorderRadius } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { logError } from '../services/errorLogger';
+import { WebBackButton } from '../components/WebBackButton';
 
 type TimerMode = 'focus' | 'break';
 type TimerState = 'idle' | 'running' | 'paused';
@@ -38,7 +38,6 @@ const BREAK_PRESETS = [3, 5, 10, 15];
 const SESSIONS_FOR_LONG_BREAK = 4;
 
 export default function StudyTimerScreen() {
-  const router = useRouter();
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
   const vibrationEnabled = useSettingsStore((st) => st.settings.vibrationEnabled);
@@ -227,16 +226,8 @@ export default function StudyTimerScreen() {
   const uniqueRecent = recentMinutes.filter((m) => !FOCUS_PRESETS.includes(m));
 
   return (
-    <SafeAreaView style={s.safe}>
-      {/* Header */}
-      <View style={s.header}>
-        <Pressable onPress={() => router.back()} style={s.backBtn} accessibilityRole="button">
-          <Text style={s.backText}>‹ 戻る</Text>
-        </Pressable>
-        <Text style={s.headerTitle}>学習タイマー</Text>
-        <View style={{ width: 60 }} />
-      </View>
-
+    <SafeAreaView style={s.safe} edges={['bottom']}>
+      <WebBackButton />
       <ScrollView contentContainerStyle={s.content}>
         {/* Mode indicator */}
         <View style={[s.modePill, mode === 'focus' ? s.modeFocus : s.modeBreak]}>
