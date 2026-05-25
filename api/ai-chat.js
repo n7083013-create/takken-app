@@ -6,6 +6,8 @@
 // ============================================================
 
 const { createClient } = require('@supabase/supabase-js');
+const { checkRateLimit, sendRateLimitExceeded } = require('./_lib/rateLimit');
+const { logSecurityEvent, EVENT } = require('./_lib/securityLog');
 
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 const MODEL = 'claude-haiku-4-5';
@@ -316,8 +318,38 @@ const SUPPORT_INBOX = process.env.SUPPORT_INBOX || 'taira@2023kakeru.com';
 const SUPPORT_FROM_NAME = '宅建士 完全対策 サポート';
 const SUPPORT_FROM = process.env.SUPPORT_FROM || 'noreply@mail.takkenkanzen.com';
 const FEEDBACK_RATE_LIMIT_PER_DAY = 5;
+// T-PII Round2 H-2: 未ログイン送信に対するIP単位レート制限
+const FEEDBACK_IP_LIMIT_PER_HOUR = 10;
+const FEEDBACK_IP_WINDOW_MS = 60 * 60 * 1000;
+
+// T-PII Round2 H-3: contactEmail バリデーション (CRLF注入対策)
+const FEEDBACK_EMAIL_MAX = 254;
+const FEEDBACK_EMAIL_LOCAL_MAX = 64;
+const EMAIL_RE = /^[A-Za-z0-9!#$%&'*+\-/=?^_`{|}~.]+@[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$/;
+const EMAIL_FORBIDDEN_RE = /[\r\n\t\x00-\x1F\x7F<>"'\\,;:()[\]]|%0[ADad]/;
+
+function isValidContactEmail(value) {
+  if (typeof value !== 'string') return false;
+  if (value.length === 0 || value.length > FEEDBACK_EMAIL_MAX) return false;
+  if (EMAIL_FORBIDDEN_RE.test(value)) return false;
+  if (!EMAIL_RE.test(value)) return false;
+  const atIdx = value.indexOf('@');
+  if (atIdx < 1 || atIdx > FEEDBACK_EMAIL_LOCAL_MAX) return false;
+  return true;
+}
 
 async function handleFeedback(req, res) {
+  // T-PII Round2 H-2: 未ログイン送信に対するIPベース第一防衛線。
+  // 認証なしで mode=feedback 早期分岐に入る経路がDoS / 間接スパムの入口。
+  const rl = checkRateLimit(req, 'feedback', {
+    limit: FEEDBACK_IP_LIMIT_PER_HOUR,
+    windowMs: FEEDBACK_IP_WINDOW_MS,
+  });
+  if (!rl.allowed) {
+    logSecurityEvent(EVENT.RATE_LIMIT_EXCEEDED, { path: '/api/ai-chat:feedback', ip: rl.ip });
+    return sendRateLimitExceeded(res, rl.resetAt);
+  }
+
   try {
     const { category, body, contactEmail, meta } = req.body || {};
     // バリデーション
@@ -331,8 +363,16 @@ async function handleFeedback(req, res) {
     if (body.length > 4000) {
       return res.status(400).json({ error: '内容は4000文字以内にしてください' });
     }
-    if (contactEmail && (typeof contactEmail !== 'string' || contactEmail.length > 200)) {
-      return res.status(400).json({ error: 'メールアドレスが不正です' });
+    // T-PII Round2 H-3: 形式 + CRLF注入 + 長さ上限の三段検証
+    if (contactEmail !== undefined && contactEmail !== null && contactEmail !== '') {
+      if (!isValidContactEmail(contactEmail)) {
+        logSecurityEvent(EVENT.INVALID_INPUT, {
+          path: '/api/ai-chat:feedback',
+          ip: rl.ip,
+          reason: 'contact_email_format',
+        });
+        return res.status(400).json({ error: 'メールアドレス形式が不正です' });
+      }
     }
 
     // 認証は任意（未ログインでも送信可能だが、ログイン中なら user_id をメタに）
@@ -350,23 +390,38 @@ async function handleFeedback(req, res) {
       } catch {}
     }
 
-    // レート制限: 1日あたり1ユーザー/IP 5件まで（スパム対策）
+    // レート制限: 1日あたり1ユーザー 5件まで（スパム対策）
+    // T-PII Round2 H-1: 旧実装はテーブル不在エラーを catch句で握り潰し常に許可していた。
+    // .select() の error / count を明示確認し、異常系をセキュリティログに残す。
+    // (takken は migrations/009_feedback.sql で本番テーブル投入済みなので通常運用は問題なし)
     if (userId) {
       try {
-        const today = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        const { count } = await supabaseAdmin
+        const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const { count, error: rateErr } = await supabaseAdmin
           .from('feedback_submissions')
           .select('id', { count: 'exact', head: true })
           .eq('user_id', userId)
-          .gte('submitted_at', today);
-        if ((count || 0) >= FEEDBACK_RATE_LIMIT_PER_DAY) {
+          .gte('submitted_at', since);
+        if (rateErr) {
+          logSecurityEvent(EVENT.SUSPICIOUS_PATTERN, {
+            path: '/api/ai-chat:feedback',
+            ip: rl.ip,
+            reason: 'feedback_rate_lookup_failed',
+            detail: rateErr.message,
+          });
+        } else if ((count || 0) >= FEEDBACK_RATE_LIMIT_PER_DAY) {
           return res.status(429).json({
             error: '本日の送信上限に達しました。明日また送信できます。',
             code: 'rate_limit_exceeded',
           });
         }
-      } catch {
-        // テーブルが無くてもメール送信は実行（レコード保存はベストエフォート）
+      } catch (e) {
+        logSecurityEvent(EVENT.SUSPICIOUS_PATTERN, {
+          path: '/api/ai-chat:feedback',
+          ip: rl.ip,
+          reason: 'feedback_rate_exception',
+          detail: e?.message,
+        });
       }
     }
 
@@ -377,7 +432,9 @@ async function handleFeedback(req, res) {
       return res.status(500).json({ error: 'メール送信が設定されていません' });
     }
     const catLabel = { bug: '🐛 バグ報告', feature: '✨ 機能要望', question: '❓ 質問', other: '💬 その他' }[category];
-    const subject = `[宅建アプリ] ${catLabel}: ${body.slice(0, 30)}${body.length > 30 ? '...' : ''}`;
+    // T-PII Round2: 件名行 CRLF注入対策で制御文字をスペースに正規化
+    const subjectBody = body.slice(0, 30).replace(/[\r\n\t\x00-\x1F\x7F]/g, ' ');
+    const subject = `[宅建アプリ] ${catLabel}: ${subjectBody}${body.length > 30 ? '...' : ''}`;
     const safe = (s) => String(s || '').replace(/[<>]/g, (c) => ({ '<': '&lt;', '>': '&gt;' }[c]));
     const html = `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;">
@@ -418,17 +475,31 @@ async function handleFeedback(req, res) {
       return res.status(500).json({ error: 'メール送信に失敗しました' });
     }
 
-    // 履歴保存（レート制限用 / ベストエフォート）
+    // 履歴保存（レート制限の前提となるレコード / ベストエフォート）
+    // T-PII Round2 H-1: insert失敗を黙殺せずログ出力。RLS違反等を早期検知
     if (userId) {
       try {
-        await supabaseAdmin.from('feedback_submissions').insert({
+        const { error: insertErr } = await supabaseAdmin.from('feedback_submissions').insert({
           user_id: userId,
           category,
           body: body.slice(0, 2000),
-          contact_email: contactEmail?.slice(0, 200) || null,
+          contact_email: contactEmail?.slice(0, FEEDBACK_EMAIL_MAX) || null,
           submitted_at: new Date().toISOString(),
         });
-      } catch {}
+        if (insertErr) {
+          logSecurityEvent(EVENT.SUSPICIOUS_PATTERN, {
+            path: '/api/ai-chat:feedback',
+            reason: 'feedback_insert_failed',
+            detail: insertErr.message,
+          });
+        }
+      } catch (e) {
+        logSecurityEvent(EVENT.SUSPICIOUS_PATTERN, {
+          path: '/api/ai-chat:feedback',
+          reason: 'feedback_insert_exception',
+          detail: e?.message,
+        });
+      }
     }
 
     return res.status(200).json({ ok: true });

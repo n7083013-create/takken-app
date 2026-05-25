@@ -119,7 +119,7 @@ function emailDay3(_email, examDays) {
       'こんにちは！学習は進んでますか？',
       `<p style="font-size:15px;line-height:24px">登録いただいてから3日。宅建試験合格に向けて、一緒に頑張りましょう！</p>
        <div style="background:#E8F5EC;border-left:4px solid #1B7A3D;padding:14px;border-radius:6px;margin:20px 0">
-         <p style="margin:0;font-size:14px;color:#1B5E20;font-weight:600">💡 効果的な学習法</p>
+         <p style="margin:0;font-size:14px;color:#145C2E;font-weight:600">💡 効果的な学習法</p>
          <p style="margin:6px 0 0 0;font-size:14px;color:#2E5C3A;line-height:22px">
            スキマ時間に「一問一答」を毎日10問解くだけで、試験までに300問以上攻略できます。
          </p>
@@ -189,7 +189,7 @@ function emailInactive3d(examDays) {
       'お久しぶりです。学習に戻りましょう',
       `<p style="font-size:15px;line-height:24px">最後の学習から3日。忙しい毎日、お疲れさまです。</p>
        <div style="background:#E8F5EC;border-left:4px solid #1B7A3D;padding:14px;border-radius:6px;margin:20px 0">
-         <p style="margin:0;font-size:14px;color:#1B5E20;font-weight:700">💡 1日1問でも、合格に近づきます</p>
+         <p style="margin:0;font-size:14px;color:#145C2E;font-weight:700">💡 1日1問でも、合格に近づきます</p>
          <p style="margin:6px 0 0 0;font-size:14px;color:#2E5C3A;line-height:22px">
            試験まで残り <b>${examDays}日</b>。今日の1問が、合格への大きな一歩になります。
          </p>
