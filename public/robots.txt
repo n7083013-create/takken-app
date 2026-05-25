@@ -4,4 +4,4 @@ Disallow: /api/
 Disallow: /auth/
 Disallow: /paywall
 
-Sitemap: https://takken-app-olive.vercel.app/sitemap.xml
+Sitemap: https://takkenkanzen.com/sitemap.xml

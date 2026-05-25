@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- ブランド/LP（apex） -->
   <url>
-    <loc>https://takken-app-olive.vercel.app/</loc>
-    <lastmod>2026-04-16</lastmod>
+    <loc>https://takkenkanzen.com/</loc>
+    <lastmod>2026-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://takken-app-olive.vercel.app/auth/login</loc>
-    <lastmod>2026-04-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://takken-app-olive.vercel.app/legal/privacy</loc>
-    <lastmod>2026-04-16</lastmod>
+    <loc>https://takkenkanzen.com/legal/privacy</loc>
+    <lastmod>2026-04-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://takken-app-olive.vercel.app/legal/terms</loc>
-    <lastmod>2026-04-16</lastmod>
+    <loc>https://takkenkanzen.com/legal/terms</loc>
+    <lastmod>2026-04-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://takken-app-olive.vercel.app/legal/tokushoho</loc>
-    <lastmod>2026-04-16</lastmod>
+    <loc>https://takkenkanzen.com/legal/tokushoho</loc>
+    <lastmod>2026-04-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+  </url>
+
+  <!-- アプリ本体（subdomain） -->
+  <url>
+    <loc>https://app.takkenkanzen.com/</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://app.takkenkanzen.com/auth/login</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

@@ -9,9 +9,9 @@
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "X-XSS-Protection", "value": "1; mode=block" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(self), geolocation=()" },
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' https://js.pay.jp; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; frame-src 'none'; object-src 'none'; base-uri 'self';" }
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.pay.jp https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://analytics.tiktok.com https://static.ads-twitter.com https://*.googletagservices.com https://*.googlesyndication.com https://*.doubleclick.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.facebook.com https://*.tiktok.com https://*.twitter.com https://*.googleadservices.com https://*.doubleclick.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.facebook.com https://*.tiktok.com https://*.googleadservices.com https://*.google.com https://*.doubleclick.net; font-src 'self' data:; frame-src 'self' https://td.doubleclick.net https://*.facebook.com; object-src 'none'; base-uri 'self';" }
       ]
     },
     {
@@ -24,5 +24,15 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!_expo|assets|favicon).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/weekly-review-cron",
+      "schedule": "0 23 * * 0"
+    },
+    {
+      "path": "/api/drip-campaign-cron",
+      "schedule": "0 0 * * *"
+    }
   ]
 }

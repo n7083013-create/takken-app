@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>OGP - 宅建士 完全対策</title>
+<style>
+  body {
+    margin: 0;
+    background: #1a1a1a;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
+  }
+  .ogp {
+    width: 1200px;
+    height: 630px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1B7A3D 0%, #0F5D2E 50%, #073D1E 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px;
+    box-sizing: border-box;
+  }
+
+  /* 大きい装飾要素（背景の奥行き） */
+  .deco-circle-1 {
+    position: absolute;
+    top: -200px;
+    left: -150px;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+  }
+  .deco-circle-2 {
+    position: absolute;
+    bottom: -250px;
+    right: -200px;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: rgba(255, 215, 0, 0.06);
+    pointer-events: none;
+  }
+
+  /* 上の小さなバッジ */
+  .top-badge {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    padding: 14px 32px;
+    border-radius: 999px;
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 50px;
+    letter-spacing: 1px;
+  }
+
+  /* メインタイトル（最大に） */
+  .title {
+    position: relative;
+    z-index: 1;
+    font-size: 130px;
+    font-weight: 900;
+    letter-spacing: -4px;
+    line-height: 1;
+    margin: 0 0 35px 0;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* サブタイトル（短く強く） */
+  .subtitle {
+    position: relative;
+    z-index: 1;
+    font-size: 50px;
+    font-weight: 800;
+    color: #FFD700;
+    margin-bottom: 50px;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  /* 下のCTAバナー */
+  .bottom-cta {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 22px 50px;
+    border-radius: 999px;
+    font-size: 36px;
+    font-weight: 800;
+  }
+  .bottom-cta .accent {
+    color: #FFD700;
+    font-size: 42px;
+    font-weight: 900;
+  }
+  .bottom-cta .divider {
+    width: 2px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="ogp">
+  <div class="deco-circle-1"></div>
+  <div class="deco-circle-2"></div>
+
+  <div class="top-badge">🎯 AI搭載 宅建学習アプリ</div>
+
+  <h1 class="title">宅建士 完全対策</h1>
+
+  <div class="subtitle">「今、受かるか」が一目でわかる</div>
+
+  <div class="bottom-cta">
+    <span class="accent">7日間無料</span>
+    <div class="divider"></div>
+    <span>月額¥980</span>
+  </div>
+</div>
+
+</body>
+</html>
