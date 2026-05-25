@@ -609,9 +609,9 @@ export default function LandingPage() {
         <Pressable
           ref={finalCTARef}
           style={[s.finalCTABtn, Shadow.md]}
-          onPress={goLogin}
+          onPress={goPremiumMonthly}
           accessibilityRole="button"
-          accessibilityLabel="7日間無料で始める"
+          accessibilityLabel="Premium 月額 7日間無料トライアル"
         >
           <Text style={s.finalCTABtnText}>7日間 無料で始める</Text>
           <Text style={s.finalCTABtnSub}>まずは無料で全機能を体験</Text>
