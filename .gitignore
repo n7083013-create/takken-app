@@ -32,6 +32,8 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env.production
+.env
 
 # typescript
 *.tsbuildinfo
@@ -40,3 +42,19 @@ yarn-error.*
 /ios
 /android
 .vercel
+
+# build artifacts (NEVER commit signed builds)
+*.aab
+*.apk
+*.ipa
+application-*.aab
+
+# Google Play / Apple credentials (NEVER commit)
+google-play-service-account.json
+*-service-account*.json
+takken-app-*.json
+GoogleService-Info.plist
+google-services.json
+AuthKey_*.p8
+
+coverage/
