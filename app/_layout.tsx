@@ -2,7 +2,6 @@
 import { initSentry, setSentryUser } from '../services/sentry';
 initSentry();
 
-import '../global.css';
 import { useEffect, useRef } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
