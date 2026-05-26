@@ -48,6 +48,16 @@ import {
 } from '../../store/useProgressStore';
 import type { StudyStats } from '../../types';
 
+/**
+ * 実装側 `getDateKey()` と同じローカルタイム基準の日付キーを返す。
+ * `new Date().toISOString().slice(0, 10)` (UTC) を使うと、日本の深夜帯
+ * (JST 00:00〜09:00) でテスト実行すると UTC と日付がズレて FAIL する。
+ * gas-shunin commit 28b6907 と同じ port。
+ */
+function getLocalDateKey(date: Date = new Date()): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
 const baseStats: StudyStats = {
   totalQuestions: 0,
   totalCorrect: 0,
@@ -316,7 +326,7 @@ describe('mergeQuickQuizStats - 一問一答 stats マージ', () => {
   });
 
   test('todayCount は今日の日付の値だけ MAX (古い todayDate は無視)', () => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getLocalDateKey();
     const local = makeQQ({ todayCount: 3, todayDate: today });
     const remote = makeQQ({ todayCount: 5, todayDate: today });
     const merged = mergeQuickQuizStats(local, remote);
@@ -325,8 +335,8 @@ describe('mergeQuickQuizStats - 一問一答 stats マージ', () => {
   });
 
   test('todayDate が古い片方は todayCount に寄与しない', () => {
-    const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const today = getLocalDateKey();
+    const yesterday = getLocalDateKey(new Date(Date.now() - 86400000));
     const local = makeQQ({ todayCount: 99, todayDate: yesterday }); // 昨日のデータ
     const remote = makeQQ({ todayCount: 4, todayDate: today });
     const merged = mergeQuickQuizStats(local, remote);
@@ -335,7 +345,7 @@ describe('mergeQuickQuizStats - 一問一答 stats マージ', () => {
   });
 
   test('両方とも今日でない → todayCount = 0 にリセット', () => {
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const yesterday = getLocalDateKey(new Date(Date.now() - 86400000));
     const local = makeQQ({ todayCount: 5, todayDate: yesterday });
     const remote = makeQQ({ todayCount: 3, todayDate: yesterday });
     const merged = mergeQuickQuizStats(local, remote);
@@ -366,7 +376,7 @@ describe('mergeQuickQuizStats - 一問一答 stats マージ', () => {
   });
 
   test('回帰: モバイル今日 5問 / PC 今日 2問 → PC sync 後に 5問 (モバイルが失われない)', () => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getLocalDateKey();
     const pcLocal = makeQQ({ total: 2, correct: 1, todayCount: 2, todayDate: today });
     const cloudFromMobile = makeQQ({ total: 5, correct: 4, todayCount: 5, todayDate: today });
     const merged = mergeQuickQuizStats(pcLocal, cloudFromMobile);
