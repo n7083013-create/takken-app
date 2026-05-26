@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   Pressable,
   StyleSheet,
   KeyboardAvoidingView,
@@ -21,6 +20,7 @@ import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useAuthStore } from '../../store/useAuthStore';
 import { supabase, isSupabaseConfigured } from '../../services/supabase';
 import { trackEvent, trackEventWithUserData, getAdAttribution } from '../../services/analytics';
+import { Input } from '../../components/ui/Input';
 
 type Mode = 'signin' | 'signup';
 
@@ -401,25 +401,20 @@ export default function LoginScreen() {
 
           {/* メールフォーム */}
           <View style={[s.card, Shadow.sm]}>
-            <TextInput
-              style={s.input}
+            <Input
+              variant="email"
               value={email}
               onChangeText={setEmail}
               placeholder="メールアドレス"
-              placeholderTextColor={colors.textTertiary}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
             />
 
-            <TextInput
-              style={[s.input, { marginTop: 10 }]}
+            <View style={{ height: 10 }} />
+
+            <Input
+              variant="password"
               value={password}
               onChangeText={setPassword}
               placeholder="パスワード（8文字以上）"
-              placeholderTextColor={colors.textTertiary}
-              secureTextEntry
-              autoCapitalize="none"
             />
 
             {mode === 'signup' && (
@@ -670,16 +665,6 @@ function makeStyles(C: ThemeColors) {
 
     // Email form
     card: { backgroundColor: C.card, borderRadius: 16, padding: 20 },
-    input: {
-      borderWidth: 1,
-      borderColor: C.border,
-      borderRadius: 10,
-      paddingHorizontal: 14,
-      paddingVertical: 12,
-      fontSize: 15,
-      color: C.text,
-      backgroundColor: C.background,
-    },
     agreeRow: { flexDirection: 'row', alignItems: 'center', marginTop: 14 },
     checkbox: {
       width: 20,

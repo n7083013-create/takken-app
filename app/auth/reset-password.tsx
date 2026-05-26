@@ -1,11 +1,9 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   Pressable,
   StyleSheet,
-  Platform,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +12,7 @@ import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { supabase } from '../../services/supabase';
 import { infoAlert } from '../../services/alert';
 import { validatePassword } from '../../services/validation';
+import { Input } from '../../components/ui/Input';
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
@@ -72,23 +71,24 @@ export default function ResetPasswordScreen() {
         <Text style={s.title}>新しいパスワードを設定</Text>
         <Text style={s.sub}>8文字以上で入力してください</Text>
 
-        <TextInput
-          style={s.input}
+        <Input
+          variant="password"
           value={password}
           onChangeText={setPassword}
           placeholder="新しいパスワード"
-          placeholderTextColor={colors.textTertiary}
-          secureTextEntry
-          autoCapitalize="none"
+          helperText="8文字以上の英数字"
         />
-        <TextInput
-          style={[s.input, { marginTop: 12 }]}
+        <View style={{ height: 12 }} />
+        <Input
+          variant="password"
           value={confirm}
           onChangeText={setConfirm}
           placeholder="パスワード（確認）"
-          placeholderTextColor={colors.textTertiary}
-          secureTextEntry
-          autoCapitalize="none"
+          error={
+            confirm.length > 0 && confirm !== password
+              ? 'パスワードが一致しません'
+              : undefined
+          }
         />
 
         <Pressable
@@ -110,16 +110,6 @@ function makeStyles(C: ThemeColors) {
     center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
     title: { fontSize: 22, fontWeight: '800', color: C.text, marginBottom: 8 },
     sub: { fontSize: 14, color: C.textSecondary, marginBottom: 24 },
-    input: {
-      borderWidth: 1,
-      borderColor: C.border,
-      borderRadius: 10,
-      paddingHorizontal: 14,
-      paddingVertical: 12,
-      fontSize: 15,
-      color: C.text,
-      backgroundColor: C.card,
-    },
     btn: {
       marginTop: 24,
       backgroundColor: C.primary,
