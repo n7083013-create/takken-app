@@ -8,7 +8,6 @@ import {
   Text,
   Modal,
   Pressable,
-  TextInput,
   ScrollView,
   StyleSheet,
   ActivityIndicator,
@@ -18,6 +17,7 @@ import {
 } from 'react-native';
 import { FontSize, Spacing, BorderRadius } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
+import { Input } from './ui/Input';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { askAI } from '../services/claude';
 import { sanitizeAIQuery } from '../services/validation';
@@ -234,16 +234,18 @@ export function AIChatModal(props: AIChatModalProps) {
 
           {/* 入力 */}
           <View style={s.inputRow}>
-            <TextInput
-              style={s.input}
+            <Input
+              variant="multiline"
               placeholder={isListening ? '話してください...' : '質問を入力...'}
-              placeholderTextColor={colors.textDisabled}
               value={input}
               onChangeText={setInput}
-              multiline
+              rows={1}
               maxLength={500}
               returnKeyType="send"
               onSubmitEditing={handleSend}
+              accessibilityLabel="AIへの質問"
+              containerStyle={s.inputFlex}
+              inputStyle={s.inputBody}
             />
             {/* マイクボタン */}
             {micAvailable && (
@@ -399,18 +401,8 @@ function makeStyles(C: ThemeColors) {
       backgroundColor: C.card,
       gap: 8,
     },
-    input: {
-      flex: 1,
-      backgroundColor: C.background,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      fontSize: FontSize.subhead,
-      color: C.text,
-      maxHeight: 160,
-      borderWidth: 1,
-      borderColor: C.border,
-    },
+    inputFlex: { flex: 1 },
+    inputBody: { maxHeight: 120 },
     micBtn: {
       width: 36,
       height: 36,

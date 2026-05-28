@@ -10,7 +10,6 @@ import { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   ScrollView,
   Pressable,
   StyleSheet,
@@ -24,6 +23,7 @@ import Constants from 'expo-constants';
 import { useAuthStore } from '../store/useAuthStore';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import { Shadow } from '../constants/theme';
+import { Input } from '../components/ui/Input';
 import { API_BASE_URL, APP_VERSION } from '../constants/config';
 import { infoAlert } from '../services/alert';
 import { WebBackButton } from '../components/WebBackButton';
@@ -166,30 +166,26 @@ export default function FeedbackScreen() {
             })}
           </View>
 
-          <Text style={s.sectionLabel}>内容</Text>
-          <TextInput
-            style={s.textarea}
+          <Input
+            variant="multiline"
+            label="内容"
             placeholder="ご質問・ご要望の内容をお書きください"
-            placeholderTextColor={colors.textTertiary}
-            multiline
-            numberOfLines={8}
             value={body}
             onChangeText={setBody}
+            rows={8}
             maxLength={4000}
-            textAlignVertical="top"
+            accessibilityLabel="お問い合わせ内容"
           />
-          <Text style={s.charCount}>{body.length} / 4000</Text>
 
-          <Text style={s.sectionLabel}>ご連絡先メールアドレス</Text>
-          <TextInput
-            style={s.input}
+          <View style={s.fieldGap} />
+          <Input
+            variant="email"
+            label="ご連絡先メールアドレス"
             placeholder="返信先メールアドレス"
-            placeholderTextColor={colors.textTertiary}
             value={contactEmail}
             onChangeText={setContactEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
+            maxLength={MAX_EMAIL}
+            accessibilityLabel="ご連絡先メールアドレス"
           />
           <Text style={s.note}>
             ※ ログイン中のメールアドレスが自動入力されています。{'\n'}
@@ -242,26 +238,7 @@ function makeStyles(C: ThemeColors) {
     catIcon: { fontSize: 22 },
     catLabel: { fontSize: 14, fontWeight: '700', color: C.textSecondary },
     catLabelActive: { color: C.primary },
-    textarea: {
-      backgroundColor: C.card,
-      borderRadius: 12,
-      borderWidth: 1.5,
-      borderColor: C.border,
-      padding: 14,
-      fontSize: 15,
-      color: C.text,
-      minHeight: 160,
-    },
-    charCount: { fontSize: 12, color: C.textTertiary, textAlign: 'right', marginTop: 4 },
-    input: {
-      backgroundColor: C.card,
-      borderRadius: 12,
-      borderWidth: 1.5,
-      borderColor: C.border,
-      padding: 14,
-      fontSize: 15,
-      color: C.text,
-    },
+    fieldGap: { height: 16 },
     note: { fontSize: 11, color: C.textTertiary, marginTop: 6, lineHeight: 16 },
     primaryBtn: {
       backgroundColor: C.primary,

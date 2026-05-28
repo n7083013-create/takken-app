@@ -8,7 +8,6 @@ import {
   View,
   Text,
   Pressable,
-  TextInput,
   StyleSheet,
   Alert,
   KeyboardAvoidingView,
@@ -17,6 +16,7 @@ import {
 } from 'react-native';
 import { Shadow } from '../constants/theme';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
+import { Input } from './ui/Input';
 import {
   useReportStore,
   ReportReason,
@@ -77,16 +77,14 @@ export function ReportModal({ visible, questionId, onClose }: Props) {
               </Pressable>
             ))}
 
-            <Text style={s.sectionLabel}>詳細（任意）</Text>
-            <TextInput
-              style={s.input}
+            <View style={s.detailGap} />
+            <Input
+              variant="multiline"
+              label="詳細（任意）"
               value={detail}
               onChangeText={setDetail}
               placeholder="どの部分に問題があるか教えてください"
-              placeholderTextColor={colors.textTertiary}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
+              rows={4}
             />
 
             <View style={s.btnRow}>
@@ -145,16 +143,7 @@ function makeStyles(C: ThemeColors) {
     },
     radioSelected: { borderColor: C.primary, backgroundColor: C.primary },
     reasonLabel: { fontSize: 14, color: C.text, flex: 1 },
-    input: {
-      borderWidth: 1,
-      borderColor: C.border,
-      borderRadius: 10,
-      padding: 12,
-      fontSize: 14,
-      color: C.text,
-      minHeight: 90,
-      backgroundColor: C.background,
-    },
+    detailGap: { height: 12 },
     btnRow: { flexDirection: 'row', gap: 10, marginTop: 20 },
     btn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
     btnCancel: { backgroundColor: C.background },

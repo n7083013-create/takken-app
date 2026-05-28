@@ -15,7 +15,6 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
-  TextInput,
   Alert,
   Platform,
 } from 'react-native';
@@ -30,6 +29,7 @@ import {
   LetterSpacing,
 } from '../../constants/theme';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
+import { Input } from '../../components/ui/Input';
 import { useAuthStore } from '../../store/useAuthStore';
 import { API_BASE_URL } from '../../constants/config';
 import { ALL_QUESTIONS } from '../../data';
@@ -413,15 +413,15 @@ export default function AdminReviewScreen() {
         {currentQuestion && (
           <View style={[s.section, Shadow.sm]}>
             <Text style={s.sectionTitle}>📝 メモ（任意・⚠️ 修正必要のとき送信されます）</Text>
-            <TextInput
-              style={s.noteInput}
-              multiline
+            <Input
+              variant="multiline"
               placeholder="例: 民法XXX条の改正で正解が変わる可能性"
-              placeholderTextColor={colors.textTertiary}
               value={noteDraft}
               onChangeText={setNoteDraft}
+              rows={4}
               maxLength={1000}
-              editable={!submitting}
+              disabled={submitting}
+              accessibilityLabel="レビューメモ"
             />
           </View>
         )}
@@ -826,18 +826,6 @@ function makeStyles(C: ThemeColors) {
       fontSize: FontSize.caption2,
       color: C.textTertiary,
       marginRight: 12,
-    },
-
-    noteInput: {
-      backgroundColor: C.background,
-      borderWidth: 1,
-      borderColor: C.borderLight,
-      borderRadius: BorderRadius.md,
-      padding: 12,
-      minHeight: 80,
-      color: C.text,
-      fontSize: FontSize.caption,
-      textAlignVertical: 'top',
     },
 
     actionRow: {

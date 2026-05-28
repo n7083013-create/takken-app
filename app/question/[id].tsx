@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Animated,
   Modal,
-  TextInput,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -19,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getNextInAiQueue, clearAiQueue } from '../../utils/aiQueue';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius, DifficultyLabel, DifficultyColor } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
+import { Input } from '../../components/ui/Input';
 import { CATEGORY_LABELS, CATEGORY_COLORS, Category, ConfidenceLevel, AIChatMessage } from '../../types';
 import { getQuestionById, getGlossaryByTags, getGlossaryBySlug, ALL_QUESTIONS } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
@@ -438,15 +438,17 @@ export default function QuestionDetailScreen() {
 
         {/* Input */}
         <View style={s.aiInputRow}>
-          <TextInput
-            style={s.aiInput}
+          <Input
+            variant="multiline"
             placeholder="質問を入力..."
-            placeholderTextColor={colors.textDisabled}
             value={aiInput}
             onChangeText={setAiInput}
-            multiline
+            rows={1}
             maxLength={500}
-            editable={!aiLoading}
+            disabled={aiLoading}
+            accessibilityLabel="AIへの質問"
+            containerStyle={s.aiInputFlex}
+            inputStyle={s.aiInputBody}
           />
           <Pressable
             style={[s.aiSendBtn, (!aiInput.trim() || aiLoading || !canAI) && s.aiSendBtnDisabled]}
@@ -1217,20 +1219,8 @@ function makeStyles(C: ThemeColors, isWide = false) {
       borderTopColor: C.border,
       backgroundColor: C.card,
     },
-    aiInput: {
-      flex: 1,
-      backgroundColor: C.background,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-      fontSize: FontSize.body,
-      color: C.text,
-      minHeight: 52,
-      maxHeight: 140,
-      borderWidth: 1,
-      borderColor: C.border,
-      lineHeight: LineHeight.body,
-    },
+    aiInputFlex: { flex: 1 },
+    aiInputBody: { maxHeight: 140 },
     aiSendBtn: {
       width: 48,
       height: 48,

@@ -5,7 +5,6 @@ import {
   Pressable,
   StyleSheet,
   ScrollView,
-  TextInput,
   ActivityIndicator,
   Modal,
   KeyboardAvoidingView,
@@ -17,6 +16,7 @@ import { useRouter } from 'expo-router';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
 import { CATEGORIES } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
+import { Input } from '../../components/ui/Input';
 import {
   CATEGORY_LABELS,
   CATEGORY_ICONS,
@@ -508,15 +508,17 @@ export default function QuickQuizScreen() {
 
             {/* Input */}
             <View style={s.aiInputRow}>
-              <TextInput
-                style={s.aiInput}
+              <Input
+                variant="multiline"
                 placeholder="質問を入力..."
-                placeholderTextColor={colors.textDisabled}
                 value={aiInput}
                 onChangeText={setAiInput}
-                multiline
+                rows={1}
                 maxLength={500}
-                editable={!aiLoading}
+                disabled={aiLoading}
+                accessibilityLabel="AIへの質問"
+                containerStyle={s.aiInputFlex}
+                inputStyle={s.aiInputBody}
               />
               <Pressable
                 style={[s.aiSendBtn, (!aiInput.trim() || aiLoading || !canAI) && s.aiSendBtnDisabled]}
@@ -906,7 +908,8 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   aiMsgText: { fontSize: FontSize.subhead, color: C.text, lineHeight: LineHeight.body },
   aiMsgTextUser: { color: C.white },
   aiInputRow: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 16, paddingVertical: 14, gap: 12, borderTopWidth: 1, borderTopColor: C.border, backgroundColor: C.card },
-  aiInput: { flex: 1, backgroundColor: C.background, borderRadius: BorderRadius.lg, paddingHorizontal: 18, paddingVertical: 14, fontSize: FontSize.body, color: C.text, minHeight: 52, maxHeight: 140, borderWidth: 1, borderColor: C.border, lineHeight: LineHeight.body },
+  aiInputFlex: { flex: 1 },
+  aiInputBody: { maxHeight: 140 },
   aiSendBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center' },
   aiSendBtnDisabled: { backgroundColor: C.borderLight },
   aiSendIcon: { fontSize: 20, fontWeight: '800', color: C.white },

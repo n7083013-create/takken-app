@@ -11,7 +11,6 @@ import {
   StyleSheet,
   Modal,
   ScrollView,
-  TextInput,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -20,6 +19,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import { FontSize, LineHeight, Spacing, BorderRadius } from '../constants/theme';
+import { Input } from './ui/Input';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { AIChatMessage } from '../types';
 import { askAI } from '../services/claude';
@@ -210,15 +210,17 @@ export function GlobalAIButton() {
             )}
 
             <View style={s.inputRow}>
-              <TextInput
-                style={s.input}
+              <Input
+                variant="multiline"
                 placeholder={isListening ? '話してください...' : '宅建について質問...'}
-                placeholderTextColor={colors.textDisabled}
                 value={input}
                 onChangeText={setInput}
-                multiline
+                rows={1}
                 maxLength={500}
-                editable={!loading}
+                disabled={loading}
+                accessibilityLabel="AIへの質問"
+                containerStyle={s.inputFlex}
+                inputStyle={s.inputBody}
               />
               {/* マイクボタン */}
               {micAvailable && (
@@ -393,20 +395,8 @@ function makeStyles(C: ThemeColors) {
       borderTopColor: C.border,
       backgroundColor: C.card,
     },
-    input: {
-      flex: 1,
-      backgroundColor: C.background,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: 14,
-      paddingVertical: 10,
-      fontSize: FontSize.subhead,
-      color: C.text,
-      minHeight: 44,
-      maxHeight: 160,
-      borderWidth: 1,
-      borderColor: C.border,
-      lineHeight: 22,
-    },
+    inputFlex: { flex: 1 },
+    inputBody: { maxHeight: 120 },
     micBtn: {
       width: 40,
       height: 40,

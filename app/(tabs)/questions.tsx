@@ -4,7 +4,6 @@ import {
   Text,
   SectionList,
   Pressable,
-  TextInput,
   StyleSheet,
   ScrollView,
 } from 'react-native';
@@ -13,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius, DifficultyLabel, DifficultyColor } from '../../constants/theme';
 import { CATEGORIES } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
+import { Input } from '../../components/ui/Input';
 import {
   CATEGORY_LABELS,
   CATEGORY_ICONS,
@@ -198,21 +198,13 @@ export default function QuestionsScreen() {
 
       {/* Search */}
       <View style={s.searchWrap}>
-        <View style={s.searchBox}>
-          <Text style={s.searchIcon}>🔍</Text>
-          <TextInput
-            style={s.searchInput}
-            placeholder="キーワードで検索..."
-            placeholderTextColor={colors.textDisabled}
-            value={searchText}
-            onChangeText={setSearchText}
-          />
-          {searchText.length > 0 && (
-            <Pressable onPress={() => setSearchText('')} hitSlop={8} accessibilityRole="button" accessibilityLabel="検索をクリア">
-              <Text style={s.clearBtn}>✕</Text>
-            </Pressable>
-          )}
-        </View>
+        <Input
+          variant="search"
+          placeholder="キーワードで検索..."
+          value={searchText}
+          onChangeText={setSearchText}
+          accessibilityLabel="問題を検索"
+        />
       </View>
 
       {/* Category Filters */}
@@ -442,28 +434,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
 
   // ─── Search ───
   searchWrap: { paddingHorizontal: Spacing.xl, marginBottom: Spacing.md },
-  searchBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: C.card,
-    borderRadius: BorderRadius.lg,
-    paddingHorizontal: 14,
-    borderWidth: 1,
-    borderColor: C.border,
-  },
-  searchIcon: { fontSize: 15, marginRight: 8 },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 13,
-    fontSize: FontSize.subhead,
-    color: C.text,
-    lineHeight: LineHeight.subhead,
-  },
-  clearBtn: {
-    fontSize: 15,
-    color: C.textTertiary,
-    padding: 4,
-  },
 
   // ─── Filters ───
   filterScroll: { flexShrink: 0, flexGrow: 0 },
