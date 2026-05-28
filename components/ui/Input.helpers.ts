@@ -138,9 +138,11 @@ export function resolveBackgroundColor(
 // state に応じたテキスト色
 export function resolveTextColor(
   C: ThemeColors,
-  state: { disabled: boolean },
+  state: { disabled: boolean; loading?: boolean },
 ): string {
-  return state.disabled ? C.textDisabled : C.text;
+  if (state.disabled) return C.textDisabled;
+  if (state.loading) return C.textSecondary;
+  return C.text;
 }
 
 // border 太さ

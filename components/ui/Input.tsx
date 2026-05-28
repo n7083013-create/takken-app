@@ -16,6 +16,7 @@ import {
   TextInput,
   Pressable,
   ActivityIndicator,
+  Platform,
   StyleSheet,
   type TextInput as RNTextInput,
 } from 'react-native';
@@ -96,7 +97,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
     isError,
     disabled: !!disabled,
   });
-  const textColor = resolveTextColor(C, { disabled: !!disabled });
+  const textColor = resolveTextColor(C, { disabled: !!disabled, loading: !!loading });
   const borderWidth = resolveBorderWidth(focused, isError);
   const minHeight = resolveMinHeight(variant, rows, Spacing.md, LineHeight.subhead);
   const derivedA11yLabel = deriveAccessibilityLabel(
@@ -104,6 +105,13 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
     label,
     placeholder,
   );
+  const webA11yProps =
+    Platform.OS === 'web'
+      ? ({
+          'aria-invalid': isError ? true : undefined,
+          'aria-required': required ? true : undefined,
+        } as Record<string, boolean | undefined>)
+      : {};
 
   const handleClear = useCallback(() => {
     if (onClear) onClear();
@@ -172,7 +180,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
           onSubmitEditing={onSubmitEditing}
           accessibilityLabel={derivedA11yLabel}
           accessibilityHint={accessibilityHint ?? helperText}
-          accessibilityState={{ disabled: isInactive }}
+          accessibilityState={{ disabled: isInactive, busy: !!loading }}
           testID={testID}
           style={[
             s.input,
@@ -183,6 +191,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
             },
             inputStyle,
           ]}
+          {...webA11yProps}
           {...variantProps}
           {...overrideProps}
         />

@@ -7,7 +7,7 @@ Read this BEFORE writing any code.
 
 ## Project Info
 - **Name**: takken-app (宅建士 完全対策)
-- **Framework**: Expo + React Native + TypeScript + NativeWind(撤去予定)
+- **Framework**: Expo + React Native + TypeScript (NativeWind/Tailwind は 2026-05-27 に撤去済み)
 - **Backend**: Supabase + Vercel(Serverless Functions)
 - **Status**: **pre-launch**(ユーザー0、リリース予定 2026-06頃)
 
@@ -27,13 +27,13 @@ Read this BEFORE writing any code.
 ## 🎯 takken-app 固有の知識
 
 ### 直近の状態
-- **本番 URL**: `https://takken-app.vercel.app`
+- **本番 URL**: `https://takkenkanzen.com`
 - **GitHub**: `https://github.com/n7083013-create/takken-app`
 - **Supabase**: `https://nyppnuvfkohbgcqgwfxr.supabase.co`
 - **DB trigger 状態**: 健全(`(id, email) + ON CONFLICT DO NOTHING`、display_name 残骸なし)
-- **直近 commit**: `3390b89 fix(auth): PKCE code exchange in init() for Google OAuth on Web`
-- **未コミット変更**: 約138件(前セッション以前の残骸が多く、分類必要)
-- **テスト数**: 759件(全 PASS、2026-05-24 時点)
+- **直近 commit**: `c0a1080 feat(ui): Input 共通部品実装 + auth 系 4 ファイル置換 (T8 Phase 2)`
+- **未コミット変更**: 作業開始前に `git status --short` と `CURRENT_STATE.md` を確認
+- **テスト数**: 795件(全 PASS、2026-05-28 時点)
 
 ### ディレクトリ構造
 ```

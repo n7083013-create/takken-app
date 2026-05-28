@@ -126,6 +126,12 @@ describe('Input - disabled state', () => {
     expect(resolveTextColor(LightT, { disabled: false })).toBe(Colors.text);
   });
 
+  test('loading で textColor が textSecondary になる', () => {
+    expect(resolveTextColor(LightT, { disabled: false, loading: true })).toBe(
+      Colors.textSecondary,
+    );
+  });
+
   test('Input.tsx で isInactive=true 時 onChangeText を no-op に差し替える', () => {
     expect(INPUT_SRC).toMatch(/onChangeText=\{isInactive\s*\?\s*\(\)\s*=>\s*\{\}\s*:\s*onChangeText\}/);
   });
@@ -147,8 +153,10 @@ describe('Input - loading state', () => {
     expect(INPUT_SRC).toMatch(/\{loading\s*&&\s*\([\s\S]*?ActivityIndicator/);
   });
 
-  test('accessibilityState で disabled = isInactive (loading も含む)', () => {
-    expect(INPUT_SRC).toMatch(/accessibilityState=\{\{\s*disabled:\s*isInactive\s*\}\}/);
+  test('accessibilityState で disabled と busy を伝える', () => {
+    expect(INPUT_SRC).toMatch(
+      /accessibilityState=\{\{\s*disabled:\s*isInactive,\s*busy:\s*!!loading\s*\}\}/,
+    );
   });
 });
 
@@ -294,6 +302,11 @@ describe('Input - accessibilityLabel auto-derive', () => {
 
   test('全て未指定なら undefined (SR 側のフォールバックに委ねる)', () => {
     expect(deriveAccessibilityLabel(undefined, undefined, undefined)).toBeUndefined();
+  });
+
+  test('Web 向けに aria-invalid / aria-required を渡す', () => {
+    expect(INPUT_SRC).toMatch(/'aria-invalid':\s*isError\s*\?\s*true\s*:\s*undefined/);
+    expect(INPUT_SRC).toMatch(/'aria-required':\s*required\s*\?\s*true\s*:\s*undefined/);
   });
 });
 

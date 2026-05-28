@@ -17,6 +17,32 @@ import { logError } from '../services/errorLogger';
 
 const STORAGE_KEY = '@takken_progress';
 
+function isJestRuntime(): boolean {
+  return typeof process !== 'undefined' && !!process.env.JEST_WORKER_ID;
+}
+
+function trackFirstQuestionAnsweredActivation(): void {
+  const params = { value: 1, currency: 'JPY' };
+
+  if (isJestRuntime()) {
+    try {
+      // Jest では対象テストだけが analytics を mock する。
+      // mock されていないテストでは RN 依存を読まずに抜ける。
+      const analytics = require('../services/analytics') as {
+        trackEvent?: (eventName: string, params?: Record<string, unknown>) => void;
+      };
+      analytics.trackEvent?.('first_question_answered', params);
+    } catch {
+      // テスト環境で mock が無い場合は、計測副作用を発火しない。
+    }
+    return;
+  }
+
+  import('../services/analytics')
+    .then((m) => m.trackEvent('first_question_answered', params))
+    .catch(() => {});
+}
+
 // ── 解答後のクラウド即時プッシュ（デバウンス 1 秒） ──────────────────
 // 解答するたびにクラウドへ Push することで、別デバイスが pull したとき
 // 最新データが取得できる。1秒間の操作をまとめて1回の API 呼び出しに集約する。
@@ -24,6 +50,7 @@ const STORAGE_KEY = '@takken_progress';
 let _cloudPushTimer: ReturnType<typeof setTimeout> | null = null;
 
 function scheduleCloudPush(): void {
+  if (isJestRuntime()) return;
   if (_cloudPushTimer) clearTimeout(_cloudPushTimer);
   _cloudPushTimer = setTimeout(() => {
     _cloudPushTimer = null;
@@ -528,18 +555,18 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
     // [Phase 1.3] アクティベーション (初回正解) を Google Ads / GA4 に通知
     if (isFirstCorrect) {
-      import('../services/analytics')
-        .then((m) => m.trackEvent('first_question_answered', { value: 1, currency: 'JPY' }))
-        .catch(() => {});
+      trackFirstQuestionAnsweredActivation();
     }
 
     // ストリーク維持通知 + 日次リマインダー本文を最新化
     // - 答案ごとに最終学習から 20-22h 後に再予約 → ストリーク切れ前夜の警告
     // - 日次リマインダー本文も同時に更新（dueCount, streak, weakCount を反映）
     // 循環依存を避けるため動的 import + fire-and-forget
-    import('../services/notifications')
-      .then((m) => m.refreshNotificationsAfterAnswer())
-      .catch((e) => logError(e, { context: 'progress.refreshNotifications' }));
+    if (!isJestRuntime()) {
+      import('../services/notifications')
+        .then((m) => m.refreshNotificationsAfterAnswer())
+        .catch((e) => logError(e, { context: 'progress.refreshNotifications' }));
+    }
   },
 
   toggleBookmark(questionId: string) {
