@@ -164,7 +164,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               </View>
               <Text style={s.pageTitle}>試験まであと {daysUntilExam}日</Text>
               <Text style={s.pageSubtitle}>
-                全 2,020 問の過去問×AI解説で、{'\n'}あなた専用の最短合格ルートを作成
+                全 2,020 問の本試験形式の予想問題×AI解説で、{'\n'}あなた専用の学習プランを作成
               </Text>
 
               {/* 価値提案バッジ: ¥980 / 7日無料 / 解約自由 */}

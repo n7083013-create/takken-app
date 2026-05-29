@@ -82,7 +82,7 @@ export function getLimitCopy(mode: LimitMode): LimitCopy {
       return {
         emoji: '🤖',
         title: 'AI 合格予測 × 弱点分析',
-        subtitle: 'あなた専用の最短ルートを AI が組み立てる。\n7日間無料で合格予測スコアまで確認できる。',
+        subtitle: 'あなたに最適な学習ルートを AI が組み立てる。\n7日間無料で合格予測スコアまで確認できる。',
         primaryCta: '7日間無料でAI分析を試す',
       };
 

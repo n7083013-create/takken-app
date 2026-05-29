@@ -18,7 +18,7 @@ function getDaysUntilExam(): number {
 
 // ─── 定数データ ───
 const FEATURES = [
-  { icon: '📚', title: `過去問 ${TOTAL_Q}問`, desc: '分野別・年度別に網羅した問題集' },
+  { icon: '📚', title: `本試験形式の予想問題 ${TOTAL_Q}問`, desc: '分野別・年度別に整理したオリジナル問題集' },
   { icon: '⚡', title: `一問一答 ${TOTAL_QQ}問`, desc: 'スキマ時間にサクサク解ける' },
   { icon: '📝', title: '本番形式 模擬試験', desc: '50問×2時間の本試験シミュレーション' },
   { icon: '🤖', title: 'AI解説チャット', desc: 'わからない問題をAIが即座に解説' },
@@ -27,7 +27,7 @@ const FEATURES = [
 ];
 
 const COMPARISONS = [
-  { feature: '過去問演習', free: '一部', premium: `全${TOTAL_Q}問` },
+  { feature: '本試験形式の演習', free: '一部', premium: `全${TOTAL_Q}問` },
   { feature: '一問一答', free: '一部', premium: `全${TOTAL_QQ}問` },
   { feature: '模擬試験', free: '×', premium: '無制限' },
   { feature: 'AI解説', free: '×', premium: '1日100回' },
@@ -52,7 +52,7 @@ const APP_MOCKUPS = [
   {
     icon: '📚',
     title: '問題演習',
-    desc: '分野別・年度別の過去問を\nスワイプで快適に解答',
+    desc: '分野別・年度別の予想問題を\nスワイプで快適に解答',
     details: ['4択問題をタップで回答', '即座に正誤判定', '解説をその場で確認'],
   },
   {
@@ -109,7 +109,7 @@ const FAQ_DATA = [
   },
   {
     q: '2026年度の法改正に対応していますか？',
-    a: 'はい、2026年度の最新法改正に完全対応しています。法改正があった場合も速やかに問題・解説を更新しますので、安心してご利用ください。',
+    a: 'はい、2026年(施行分)の法改正に対応しています。法改正があった場合も速やかに問題・解説を更新する継続更新方針ですので、安心してご利用ください。',
   },
   {
     q: '解約は簡単ですか？',
@@ -121,7 +121,7 @@ const TRUST_ITEMS = [
   { icon: '🔒', title: '安全な決済', desc: 'PAY.JPによるPCI DSS準拠の決済処理' },
   { icon: '✋', title: 'いつでも解約', desc: 'マイページから即時解約。違約金なし' },
   { icon: '🎁', title: '7日間無料', desc: 'トライアル中に解約すれば完全無料' },
-  { icon: '⚖️', title: '法改正対応', desc: '2026年度の最新法改正に完全対応' },
+  { icon: '⚖️', title: '法改正対応', desc: '2026年(施行分)の法改正に対応・継続更新' },
 ];
 
 // ─── CTA pulse animation CSS (web only) ───
@@ -185,16 +185,16 @@ export default function LandingPage() {
       el.content = content;
     };
     document.title = '宅建士 完全対策 - AI搭載の宅建試験対策アプリ';
-    meta('description', `全${TOTAL_Q}問の過去問とAI解説で宅建試験合格を目指す。7日間無料トライアル。`, 'name');
+    meta('description', `全${TOTAL_Q}問の本試験形式の予想問題とAI解説で宅建試験合格を目指す。7日間無料トライアル。`, 'name');
     meta('og:title', '宅建士 完全対策 - AI搭載の宅建試験対策アプリ');
-    meta('og:description', `過去問${TOTAL_Q}問+一問一答${TOTAL_QQ}問。AIが弱点を分析し最短ルートで合格へ導く。`);
+    meta('og:description', `本試験形式の予想問題${TOTAL_Q}問+一問一答${TOTAL_QQ}問。AIが弱点を分析し効率的に合格をめざす。`);
     meta('og:type', 'website');
     meta('og:url', 'https://takken-app-olive.vercel.app/');
     meta('og:image', 'https://takken-app-olive.vercel.app/ogp.png');
     meta('og:locale', 'ja_JP');
     meta('twitter:card', 'summary_large_image', 'name');
     meta('twitter:title', '宅建士 完全対策 - AI搭載の宅建試験対策アプリ', 'name');
-    meta('twitter:description', `過去問${TOTAL_Q}問+AI解説で宅建合格を目指す。7日間無料。`, 'name');
+    meta('twitter:description', `本試験形式の予想問題${TOTAL_Q}問+AI解説で宅建合格を目指す。7日間無料。`, 'name');
 
     // Inject CSS animations
     const styleId = 'lp-pulse-style';
@@ -274,8 +274,8 @@ export default function LandingPage() {
           もう分厚いテキストは{'\n'}いらない
         </Text>
         <Text style={s.heroSub}>
-          全{TOTAL_Q}問の過去問 × AI解説{'\n'}
-          スマホ1つで、合格へ最短ルート
+          全{TOTAL_Q}問の本試験形式の予想問題 × AI解説{'\n'}
+          スマホ1つで、効率的に合格をめざす
         </Text>
 
         {/* Stats row */}
@@ -287,7 +287,7 @@ export default function LandingPage() {
           <View style={s.heroStatDivider} />
           <View style={s.heroStat}>
             <Text style={s.heroStatNum}>4科目</Text>
-            <Text style={s.heroStatLabel}>完全網羅</Text>
+            <Text style={s.heroStatLabel}>広くカバー</Text>
           </View>
           <View style={s.heroStatDivider} />
           <View style={s.heroStat}>
@@ -374,7 +374,7 @@ export default function LandingPage() {
       {/* ─── 6. 科目カバー ─── */}
       <View style={s.section}>
         <Text style={s.sectionLabel}>COVERAGE</Text>
-        <Text style={s.sectionTitle}>全4科目を完全網羅</Text>
+        <Text style={s.sectionTitle}>全4科目を広くカバー</Text>
         <View style={s.subjectList}>
           {[
             { icon: '⚖️', name: '権利関係', desc: '民法・借地借家法・区分所有法・不動産登記法', color: '#1B7A3D' },
@@ -440,7 +440,7 @@ export default function LandingPage() {
             <Text style={s.planPrice}>¥0</Text>
             <Text style={s.planPeriod}>ずっと無料</Text>
             <View style={s.planDivider} />
-            <Text style={s.planFeature}>✓ 一部の過去問</Text>
+            <Text style={s.planFeature}>✓ 一部の予想問題</Text>
             <Text style={s.planFeature}>✓ 基本的な学習機能</Text>
             <Text style={s.planFeature}>✓ 学習記録</Text>
             <Text style={s.planFeatureDisabled}>× 模擬試験</Text>
@@ -456,10 +456,10 @@ export default function LandingPage() {
             </Pressable>
           </View>
 
-          {/* 2. PREMIUM 年額 (人気No.1・中央配置で視線誘導 - Headspace パターン) */}
+          {/* 2. PREMIUM 年額 (おすすめ・中央配置で視線誘導 - Headspace パターン) */}
           <View style={[s.planCard, s.planCardPremium, Shadow.md]}>
             <View style={s.planBadge}>
-              <Text style={s.planBadgeText}>人気No.1</Text>
+              <Text style={s.planBadgeText}>おすすめ</Text>
             </View>
             <Text style={[s.planName, s.planNamePremium]}>Premium 年額</Text>
             <View style={s.planSavingsBanner}>
@@ -474,7 +474,7 @@ export default function LandingPage() {
             <Text style={s.planFeaturePremium}>✓ 模擬試験 無制限</Text>
             <Text style={s.planFeaturePremium}>✓ AI解説 1日100回</Text>
             <Text style={s.planFeaturePremium}>✓ AI苦手分析</Text>
-            <Text style={s.planFeaturePremium}>✓ 法改正完全対応</Text>
+            <Text style={s.planFeaturePremium}>✓ 法改正に対応・継続更新</Text>
             <Pressable
               style={[s.planCTA, Shadow.sm]}
               onPress={goPremiumAnnual}
@@ -497,7 +497,7 @@ export default function LandingPage() {
             <Text style={s.planFeature}>✓ 模擬試験 無制限</Text>
             <Text style={s.planFeature}>✓ AI解説 1日100回</Text>
             <Text style={s.planFeature}>✓ AI苦手分析</Text>
-            <Text style={s.planFeature}>✓ 法改正完全対応</Text>
+            <Text style={s.planFeature}>✓ 法改正に対応・継続更新</Text>
             <Pressable
               style={[s.planCTA, s.planCTASecondary, Shadow.sm]}
               onPress={goPremiumMonthly}
@@ -603,7 +603,7 @@ export default function LandingPage() {
           今日が、合格への{'\n'}最短スタート地点
         </Text>
         <Text style={s.finalCTASub}>
-          {TOTAL_Q}問の過去問とAI解説で{'\n'}
+          {TOTAL_Q}問の本試験形式の予想問題とAI解説で{'\n'}
           効率的に宅建合格を目指せます
         </Text>
         <Pressable

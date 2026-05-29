@@ -318,7 +318,7 @@ export default function PaywallScreen() {
         {/* Hero */}
         <View style={[s.hero, Shadow.lg]}>
           <Text style={s.heroBadge}>PREMIUM</Text>
-          <Text style={s.heroTitle}>合格への最短ルート</Text>
+          <Text style={s.heroTitle}>あなた専用の合格プラン</Text>
           <Text style={s.heroSub}>{heroSub}</Text>
         </View>
 
