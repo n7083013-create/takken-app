@@ -1,11 +1,14 @@
 // ============================================================
 // 宅建士 完全対策 - 問題誤り報告ストア
-// ローカル保存 → 将来的にSupabaseで開発者に集約
+// ローカル保存 + 既存 feedback 経路(ai-chat mode=feedback)で運営へサーバー送信。
+// 新規DBテーブル不要: Resend 経由でサポート受信箱にメール到達。
+// 送信失敗時はローカル保持し、起動時 syncPendingReports() で再送。
 // ============================================================
 
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logError } from '../services/errorLogger';
+import { API_BASE_URL } from '../constants/config';
 
 const STORAGE_KEY = '@takken_reports';
 
@@ -38,8 +41,52 @@ interface ReportState {
   addReport(questionId: string, reason: ReportReason, detail: string): void;
   loadReports(): Promise<void>;
   saveReports(): Promise<void>;
+  /** 未送信(synced:false)の報告をサーバーへ再送。起動時に呼ぶ。 */
+  syncPendingReports(): Promise<void>;
   resetStore(): void;
   markSynced(id: string): void;
+}
+
+/**
+ * 問題報告を既存 feedback 経路(/ai-chat mode=feedback)でサーバーへ送る。
+ * Resend 経由で運営のサポート受信箱にメール到達する(新規DB不要)。
+ * 成功時 true。失敗時 false を返し、呼び出し側がローカル保持→次回再送する。
+ */
+async function postReportToServer(report: QuestionReport): Promise<boolean> {
+  try {
+    const reasonLabel = REPORT_REASON_LABELS[report.reason] ?? report.reason;
+    const text =
+      `【問題報告】\n問題ID: ${report.questionId}\n理由: ${reasonLabel}\n` +
+      `詳細: ${report.detail?.trim() || '(記載なし)'}`;
+    // ログイン中ならトークンを付与(運営側で user_id を把握できる)。未ログインでも送信可。
+    let token: string | undefined;
+    try {
+      // 循環依存回避のため動的 require
+      const { supabase } = require('../services/supabase');
+      const { data } = await supabase.auth.getSession();
+      token = data?.session?.access_token;
+    } catch {
+      /* 未ログイン/未設定でも匿名送信を試みる */
+    }
+    const res = await fetch(`${API_BASE_URL}/ai-chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        mode: 'feedback',
+        category: 'bug', // 問題の誤り=コンテンツのバグとして運営に届ける
+        body: text,
+        contactEmail: '',
+        meta: { kind: 'question_report', questionId: report.questionId, reason: report.reason },
+      }),
+    });
+    return res.ok;
+  } catch (e) {
+    logError(e, { context: 'report.postToServer' });
+    return false;
+  }
 }
 
 export const useReportStore = create<ReportState>((set, get) => ({
@@ -61,6 +108,12 @@ export const useReportStore = create<ReportState>((set, get) => ({
     };
     set({ reports: [...get().reports, report] });
     get().saveReports();
+    // サーバー送信(失敗してもローカル保持。起動時 syncPendingReports で再送)
+    postReportToServer(report)
+      .then((ok) => {
+        if (ok) get().markSynced(report.id);
+      })
+      .catch(() => {});
   },
 
   markSynced(id) {
@@ -68,6 +121,16 @@ export const useReportStore = create<ReportState>((set, get) => ({
       reports: get().reports.map((r) => (r.id === id ? { ...r, synced: true } : r)),
     });
     get().saveReports();
+  },
+
+  async syncPendingReports() {
+    const pending = get().reports.filter((r) => !r.synced);
+    for (const r of pending) {
+      // 順次送信(件数は通常ごく少数)。1件成功ごとに markSynced。
+      // eslint-disable-next-line no-await-in-loop
+      const ok = await postReportToServer(r);
+      if (ok) get().markSynced(r.id);
+    }
   },
 
   async loadReports() {

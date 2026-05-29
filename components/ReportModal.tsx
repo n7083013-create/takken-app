@@ -45,7 +45,7 @@ export function ReportModal({ visible, questionId, onClose }: Props) {
     setReason('wrong_answer');
     Alert.alert(
       'ご報告ありがとうございます',
-      '内容を確認のうえ修正いたします。今後とも宜しくお願いします。',
+      '内容を確認のうえ、必要に応じて修正いたします。今後とも宜しくお願いします。',
       [{ text: 'OK', onPress: onClose }],
     );
   };

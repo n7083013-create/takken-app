@@ -61,6 +61,8 @@ export default function RootLayout() {
       ]);
       // Auth は他ストアの後に初期化（セッション復元後にsync等が走るため）
       await initAuth();
+      // 未送信の問題報告を再送(前回オフライン/送信失敗分)。トークンが要るので auth 後。
+      useReportStore.getState().syncPendingReports().catch(() => {});
       // IAP（Native のみ）— 起動後に非ブロッキングで購入リスナーを起動
       if (Platform.OS !== 'web') {
         initializeIAP().catch(() => {});
