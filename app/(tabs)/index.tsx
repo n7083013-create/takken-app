@@ -441,7 +441,7 @@ function HomeScreen() {
           <View style={s.dashTop}>
             <View style={s.dashGoal}>
               <View style={s.dashGoalRing}>
-                <AnimatedNumber value={todayAnswered} style={s.dashGoalNum} duration={500} />
+                <AnimatedNumber value={todayAnswered} style={s.dashGoalNum} duration={500} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.5} />
                 <Text style={s.dashGoalDenom}>/{dailyGoal}</Text>
               </View>
               <Text style={s.dashGoalLabel}>
