@@ -135,14 +135,18 @@ describe('getLimitCopy - モード別文言生成', () => {
       expect(c.title).toContain('3/3');
     });
 
-    test('Premium の上限値 (100回) で表示', () => {
-      const c = getLimitCopy({ kind: 'daily_limit_ai_chat', usedToday: 100, limit: 100 });
-      expect(c.title).toContain('100/100');
+    test('Premium の上限値 (50回=server PAID_DAILY_LIMIT) で表示', () => {
+      // [2026-05-30 決定A] Premium日次は 50 (サーバー実値)。title は usedToday/limit を素通しで表示。
+      const c = getLimitCopy({ kind: 'daily_limit_ai_chat', usedToday: 50, limit: 50 });
+      expect(c.title).toContain('50/50');
     });
 
-    test('CTA は「100回/日」など具体数字を含む', () => {
+    test('CTA は trial-first 文言 (具体数字は出さず Fair Use 方針)', () => {
+      // [2026-05-30 決定A] 「100回/日」等の具体数字はコピーから撤去 (過約束回避)。
+      // CTA は trial-first の「無料」を必ず含む。
       const c = getLimitCopy({ kind: 'daily_limit_ai_chat', usedToday: 3, limit: 3 });
-      expect(c.primaryCta).toContain('100');
+      expect(c.primaryCta).toMatch(/無料/);
+      expect(c.primaryCta).not.toContain('100');
     });
   });
 
