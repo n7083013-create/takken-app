@@ -111,20 +111,33 @@ describe('probeAny - 並列複数エンドポイントチェック', () => {
   });
 
   test('並列実行されている (順次ではない)', async () => {
-    // 各 fetch に 50ms の遅延を加えて、並列なら ~50ms、順次なら ~100ms かかる
+    // [flaky 対策] 並列性は「壁時計の経過時間」ではなく「dispatch のタイミング」で
+    // 確定的に検証する。経過時間 (Date.now) ベースの assert は、jest 並列実行で
+    // CPU が逼迫した worker 上では setTimeout が大きく遅延し、たまたま閾値を超えて
+    // false-fail する (テスト間汚染ではなく純粋な計測ノイズ)。
+    //
+    // probeAny は Promise.allSettled で全 URL を同期的に dispatch する。
+    // 順次実装なら最初の probe を await するまで 2 つ目の fetch を呼ばない。
+    // → 「どの probe もまだ解決していない時点で両方の fetch が呼ばれている」
+    //    ことが、並列 dispatch の決定的な証拠になる。
+    const resolvers: Array<(v: unknown) => void> = [];
     const fakeFetch = jest.fn().mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve({ ok: true }), 50)),
+      () => new Promise((resolve) => { resolvers.push(resolve); }),
     );
-    const start = Date.now();
-    await probeAny(
+
+    const promise = probeAny(
       ['https://a.example.com', 'https://b.example.com'],
       1000,
       fakeFetch as unknown as typeof fetch,
     );
-    const elapsed = Date.now() - start;
-    // 並列実行なら 50ms + 余裕。順次実行なら 100ms 以上。
-    // 余裕を持って 90ms 未満なら並列実行
-    expect(elapsed).toBeLessThan(90);
+
+    // await する前 = まだ 1 つも解決していない時点で両方 dispatch 済み
+    expect(fakeFetch).toHaveBeenCalledTimes(2);
+
+    // 後片付け: pending な probe を全て解決させ、probeAny を完了させる
+    // (probeEndpoint 内の abort timer は finally で clearTimeout されるためリークしない)
+    resolvers.forEach((resolve) => resolve({ ok: true }));
+    await expect(promise).resolves.toBe(true);
   });
 
   test('1つが成功すれば、他の失敗を無視', async () => {
