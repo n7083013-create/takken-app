@@ -157,10 +157,11 @@ describe('postTrialDescription - トライアル後課金説明', () => {
 });
 
 describe('annualBadgeLabel - 年額タブのバッジ', () => {
-  // [2026-05-22] 「約49% OFF・人気No.1」は narrow phone で2行折返し「年額」と重なるため、
-  // 1行に収まる「人気No.1」のみに短縮。割引率は ¥498/月相当 サブラベルで伝わる。
-  test('「人気No.1」を含む (social proof)', () => {
-    expect(annualBadgeLabel()).toContain('人気No.1');
+  // [2026-05-22] バッジは narrow phone で2行折返し「年額」と重なるため1行に収める。
+  // [2026-05-30] 景表法 (No.1表示の客観的根拠なし) のため「人気No.1」→「おすすめ」に是正。
+  //   割引率は ¥498/月相当 サブラベルで伝わるため、中立的な推奨表現に振る。
+  test('「おすすめ」を含む (景表法是正: 根拠なき No.1 表現を撤去)', () => {
+    expect(annualBadgeLabel()).toContain('おすすめ');
   });
 
   test('1行に収まる短さ (10 文字以内)', () => {

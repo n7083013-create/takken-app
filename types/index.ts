@@ -120,8 +120,13 @@ export const SUBCATEGORIES: Record<Category, Subcategory[]> = {
 };
 
 // AI質問回数制限（月あたり・後方互換のため残置）
+// 主ゲートは AI_DAILY_LIMITS（日次）。ここは月次の安全上限。
+// free=93 は「1日3回 × 31日」の非拘束セーフティ上限（31日ある月でも日次3回が常に唯一の拘束。
+//   ×30 だと31日目に月次が先に効く silent cap が残るため ×31）。
+// (旧 free=3 は日次3より先に効き、コピー「1日3回」に反し実質「月3回」になる不具合だった)
+// ※サーバー api/ai-chat.js は日次のみ管理（月次キャップなし）。この月次はクライアント予測用。
 export const AI_QUERY_LIMITS: Record<SubscriptionPlan, number> = {
-  free: 3,
+  free: 93,
   standard: 3000,
   unlimited: 3000,
 };

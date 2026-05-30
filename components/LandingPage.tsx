@@ -30,7 +30,7 @@ const COMPARISONS = [
   { feature: '本試験形式の演習', free: '一部', premium: `全${TOTAL_Q}問` },
   { feature: '一問一答', free: '一部', premium: `全${TOTAL_QQ}問` },
   { feature: '模擬試験', free: '×', premium: '無制限' },
-  { feature: 'AI解説', free: '×', premium: '1日100回' },
+  { feature: 'AI解説', free: '1日3回', premium: '1日100回' },
   { feature: 'AI苦手分析', free: '×', premium: '○' },
   { feature: '法改正対応', free: '○', premium: '○' },
 ];
@@ -444,7 +444,7 @@ export default function LandingPage() {
             <Text style={s.planFeature}>✓ 基本的な学習機能</Text>
             <Text style={s.planFeature}>✓ 学習記録</Text>
             <Text style={s.planFeatureDisabled}>× 模擬試験</Text>
-            <Text style={s.planFeatureDisabled}>× AI解説</Text>
+            <Text style={s.planFeature}>✓ AI解説 1日3回</Text>
             <Text style={s.planFeatureDisabled}>× AI苦手分析</Text>
             <Pressable
               style={[s.planCTA, s.planCTASecondary, Shadow.sm]}

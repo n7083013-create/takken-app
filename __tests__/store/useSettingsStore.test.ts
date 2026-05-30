@@ -19,6 +19,7 @@ jest.mock('../../constants/config', () => ({
 }));
 
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { AI_DAILY_LIMITS, AI_QUERY_LIMITS } from '../../types';
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const ONE_DAY_MS = 24 * ONE_HOUR_MS;
@@ -295,5 +296,33 @@ describe('useSettingsStore', () => {
       setSub({ aiQueriesDayKey: '1999-01-01' });
       expect(useSettingsStore.getState().getAIDailyRemaining()).toBeGreaterThan(0);
     });
+  });
+});
+
+// ============================================================
+// 無料プラン AI質問: 1日3回 (毎日リセット) の回帰テスト
+// ============================================================
+//
+// 2026-05-30 決定 (ユーザー判断): takken は当初コメント意図どおり「1日3回」。
+//   旧実装は AI_QUERY_LIMITS.free=3 (月) が AI_DAILY_LIMITS.free=3 (日) より先に
+//   効き、コピー「1日3回」に反して実質「月3回」だった不具合を解消。
+//   → 月次を 93 (=3×31) に引上げ、日次3を常に唯一の拘束に。
+//   ※サーバー api/ai-chat.js も FREE_DAILY_LIMIT=3 (真値) と一致させること。
+//
+// 守りたい性質 (無料枠のみ。Premium日次 100/50 の整合は別途ユーザー判断):
+// 1. AI日次上限 free=3
+// 2. AI月次上限 free=93 (=3×31 の安全上限)
+// 3. 月次は日次×31以上 (31日月でも日次が唯一の拘束になる不変条件)
+describe('無料プラン AI質問: 1日3回 (毎日リセット)', () => {
+  it('AI日次上限: free=3', () => {
+    expect(AI_DAILY_LIMITS.free).toBe(3);
+  });
+
+  it('AI月次上限: free=93', () => {
+    expect(AI_QUERY_LIMITS.free).toBe(93);
+  });
+
+  it('無料の月次上限 ≥ 日次上限×31 (silent monthly cap の再発防止)', () => {
+    expect(AI_QUERY_LIMITS.free).toBeGreaterThanOrEqual(AI_DAILY_LIMITS.free * 31);
   });
 });
