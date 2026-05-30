@@ -93,8 +93,8 @@ export function getLimitCopy(mode: LimitMode): LimitCopy {
       return {
         emoji: '🤖',
         title: `本日のAI質問 ${mode.usedToday}/${mode.limit} 使い切り`,
-        subtitle: '7日間無料で 1日 100 回まで質問できる。',
-        primaryCta: '7日間無料で100回/日に',
+        subtitle: 'Premiumなら通常学習で上限に達しない設計（Fair Use）。\n7日間無料でAI解説をたっぷり試せる。',
+        primaryCta: '7日間無料でAIを使い倒す',
       };
 
     default: {

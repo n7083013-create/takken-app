@@ -284,10 +284,13 @@ export const PLAN_PRICES = {
 } as const;
 
 // AI解説の1日あたり上限（フェア利用ポリシー）
+// ※サーバー api/ai-chat.js PAID_DAILY_LIMIT=50 が真値。ここはクライアント表示・予測用で
+//   必ず一致させること。コピーは具体数を出さず「実質無制限(Fair Use)」で表現する
+//   (2026-05-30 決定A: 数値の過約束を避け gas-shunin と同方式に統一)。
 export const AI_DAILY_LIMITS: Record<SubscriptionPlan, number> = {
   free: 3,        // 無料でも1日3回（体験してもらう）
-  standard: 100,
-  unlimited: 100,
+  standard: 50,   // Fair Use 上限（通常学習で到達しない設計値）
+  unlimited: 50,
 };
 
 // トライアル中のAI制限（コスト管理）

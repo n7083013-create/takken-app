@@ -6,7 +6,8 @@
 // 入力欄が disabled になった瞬間に表示される (push 遷移ではない)。
 //
 // 旧: 「本日のAI質問回数の上限に達しました」というテキストのみ → 行動先がない。
-// 新: 使用回数 (X/Y) を可視化 + 「7日間無料で100回/日に」CTA を併設。
+// 新: 使用回数 (X/Y) を可視化 + 「7日間無料でAIを使い倒す」CTA を併設
+//     (文言は paywallCopy.ts の daily_limit_ai_chat。Premiumは実質無制限=Fair Use表現)。
 //
 // 共通利用: question/[id].tsx, quest/[missionId].tsx, (tabs)/quick-quiz.tsx
 

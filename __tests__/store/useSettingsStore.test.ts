@@ -309,10 +309,13 @@ describe('useSettingsStore', () => {
 //   → 月次を 93 (=3×31) に引上げ、日次3を常に唯一の拘束に。
 //   ※サーバー api/ai-chat.js も FREE_DAILY_LIMIT=3 (真値) と一致させること。
 //
-// 守りたい性質 (無料枠のみ。Premium日次 100/50 の整合は別途ユーザー判断):
+// 守りたい性質:
 // 1. AI日次上限 free=3
 // 2. AI月次上限 free=93 (=3×31 の安全上限)
 // 3. 月次は日次×31以上 (31日月でも日次が唯一の拘束になる不変条件)
+// 4. [2026-05-30 決定A] Premium(standard/unlimited) 日次=50。サーバー api/ai-chat.js
+//    PAID_DAILY_LIMIT=50 が真値で、クライアント定数はそれと一致させる。
+//    コピーは数値を出さず「実質無制限(Fair Use)」表現に統一(過約束の回避・gasと同方式)。
 describe('無料プラン AI質問: 1日3回 (毎日リセット)', () => {
   it('AI日次上限: free=3', () => {
     expect(AI_DAILY_LIMITS.free).toBe(3);
@@ -324,5 +327,12 @@ describe('無料プラン AI質問: 1日3回 (毎日リセット)', () => {
 
   it('無料の月次上限 ≥ 日次上限×31 (silent monthly cap の再発防止)', () => {
     expect(AI_QUERY_LIMITS.free).toBeGreaterThanOrEqual(AI_DAILY_LIMITS.free * 31);
+  });
+});
+
+describe('Premium AI日次上限: サーバー実値(50)と一致 (決定A: Fair Use表記)', () => {
+  it('standard / unlimited とも 50 (= server PAID_DAILY_LIMIT)', () => {
+    expect(AI_DAILY_LIMITS.standard).toBe(50);
+    expect(AI_DAILY_LIMITS.unlimited).toBe(50);
   });
 });

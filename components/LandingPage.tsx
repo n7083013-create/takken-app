@@ -30,7 +30,7 @@ const COMPARISONS = [
   { feature: '本試験形式の演習', free: '一部', premium: `全${TOTAL_Q}問` },
   { feature: '一問一答', free: '一部', premium: `全${TOTAL_QQ}問` },
   { feature: '模擬試験', free: '×', premium: '無制限' },
-  { feature: 'AI解説', free: '1日3回', premium: '1日100回' },
+  { feature: 'AI解説', free: '1日3回', premium: '実質無制限' },
   { feature: 'AI苦手分析', free: '×', premium: '○' },
   { feature: '法改正対応', free: '○', premium: '○' },
 ];
@@ -472,7 +472,7 @@ export default function LandingPage() {
             <Text style={s.planFeaturePremium}>✓ 全{TOTAL_Q}問が解き放題</Text>
             <Text style={s.planFeaturePremium}>✓ 一問一答{TOTAL_QQ}問</Text>
             <Text style={s.planFeaturePremium}>✓ 模擬試験 無制限</Text>
-            <Text style={s.planFeaturePremium}>✓ AI解説 1日100回</Text>
+            <Text style={s.planFeaturePremium}>✓ AI解説 実質無制限 (Fair Use)</Text>
             <Text style={s.planFeaturePremium}>✓ AI苦手分析</Text>
             <Text style={s.planFeaturePremium}>✓ 法改正に対応・継続更新</Text>
             <Pressable
@@ -495,7 +495,7 @@ export default function LandingPage() {
             <Text style={s.planFeature}>✓ 全{TOTAL_Q}問が解き放題</Text>
             <Text style={s.planFeature}>✓ 一問一答{TOTAL_QQ}問</Text>
             <Text style={s.planFeature}>✓ 模擬試験 無制限</Text>
-            <Text style={s.planFeature}>✓ AI解説 1日100回</Text>
+            <Text style={s.planFeature}>✓ AI解説 実質無制限 (Fair Use)</Text>
             <Text style={s.planFeature}>✓ AI苦手分析</Text>
             <Text style={s.planFeature}>✓ 法改正に対応・継続更新</Text>
             <Pressable
