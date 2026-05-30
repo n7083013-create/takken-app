@@ -156,7 +156,7 @@ export default function PaywallScreen() {
     // Google Play 規約上、Android アプリ内で Web 課金（PayPal）は使えない
     if (Platform.OS !== 'web') {
       try {
-        await iapPurchase();
+        await iapPurchase(billingCycle);
         // 実際のレシート検証 → profile 更新は purchaseUpdatedListener 経由で非同期実行
         // ここでは「最大15秒間 1秒おきに verify をポーリング」して isPro 化を確認
         // setTimeout 固定 2.5秒だとリスナー処理が遅延した時に見逃す（H2 race condition 対策）

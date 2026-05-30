@@ -22,6 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logError } from './errorLogger';
 import { API_BASE_URL } from '../constants/config';
 import { useAuthStore } from '../store/useAuthStore';
+import type { BillingCycle } from '../types';
 
 // Issue #7: 購入直後に verify が失敗した場合に保存しておく
 // 起動時/復帰時/ログイン時にリトライして finishTransaction 漏れを防ぐ
@@ -101,29 +102,35 @@ export async function retryPendingPurchases(): Promise<number> {
   }
 }
 
-// 各プラットフォームのプロダクトID
+// 各プラットフォームのプロダクトID(月額 / 年額)
 // ────────────────────────────────────────────────────────────
-// 🚧 2026-06 ストアリリース時の TODO:
-//   1. 下記に PREMIUM_ANNUAL_ANDROID / PREMIUM_ANNUAL_IOS を追加
-//   2. getProductId(billingCycle) で月額/年額を切替
-//   3. purchaseSubscription(billingCycle) も同様に
-//   4. App Store Connect / Play Console で 年額 SKU 登録 (¥5,980/年・7日トライアル)
+// ⚠️ ストア側の SKU 登録が前提:
+//   App Store Connect / Google Play Console で下記 ID の商品を作成すること。
+//   - 月額: premium_monthly        / com.takkenkanzen.app.premium.monthly   (¥980/月・7日トライアル)
+//   - 年額: premium_annual         / com.takkenkanzen.app.premium.annual    (¥5,980/年・7日トライアル)
+//   コードは年額対応済み。年額 SKU が**ストア未登録**の場合、年額購入は
+//   fetchSubscriptionInfo が null → purchaseSubscription が明示エラーで弾く
+//   (月額には一切影響しない)。年額 SKU 登録後そのまま購入可能になる。
 //   詳細手順: ObsidianVault/10_Projects/資格アプリ開発/ストア提出プレイブック.md
 // ────────────────────────────────────────────────────────────
 export const IAP_PRODUCTS = {
   // Google Play では短い ID 推奨（Play Console で同じ ID を作成）
   PREMIUM_MONTHLY_ANDROID: 'premium_monthly',
+  PREMIUM_ANNUAL_ANDROID: 'premium_annual',
   // Apple IAP は逆ドメイン形式
   PREMIUM_MONTHLY_IOS: 'com.takkenkanzen.app.premium.monthly',
-  // TODO 2026-06: 年額プランの SKU をストアで登録後、以下のコメントアウトを外す
-  // PREMIUM_ANNUAL_ANDROID: 'premium_annual',
-  // PREMIUM_ANNUAL_IOS: 'com.takkenkanzen.app.premium.annual',
+  PREMIUM_ANNUAL_IOS: 'com.takkenkanzen.app.premium.annual',
 } as const;
 
-export function getProductId(): string {
-  // TODO 2026-06: billingCycle 引数を取って annual / monthly を切替えるよう拡張
-  if (Platform.OS === 'android') return IAP_PRODUCTS.PREMIUM_MONTHLY_ANDROID;
-  if (Platform.OS === 'ios') return IAP_PRODUCTS.PREMIUM_MONTHLY_IOS;
+/** 課金サイクル + プラットフォームから Product ID を解決 */
+export function getProductId(billingCycle: BillingCycle = 'monthly'): string {
+  const annual = billingCycle === 'annual';
+  if (Platform.OS === 'android') {
+    return annual ? IAP_PRODUCTS.PREMIUM_ANNUAL_ANDROID : IAP_PRODUCTS.PREMIUM_MONTHLY_ANDROID;
+  }
+  if (Platform.OS === 'ios') {
+    return annual ? IAP_PRODUCTS.PREMIUM_ANNUAL_IOS : IAP_PRODUCTS.PREMIUM_MONTHLY_IOS;
+  }
   throw new Error('IAP is only supported on iOS and Android');
 }
 
@@ -227,7 +234,7 @@ export async function teardownIAP(): Promise<void> {
 /**
  * サブスクリプション情報取得（価格表示用）
  */
-export async function fetchSubscriptionInfo(): Promise<{
+export async function fetchSubscriptionInfo(billingCycle: BillingCycle = 'monthly'): Promise<{
   price: string;
   currency: string;
   title: string;
@@ -237,13 +244,18 @@ export async function fetchSubscriptionInfo(): Promise<{
   const lib = await loadIAPLib();
   if (!lib) return null;
 
+  const annual = billingCycle === 'annual';
+  const fallbackPrice = annual ? '¥5,980' : '¥980';
+  const fallbackTitle = annual ? 'Premium 年額プラン' : 'Premium 月額プラン';
+
   try {
     if (!connectionInitialized) await lib.initConnection();
-    const sku = getProductId();
+    const sku = getProductId(billingCycle);
     // expo-iap: fetchProducts API（getSubscriptions も alias で生きてる）
     const subscriptions = lib.fetchProducts
       ? await lib.fetchProducts({ skus: [sku], type: 'subs' })
       : await lib.getSubscriptions({ skus: [sku] });
+    // 年額 SKU がストア未登録だと空配列 → null を返し、購入側で「年額は準備中」として弾く
     if (!subscriptions?.length) return null;
     const sub = subscriptions[0];
 
@@ -262,18 +274,18 @@ export async function fetchSubscriptionInfo(): Promise<{
         [];
       const phase = phaseList[0];
       return {
-        price: phase?.formattedPrice ?? sub.localizedPrice ?? sub.displayPrice ?? '¥980',
+        price: phase?.formattedPrice ?? sub.localizedPrice ?? sub.displayPrice ?? fallbackPrice,
         currency: phase?.priceCurrencyCode ?? 'JPY',
-        title: sub.title ?? sub.displayName ?? 'Premium 月額プラン',
+        title: sub.title ?? sub.displayName ?? fallbackTitle,
         offerToken: offer?.offerToken,
       };
     }
 
     // iOS
     return {
-      price: sub.localizedPrice ?? sub.displayPrice ?? '¥980',
+      price: sub.localizedPrice ?? sub.displayPrice ?? fallbackPrice,
       currency: sub.currency ?? sub.currencyCode ?? 'JPY',
-      title: sub.title ?? sub.displayName ?? 'Premium 月額プラン',
+      title: sub.title ?? sub.displayName ?? fallbackTitle,
     };
   } catch (e) {
     logError(e, { context: 'iap.fetchSubscriptionInfo' });
@@ -285,7 +297,7 @@ export async function fetchSubscriptionInfo(): Promise<{
  * サブスクリプション購入を開始
  * 購入完了は purchaseUpdatedListener で非同期に検知
  */
-export async function purchaseSubscription(): Promise<void> {
+export async function purchaseSubscription(billingCycle: BillingCycle = 'monthly'): Promise<void> {
   if (Platform.OS === 'web') {
     throw new Error('Web は paywall.tsx で PayPal を使用してください');
   }
@@ -296,13 +308,18 @@ export async function purchaseSubscription(): Promise<void> {
   if (!lib) throw new Error('IAP モジュールが読み込めません');
   if (!connectionInitialized) await lib.initConnection();
 
-  const sku = getProductId();
+  const sku = getProductId(billingCycle);
 
   if (Platform.OS === 'android') {
     // Android Play Billing v6+ は offerToken 必須
-    const info = await fetchSubscriptionInfo();
+    const info = await fetchSubscriptionInfo(billingCycle);
     if (!info?.offerToken) {
-      throw new Error('サブスクリプション情報を取得できませんでした');
+      // 年額 SKU がストア未登録だと info=null。月額には影響させず、年額のみ明示エラー。
+      throw new Error(
+        billingCycle === 'annual'
+          ? '年額プランは現在準備中です。月額プランをご利用ください。'
+          : 'サブスクリプション情報を取得できませんでした',
+      );
     }
     // expo-iap v4+: per-platform request shape
     // Android は skus (複数形・配列) + subscriptionOffers
@@ -316,6 +333,17 @@ export async function purchaseSubscription(): Promise<void> {
       type: 'subs',
     });
     return;
+  }
+
+  // iOS — 年額 SKU がストア未登録なら requestPurchase 前に弾く(分かりやすいエラーに)。
+  // 月額は従来どおり(info 取得は購入前チェックのみで、失敗時も月額は親切メッセージ)。
+  const iosInfo = await fetchSubscriptionInfo(billingCycle);
+  if (!iosInfo) {
+    throw new Error(
+      billingCycle === 'annual'
+        ? '年額プランは現在準備中です。月額プランをご利用ください。'
+        : 'サブスクリプション情報を取得できませんでした',
+    );
   }
 
   // iOS — per-platform request shape
