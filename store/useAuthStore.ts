@@ -12,7 +12,8 @@ import * as WebBrowser from 'expo-web-browser';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { logError } from '../services/errorLogger';
 import { isValidEmail, validatePassword } from '../services/validation';
-import { syncAnalyticsExclusionForUser } from '../services/analytics';
+import { syncAnalyticsExclusionForUser, getAdAttribution } from '../services/analytics';
+import { isNewOAuthSignup, trackSignUpConversionOnce } from '../services/signupConversion';
 import { useProgressStore } from './useProgressStore';
 import { useSettingsStore } from './useSettingsStore';
 import { useAchievementStore } from './useAchievementStore';
@@ -25,6 +26,33 @@ import type { SubscriptionPlan } from '../types';
 // onAuthStateChange のリスナー追跡（HMR / 多重 init() 対策）
 // モジュールスコープで1つだけ保持し、再 init 時に古いリスナーを解除する
 let authStateSub: { unsubscribe: () => void } | null = null;
+
+/**
+ * OAuth 新規サインアップ時に、LP で保存された広告アトリビューション(GCLID/UTM)を
+ * profiles に保存する。後の購入(Web/iOS/Android)で Offline Conversion に紐付けるため。
+ * login.tsx のメール登録経路と同等の処理を OAuth 経路にも適用する。
+ * best-effort: 失敗してもサインインを妨げない。
+ */
+async function saveOAuthSignupAttribution(userId: string): Promise<void> {
+  try {
+    const attribution = getAdAttribution();
+    if (!attribution) return;
+    await supabase.from('profiles').update({
+      ad_gclid: attribution.gclid ?? null,
+      ad_wbraid: attribution.wbraid ?? null,
+      ad_gbraid: attribution.gbraid ?? null,
+      ad_utm_source: attribution.utm_source ?? null,
+      ad_utm_medium: attribution.utm_medium ?? null,
+      ad_utm_campaign: attribution.utm_campaign ?? null,
+      ad_utm_term: attribution.utm_term ?? null,
+      ad_utm_content: attribution.utm_content ?? null,
+      ad_captured_at: attribution.captured_at ?? null,
+      ad_landing_page: attribution.landing_page ?? null,
+    }).eq('id', userId);
+  } catch {
+    // best-effort: 失敗は無視
+  }
+}
 
 /**
  * ユーザーのプラン情報を同期
@@ -202,6 +230,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         // SIGNED_OUT は state を消すだけで sync 不要
         if (event === 'SIGNED_OUT' || !session?.user || !eventUserId) return;
+
+        // [計測] OAuth(Google/Apple)新規サインアップの sign_up を1回だけ発火。
+        // web の OAuth はリダイレクトで完結し login.tsx の後続コードが走らないため、
+        // sign_up はここでしか捕捉できない(従来発火漏れ=P-MAX 登録0 の真因)。
+        // メール登録は login.tsx が直接発火するので、provider=google/apple かつ
+        // 新規作成(created_at 直近)に限定し、localStorage フラグで二重計上を防ぐ。
+        if (isNewOAuthSignup(session.user)) {
+          void trackSignUpConversionOnce(session.user.id, session.user.email ?? null);
+          void saveOAuthSignupAttribution(session.user.id);
+        }
 
         // Add jitter to prevent thundering herd
         const jitter = Math.random() * 5000;
