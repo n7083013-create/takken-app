@@ -454,6 +454,17 @@ export default function PaywallScreen() {
           ・解約後は無料プランに戻ります
         </Text>
 
+        {/* [CVR] トライアルを迷う層向けの無料導線。離脱(完全消失)を無料利用へ転換する最後の受け皿。
+            憲法P6: 無料で続ける選択肢を常に明示(ダークパターン回避)。 */}
+        <Pressable
+          onPress={() => router.replace('/(tabs)')}
+          style={s.freeContinueBtn}
+          accessibilityRole="button"
+          accessibilityLabel="まずは無料プランで使ってみる。カード登録は不要です"
+        >
+          <Text style={s.freeContinueText}>まずは無料プランで使ってみる（カード登録なし）</Text>
+        </Pressable>
+
         <View style={s.linksRow}>
           <Pressable onPress={() => router.push('/legal/terms')}>
             <Text style={s.linkText}>利用規約</Text>
@@ -693,6 +704,17 @@ function makeStyles(C: ThemeColors) {
     restoreText: {
       fontSize: 13,
       color: C.textSecondary,
+      textDecorationLine: 'underline',
+    },
+    freeContinueBtn: {
+      alignItems: 'center',
+      paddingVertical: 12,
+      marginTop: 4,
+    },
+    freeContinueText: {
+      fontSize: 14,
+      color: C.primary,
+      fontWeight: '700',
       textDecorationLine: 'underline',
     },
   });

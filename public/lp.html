@@ -97,7 +97,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // CTA クリック計測
-      var ctaSelectors = ['.hero-cta', '.header-cta', '.pricing-cta', '.section-cta', '.final-cta', '.footer-cta'];
+      var ctaSelectors = ['.hero-cta', '.hero-cta-secondary', '.header-cta', '.pricing-cta', '.section-cta', '.final-cta', '.footer-cta'];
       ctaSelectors.forEach(function(sel) {
         document.querySelectorAll(sel).forEach(function(el) {
           el.addEventListener('click', function() {
@@ -265,6 +265,40 @@
       transition: transform 0.15s ease;
     }
     .hero-cta:hover { text-decoration: none; transform: translateY(-2px); }
+    /* 副CTA(7日トライアル): 主CTA(白ベタ)より控えめなゴースト枠線 */
+    .hero-cta-secondary {
+      display: inline-block;
+      background: transparent;
+      color: #fff;
+      padding: 12px 28px;
+      border: 1.5px solid rgba(255,255,255,0.7);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      min-height: 44px;
+      margin-top: 14px;
+      transition: opacity 0.15s ease;
+    }
+    .hero-cta-secondary:hover { text-decoration: none; opacity: 0.85; }
+    /* 主CTA直下の安心訴求(カード不要) */
+    .hero-reassure {
+      margin-top: 10px;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      opacity: 0.95;
+      line-height: 1.5;
+    }
+    /* キーボード操作のフォーカス可視化(緑地/白地どちらでも視認できる琥珀) */
+    .hero-cta:focus-visible,
+    .hero-cta-secondary:focus-visible,
+    .header-cta:focus-visible,
+    .section-cta:focus-visible,
+    .pricing-cta:focus-visible,
+    .final-cta:focus-visible,
+    .footer-cta:focus-visible {
+      outline: 3px solid #FFD24A;
+      outline-offset: 3px;
+    }
     .hero-sub {
       margin-top: 12px;
       font-size: 13px;
@@ -1171,7 +1205,7 @@
   <!-- Header (sticky, CTA #1) -->
   <header class="header">
     <div class="logo">宅建士 完全対策</div>
-    <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="header-cta">7日間 無料で始める</a>
+    <a href="https://app.takkenkanzen.com/auth/login?mode=signup" class="header-cta">無料で始める</a>
   </header>
 
   <!-- Hero (CTA #2) -->
@@ -1202,10 +1236,12 @@
     </div>
 
     <div class="hero-free">
-      7日間 ¥0 無料
+      今日から ¥0 ではじめる
     </div>
-    <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="hero-cta">いますぐ無料で始める</a>
-    <p class="hero-sub">無料期間終了後 ¥980/月 ・ いつでも解約OK</p>
+    <a href="https://app.takkenkanzen.com/auth/login?mode=signup" class="hero-cta" aria-label="無料で始める。クレジットカード不要">無料で始める</a>
+    <p class="hero-reassure">クレジットカード不要・登録30秒 ・ 今日から1日10問＋AI解説</p>
+    <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="hero-cta-secondary" aria-label="7日間の無料トライアルで模試やAI弱点分析など全機能を試す">7日間 全機能を試す →</a>
+    <p class="hero-sub">7日間無料 → 月額¥980 ・ いつでも解約OK</p>
 
     <div class="hero-trustbar">
       <span>📱 1日10分から</span>
@@ -1400,8 +1436,8 @@
       </div>
     </div>
     <div class="section-cta-wrap">
-      <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="section-cta">7日間 無料で全機能を試す</a>
-      <span class="section-cta-note">いつでも解約OK</span>
+      <a href="https://app.takkenkanzen.com/auth/login?mode=signup" class="section-cta">無料で始める（カード不要）</a>
+      <span class="section-cta-note">カード登録なし・登録30秒</span>
     </div>
   </section>
 
@@ -1450,28 +1486,28 @@
       <div class="step">
         <div class="step-num">1</div>
         <div>
-          <h3>無料トライアルを開始</h3>
-          <p>7日間の無料体験をスタート。すべての機能が使えます。</p>
+          <h3>無料で始める</h3>
+          <p>登録30秒・カード不要。今日から4択10問・一問一答20問・AI解説が使えます。</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div>
           <h3>毎日学習を続ける</h3>
-          <p>4択演習・一問一答・模擬試験・AI解説で効率的に学習。自動復習とストリーク機能で習慣化。</p>
+          <p>4択演習・一問一答・AI解説で効率的に学習。自動復習とストリーク機能で習慣化。</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div>
           <h3>合格を勝ち取る</h3>
-          <p>苦手を克服し、本番で力を発揮。8日目以降は月額¥980で継続利用。いつでも解約可能です。</p>
+          <p>苦手を克服し、本番で力を発揮。模試・AI弱点分析まで使うなら 7日間¥0 のトライアル(以降 月額¥980)へ。いつでも解約OK。</p>
         </div>
       </div>
     </div>
     <div class="section-cta-wrap">
-      <a href="https://app.takkenkanzen.com/auth/login" class="section-cta">いますぐステップ1を始める</a>
-      <span class="section-cta-note">いつでも解約OK</span>
+      <a href="https://app.takkenkanzen.com/auth/login?mode=signup" class="section-cta">いますぐ無料で始める</a>
+      <span class="section-cta-note">カード不要・登録30秒</span>
     </div>
   </section>
 
@@ -1627,8 +1663,8 @@
       </details>
     </div>
     <div class="section-cta-wrap">
-      <a href="https://app.takkenkanzen.com/auth/login" class="section-cta">疑問解消できたら、無料で始める</a>
-      <span class="section-cta-note">いつでも解約OK</span>
+      <a href="https://app.takkenkanzen.com/auth/login?mode=signup" class="section-cta">疑問が解消できたら、無料で始める</a>
+      <span class="section-cta-note">カード不要・登録30秒</span>
     </div>
   </section>
 
@@ -1639,8 +1675,8 @@
     </div>
     <h2>迷っている1分1秒も、<br>ライバルは勉強しています。</h2>
     <p>あなたの宅建合格を、効率的に。<br>すべての機能を、まずは7日間 ¥0 でお試しください。</p>
-    <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="final-cta">7日間 無料で始める</a>
-    <span class="final-cta-note">いつでも解約OK</span>
+    <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="final-cta">7日間トライアルで全機能を試す</a>
+    <span class="final-cta-note">無料期間中の解約で料金はかかりません</span>
   </section>
 
   <!-- Company info -->
@@ -1660,7 +1696,7 @@
   <!-- Footer (CTA #8) -->
   <footer class="footer">
     <div class="footer-cta-block">
-      <a href="https://app.takkenkanzen.com/auth/login?returnTo=/paywall" class="footer-cta">7日間 無料で始める</a>
+      <a href="https://app.takkenkanzen.com/auth/login?mode=signup" class="footer-cta">無料で始める</a>
     </div>
     <div class="footer-links">
       <a href="https://app.takkenkanzen.com/auth/login">アプリを開く</a>
