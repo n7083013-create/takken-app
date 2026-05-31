@@ -12,6 +12,9 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
+// 有料プランの plan 値（takken は単一プラン 'standard'）
+const PAID_PLAN = 'standard';
+
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
   .split(',')
   .map((e) => e.trim().toLowerCase())
@@ -189,19 +192,47 @@ module.exports = async (req, res) => {
     // GET: 既存のビジネス指標集計
     // ────────── 集計開始 ──────────
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+
+    // 「今日」の境界は JST（事業は日本時間。Vercel 関数は UTC 稼働のため明示変換）。
+    const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+    const nowJst = new Date(now.getTime() + JST_OFFSET_MS);
+    const jstMidnightMs =
+      Date.UTC(nowJst.getUTCFullYear(), nowJst.getUTCMonth(), nowJst.getUTCDate()) - JST_OFFSET_MS;
+    const today = new Date(jstMidnightMs).toISOString();
+    const tomorrow = new Date(jstMidnightMs + 24 * 60 * 60 * 1000).toISOString();
+
+    // ローリング窓（過去N日）は現状維持。
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
-    // 全 profiles 取得（数百〜数千件想定なので一括取得でOK）
+    // [過小集計対策] Supabase はデフォルト 1000 行で silent に打ち切る。
+    // 正確な総数を head カウントで別取得し、行取得は range で上限を引き上げる。
+    const { count: exactTotal, error: countError } = await supabaseAdmin
+      .from('profiles')
+      .select('id', { count: 'exact', head: true });
+    if (countError) {
+      console.error('[admin.stats] Profile count failed:', countError.message);
+      return res.status(500).json({ error: 'データ取得失敗' });
+    }
+
+    // 全 profiles 取得（広告アトリビューション列・billing_cycle を含む）
     const { data: rawProfiles, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('id, email, plan, subscription_status, trial_ends_at, subscription_ends_at, payment_provider, created_at, updated_at');
+      .select('id, email, plan, subscription_status, trial_ends_at, subscription_ends_at, payment_provider, billing_cycle, ad_gclid, ad_wbraid, ad_gbraid, ad_utm_source, ad_utm_campaign, ad_captured_at, created_at, updated_at')
+      .range(0, 49999);
 
     if (profileError) {
       console.error('[admin.stats] Profile query failed:', profileError.message);
       return res.status(500).json({ error: 'データ取得失敗' });
+    }
+
+    // 取得行が正確な総数より少なければ集計が過小。警告 + レスポンスに truncated を含める。
+    const truncated = exactTotal != null && (rawProfiles || []).length < exactTotal;
+    if (truncated) {
+      console.warn(
+        `[admin.stats] profiles truncated: fetched ${(rawProfiles || []).length} of ${exactTotal} rows. Stats are undercounted.`,
+      );
     }
 
     // [集計除外] 管理者・身内アカウント・テストアカウントは数字に含めない
@@ -214,13 +245,14 @@ module.exports = async (req, res) => {
     const total = profiles.length;
 
     // ─── ユーザー数 ───
+    // 本日 = JST 当日 0:00 以降の登録（today は JST 深夜の ISO 文字列）。
     const newToday = profiles.filter((p) => p.created_at >= today).length;
     const newWeek = profiles.filter((p) => p.created_at >= weekAgo).length;
     const newMonth = profiles.filter((p) => p.created_at >= monthAgo).length;
 
     // ─── プラン別 ───
     const free = profiles.filter((p) => p.plan === 'free').length;
-    const standard = profiles.filter((p) => p.plan === 'standard').length;
+    const standard = profiles.filter((p) => p.plan === PAID_PLAN).length;
 
     // ─── トライアル状態 ───
     // trial_ends_at が未来 = まだトライアル中
@@ -230,12 +262,10 @@ module.exports = async (req, res) => {
       new Date(p.trial_ends_at) > now,
     ).length;
 
+    // 本日終了 = trial_ends_at が JST 当日内（today 以降・tomorrow 未満）。
     const trialEndingToday = profiles.filter((p) => {
       if (!p.trial_ends_at) return false;
-      const end = new Date(p.trial_ends_at);
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const tomorrow = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-      return end >= todayStart && end < tomorrow;
+      return p.trial_ends_at >= today && p.trial_ends_at < tomorrow;
     }).length;
 
     const trialEndingWeek = profiles.filter((p) => {
@@ -246,30 +276,44 @@ module.exports = async (req, res) => {
 
     // ─── 課金 ───
     const activePaid = profiles.filter((p) =>
-      p.plan === 'standard' && p.subscription_status === 'active',
+      p.plan === PAID_PLAN && p.subscription_status === 'active',
     ).length;
 
     const trialingPaid = profiles.filter((p) =>
-      p.plan === 'standard' && p.subscription_status === 'trialing',
+      p.plan === PAID_PLAN && p.subscription_status === 'trialing',
     ).length;
 
     const canceled = profiles.filter((p) => p.subscription_status === 'canceled').length;
     const pastDue = profiles.filter((p) => p.subscription_status === 'past_due').length;
 
     // ─── 月間売上 (MRR) ───
-    // active な standard プランは ¥980/月
-    const mrr = activePaid * 980;
+    // 月額(¥980)はそのまま、年額(¥5,980/年)は月割で計上する。
+    const activeMonthly = profiles.filter((p) =>
+      p.plan === PAID_PLAN && p.subscription_status === 'active' && p.billing_cycle !== 'annual',
+    ).length;
+    const activeAnnual = profiles.filter((p) =>
+      p.plan === PAID_PLAN && p.subscription_status === 'active' && p.billing_cycle === 'annual',
+    ).length;
+    const mrr = activeMonthly * 980 + Math.floor((activeAnnual * 5980) / 12);
+
+    // ─── ARPU / ARPPU ───
+    // ARPPU: 課金者1人あたり月次収益。ARPU: 全ユーザー1人あたり月次収益。
+    const arppu = activePaid > 0 ? Math.round(mrr / activePaid) : 0;
+    const arpu = total > 0 ? Math.round(mrr / total) : 0;
 
     // ─── 今月の新規課金数 ───
     const newPaidThisMonth = profiles.filter((p) =>
-      p.plan === 'standard' &&
+      p.plan === PAID_PLAN &&
       p.created_at >= monthAgo,
     ).length;
 
     // ─── 転換率 ───
-    // 登録 → 課金（active or trialing）
+    // 獲得転換: 登録 → 課金 or トライアル（既存指標。誤誘導を避けるためラベルは「獲得」に）
     const totalConverted = activePaid + trialingPaid;
     const conversionRate = total > 0 ? Math.round((totalConverted / total) * 1000) / 10 : 0;
+
+    // 実課金転換: 登録 → 実際に課金（active のみ）
+    const paidConversionRate = total > 0 ? Math.round((activePaid / total) * 1000) / 10 : 0;
 
     // トライアル → 有料転換率（active / (active + canceled in trial period)）
     // 簡易版: active な人 / 全 standard プランに到達した人
@@ -281,7 +325,7 @@ module.exports = async (req, res) => {
     // ─── 継続率 ───
     // 1ヶ月以上前に課金開始した人のうち、現在も active な人
     const oldPaidUsers = profiles.filter((p) =>
-      p.plan === 'standard' &&
+      p.plan === PAID_PLAN &&
       p.created_at < monthAgo,
     );
     const stillActive1m = oldPaidUsers.filter((p) => p.subscription_status === 'active').length;
@@ -290,7 +334,7 @@ module.exports = async (req, res) => {
       : 0;
 
     const veryOldPaidUsers = profiles.filter((p) =>
-      p.plan === 'standard' &&
+      p.plan === PAID_PLAN &&
       p.created_at < threeMonthsAgo,
     );
     const stillActive3m = veryOldPaidUsers.filter((p) => p.subscription_status === 'active').length;
@@ -301,7 +345,8 @@ module.exports = async (req, res) => {
     // ─── 学習統計（全ユーザーの累計）───
     const { data: stats } = await supabaseAdmin
       .from('study_stats')
-      .select('total_questions, total_correct');
+      .select('total_questions, total_correct')
+      .range(0, 49999);
 
     const totalQuestionsAnswered = (stats || []).reduce((sum, s) => sum + (s.total_questions || 0), 0);
     const totalCorrect = (stats || []).reduce((sum, s) => sum + (s.total_correct || 0), 0);
@@ -309,10 +354,34 @@ module.exports = async (req, res) => {
       ? Math.round((totalCorrect / totalQuestionsAnswered) * 1000) / 10
       : 0;
 
+    // ─── 広告アトリビューション（P-MAX）───
+    // クリックID（gclid/wbraid/gbraid）または捕捉時刻があれば広告経由とみなす（migration 012 列で算出）。
+    const isAdUser = (p) => !!(p.ad_gclid || p.ad_wbraid || p.ad_gbraid || p.ad_captured_at);
+    const adUsers = profiles.filter(isAdUser);
+    const adSignupsTotal = adUsers.length;
+    const adSignupsToday = adUsers.filter((p) => p.created_at >= today).length;
+    const adSignupsWeek = adUsers.filter((p) => p.created_at >= weekAgo).length;
+    const adSignupsMonth = adUsers.filter((p) => p.created_at >= monthAgo).length;
+    const adPaidActive = adUsers.filter((p) =>
+      p.plan === PAID_PLAN && p.subscription_status === 'active',
+    ).length;
+    const adConversionRate = adSignupsTotal > 0
+      ? Math.round((adPaidActive / adSignupsTotal) * 1000) / 10
+      : 0;
+    const organicSignups = total - adSignupsTotal;
+
+    // 概算CAC: 登録1件あたりの広告費。日次予算 env から月次換算して当月の広告経由登録数で割る。
+    const adSpendDaily = Number(process.env.AD_SPEND_DAILY_JPY || 0);
+    const adSpendMonthly = adSpendDaily * 30;
+    const cacPerSignup = (adSpendMonthly > 0 && adSignupsMonth > 0)
+      ? Math.round(adSpendMonthly / adSignupsMonth)
+      : 0;
+
     return res.status(200).json({
       ok: true,
       generated_at: now.toISOString(),
       excluded_admin_count: excludedCount,
+      truncated,
       users: {
         total,
         new_today: newToday,
@@ -333,12 +402,27 @@ module.exports = async (req, res) => {
         past_due: pastDue,
         mrr_jpy: mrr,
         new_paid_this_month: newPaidThisMonth,
+        active_monthly: activeMonthly,
+        active_annual: activeAnnual,
+        arpu_jpy: arpu,
+        arppu_jpy: arppu,
       },
       conversion: {
         signup_to_paid_pct: conversionRate,
+        paid_conversion_pct: paidConversionRate,
         trial_to_active_pct: trialToActiveRate,
         retention_1m_pct: retention1m,
         retention_3m_pct: retention3m,
+      },
+      ads: {
+        signups_total: adSignupsTotal,
+        signups_today: adSignupsToday,
+        signups_week: adSignupsWeek,
+        signups_month: adSignupsMonth,
+        paid_active: adPaidActive,
+        conversion_pct: adConversionRate,
+        organic_signups: organicSignups,
+        cac_per_signup_jpy: cacPerSignup,
       },
       learning: {
         total_questions_answered: totalQuestionsAnswered,

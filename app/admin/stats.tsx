@@ -25,6 +25,7 @@ import { API_BASE_URL } from '../../constants/config';
 interface AdminStats {
   ok: boolean;
   generated_at: string;
+  truncated?: boolean;
   users: {
     total: number;
     new_today: number;
@@ -45,12 +46,27 @@ interface AdminStats {
     past_due: number;
     mrr_jpy: number;
     new_paid_this_month: number;
+    active_monthly: number;
+    active_annual: number;
+    arpu_jpy: number;
+    arppu_jpy: number;
   };
   conversion: {
     signup_to_paid_pct: number;
+    paid_conversion_pct: number;
     trial_to_active_pct: number;
     retention_1m_pct: number;
     retention_3m_pct: number;
+  };
+  ads: {
+    signups_total: number;
+    signups_today: number;
+    signups_week: number;
+    signups_month: number;
+    paid_active: number;
+    conversion_pct: number;
+    organic_signups: number;
+    cac_per_signup_jpy: number;
   };
   learning: {
     total_questions_answered: number;
@@ -171,11 +187,23 @@ export default function AdminStatsScreen() {
           <Text style={s.headerSub}>最終更新: {generatedStr}</Text>
         </View>
 
+        {/* 集計が打ち切られた場合の警告（1000行 silent 上限対策） */}
+        {stats.truncated && (
+          <View style={s.warnBanner}>
+            <Text style={s.warnText}>
+              ⚠️ データ件数が多く集計が打ち切られた可能性があります。{'\n'}
+              表示中の数値は実際より少なく出ている恐れがあります。
+            </Text>
+          </View>
+        )}
+
         {/* MRR ハイライト */}
         <View style={[s.heroCard, Shadow.md]}>
           <Text style={s.heroLabel}>MRR（月間経常収益）</Text>
           <Text style={s.heroValue}>¥{stats.revenue.mrr_jpy.toLocaleString()}</Text>
-          <Text style={s.heroSub}>有料会員 {stats.revenue.active_paid}人 × ¥980</Text>
+          <Text style={s.heroSub}>
+            月額{stats.revenue.active_monthly}人 + 年額{stats.revenue.active_annual}人（¥5,980/12で月換算）
+          </Text>
         </View>
 
         {/* ユーザー */}
@@ -205,15 +233,33 @@ export default function AdminStatsScreen() {
           <View style={s.divider} />
           <Row label="今月の新規課金" value={`+${stats.revenue.new_paid_this_month}人`} />
           <Row label="月間経常収益（MRR）" value={`¥${stats.revenue.mrr_jpy.toLocaleString()}`} highlight />
+          <Row label="ARPU（全ユーザー単価）" value={`¥${stats.revenue.arpu_jpy.toLocaleString()}`} />
+          <Row label="ARPPU（課金者単価）" value={`¥${stats.revenue.arppu_jpy.toLocaleString()}`} />
+        </Section>
+
+        {/* 広告（P-MAX） */}
+        <Section title="📣 広告（P-MAX）" colors={colors}>
+          <Row label="広告経由 本日登録" value={`+${stats.ads.signups_today}人`} />
+          <Row label="広告経由 今週登録" value={`+${stats.ads.signups_week}人`} />
+          <Row label="広告経由 今月登録" value={`+${stats.ads.signups_month}人`} />
+          <Row label="広告経由 累計登録" value={`${stats.ads.signups_total}人`} highlight />
+          <View style={s.divider} />
+          <Row label="広告経由 課金中" value={`${stats.ads.paid_active}人`} highlightGreen />
+          <Row label="広告→課金率" value={`${stats.ads.conversion_pct}%`} highlight />
+          <Row label="オーガニック登録" value={`${stats.ads.organic_signups}人`} />
+          {stats.ads.cac_per_signup_jpy > 0 && (
+            <Row label="登録あたり広告費（概算CAC）" value={`¥${stats.ads.cac_per_signup_jpy.toLocaleString()}`} />
+          )}
         </Section>
 
         {/* 転換率 */}
         <Section title="📈 転換率・継続率" colors={colors}>
-          <Row label="登録→課金 全体" value={`${stats.conversion.signup_to_paid_pct}%`} />
-          <Row label="トライアル→有料 転換率" value={`${stats.conversion.trial_to_active_pct}%`} highlight />
+          <Row label="登録→獲得（課金+トライアル）" value={`${stats.conversion.signup_to_paid_pct}%`} />
+          <Row label="登録→課金（実課金）" value={`${stats.conversion.paid_conversion_pct}%`} highlight />
+          <Row label="トライアル→有料 転換率（参考値）" value={`${stats.conversion.trial_to_active_pct}%`} />
           <View style={s.divider} />
-          <Row label="1ヶ月継続率" value={`${stats.conversion.retention_1m_pct}%`} />
-          <Row label="3ヶ月継続率" value={`${stats.conversion.retention_3m_pct}%`} />
+          <Row label="登録30日経過後の現課金率（暫定）" value={`${stats.conversion.retention_1m_pct}%`} />
+          <Row label="登録90日経過後の現課金率（暫定）" value={`${stats.conversion.retention_3m_pct}%`} />
         </Section>
 
         {/* 学習統計 */}
@@ -330,6 +376,21 @@ function makeStyles(C: ThemeColors) {
       fontSize: FontSize.caption,
       color: C.textTertiary,
       marginTop: 4,
+    },
+
+    warnBanner: {
+      backgroundColor: C.card,
+      borderWidth: 2,
+      borderColor: C.error,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.md,
+      marginBottom: Spacing.md,
+    },
+    warnText: {
+      fontSize: FontSize.caption,
+      color: C.error,
+      fontWeight: '700',
+      lineHeight: 18,
     },
 
     heroCard: {
