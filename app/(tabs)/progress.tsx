@@ -16,7 +16,7 @@ import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } fr
 import { CATEGORIES, EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
-import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, AI_QUERY_LIMITS, AI_DAILY_LIMITS, TRIAL_AI_DAILY_LIMIT } from '../../types';
+import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category } from '../../types';
 import { getCategoryStats, ALL_QUESTIONS } from '../../data';
 import type { HabitStack } from '../../types';
 import { useMemo, useState, useCallback } from 'react';
@@ -1005,11 +1005,11 @@ export default function ProgressScreen() {
   // - サーバー側は日次のみ管理 (profiles.ai_used_today)、月間累計は信頼性なし
   // - 今日の上限を超えるとサーバーが弾く設計なので、ユーザーに最も実用的な値。
   const getAIDailyRemaining = useSettingsStore((s) => s.getAIDailyRemaining);
-  const isTrialActive = useSettingsStore((s) => s.isTrialActive());
+  const getAIDailyLimit = useSettingsStore((s) => s.getAIDailyLimit);
   const aiDailyRemaining = getAIDailyRemaining();
-  const aiDailyLimit = isTrialActive
-    ? TRIAL_AI_DAILY_LIMIT
-    : AI_DAILY_LIMITS[subscription.plan];
+  // [H-1] AI上限は常にプラン基準(= サーバー一致)。旧トライアル特例(10/日)は撤去し、
+  // store の getAIDailyLimit() に一本化(トライアル中の「0/10」誤表示を解消)。
+  const aiDailyLimit = getAIDailyLimit();
   const aiUsedToday = Math.max(0, aiDailyLimit - aiDailyRemaining);
 
   const examPrediction = useExamPrediction();

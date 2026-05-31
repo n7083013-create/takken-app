@@ -267,7 +267,8 @@ export interface Subscription {
   firstSubscribedAt?: string;  // 初回課金日（連続契約期間判定）
   renewalCount: number;        // 連続更新回数（0=初年度, 1+=継続割引対象）
   // 無料トライアル
-  trialStartedAt?: string;     // トライアル開始日
+  trialStartedAt?: string;     // トライアル開始日（廃止予定: 旧実装の名残。判定は trialEndsAt を使用）
+  trialEndsAt?: string;        // トライアル終了日（サーバー verify-subscription 由来。残日数/バナー判定に使用）
   // セキュリティ: サーバー検証タイムスタンプ
   lastVerifiedAt?: string;     // 最後にサーバーでプラン検証した日時（ISO）
   // [Issue #13] 時計巻き戻し検知

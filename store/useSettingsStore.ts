@@ -12,7 +12,6 @@ import {
   SubscriptionPlan,
   AI_QUERY_LIMITS,
   AI_DAILY_LIMITS,
-  TRIAL_AI_DAILY_LIMIT,
   PLAN_PRICES,
 } from '../types';
 
@@ -174,21 +173,32 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   isTrialActive() {
+    // [H-1 修正] 旧実装は trialStartedAt(サーバー検証フローで一度も書かれない)と
+    // plan==='free'(トライアル中はサーバーが plan='standard' を返すため矛盾)に依存し
+    // 常に false → 「無料トライアル中・残りN日」バナーが一切出ない不具合だった。
+    // サーバー verify-subscription が返す trialEndsAt + subscriptionStatus を真値に判定する。
     const sub = get().subscription;
-    if (!sub.trialStartedAt) return false;
-    if (sub.plan !== 'free') return false; // 有料会員はトライアル不要
-    // ⚠️ サーバー側で trialing ステータスが確認されているときのみ認める
-    // subscriptionStatus は verifySubscription() でサーバーから降ってくる値
-    if (sub.subscriptionStatus !== 'trialing') return false;
-    const elapsed = Date.now() - new Date(sub.trialStartedAt).getTime();
-    return elapsed < 7 * 24 * 60 * 60 * 1000; // 7日間
+    if (!sub.trialEndsAt) return false;
+    const now = Date.now();
+    const end = new Date(sub.trialEndsAt).getTime();
+    if (!Number.isFinite(end) || end <= now) return false; // トライアル無し or 終了済
+    // PayPal はトライアルでも 'active' を返すため 'trialing'/'active' を許容。canceled/none/past_due は除外。
+    if (sub.subscriptionStatus !== 'trialing' && sub.subscriptionStatus !== 'active') return false;
+    // --- サーバー検証ゲート(isPro と同等の防御。改ざん/未検証/時計巻き戻しを弾く)---
+    // ※ isPro() は呼ばない(isPro が本関数を呼ぶため循環を避ける)。
+    if (!sub.lastVerifiedAt) return false;
+    const maxSeen = sub.clockMaxSeen ? new Date(sub.clockMaxSeen).getTime() : 0;
+    if (maxSeen > 0 && now < maxSeen - 60 * 60 * 1000) return false; // 時計巻き戻し疑い
+    const sinceVerify = now - new Date(sub.lastVerifiedAt).getTime();
+    if (sinceVerify < 0 || sinceVerify > 3 * 24 * 60 * 60 * 1000) return false; // 巻き戻し/検証が古い(3日超)
+    return true;
   },
 
   trialDaysLeft() {
+    // [H-1 修正] trialEndsAt(サーバー由来)から残日数を算出。
     const sub = get().subscription;
-    if (!sub.trialStartedAt) return 0;
-    const elapsed = Date.now() - new Date(sub.trialStartedAt).getTime();
-    const remaining = 7 * 24 * 60 * 60 * 1000 - elapsed;
+    if (!sub.trialEndsAt) return 0;
+    const remaining = new Date(sub.trialEndsAt).getTime() - Date.now();
     return Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)));
   },
 
@@ -248,9 +258,11 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       get().saveSettings();
     }
 
-    const isTrial = get().isTrialActive();
-    const monthlyLimit = isTrial ? 300 : AI_QUERY_LIMITS[checked.plan];
-    const dailyLimit = isTrial ? TRIAL_AI_DAILY_LIMIT : AI_DAILY_LIMITS[checked.plan];
+    // [H-1] AI上限は常にプラン基準(= サーバー api/ai-chat.js と一致)。
+    // 旧 isTrial 分岐(10/日)はサーバー(トライアル中も plan='standard'→50/日)と乖離し、
+    // クライアント側で早期に「上限到達」を誤表示するため撤去。
+    const monthlyLimit = AI_QUERY_LIMITS[checked.plan];
+    const dailyLimit = AI_DAILY_LIMITS[checked.plan];
     return (
       checked.aiQueriesUsed < monthlyLimit &&
       checked.aiQueriesUsedToday < dailyLimit
@@ -267,8 +279,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     set((state) => {
       let checked = checkAndResetQueries(state.subscription);
       const today = getDayKey();
-      const isTrial = get().isTrialActive();
-      const limit = isTrial ? TRIAL_AI_DAILY_LIMIT : AI_DAILY_LIMITS[checked.plan];
+      const limit = AI_DAILY_LIMITS[checked.plan]; // [H-1] プラン基準(サーバー一致)
       const used = Math.max(0, limit - remaining);
       return {
         subscription: {
@@ -290,15 +301,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const { subscription } = get();
     const today = getDayKey();
     const usedToday = subscription.aiQueriesDayKey === today ? subscription.aiQueriesUsedToday : 0;
-    const isTrial = get().isTrialActive();
-    const limit = isTrial ? TRIAL_AI_DAILY_LIMIT : AI_DAILY_LIMITS[subscription.plan];
+    const limit = AI_DAILY_LIMITS[subscription.plan]; // [H-1] プラン基準(サーバー一致)
     return Math.max(0, limit - usedToday);
   },
 
   getAIDailyLimit() {
     const { subscription } = get();
-    const isTrial = get().isTrialActive();
-    return isTrial ? TRIAL_AI_DAILY_LIMIT : AI_DAILY_LIMITS[subscription.plan];
+    return AI_DAILY_LIMITS[subscription.plan]; // [H-1] プラン基準(サーバー一致)
   },
 
   async verifySubscription(accessToken: string) {
@@ -320,6 +329,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             plan: 'free',
             subscriptionStatus: 'none',
             expiresAt: undefined,
+            trialEndsAt: undefined,
             lastVerifiedAt: new Date().toISOString(),
             clockMaxSeen: bumpClockMaxSeen(get().subscription.clockMaxSeen),
           },
@@ -338,6 +348,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           plan: data.plan || 'free',
           subscriptionStatus: data.subscriptionStatus || 'none',
           expiresAt: data.subscriptionEndsAt || data.trialEndsAt || undefined,
+          trialEndsAt: data.trialEndsAt || undefined,
           lastVerifiedAt: new Date().toISOString(),
           clockMaxSeen: bumpClockMaxSeen(get().subscription.clockMaxSeen),
         },
@@ -389,6 +400,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           plan: data.plan || 'free',
           subscriptionStatus: data.subscriptionStatus || 'none',
           expiresAt: data.subscriptionEndsAt || data.trialEndsAt || undefined,
+          trialEndsAt: data.trialEndsAt || undefined,
           lastVerifiedAt: new Date().toISOString(),
           clockMaxSeen: bumpClockMaxSeen(get().subscription.clockMaxSeen),
         },

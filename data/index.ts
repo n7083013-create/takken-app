@@ -148,18 +148,37 @@ export function toWareki(year: number): string {
 // 内部的には sourceExamYear ベースのデータをそのまま使う。
 // ============================================================
 
-/** 利用可能な模擬試験プリセットの総数 */
+/**
+ * 模擬試験プリセットに使える年度のみを返す(新しい順)。
+ * 「本試験形式 50問」を満たすため、50問に満たない年度は除外する。
+ *
+ * ⚠️ 背景(バグ C-1 の修正):
+ *   一部年度は問題が 50問に満たない(例: 2023=15 / 2022=19 / 2021=33 / 2020=42)。
+ *   これらをプリセットにすると、セッションUIの「/50」や合格ライン 36点(PASS_LINE)が
+ *   実問題数と乖離し、数学的に合格不能 + 表示矛盾になる。
+ *   → 50問揃う年度だけをプリセット化する(除外年度の問題は通常モード/ランダム模擬に残る)。
+ */
+export function getMockPresetYears(): number[] {
+  // getExamByYear は本試験の科目配分でソート後 50問に切り出す。
+  // その結果が 50問に満たない年度(科目別の不足含む)は本試験形式を満たさないため除外。
+  return getAvailableExamYears().filter(
+    (year) => getExamByYear(year).length >= 50,
+  );
+}
+
+/** 利用可能な模擬試験プリセットの総数(50問揃う年度のみ) */
 export function getMockPresetCount(): number {
-  return getAvailableExamYears().length;
+  return getMockPresetYears().length;
 }
 
 /**
  * 模擬試験プリセット番号 (1始まり) → 50問
  * 1 = 最新年度ベース (法改正対応最新)、2 = その前、...
  * UI には年度を露出せず「模擬1」「模擬2」として表示する想定。
+ * 50問揃う年度のみが対象(getMockPresetYears)。
  */
 export function getMockPresetByNumber(n: number): Question[] {
-  const years = getAvailableExamYears(); // 新しい順
+  const years = getMockPresetYears(); // 新しい順・50問揃う年度のみ
   if (n < 1 || n > years.length) return [];
   const year = years[n - 1];
   return getExamByYear(year);

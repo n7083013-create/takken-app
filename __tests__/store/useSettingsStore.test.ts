@@ -109,22 +109,67 @@ describe('useSettingsStore', () => {
       expect(useSettingsStore.getState().isPro()).toBe(false);
     });
 
-    it('trialing 状態（trial 中）はPro扱い', () => {
+    // [H-1] trial 判定は trialEndsAt(サーバー由来) + status + 検証ゲートで行う
+    it('trialing 状態（trialEndsAt 未来・検証済み）は Pro 扱い + isTrialActive=true', () => {
       setSub({
-        plan: 'free',
+        plan: 'standard',
         subscriptionStatus: 'trialing',
-        trialStartedAt: new Date().toISOString(),
+        trialEndsAt: new Date(Date.now() + 5 * ONE_DAY_MS).toISOString(),
+        lastVerifiedAt: new Date().toISOString(),
+        clockMaxSeen: new Date().toISOString(),
       });
-      expect(useSettingsStore.getState().isPro()).toBe(true);
+      const st = useSettingsStore.getState();
+      expect(st.isTrialActive()).toBe(true);
+      expect(st.isPro()).toBe(true);
+      expect(st.trialDaysLeft()).toBe(5);
     });
 
-    it('trialStartedAt が 8日前（期限切れ）なら trial 扱いしない', () => {
+    it('PayPal トライアル(status=active・trialEndsAt 未来)も isTrialActive=true', () => {
+      setSub({
+        plan: 'standard',
+        subscriptionStatus: 'active',
+        trialEndsAt: new Date(Date.now() + 3 * ONE_DAY_MS).toISOString(),
+        expiresAt: new Date(Date.now() + 3 * ONE_DAY_MS).toISOString(),
+        lastVerifiedAt: new Date().toISOString(),
+        clockMaxSeen: new Date().toISOString(),
+      });
+      expect(useSettingsStore.getState().isTrialActive()).toBe(true);
+    });
+
+    it('trialEndsAt が過去（期限切れ）なら trial 扱いしない', () => {
       setSub({
         plan: 'free',
         subscriptionStatus: 'trialing',
-        trialStartedAt: new Date(Date.now() - 8 * ONE_DAY_MS).toISOString(),
+        trialEndsAt: new Date(Date.now() - ONE_DAY_MS).toISOString(),
+        lastVerifiedAt: new Date().toISOString(),
+        clockMaxSeen: new Date().toISOString(),
       });
-      expect(useSettingsStore.getState().isPro()).toBe(false);
+      const st = useSettingsStore.getState();
+      expect(st.isTrialActive()).toBe(false);
+      expect(st.trialDaysLeft()).toBe(0);
+    });
+
+    it('有料(active・trialEndsAt 無し)は Pro だが trial 扱いしない', () => {
+      setSub({
+        plan: 'standard',
+        subscriptionStatus: 'active',
+        expiresAt: new Date(Date.now() + 30 * ONE_DAY_MS).toISOString(),
+        lastVerifiedAt: new Date().toISOString(),
+        clockMaxSeen: new Date().toISOString(),
+      });
+      const st = useSettingsStore.getState();
+      expect(st.isPro()).toBe(true);
+      expect(st.isTrialActive()).toBe(false);
+    });
+
+    it('trialEndsAt 未来でも未検証(lastVerifiedAt 無し)なら trial 扱いしない（改ざん防御）', () => {
+      setSub({
+        plan: 'standard',
+        subscriptionStatus: 'trialing',
+        trialEndsAt: new Date(Date.now() + 5 * ONE_DAY_MS).toISOString(),
+        lastVerifiedAt: undefined,
+      });
+      expect(useSettingsStore.getState().isTrialActive()).toBe(false);
     });
   });
 
