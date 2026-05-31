@@ -66,7 +66,6 @@ interface ExamState {
   getExamHistory(): ExamResult[];
   getBestScore(): number;
   getLatestScore(): number | null;
-  getScoreTrend(): number[];
   /** 直近 N 回の模試で出題された問題IDを返す（重複出題回避用） */
   getRecentQuestionIds(lastN?: number): Set<string>;
   /** 問題ストック不足を検出: 不足している (category, difficulty) を返す */
@@ -457,10 +456,6 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const { examHistory } = get();
     if (examHistory.length === 0) return null;
     return examHistory[examHistory.length - 1].score;
-  },
-
-  getScoreTrend(): number[] {
-    return get().examHistory.map((r) => r.score);
   },
 
   /**

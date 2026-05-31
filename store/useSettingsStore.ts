@@ -12,7 +12,6 @@ import {
   SubscriptionPlan,
   AI_QUERY_LIMITS,
   AI_DAILY_LIMITS,
-  PLAN_PRICES,
 } from '../types';
 
 function getDayKey(): string {
@@ -46,8 +45,6 @@ interface SettingsState {
   /** サーバー応答の `remaining` を反映して残回数を上書き */
   setAIRemainingFromServer(remaining: number): void;
   isPro(): boolean;
-  isContinuingMember(): boolean; // 2年目以降
-  getRenewalPrice(): number;
   getAIDailyRemaining(): number;
   /** 今日の AI 上限 (トライアル / プランに応じて切替) */
   getAIDailyLimit(): number;
@@ -229,19 +226,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     // sinceVerify が負（lastVerifiedAt より now が前）→ 時計巻き戻し
     if (sinceVerify < 0) return false;
     return true;
-  },
-
-  isContinuingMember() {
-    const sub = get().subscription;
-    if (!sub.firstSubscribedAt) return false;
-    const days =
-      (Date.now() - new Date(sub.firstSubscribedAt).getTime()) /
-      (1000 * 60 * 60 * 24);
-    return days >= 365 || sub.renewalCount >= 1;
-  },
-
-  getRenewalPrice() {
-    return PLAN_PRICES.monthly;
   },
 
   canUseAI(): boolean {
