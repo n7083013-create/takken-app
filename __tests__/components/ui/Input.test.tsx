@@ -74,8 +74,12 @@ describe('Input - focused state', () => {
     expect(resolveBorderWidth(false, false)).toBe(1.5);
   });
 
-  test('Input.tsx 内で focused 時に Shadow.sm を適用する', () => {
-    expect(INPUT_SRC).toMatch(/focused\s*&&\s*Shadow\.sm/);
+  test('focus 時にレイアウト(枠線幅/shadow)を変えない (Fabric focus-blur 回帰防止)', () => {
+    // [回帰防止] focus で borderWidth を変えたり shadow を付けると New Architecture で
+    // TextInput の first responder が剥離しキーボードが落ちる (build #22 の登録不可バグ)。
+    // focus は色だけ変える = レイアウト不変であること。
+    expect(INPUT_SRC).not.toMatch(/focused\s*&&\s*Shadow/);
+    expect(INPUT_SRC).toMatch(/borderWidth\s*=\s*isError\s*\?\s*2\s*:\s*1\.5/);
   });
 });
 
@@ -153,9 +157,11 @@ describe('Input - loading state', () => {
     expect(INPUT_SRC).toMatch(/\{loading\s*&&\s*\([\s\S]*?ActivityIndicator/);
   });
 
-  test('accessibilityState で disabled と busy を伝える', () => {
+  test('accessibilityState で disabled と busy を伝える (memo 化)', () => {
+    // [Fabric focus-blur 修正] 毎レンダー新規オブジェクトを focus コミット経路に渡さないため memo 化
+    expect(INPUT_SRC).toMatch(/accessibilityState=\{a11yState\}/);
     expect(INPUT_SRC).toMatch(
-      /accessibilityState=\{\{\s*disabled:\s*isInactive,\s*busy:\s*!!loading\s*\}\}/,
+      /a11yState\s*=\s*useMemo\([\s\S]*?disabled:\s*isInactive,\s*busy:\s*!!loading/,
     );
   });
 });
@@ -318,12 +324,13 @@ describe('Input - 静的構造検査 (token 採用)', () => {
     expect(INPUT_SRC).toMatch(/useThemeColors/);
   });
 
-  test('constants/theme から Spacing/FontSize/LineHeight/Shadow/FontWeight を import', () => {
+  test('constants/theme から Spacing/FontSize/LineHeight/FontWeight を import', () => {
     expect(INPUT_SRC).toMatch(/Spacing/);
     expect(INPUT_SRC).toMatch(/FontSize/);
     expect(INPUT_SRC).toMatch(/LineHeight/);
-    expect(INPUT_SRC).toMatch(/Shadow/);
     expect(INPUT_SRC).toMatch(/FontWeight/);
+    // [Fabric focus-blur 修正] Shadow は focus 付与で blur を誘発するため import 撤去済み
+    expect(INPUT_SRC).not.toMatch(/^\s*Shadow,$/m);
   });
 
   test('色のハードコード (#XXXXXX) を含まない', () => {

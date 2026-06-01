@@ -25,7 +25,6 @@ import {
   FontSize,
   FontWeight,
   LineHeight,
-  Shadow,
 } from '../../constants/theme';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
 import {
@@ -33,7 +32,6 @@ import {
   resolveBorderColor,
   resolveBackgroundColor,
   resolveTextColor,
-  resolveBorderWidth,
   resolveMinHeight,
   deriveAccessibilityLabel,
   resolveCounterColor,
@@ -83,6 +81,12 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
   const isError = !!error;
   const isInactive = !!disabled || !!loading;
 
+  // [Fabric focus-blur 修正] 毎レンダー新規オブジェクトを focus コミット経路に渡さない
+  const a11yState = useMemo(
+    () => ({ disabled: isInactive, busy: !!loading }),
+    [isInactive, loading],
+  );
+
   const variantProps = useMemo(
     () => resolveVariantProps(variant, rows, showPassword),
     [variant, rows, showPassword],
@@ -98,7 +102,10 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
     disabled: !!disabled,
   });
   const textColor = resolveTextColor(C, { disabled: !!disabled, loading: !!loading });
-  const borderWidth = resolveBorderWidth(focused, isError);
+  // [Fabric focus-blur 修正] focus で border 幅を変えると New Architecture で
+  // 祖先 View が再コミットされ TextInput の first responder が剥離 → キーボードが落ちる。
+  // 幅は focus に依存させず一定にする(focus は色だけ変える = レイアウト不変)。
+  const borderWidth = isError ? 2 : 1.5;
   const minHeight = resolveMinHeight(variant, rows, Spacing.md, LineHeight.subhead);
   const derivedA11yLabel = deriveAccessibilityLabel(
     accessibilityLabel,
@@ -153,7 +160,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
             borderWidth,
             alignItems: variant === 'multiline' ? 'flex-start' : 'center',
           },
-          focused && Shadow.sm,
+          // [Fabric focus-blur 修正] focus 時の shadow 付与を撤去(focus で親を再コミットさせない)
         ]}
       >
         {variant === 'search' && (
@@ -180,7 +187,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
           onSubmitEditing={onSubmitEditing}
           accessibilityLabel={derivedA11yLabel}
           accessibilityHint={accessibilityHint ?? helperText}
-          accessibilityState={{ disabled: isInactive, busy: !!loading }}
+          accessibilityState={a11yState}
           testID={testID}
           style={[
             s.input,
