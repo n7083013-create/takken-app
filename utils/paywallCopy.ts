@@ -53,12 +53,12 @@ export function getLimitCopy(mode: LimitMode): LimitCopy {
       };
 
     // ----------------------------------------------------------
-    // 一問一答: 1日20問達成 (Celebration mode)
+    // 一問一答: 1日10問達成 (Celebration mode)
     // ----------------------------------------------------------
     case 'daily_limit_quickquiz':
       return {
         emoji: '🎉',
-        title: '今日の20問達成！',
+        title: '今日の10問達成！',
         subtitle: '一問一答は全600問。\n7日間無料で残りも一気に攻略しよう。',
         primaryCta: '7日間無料で全問解き放題',
         streakShield: streakShieldText(mode.streak),

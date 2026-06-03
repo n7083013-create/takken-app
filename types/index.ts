@@ -300,7 +300,7 @@ export const TRIAL_AI_DAILY_LIMIT = 10;
 // 無料プランの上限（1日あたり）
 export const FREE_LIMITS = {
   questionsPerDay: 10,      // 4択問題は1日10問まで
-  quickQuizzesPerDay: 20,   // 一問一答は1日20問まで
+  quickQuizzesPerDay: 10,   // 一問一答は1日10問まで（2026-06-03: 20→10、4択と揃える）
   examMode: false,          // 模擬試験は不可
   aiAnalysis: false,        // AI苦手分析は不可
   cloudSync: false,         // クラウド同期は不可

@@ -153,7 +153,11 @@ function makeStyles(C: ThemeColors) {
       paddingHorizontal: Spacing.xxl,
       paddingVertical: Spacing.lg,
       borderRadius: BorderRadius.lg,
-      alignSelf: 'stretch',
+      // [Fix 2026-06-03] PC等の広い画面で alignSelf:'stretch'+maxWidth だと
+      // ボタンが左端に寄ってしまう不具合 → alignSelf:'center'+width:'100%' で
+      // 「最大360px・常に中央」に統一(他要素と同じ中央揃え)。
+      alignSelf: 'center',
+      width: '100%',
       maxWidth: 360,
       alignItems: 'center',
       marginBottom: Spacing.md,

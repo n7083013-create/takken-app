@@ -24,6 +24,7 @@ import {
   Category,
   QuickQuiz,
   AIChatMessage,
+  FREE_LIMITS,
 } from '../../types';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -124,7 +125,7 @@ export default function QuickQuizScreen() {
     // [UX改善 2026-05] 以前はここで router.push('/paywall') してハードリダイレクトしていたが、
     // ユーザー文脈 (どの問題を解いていたか) が失われる悪体験だった。
     // 上限到達は render 時点で LimitReachedScreen を描画する方式に統一 (世界基準: Linear/Notion パターン)。
-    if (!isPro && getTodayQuickQuizCount() >= 20) {
+    if (!isPro && getTodayQuickQuizCount() >= FREE_LIMITS.quickQuizzesPerDay) {
       return; // 念のため二重防御 — 通常はこの分岐に来ない
     }
 
@@ -196,11 +197,11 @@ export default function QuickQuizScreen() {
     }
   }, [currentQuiz, aiInput, aiLoading, canAI, aiMessages]);
 
-  // [UX改善 2026-05] 1日20問上限到達時は LimitReachedScreen を描画。
+  // [UX改善 2026-05] 1日上限(無料=FREE_LIMITS.quickQuizzesPerDay 問)到達時は LimitReachedScreen を描画。
   // 旧: handleAnswer 内で router.push('/paywall') ハードリダイレクト → 文脈破壊。
-  // 新: 共通 Celebration 画面 (「今日の20問達成！」+ streak + trial CTA)。
+  // 新: 共通 Celebration 画面 (「今日の10問達成！」+ streak + trial CTA)。
   const stats = useProgressStore((st) => st.stats);
-  if (!isPro && getTodayQuickQuizCount() >= 20) {
+  if (!isPro && getTodayQuickQuizCount() >= FREE_LIMITS.quickQuizzesPerDay) {
     return (
       <LimitReachedScreen
         mode={{ kind: 'daily_limit_quickquiz', streak: stats.streak }}
