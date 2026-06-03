@@ -309,33 +309,31 @@ export function mergeQuickQuizStats(
   remote: QuickQuizStats | null,
 ): QuickQuizStats {
   if (!remote) return local;
-  const todayLocal = local.todayDate;
-  const todayRemote = remote.todayDate;
   const today = getDateKey();
   // todayCount は今日のものだけ MAX。日付が違うなら無視。
   let todayCount = 0;
-  if (todayLocal === today) todayCount = Math.max(todayCount, local.todayCount ?? 0);
-  if (todayRemote === today) todayCount = Math.max(todayCount, remote.todayCount ?? 0);
+  if (local.todayDate === today) todayCount = Math.max(todayCount, local.todayCount ?? 0);
+  if (remote.todayDate === today) todayCount = Math.max(todayCount, remote.todayCount ?? 0);
+  // [Bugfix 2026-06-03] remote.categoryStats が undefined のケースで throw しないよう null-safe 化。
+  // 新規ユーザーはサーバの study_stats.quick_quiz_stats が categoryStats を持たない空オブジェクト {}
+  // で返るため、旧実装の remote.categoryStats.kenri.total が
+  // 「Cannot read properties of undefined (reading 'kenri')」で throw → syncWithCloud が毎回失敗し
+  // 「クラウド同期に失敗しました」バナーが20秒ごとに出続けていた（新規ユーザー全員が踏む重大バグ）。
+  // local/remote の categoryStats・各カテゴリ・各数値をすべて防御的に読む。
+  const lc = local.categoryStats ?? ({} as QuickQuizStats['categoryStats']);
+  const rc = remote.categoryStats ?? ({} as QuickQuizStats['categoryStats']);
+  const mergeCat = (k: keyof QuickQuizStats['categoryStats']) => ({
+    total: Math.max(lc[k]?.total ?? 0, rc[k]?.total ?? 0),
+    correct: Math.max(lc[k]?.correct ?? 0, rc[k]?.correct ?? 0),
+  });
   return {
-    total: Math.max(local.total, remote.total),
-    correct: Math.max(local.correct, remote.correct),
+    total: Math.max(local.total ?? 0, remote.total ?? 0),
+    correct: Math.max(local.correct ?? 0, remote.correct ?? 0),
     categoryStats: {
-      kenri: {
-        total: Math.max(local.categoryStats.kenri.total, remote.categoryStats.kenri.total),
-        correct: Math.max(local.categoryStats.kenri.correct, remote.categoryStats.kenri.correct),
-      },
-      takkengyoho: {
-        total: Math.max(local.categoryStats.takkengyoho.total, remote.categoryStats.takkengyoho.total),
-        correct: Math.max(local.categoryStats.takkengyoho.correct, remote.categoryStats.takkengyoho.correct),
-      },
-      horei_seigen: {
-        total: Math.max(local.categoryStats.horei_seigen.total, remote.categoryStats.horei_seigen.total),
-        correct: Math.max(local.categoryStats.horei_seigen.correct, remote.categoryStats.horei_seigen.correct),
-      },
-      tax_other: {
-        total: Math.max(local.categoryStats.tax_other.total, remote.categoryStats.tax_other.total),
-        correct: Math.max(local.categoryStats.tax_other.correct, remote.categoryStats.tax_other.correct),
-      },
+      kenri: mergeCat('kenri'),
+      takkengyoho: mergeCat('takkengyoho'),
+      horei_seigen: mergeCat('horei_seigen'),
+      tax_other: mergeCat('tax_other'),
     },
     todayCount,
     todayDate: today,

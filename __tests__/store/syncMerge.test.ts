@@ -383,4 +383,39 @@ describe('mergeQuickQuizStats - 一問一答 stats マージ', () => {
     expect(merged.total).toBe(5);
     expect(merged.todayCount).toBe(5);
   });
+
+  test('回帰[2026-06-03]: remote.categoryStats が undefined (サーバが空オブジェクト {} を返す新規ユーザー) でも throw しない', () => {
+    // 本番バグ: 新規ユーザーの study_stats.quick_quiz_stats が categoryStats を持たない {} で返り、
+    // 旧実装の remote.categoryStats.kenri.total が「Cannot read properties of undefined (reading 'kenri')」
+    // で throw → syncWithCloud が毎回失敗し「クラウド同期に失敗しました」バナーが20秒ごとに出続けた。
+    const local = makeQQ({ total: 0, correct: 0 });
+    const remoteEmpty = { total: 0, correct: 0, todayCount: 0, todayDate: '' } as unknown as Parameters<
+      typeof mergeQuickQuizStats
+    >[1];
+    expect(() => mergeQuickQuizStats(local, remoteEmpty)).not.toThrow();
+    const merged = mergeQuickQuizStats(local, remoteEmpty);
+    expect(merged.categoryStats.kenri).toEqual({ total: 0, correct: 0 });
+    expect(merged.categoryStats.tax_other).toEqual({ total: 0, correct: 0 });
+    expect(merged.total).toBe(0);
+  });
+
+  test('回帰[2026-06-03]: remote.categoryStats 欠落でも local 値は保持される', () => {
+    const local = makeQQ({
+      total: 10,
+      correct: 7,
+      categoryStats: {
+        kenri: { total: 5, correct: 3 },
+        takkengyoho: { total: 2, correct: 1 },
+        horei_seigen: { total: 0, correct: 0 },
+        tax_other: { total: 3, correct: 2 },
+      },
+    });
+    const remoteEmpty = { total: 0, correct: 0, todayCount: 0, todayDate: '' } as unknown as Parameters<
+      typeof mergeQuickQuizStats
+    >[1];
+    const merged = mergeQuickQuizStats(local, remoteEmpty);
+    expect(merged.categoryStats.kenri).toEqual({ total: 5, correct: 3 });
+    expect(merged.categoryStats.tax_other).toEqual({ total: 3, correct: 2 });
+    expect(merged.total).toBe(10);
+  });
 });
