@@ -152,6 +152,42 @@ describe('getAdAttribution', () => {
     });
     expect(getAdAttribution()).toEqual(data);
   });
+
+  it('[2026-06-03回帰] cookie の attribution を localStorage より優先して読む (サブドメイン共有の修正)', () => {
+    const cookieData = { gclid: 'cookie-gclid-xyz', utm_source: 'google' };
+    // localStorage には古い別値。cookie(LP→app の橋渡し)が優先されることを検証。
+    mockLocalStorage['takken_ad_attribution'] = JSON.stringify({
+      data: { gclid: 'ls-should-not-win' },
+      expires_at: Date.now() + 86400000,
+    });
+    const origDoc = (global as any).document;
+    (global as any).document = {
+      cookie:
+        'foo=bar; takken_ad_attribution=' +
+        encodeURIComponent(JSON.stringify({ data: cookieData, expires_at: Date.now() + 86400000 })) +
+        '; baz=qux',
+    };
+    try {
+      expect(getAdAttribution()).toEqual(cookieData);
+    } finally {
+      (global as any).document = origDoc;
+    }
+  });
+
+  it('[2026-06-03回帰] cookie が無ければ localStorage にフォールバック', () => {
+    const data = { gclid: 'ls-fallback' };
+    mockLocalStorage['takken_ad_attribution'] = JSON.stringify({
+      data,
+      expires_at: Date.now() + 86400000,
+    });
+    const origDoc = (global as any).document;
+    (global as any).document = { cookie: 'foo=bar' }; // 無関係な cookie のみ
+    try {
+      expect(getAdAttribution()).toEqual(data);
+    } finally {
+      (global as any).document = origDoc;
+    }
+  });
 });
 
 // ============================================================

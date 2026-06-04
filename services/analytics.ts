@@ -231,11 +231,23 @@ export interface AdAttribution {
 export function getAdAttribution(): AdAttribution | null {
   if (Platform.OS !== 'web' || typeof window === 'undefined') return null;
   try {
-    const raw = window.localStorage.getItem('takken_ad_attribution');
+    // [2026-06-03] サブドメイン間(LP=takkenkanzen.com → app=app.takkenkanzen.com)で
+    // 共有されるドメインCookieを優先して読む。localStorage はオリジン分離で、
+    // LP で保存した gclid を app 側から読めず ad_gclid が null になっていた不具合の修正。
+    let raw: string | null = null;
+    if (typeof document !== 'undefined' && document.cookie) {
+      const m = document.cookie.match(/(?:^|;\s*)takken_ad_attribution=([^;]+)/);
+      if (m && m[1]) {
+        try { raw = decodeURIComponent(m[1]); } catch { raw = m[1]; }
+      }
+    }
+    // フォールバック: 同一オリジンに直接着地したケースは localStorage
+    if (!raw) raw = window.localStorage.getItem('takken_ad_attribution');
     if (!raw) return null;
     const parsed = JSON.parse(raw) as { data: AdAttribution; expires_at: number };
     if (typeof parsed.expires_at === 'number' && Date.now() > parsed.expires_at) {
       window.localStorage.removeItem('takken_ad_attribution');
+      try { document.cookie = 'takken_ad_attribution=; domain=.takkenkanzen.com; path=/; max-age=0'; } catch {}
       return null;
     }
     return parsed.data ?? null;

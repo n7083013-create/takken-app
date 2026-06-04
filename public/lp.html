@@ -82,10 +82,15 @@
           attribution.captured_at = new Date().toISOString();
           attribution.landing_page = window.location.pathname + window.location.search;
           var expiresAt = Date.now() + 90 * 24 * 60 * 60 * 1000; // 90日
-          localStorage.setItem('takken_ad_attribution', JSON.stringify({
-            data: attribution,
-            expires_at: expiresAt
-          }));
+          var payload = JSON.stringify({ data: attribution, expires_at: expiresAt });
+          localStorage.setItem('takken_ad_attribution', payload);
+          // [2026-06-03] サブドメイン間(LP=takkenkanzen.com → app=app.takkenkanzen.com)で
+          // gclid を共有するため、localStorage に加えてドメインCookieにも保存。
+          // localStorage はオリジン分離で app 側から読めず、ad_gclid が null になる不具合の対策。
+          if (location.hostname.indexOf('takkenkanzen.com') !== -1) {
+            document.cookie = 'takken_ad_attribution=' + encodeURIComponent(payload) +
+              '; domain=.takkenkanzen.com; path=/; max-age=7776000; SameSite=Lax; Secure';
+          }
         }
       } catch (e) {
         // localStorage 拒否 (Safari Private 等) でもアプリ動作は妨げない
