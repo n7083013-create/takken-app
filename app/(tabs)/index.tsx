@@ -227,7 +227,6 @@ function HomeScreen() {
   const getLatestScore = useExamStore((s) => s.getLatestScore);
   const getBestScore = useExamStore((s) => s.getBestScore);
   const getDailyLog = useProgressStore((s) => s.getDailyLog);
-  const getStreakFreezeCount = useProgressStore((s) => s.getStreakFreezeCount);
   const [expandedCat, setExpandedCat] = useState<Category | null>(null);
   const [streakCelebVisible, setStreakCelebVisible] = useState(() => {
     // ストリークマイルストーン到達時に祝福を表示
@@ -241,7 +240,6 @@ function HomeScreen() {
   const isCelebrated = useSessionStore((st) => st.isCelebrated);
   const s = useMemo(() => makeStyles(colors), [colors]);
   const dailyLog = useMemo(() => getDailyLog(), [stats]);
-  const freezeCount = useMemo(() => getStreakFreezeCount(), [stats]);
 
   // [2026-05-22] getTodayAnswered は 4択 + 一問一答×0.2 の float を返す。
   // 目標判定 / 進捗バーは float のまま使う (滑らかな進捗表示)。
@@ -354,7 +352,6 @@ function HomeScreen() {
               <StreakPulse streak={stats.streak} style={s.streakBadge}>
                 <Text style={s.streakBadgeNum}>{stats.streak}</Text>
                 <Text style={s.streakBadgeLabel}>日連続</Text>
-                {freezeCount > 0 && <Text style={s.streakFreeze}>🛡️×{freezeCount}</Text>}
               </StreakPulse>
             )}
           </View>
@@ -959,13 +956,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     color: 'rgba(255,255,255,0.8)',
     marginTop: 1,
   },
-  streakFreeze: {
-    fontSize: FontSize.caption2,
-    color: 'rgba(200,230,255,0.9)',
-    fontWeight: '600',
-    marginTop: 4,
-  },
-
   // ─── Trial Banner ───
   trialBanner: {
     flexDirection: 'row',

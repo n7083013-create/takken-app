@@ -126,7 +126,6 @@ interface ProgressState {
   getTodayCorrect(): number;
   getTodayQuickQuizCount(): number;
   getDailyLog(): Record<string, number>;
-  getStreakFreezeCount(): number;
   /** インターリーブ学習: カテゴリ混合で最適な問題を選出 */
   getInterleavedQuestions(count: number): string[];
   /** 就寝前復習: 最も忘れやすい問題を選出 */
@@ -347,77 +346,39 @@ function getDateKey(date?: Date): string {
 }
 
 /**
- * ストリークフリーズの自動補充チェック（週1回、最大2個）
+ * [2026-06-03] 厳密ストリーク: 解答した日だけカウント。1日でも空けばリセット。
+ * （旧フリーズ「1日休んでも維持」は廃止 = 表示を実際の学習日数と一致させ正直に。
+ *   4択・一問一答どちらも「1問解いたら」その日を学習日として +1 する。）
+ * - 当日すでに解答済み → 据え置き
+ * - 前日からの継続 → +1
+ * - 2日以上空き or 初回 → 1（その日が新しい連続の初日）
+ * DST 事故回避のためローカル日付文字列(YYYY-MM-DD)を UTC 化して日数差を取る。
  */
-function refillStreakFreeze(stats: StudyStats): StudyStats {
-  const now = new Date();
-  const lastRefill = stats.streakFreezeRefilledAt ? new Date(stats.streakFreezeRefilledAt) : null;
-  const currentCount = stats.streakFreezeCount ?? 0;
-
-  if (currentCount >= 2) return stats; // 最大2個
-
-  if (!lastRefill || (now.getTime() - lastRefill.getTime()) >= 7 * 24 * 60 * 60 * 1000) {
-    return {
-      ...stats,
-      streakFreezeCount: Math.min(2, currentCount + 1),
-      streakFreezeRefilledAt: now.toISOString(),
-    };
-  }
-  return stats;
+function calculateStreak(lastStudyAt: string | undefined, currentStreak: number): number {
+  if (!lastStudyAt) return 1;
+  const lastKey = getDateKey(new Date(lastStudyAt));
+  const todayKey = getDateKey(new Date());
+  if (lastKey === todayKey) return currentStreak;
+  const [ly, lm, ld] = lastKey.split('-').map(Number);
+  const [ty, tm, td] = todayKey.split('-').map(Number);
+  const diffDays = Math.round((Date.UTC(ty, tm - 1, td) - Date.UTC(ly, lm - 1, ld)) / 86400000);
+  return diffDays === 1 ? currentStreak + 1 : 1;
 }
 
 /**
- * 連続学習日数（ストリーク）を計算する
- * ストリークフリーズ対応: 1日空いてもフリーズがあれば維持
+ * 解答（4択 / 一問一答 共通）時の「学習した日」のストリーク更新を計算する純粋ヘルパー。
+ * 厳密ストリーク + lastStudyAt 更新を返す（dailyLog は触らない＝4択ヒートマップ用に保つ）。
+ * 一問一答も lastStudyAt 経由でストリークに反映される。
  */
-function calculateStreak(
-  lastStudyAt: string | undefined,
-  currentStreak: number,
+function applyStudyDay(
   stats: StudyStats,
-): { streak: number; freezeUsed: boolean; updatedStats: StudyStats } {
-  let updatedStats = refillStreakFreeze(stats);
-
-  if (!lastStudyAt) return { streak: 1, freezeUsed: false, updatedStats };
-
-  // Issue #14: DST 切替日や夏時間導入国で setHours(0,0,0,0) 後でも 23h/25h 差になり
-  // Math.floor の結果が意図と外れる事故を防ぐため、ローカル日付文字列 (YYYY-MM-DD) で比較する
-  const lastDate = new Date(lastStudyAt);
-  const today = new Date();
-  const lastKey = getDateKey(lastDate);
-  const todayKey = getDateKey(today);
-  // 同日なら 0、翌日なら 1、それ以上は実日数差
-  let diffDays: number;
-  if (lastKey === todayKey) {
-    diffDays = 0;
-  } else {
-    // 簡易日数差: 両方を日付の 00:00 で UTC 化して計算（時刻情報を捨てる）
-    const [ly, lm, ld] = lastKey.split('-').map(Number);
-    const [ty, tm, td] = todayKey.split('-').map(Number);
-    const lastUtc = Date.UTC(ly, lm - 1, ld);
-    const todayUtc = Date.UTC(ty, tm - 1, td);
-    diffDays = Math.round((todayUtc - lastUtc) / (1000 * 60 * 60 * 24));
-  }
-
-  if (diffDays === 0) {
-    return { streak: currentStreak, freezeUsed: false, updatedStats };
-  } else if (diffDays === 1) {
-    return { streak: currentStreak + 1, freezeUsed: false, updatedStats };
-  } else if (diffDays === 2) {
-    // 1日空いた → ストリークフリーズを自動使用
-    const freezeCount = updatedStats.streakFreezeCount ?? 0;
-    const freezeUsedToday = updatedStats.streakFreezeUsedAt === getDateKey(lastDate);
-    if (freezeCount > 0 && !freezeUsedToday) {
-      updatedStats = {
-        ...updatedStats,
-        streakFreezeCount: freezeCount - 1,
-        streakFreezeUsedAt: getDateKey(new Date(lastDate.getTime() + 86400000)), // 空いた日
-      };
-      return { streak: currentStreak + 1, freezeUsed: true, updatedStats };
-    }
-    return { streak: 1, freezeUsed: false, updatedStats };
-  } else {
-    return { streak: 1, freezeUsed: false, updatedStats };
-  }
+): Pick<StudyStats, 'streak' | 'longestStreak' | 'lastStudyAt'> {
+  const newStreak = calculateStreak(stats.lastStudyAt, stats.streak);
+  return {
+    streak: newStreak,
+    longestStreak: Math.max(stats.longestStreak, newStreak),
+    lastStudyAt: new Date().toISOString(),
+  };
 }
 
 export const useProgressStore = create<ProgressState>((set, get) => ({
@@ -449,7 +410,11 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       todayDate: today,
     };
 
-    set({ quickQuizStats: updatedQuickQuizStats });
+    // [2026-06-03] 一問一答も「1問解いたら」その日を学習日にカウント（4択と同じ厳密ストリーク）
+    set({
+      quickQuizStats: updatedQuickQuizStats,
+      stats: { ...state.stats, ...applyStudyDay(state.stats) },
+    });
     get().saveProgress();
     // クラウドに即時反映（1秒デバウンス）
     scheduleCloudPush();
@@ -508,27 +473,19 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       lastConfidence: confidence,
     };
 
-    // ストリーク計算（フリーズ対応）
-    const { streak: newStreak, updatedStats: streakStats } = calculateStreak(
-      state.stats.lastStudyAt,
-      state.stats.streak,
-      state.stats,
-    );
-
-    // ヒートマップ用の日別ログ更新
+    // [2026-06-03] 厳密ストリーク（applyStudyDay）+ 4択のヒートマップ用 日次ログ
+    const studyDay = applyStudyDay(state.stats);
     const todayKey = getDateKey();
-    const dailyLog = { ...(streakStats.dailyLog ?? {}) };
-    dailyLog[todayKey] = (dailyLog[todayKey] ?? 0) + 1;
+    const dailyLog = { ...(state.stats.dailyLog ?? {}) };
+    dailyLog[todayKey] = (dailyLog[todayKey] ?? 0) + 1; // dailyLog は4択のみ（一問一答は含めない）
 
     // 統計更新
     const updatedStats: StudyStats = {
-      ...streakStats,
+      ...state.stats,
+      ...studyDay,
+      dailyLog,
       totalQuestions: state.stats.totalQuestions + 1,
       totalCorrect: state.stats.totalCorrect + (isCorrect ? 1 : 0),
-      streak: newStreak,
-      longestStreak: Math.max(state.stats.longestStreak, newStreak),
-      lastStudyAt: now,
-      dailyLog,
       categoryStats: {
         ...state.stats.categoryStats,
         [category]: {
@@ -768,11 +725,6 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   getDailyLog(): Record<string, number> {
     return get().stats.dailyLog ?? {};
-  },
-
-  getStreakFreezeCount(): number {
-    const stats = refillStreakFreeze(get().stats);
-    return stats.streakFreezeCount ?? 0;
   },
 
   /**

@@ -124,35 +124,44 @@ describe('useProgressStore - streak', () => {
   });
 
   // ----------------------------------------------------------
-  // 1日空き（フリーズあり）→ streak 維持
+  // [2026-06-03] 厳密ストリーク（フリーズ廃止）+ 一問一答カウント
   // ----------------------------------------------------------
-  describe('1日空き（フリーズあり）', () => {
-    it('2日前学習 + フリーズ1個 → streak が +1 される', () => {
+  describe('厳密ストリーク（フリーズ廃止）', () => {
+    it('2日前学習（1日空き）→ 旧フリーズが残っていても streak=1 にリセット', () => {
       useProgressStore.setState((s) => ({
-        stats: {
-          ...s.stats,
-          streak: 7,
-          lastStudyAt: isoDaysAgo(2),
-          streakFreezeCount: 1,
-          streakFreezeRefilledAt: new Date().toISOString(),
-        },
+        stats: { ...s.stats, streak: 7, lastStudyAt: isoDaysAgo(2), streakFreezeCount: 1 },
       }));
       useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
-      expect(useProgressStore.getState().stats.streak).toBe(8);
+      expect(useProgressStore.getState().stats.streak).toBe(1);
     });
 
-    it('フリーズ消費で streakFreezeCount が 0 になる', () => {
+    it('前日学習（連続）→ streak が +1', () => {
       useProgressStore.setState((s) => ({
-        stats: {
-          ...s.stats,
-          streak: 5,
-          lastStudyAt: isoDaysAgo(2),
-          streakFreezeCount: 1,
-          streakFreezeRefilledAt: new Date().toISOString(),
-        },
+        stats: { ...s.stats, streak: 4, lastStudyAt: isoDaysAgo(1) },
       }));
       useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
-      expect(useProgressStore.getState().stats.streakFreezeCount).toBe(0);
+      expect(useProgressStore.getState().stats.streak).toBe(5);
+    });
+
+    it('一問一答（recordQuickQuizAnswer）でもストリークがカウントされる', () => {
+      useProgressStore.setState((s) => ({
+        stats: { ...s.stats, streak: 2, lastStudyAt: isoDaysAgo(1) },
+      }));
+      useProgressStore.getState().recordQuickQuizAnswer('qq1', 'kenri', true);
+      expect(useProgressStore.getState().stats.streak).toBe(3); // 前日継続 → +1
+    });
+
+    it('一問一答は dailyLog（4択ヒートマップ）を汚さない（streak だけ更新）', () => {
+      useProgressStore.setState((s) => ({
+        stats: { ...s.stats, streak: 0, lastStudyAt: undefined, dailyLog: {} },
+      }));
+      useProgressStore.getState().recordQuickQuizAnswer('qq1', 'kenri', true);
+      const todayKey = (() => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      })();
+      expect(useProgressStore.getState().getDailyLog()[todayKey] ?? 0).toBe(0);
+      expect(useProgressStore.getState().stats.streak).toBe(1);
     });
   });
 
@@ -185,54 +194,6 @@ describe('useProgressStore - streak', () => {
       }));
       useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
       expect(useProgressStore.getState().stats.streak).toBe(1);
-    });
-  });
-
-  // ----------------------------------------------------------
-  // フリーズ自動補充ロジック
-  // ----------------------------------------------------------
-  describe('streakFreezeCount 自動補充', () => {
-    it('一度も補充されていない場合は 1 個から', () => {
-      useProgressStore.setState((s) => ({
-        stats: {
-          ...s.stats,
-          streak: 0,
-          lastStudyAt: undefined,
-          streakFreezeCount: 0,
-          streakFreezeRefilledAt: undefined,
-        },
-      }));
-      useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
-      // 初日 + 補充 → streakFreezeCount=1
-      expect(useProgressStore.getState().stats.streakFreezeCount).toBe(1);
-    });
-
-    it('1週間経過したら +1 される（最大2）', () => {
-      useProgressStore.setState((s) => ({
-        stats: {
-          ...s.stats,
-          streak: 0,
-          lastStudyAt: undefined,
-          streakFreezeCount: 1,
-          streakFreezeRefilledAt: isoDaysAgo(8),
-        },
-      }));
-      useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
-      expect(useProgressStore.getState().stats.streakFreezeCount).toBe(2);
-    });
-
-    it('上限 2 個を超えない', () => {
-      useProgressStore.setState((s) => ({
-        stats: {
-          ...s.stats,
-          streak: 0,
-          lastStudyAt: undefined,
-          streakFreezeCount: 2,
-          streakFreezeRefilledAt: isoDaysAgo(20),
-        },
-      }));
-      useProgressStore.getState().recordAnswer('q1', 'kenri', true, 'low');
-      expect(useProgressStore.getState().stats.streakFreezeCount).toBeLessThanOrEqual(2);
     });
   });
 
