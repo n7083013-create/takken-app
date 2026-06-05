@@ -244,6 +244,11 @@ function HomeScreen() {
       }
       if (!cancelled && milestones.includes(stats.streak) && stats.streak > last) {
         setStreakCelebVisible(true);
+        // [2026-06-05] 「表示を決めた瞬間」にフラグを記録する。
+        // 旧実装は閉じた時(dismiss)のみ記録だったため、祝福を閉じる/3秒の
+        // 自動消去の前にアプリを終了→再起動すると毎回再表示されていた
+        // (ネイティブで「見た瞬間にアプリ切替/終了」すると多発)。
+        await AsyncStorage.setItem('@takken_celebrated_streak', String(stats.streak)).catch(() => {});
       }
     })();
     return () => {
