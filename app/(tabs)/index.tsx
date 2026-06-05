@@ -228,11 +228,32 @@ function HomeScreen() {
   const getBestScore = useExamStore((s) => s.getBestScore);
   const getDailyLog = useProgressStore((s) => s.getDailyLog);
   const [expandedCat, setExpandedCat] = useState<Category | null>(null);
-  const [streakCelebVisible, setStreakCelebVisible] = useState(() => {
-    // ストリークマイルストーン到達時に祝福を表示
+  // [2026-06-03] ストリーク祝福は「マイルストーン到達時に1回だけ」。
+  // 永続フラグ(@takken_celebrated_streak)で、ログイン/再表示の度に再表示しない。
+  const [streakCelebVisible, setStreakCelebVisible] = useState(false);
+  useEffect(() => {
     const milestones = [3, 5, 7, 10, 14, 21, 30, 50, 100];
-    return milestones.includes(stats.streak);
-  });
+    let cancelled = false;
+    (async () => {
+      const raw = await AsyncStorage.getItem('@takken_celebrated_streak').catch(() => null);
+      let last = raw ? Number(raw) : 0;
+      // ストリークがリセットされたら記録もリセット（再到達で再祝福できるように）
+      if (stats.streak < last) {
+        last = 0;
+        await AsyncStorage.setItem('@takken_celebrated_streak', '0').catch(() => {});
+      }
+      if (!cancelled && milestones.includes(stats.streak) && stats.streak > last) {
+        setStreakCelebVisible(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [stats.streak]);
+  const dismissStreakCeleb = useCallback(() => {
+    setStreakCelebVisible(false);
+    AsyncStorage.setItem('@takken_celebrated_streak', String(stats.streak)).catch(() => {});
+  }, [stats.streak]);
 
   // 日目標達成祝福
   const [goalCelebVisible, setGoalCelebVisible] = useState(false);
@@ -319,7 +340,7 @@ function HomeScreen() {
       <StreakCelebration
         streak={stats.streak}
         visible={streakCelebVisible}
-        onDismiss={() => setStreakCelebVisible(false)}
+        onDismiss={dismissStreakCeleb}
       />
       {/* 日目標達成祝福（その日1回のみ） */}
       <DailyGoalCelebration
