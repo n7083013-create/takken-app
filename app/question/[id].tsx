@@ -12,7 +12,7 @@ import {
   Platform,
   useWindowDimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getNextInAiQueue, clearAiQueue } from '../../utils/aiQueue';
@@ -65,6 +65,7 @@ export default function QuestionDetailScreen() {
   const { id, source } = useLocalSearchParams<{ id: string; source?: string }>();
   const isAiMode = source === 'ai';
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const nav = useNavigation();
   const recordAnswer = useProgressStore((s) => s.recordAnswer);
   const getTodayFourChoiceCount = useProgressStore((s) => s.getTodayFourChoiceCount);
@@ -327,7 +328,7 @@ export default function QuestionDetailScreen() {
 
   if (!q) {
     return (
-      <View style={s.safe}>
+      <View style={[s.safe, { paddingTop: insets.top }]}>
         <WebBackButton />
         <Text style={s.errorText}>問題が見つかりません</Text>
       </View>
@@ -474,7 +475,9 @@ export default function QuestionDetailScreen() {
   return (
     <View style={s.splitContainer}>
     <FeedbackOverlay />
-    <WebBackButton />
+    <View style={{ paddingTop: insets.top }}>
+      <WebBackButton />
+    </View>
     {/* ブックマーク操作のフィードバックトースト（1.5秒表示してフェードアウト） */}
     {bookmarkToast ? (
       <View pointerEvents="none" style={s.bookmarkToast}>

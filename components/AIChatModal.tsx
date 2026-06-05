@@ -15,6 +15,7 @@ import {
   Platform,
   useWindowDimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontSize, Spacing, BorderRadius } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 import { Input } from './ui/Input';
@@ -70,6 +71,7 @@ export function AIChatModal(props: AIChatModalProps) {
   // ユーザー報告:「PCでAI質問するときは全画面で表示させるのやめてほしい。戻ったり消したり手間」
   const { width: screenWidth } = useWindowDimensions();
   const isWideScreen = screenWidth >= 768;
+  const insets = useSafeAreaInsets();
   const canAI = useSettingsStore((st) => st.canUseAI());
   const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
 
@@ -159,7 +161,7 @@ export function AIChatModal(props: AIChatModalProps) {
       )}
       <View style={isWideScreen ? s.pcPanel : s.container}>
         {/* Header */}
-        <View style={s.header}>
+        <View style={[s.header, !isWideScreen && Platform.OS !== 'ios' && insets.top > 0 && { paddingTop: insets.top + 14 }]}>
           <Text style={s.headerTitle}>🤖 AIに質問</Text>
           <Pressable onPress={handleClose} hitSlop={12}>
             <Text style={s.closeBtn}>✕</Text>
