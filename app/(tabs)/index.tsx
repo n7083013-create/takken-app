@@ -376,8 +376,12 @@ function HomeScreen() {
             )}
             {stats.streak > 0 && (
               <StreakPulse streak={stats.streak} style={s.streakBadge}>
-                <Text style={s.streakBadgeNum}>{stats.streak}</Text>
-                <Text style={s.streakBadgeLabel}>日連続</Text>
+                <View style={s.streakBadgeRow}>
+                  <Text style={s.streakBadgeFire}>🔥</Text>
+                  <Text style={s.streakBadgeNum}>{stats.streak}</Text>
+                  <Text style={s.streakBadgeDay}>日</Text>
+                </View>
+                <Text style={s.streakBadgeLabel}>連続</Text>
               </StreakPulse>
             )}
           </View>
@@ -970,6 +974,21 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     alignItems: 'center',
+  },
+  streakBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  streakBadgeFire: {
+    fontSize: 20,
+    marginRight: 2,
+    alignSelf: 'center',
+  },
+  streakBadgeDay: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: 'rgba(255,255,255,0.9)',
+    marginLeft: 1,
   },
   streakBadgeNum: {
     fontSize: FontSize.title1,
