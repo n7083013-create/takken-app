@@ -150,10 +150,10 @@ export function StudyHeatmap({ dailyLog, streak = 0, dailyGoal = 20 }: StudyHeat
     <View style={s.container}>
       {/* Header */}
       <View style={s.headerRow}>
-        <Text style={s.headerTitle}>直近7日間の学習</Text>
+        <Text style={s.headerTitle} numberOfLines={1}>直近7日間の学習</Text>
         {streak > 0 && (
           <View style={s.streakBadge}>
-            <Text style={s.streakText}>🔥 {streak}日連続</Text>
+            <Text style={s.streakText} numberOfLines={1}>🔥 {streak}日連続</Text>
           </View>
         )}
       </View>
@@ -260,12 +260,15 @@ function makeStyles(C: ThemeColors) {
       fontSize: FontSize.subhead,
       fontWeight: '700',
       color: C.text,
+      flexShrink: 1,
     },
     streakBadge: {
       backgroundColor: C.primarySurface,
       paddingHorizontal: 10,
       paddingVertical: 4,
       borderRadius: BorderRadius.full,
+      flexShrink: 0,
+      marginLeft: 8,
     },
     streakText: {
       fontSize: FontSize.caption,
