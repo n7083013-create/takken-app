@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useProgressStore } from '../store/useProgressStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useReportStore } from '../store/useReportStore';
+import { useTimerStore } from '../store/useTimerStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { useQuestStore } from '../store/useQuestStore';
 import { useAchievementStore } from '../store/useAchievementStore';
@@ -30,6 +31,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import { OfflineBanner } from '../components/OfflineBanner';
 import { SyncErrorBanner } from '../components/SyncErrorBanner';
 import { AchievementToast } from '../components/AchievementToast';
+import { FloatingTimer } from '../components/FloatingTimer';
 
 export default function RootLayout() {
   const loadProgress = useProgressStore((s) => s.loadProgress);
@@ -59,6 +61,7 @@ export default function RootLayout() {
         loadAchievements(),
         loadExamHistory(),
         loadCelebrated(),
+        useTimerStore.getState().load(),
       ]);
       // Auth は他ストアの後に初期化（セッション復元後にsync等が走るため）
       await initAuth();
@@ -72,6 +75,25 @@ export default function RootLayout() {
         setTimeout(() => { retryPendingPurchases().catch(() => {}); }, 5000);
       }
     })();
+  }, []);
+
+  // [学習タイマー] グローバル ticker + 背景復帰補正
+  // タイマー状態は useTimerStore に集約され、ここで一本化した 1秒間隔で駆動する。
+  // 各画面のローカル setInterval は撤去済み → どの画面にいても進行が止まらない。
+  // 残り時間は endAt (終了時刻) 基準で算出するため、background や遷移によるズレは
+  // tick() / フォアグラウンド復帰時の再計算で自動補正される。
+  useEffect(() => {
+    const interval = setInterval(() => {
+      useTimerStore.getState().tick();
+    }, 1000);
+    const sub = AppState.addEventListener('change', (state) => {
+      // 背景から復帰したら即 endAt から再計算 (ズレ補正・0到達なら complete)
+      if (state === 'active') useTimerStore.getState().tick();
+    });
+    return () => {
+      clearInterval(interval);
+      sub.remove();
+    };
   }, []);
 
   // OAuth後のリダイレクト処理 & サブスク検証
@@ -295,6 +317,7 @@ export default function RootLayout() {
       <OfflineBanner />
       <SyncErrorBanner />
       <AchievementToast />
+      <FloatingTimer />
     </GestureHandlerRootView>
     </ErrorBoundary>
   );

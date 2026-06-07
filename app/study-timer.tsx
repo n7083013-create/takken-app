@@ -1,228 +1,74 @@
 // ============================================================
 // 学習タイマー（カスタムポモドーロ）
 // 自由に時間設定・直近履歴からワンタップ・セッション記録
+//
+// 状態はすべて useTimerStore (グローバル) に集約。
+// 画面を離れても進行は止まらず、フローティング表示が出る。
+// カウントのドライブ (1秒 tick) は app/_layout.tsx のルート ticker に一本化。
 // ============================================================
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
   TextInput,
   Pressable,
   StyleSheet,
-  Vibration,
-  AppState,
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Shadow, FontSize, LineHeight, Spacing, BorderRadius } from '../constants/theme';
+import { Shadow, FontSize, Spacing, BorderRadius } from '../constants/theme';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
-import { useSettingsStore } from '../store/useSettingsStore';
-import { logError } from '../services/errorLogger';
-import { scheduleTimerNotification, cancelTimerNotification } from '../services/notifications';
+import { useTimerStore } from '../store/useTimerStore';
 import { WebBackButton } from '../components/WebBackButton';
-
-type TimerMode = 'focus' | 'break';
-type TimerState = 'idle' | 'running' | 'paused';
-
-interface SessionLog {
-  focusMin: number;
-  completedAt: string; // ISO
-}
-
-const STORAGE_KEY_RECENT = '@timer_recent_minutes';
-const STORAGE_KEY_LOGS = '@timer_session_logs';
 
 const FOCUS_PRESETS = [5, 10, 15, 25, 30, 45, 60];
 const BREAK_PRESETS = [3, 5, 10, 15];
-const SESSIONS_FOR_LONG_BREAK = 4;
 
 export default function StudyTimerScreen() {
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
-  const vibrationEnabled = useSettingsStore((st) => st.settings.vibrationEnabled);
 
-  // Timer state
-  const [mode, setMode] = useState<TimerMode>('focus');
-  const [timerState, setTimerState] = useState<TimerState>('idle');
-  const [focusMin, setFocusMin] = useState(25);
-  const [breakMin, setBreakMin] = useState(5);
-  const [remainingSec, setRemainingSec] = useState(25 * 60);
-  const [completedSessions, setCompletedSessions] = useState(0);
-  const [totalFocusMin, setTotalFocusMin] = useState(0);
+  // グローバルストアの現在状態を購読 (再入場時も走行中なら継続表示される)
+  const mode = useTimerStore((st) => st.mode);
+  const status = useTimerStore((st) => st.status);
+  const focusMin = useTimerStore((st) => st.focusMin);
+  const breakMin = useTimerStore((st) => st.breakMin);
+  const remainingSec = useTimerStore((st) => st.remainingSec);
+  const completedSessions = useTimerStore((st) => st.completedSessions);
+  const totalFocusMin = useTimerStore((st) => st.totalFocusMin);
+  const recentMinutes = useTimerStore((st) => st.recentMinutes);
+  const todayLogs = useTimerStore((st) => st.todayLogs);
 
-  // Recent & logs
-  const [recentMinutes, setRecentMinutes] = useState<number[]>([]);
-  const [todayLogs, setTodayLogs] = useState<SessionLog[]>([]);
+  const setFocusMin = useTimerStore((st) => st.setFocusMin);
+  const setBreakMin = useTimerStore((st) => st.setBreakMin);
+  const start = useTimerStore((st) => st.start);
+  const pause = useTimerStore((st) => st.pause);
+  const resume = useTimerStore((st) => st.resume);
+  const reset = useTimerStore((st) => st.reset);
+  const skip = useTimerStore((st) => st.skip);
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const bgTimeRef = useRef<number | null>(null);
-
-  // Load recent minutes and today's logs
-  useEffect(() => {
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY_RECENT);
-        if (raw) {
-          const parsed = JSON.parse(raw) as number[];
-          setRecentMinutes(parsed);
-          if (parsed.length > 0) {
-            setFocusMin(parsed[0]);
-            setRemainingSec(parsed[0] * 60);
-          }
-        }
-      } catch (e) {
-        logError(e, { context: 'timer.loadRecent' });
-      }
-      try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY_LOGS);
-        if (raw) {
-          const all = JSON.parse(raw) as SessionLog[];
-          const today = new Date().toISOString().slice(0, 10);
-          setTodayLogs(all.filter((l) => l.completedAt.slice(0, 10) === today));
-        }
-      } catch (e) {
-        logError(e, { context: 'timer.loadLogs' });
-      }
-    })();
-  }, []);
-
-  // Save recent minutes
-  const saveRecent = useCallback(async (min: number) => {
-    const updated = [min, ...recentMinutes.filter((m) => m !== min)].slice(0, 5);
-    setRecentMinutes(updated);
-    await AsyncStorage.setItem(STORAGE_KEY_RECENT, JSON.stringify(updated));
-  }, [recentMinutes]);
-
-  // Save session log
-  const saveLog = useCallback(async (min: number) => {
-    const log: SessionLog = { focusMin: min, completedAt: new Date().toISOString() };
-    try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEY_LOGS);
-      const all: SessionLog[] = raw ? JSON.parse(raw) : [];
-      // Keep last 100 logs
-      const updated = [log, ...all].slice(0, 100);
-      await AsyncStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(updated));
-      const today = new Date().toISOString().slice(0, 10);
-      setTodayLogs(updated.filter((l) => l.completedAt.slice(0, 10) === today));
-    } catch (e) {
-      logError(e, { context: 'timer.saveLog' });
-    }
-  }, []);
-
-  // Background time correction
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active' && bgTimeRef.current && timerState === 'running') {
-        const elapsed = Math.floor((Date.now() - bgTimeRef.current) / 1000);
-        setRemainingSec((prev) => Math.max(0, prev - elapsed));
-        bgTimeRef.current = null;
-      } else if (state === 'background' && timerState === 'running') {
-        bgTimeRef.current = Date.now();
-      }
-    });
-    return () => sub.remove();
-  }, [timerState]);
-
-  // Countdown
-  useEffect(() => {
-    if (timerState === 'running') {
-      intervalRef.current = setInterval(() => {
-        setRemainingSec((prev) => {
-          if (prev <= 1) {
-            clearInterval(intervalRef.current!);
-            handleTimerComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [timerState]);
-
-  const handleTimerComplete = useCallback(() => {
-    if (vibrationEnabled) Vibration.vibrate([0, 500, 200, 500]);
-
-    if (mode === 'focus') {
-      const newSessions = completedSessions + 1;
-      setCompletedSessions(newSessions);
-      setTotalFocusMin((prev) => prev + focusMin);
-      saveLog(focusMin);
-      setMode('break');
-      setRemainingSec(breakMin * 60);
-      setTimerState('idle');
-    } else {
-      setMode('focus');
-      setRemainingSec(focusMin * 60);
-      setTimerState('idle');
-    }
-  }, [mode, completedSessions, vibrationEnabled, focusMin, breakMin, saveLog]);
-
-  const startTimer = () => {
-    saveRecent(focusMin);
-    setTimerState('running');
-    // [#5] アプリを閉じても/他モードでも、終了時刻に音・バイブで知らせる
-    scheduleTimerNotification(remainingSec, mode);
-  };
-  const pauseTimer = () => {
-    setTimerState('paused');
-    cancelTimerNotification();
-  };
-  const resumeTimer = () => {
-    setTimerState('running');
-    scheduleTimerNotification(remainingSec, mode);
-  };
-  const resetTimer = () => {
-    cancelTimerNotification();
-    setTimerState('idle');
-    setMode('focus');
-    setRemainingSec(focusMin * 60);
-  };
-  const skipToNext = () => {
-    cancelTimerNotification();
-    setTimerState('idle');
-    if (mode === 'focus') {
-      setMode('break');
-      setRemainingSec(breakMin * 60);
-    } else {
-      setMode('focus');
-      setRemainingSec(focusMin * 60);
-    }
-  };
-
-  // Time input
+  // 入力欄の文字列はこの画面のローカル UI 状態 (確定値は store の focusMin/breakMin)
   const [focusInput, setFocusInput] = useState(String(focusMin));
   const [breakInput, setBreakInput] = useState(String(breakMin));
 
   const applyFocusInput = (text: string) => {
     setFocusInput(text);
     const num = parseInt(text, 10);
-    if (!isNaN(num) && num >= 1 && num <= 120) {
-      setFocusMin(num);
-      if (mode === 'focus') setRemainingSec(num * 60);
-    }
+    if (!isNaN(num) && num >= 1 && num <= 120) setFocusMin(num);
   };
   const applyBreakInput = (text: string) => {
     setBreakInput(text);
     const num = parseInt(text, 10);
-    if (!isNaN(num) && num >= 1 && num <= 60) {
-      setBreakMin(num);
-      if (mode === 'break') setRemainingSec(num * 60);
-    }
+    if (!isNaN(num) && num >= 1 && num <= 60) setBreakMin(num);
   };
   const selectFocusPreset = (min: number) => {
     setFocusMin(min);
     setFocusInput(String(min));
-    if (mode === 'focus') setRemainingSec(min * 60);
   };
   const selectBreakPreset = (min: number) => {
     setBreakMin(min);
     setBreakInput(String(min));
-    if (mode === 'break') setRemainingSec(min * 60);
   };
 
   // Display
@@ -255,7 +101,7 @@ export default function StudyTimerScreen() {
                 {timeStr}
               </Text>
               <Text style={s.timerLabel}>
-                {timerState === 'idle' ? 'スタート待ち' : timerState === 'paused' ? '一時停止中' : mode === 'focus' ? '集中しましょう' : 'リラックス'}
+                {status === 'idle' ? 'スタート待ち' : status === 'paused' ? '一時停止中' : mode === 'focus' ? '集中しましょう' : 'リラックス'}
               </Text>
             </View>
           </View>
@@ -265,7 +111,7 @@ export default function StudyTimerScreen() {
         </View>
 
         {/* Time settings (idle only) */}
-        {timerState === 'idle' && (
+        {status === 'idle' && (
           <View style={s.setupSection}>
             {/* ── 集中時間 ── */}
             <Text style={s.setupLabel}>🎯 集中時間</Text>
@@ -321,28 +167,28 @@ export default function StudyTimerScreen() {
 
         {/* Controls */}
         <View style={s.controls}>
-          {timerState === 'idle' && (
-            <Pressable style={[s.mainBtn, mode === 'focus' ? s.btnFocus : s.btnBreak]} onPress={startTimer} accessibilityRole="button">
+          {status === 'idle' && (
+            <Pressable style={[s.mainBtn, mode === 'focus' ? s.btnFocus : s.btnBreak]} onPress={start} accessibilityRole="button">
               <Text style={s.mainBtnText}>▶ スタート</Text>
             </Pressable>
           )}
-          {timerState === 'running' && (
-            <Pressable style={[s.mainBtn, s.btnPause]} onPress={pauseTimer} accessibilityRole="button">
+          {status === 'running' && (
+            <Pressable style={[s.mainBtn, s.btnPause]} onPress={pause} accessibilityRole="button">
               <Text style={s.mainBtnText}>⏸ 一時停止</Text>
             </Pressable>
           )}
-          {timerState === 'paused' && (
+          {status === 'paused' && (
             <View style={s.pauseControls}>
-              <Pressable style={[s.mainBtn, mode === 'focus' ? s.btnFocus : s.btnBreak]} onPress={resumeTimer} accessibilityRole="button">
+              <Pressable style={[s.mainBtn, mode === 'focus' ? s.btnFocus : s.btnBreak]} onPress={resume} accessibilityRole="button">
                 <Text style={s.mainBtnText}>▶ 再開</Text>
               </Pressable>
-              <Pressable style={s.subBtn} onPress={resetTimer} accessibilityRole="button">
+              <Pressable style={s.subBtn} onPress={reset} accessibilityRole="button">
                 <Text style={s.subBtnText}>リセット</Text>
               </Pressable>
             </View>
           )}
-          {timerState !== 'idle' && (
-            <Pressable style={s.skipBtn} onPress={skipToNext} accessibilityRole="button">
+          {status !== 'idle' && (
+            <Pressable style={s.skipBtn} onPress={skip} accessibilityRole="button">
               <Text style={s.skipBtnText}>
                 {mode === 'focus' ? '休憩にスキップ ›' : '次の集中へ ›'}
               </Text>
