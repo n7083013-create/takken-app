@@ -237,7 +237,7 @@ export default function StudyTimerScreen() {
   const uniqueRecent = recentMinutes.filter((m) => !FOCUS_PRESETS.includes(m));
 
   return (
-    <SafeAreaView style={s.safe} edges={['bottom']}>
+    <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
       <WebBackButton />
       <ScrollView contentContainerStyle={s.content}>
         {/* Mode indicator */}
