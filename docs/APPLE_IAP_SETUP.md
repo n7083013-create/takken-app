@@ -18,7 +18,7 @@
 │  Vercel Serverless Function                          │
 │   ├── Apple verifyReceipt API で検証                 │
 │   │    （shared secret + receipt-data）              │
-│   └── profiles.plan = 'standard' に更新              │
+│   └── profiles.plan = 'premium' に更新               │
 └──────────────────────────────────────────────────────┘
 ```
 

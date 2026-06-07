@@ -185,7 +185,7 @@ async function handleAppleNotification(notification, transactionInfo, renewalInf
     case 'OFFER_REDEEMED': // 特別オファー利用
     case 'PRICE_INCREASE': // 価格上昇承認 / 拒否（subtype による）
     {
-      updates.plan = 'standard';
+      updates.plan = 'premium';
       updates.payment_provider = 'apple';
       if (isTrial) {
         updates.subscription_status = 'trialing';

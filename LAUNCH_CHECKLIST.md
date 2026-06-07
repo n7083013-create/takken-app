@@ -101,7 +101,7 @@ PayPal Developer Dashboard → Webhooks → 該当Webhookの詳細画面
 ```sql
 -- Supabase SQL Editor で手動反映
 UPDATE profiles
-SET plan='standard', subscription_status='active', payment_provider='paypal'
+SET plan='premium', subscription_status='active', payment_provider='paypal'
 WHERE email='ユーザーのメールアドレス';
 ```
 

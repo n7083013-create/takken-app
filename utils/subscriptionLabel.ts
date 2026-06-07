@@ -13,11 +13,10 @@ interface PlanLabelInput {
 
 /**
  * 現状の運用は LP どおり 2 プラン (無料 / Premium)。
- * `unlimited` (Premium+) は実装はあるが運用していないため、Premium 扱いで表示する。
  * トライアル中は「無料トライアル（残り○日）」を優先表示。
  *
  * @example
- *   planLabel({ plan: 'standard', isTrial: false, trialDaysLeft: 0 })
+ *   planLabel({ plan: 'premium', isTrial: false, trialDaysLeft: 0 })
  *   // => 'Premium プラン'
  *   planLabel({ plan: 'free', isTrial: true, trialDaysLeft: 3 })
  *   // => '無料トライアル（残り3日）'
@@ -26,8 +25,7 @@ export function planLabel({ plan, isTrial, trialDaysLeft }: PlanLabelInput): str
   if (isTrial) {
     return `無料トライアル（残り${trialDaysLeft}日）`;
   }
-  // standard と unlimited は LP の「Premium」として一括表示
-  if (plan === 'standard' || plan === 'unlimited') {
+  if (plan === 'premium') {
     return 'Premium プラン';
   }
   return '無料プラン';

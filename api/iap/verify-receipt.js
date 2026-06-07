@@ -380,7 +380,7 @@ module.exports = async (req, res) => {
       // - トライアル中: subscription_status='trialing', trial_ends_at=expiry
       // - 本契約中:    subscription_status='active',   subscription_ends_at=expiry
       const profileUpdates = {
-        plan: 'standard',
+        plan: 'premium',
         payment_provider: 'google_play',
         google_play_purchase_token: purchaseToken,
         google_play_product_id: productId,
@@ -438,7 +438,7 @@ module.exports = async (req, res) => {
 
       return res.status(200).json({
         ok: true,
-        plan: 'standard',
+        plan: 'premium',
         expiresAt: expiryTime,
         state,
         isTrial,
@@ -528,7 +528,7 @@ module.exports = async (req, res) => {
 
       // profile 更新（trial / 本契約で分岐）
       const profileUpdates = {
-        plan: 'standard',
+        plan: 'premium',
         payment_provider: 'apple',
         apple_original_transaction_id: verified.originalTransactionId,
         apple_product_id: verified.productId,
@@ -583,7 +583,7 @@ module.exports = async (req, res) => {
 
       return res.status(200).json({
         ok: true,
-        plan: 'standard',
+        plan: 'premium',
         expiresAt: expiryTime,
         isTrial: verified.isTrial,
       });

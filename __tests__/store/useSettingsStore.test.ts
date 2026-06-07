@@ -46,13 +46,13 @@ describe('useSettingsStore', () => {
     });
 
     it('plan=standard かつ lastVerifiedAt が無いと false（改ざん防御）', () => {
-      setSub({ plan: 'standard', lastVerifiedAt: undefined });
+      setSub({ plan: 'premium', lastVerifiedAt: undefined });
       expect(useSettingsStore.getState().isPro()).toBe(false);
     });
 
     it('plan=standard + 直近検証済みなら true', () => {
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         lastVerifiedAt: new Date().toISOString(),
         clockMaxSeen: new Date().toISOString(),
       });
@@ -62,7 +62,7 @@ describe('useSettingsStore', () => {
     it('lastVerifiedAt が 4日前（>3日）なら false', () => {
       const fourDaysAgo = new Date(Date.now() - 4 * ONE_DAY_MS).toISOString();
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         lastVerifiedAt: fourDaysAgo,
         clockMaxSeen: fourDaysAgo,
       });
@@ -72,7 +72,7 @@ describe('useSettingsStore', () => {
     it('lastVerifiedAt が未来（時計巻き戻し検知）なら false', () => {
       const future = new Date(Date.now() + ONE_DAY_MS).toISOString();
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         lastVerifiedAt: future,
         clockMaxSeen: new Date().toISOString(),
       });
@@ -82,7 +82,7 @@ describe('useSettingsStore', () => {
     it('clockMaxSeen より now が 1時間以上前なら false（巻き戻し）', () => {
       const futureMaxSeen = new Date(Date.now() + 2 * ONE_HOUR_MS).toISOString();
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         lastVerifiedAt: new Date().toISOString(),
         clockMaxSeen: futureMaxSeen,
       });
@@ -92,7 +92,7 @@ describe('useSettingsStore', () => {
     it('clockMaxSeen との差が 30分（<1h）なら true（誤差許容）', () => {
       const slightlyAhead = new Date(Date.now() + 30 * 60 * 1000).toISOString();
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         lastVerifiedAt: new Date().toISOString(),
         clockMaxSeen: slightlyAhead,
       });
@@ -101,7 +101,7 @@ describe('useSettingsStore', () => {
 
     it('expiresAt が過去なら false', () => {
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         lastVerifiedAt: new Date().toISOString(),
         clockMaxSeen: new Date().toISOString(),
         expiresAt: new Date(Date.now() - ONE_DAY_MS).toISOString(),
@@ -112,7 +112,7 @@ describe('useSettingsStore', () => {
     // [H-1] trial 判定は trialEndsAt(サーバー由来) + status + 検証ゲートで行う
     it('trialing 状態（trialEndsAt 未来・検証済み）は Pro 扱い + isTrialActive=true', () => {
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         subscriptionStatus: 'trialing',
         trialEndsAt: new Date(Date.now() + 5 * ONE_DAY_MS).toISOString(),
         lastVerifiedAt: new Date().toISOString(),
@@ -126,7 +126,7 @@ describe('useSettingsStore', () => {
 
     it('PayPal トライアル(status=active・trialEndsAt 未来)も isTrialActive=true', () => {
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         subscriptionStatus: 'active',
         trialEndsAt: new Date(Date.now() + 3 * ONE_DAY_MS).toISOString(),
         expiresAt: new Date(Date.now() + 3 * ONE_DAY_MS).toISOString(),
@@ -151,7 +151,7 @@ describe('useSettingsStore', () => {
 
     it('有料(active・trialEndsAt 無し)は Pro だが trial 扱いしない', () => {
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         subscriptionStatus: 'active',
         expiresAt: new Date(Date.now() + 30 * ONE_DAY_MS).toISOString(),
         lastVerifiedAt: new Date().toISOString(),
@@ -164,7 +164,7 @@ describe('useSettingsStore', () => {
 
     it('trialEndsAt 未来でも未検証(lastVerifiedAt 無し)なら trial 扱いしない（改ざん防御）', () => {
       setSub({
-        plan: 'standard',
+        plan: 'premium',
         subscriptionStatus: 'trialing',
         trialEndsAt: new Date(Date.now() + 5 * ONE_DAY_MS).toISOString(),
         lastVerifiedAt: undefined,
@@ -178,22 +178,22 @@ describe('useSettingsStore', () => {
   // ----------------------------------------------------------
   describe('setPlan / cancelPlan', () => {
     it('setPlan で plan が更新される', () => {
-      useSettingsStore.getState().setPlan('standard');
-      expect(useSettingsStore.getState().subscription.plan).toBe('standard');
+      useSettingsStore.getState().setPlan('premium');
+      expect(useSettingsStore.getState().subscription.plan).toBe('premium');
     });
 
     it('setPlan で firstSubscribedAt が初回のみ設定される', () => {
-      useSettingsStore.getState().setPlan('standard');
+      useSettingsStore.getState().setPlan('premium');
       const first = useSettingsStore.getState().subscription.firstSubscribedAt;
       expect(first).toBeDefined();
 
       // 2回目はそのまま保持
-      useSettingsStore.getState().setPlan('unlimited');
+      useSettingsStore.getState().setPlan('premium');
       expect(useSettingsStore.getState().subscription.firstSubscribedAt).toBe(first);
     });
 
     it('cancelPlan で free に戻り firstSubscribedAt がクリアされる', () => {
-      useSettingsStore.getState().setPlan('standard');
+      useSettingsStore.getState().setPlan('premium');
       useSettingsStore.getState().cancelPlan();
       const sub = useSettingsStore.getState().subscription;
       expect(sub.plan).toBe('free');
@@ -228,7 +228,7 @@ describe('useSettingsStore', () => {
         status: 401,
         json: async () => ({}),
       }) as any;
-      setSub({ plan: 'standard' });
+      setSub({ plan: 'premium' });
       await useSettingsStore.getState().verifySubscription('token');
       const sub = useSettingsStore.getState().subscription;
       expect(sub.plan).toBe('free');
@@ -241,14 +241,14 @@ describe('useSettingsStore', () => {
         ok: true,
         status: 200,
         json: async () => ({
-          plan: 'standard',
+          plan: 'premium',
           subscriptionStatus: 'active',
           subscriptionEndsAt: '2030-01-01T00:00:00Z',
         }),
       }) as any;
       await useSettingsStore.getState().verifySubscription('token');
       const sub = useSettingsStore.getState().subscription;
-      expect(sub.plan).toBe('standard');
+      expect(sub.plan).toBe('premium');
       expect(sub.subscriptionStatus).toBe('active');
       expect(sub.expiresAt).toBe('2030-01-01T00:00:00Z');
       expect(sub.lastVerifiedAt).toBeDefined();
@@ -260,19 +260,19 @@ describe('useSettingsStore', () => {
         status: 503,
         json: async () => ({}),
       }) as any;
-      setSub({ plan: 'standard', lastVerifiedAt: '2020-01-01T00:00:00Z' });
+      setSub({ plan: 'premium', lastVerifiedAt: '2020-01-01T00:00:00Z' });
       await useSettingsStore.getState().verifySubscription('token');
       const sub = useSettingsStore.getState().subscription;
-      expect(sub.plan).toBe('standard');
+      expect(sub.plan).toBe('premium');
       expect(sub.lastVerifiedAt).toBe('2020-01-01T00:00:00Z');
     });
 
     it('ネットワークエラー時はローカル維持', async () => {
       global.fetch = jest.fn().mockRejectedValueOnce(new Error('network')) as any;
-      setSub({ plan: 'standard', lastVerifiedAt: '2020-01-01T00:00:00Z' });
+      setSub({ plan: 'premium', lastVerifiedAt: '2020-01-01T00:00:00Z' });
       await useSettingsStore.getState().verifySubscription('token');
       const sub = useSettingsStore.getState().subscription;
-      expect(sub.plan).toBe('standard');
+      expect(sub.plan).toBe('premium');
     });
   });
 
@@ -299,7 +299,7 @@ describe('useSettingsStore', () => {
         ok: true,
         status: 200,
         json: async () => ({
-          plan: 'standard',
+          plan: 'premium',
           subscriptionStatus: 'active',
           isPro: true,
           subscriptionEndsAt: '2030-01-01T00:00:00Z',
@@ -315,7 +315,7 @@ describe('useSettingsStore', () => {
         status: 401,
         json: async () => ({}),
       }) as any;
-      setSub({ plan: 'standard' });
+      setSub({ plan: 'premium' });
       const r = await useSettingsStore.getState().ensureProAccess('token');
       expect(r).toBe(false);
       expect(useSettingsStore.getState().subscription.plan).toBe('free');
@@ -376,8 +376,7 @@ describe('無料プラン AI質問: 1日3回 (毎日リセット)', () => {
 });
 
 describe('Premium AI日次上限: サーバー実値(50)と一致 (決定A: Fair Use表記)', () => {
-  it('standard / unlimited とも 50 (= server PAID_DAILY_LIMIT)', () => {
-    expect(AI_DAILY_LIMITS.standard).toBe(50);
-    expect(AI_DAILY_LIMITS.unlimited).toBe(50);
+  it('premium が 50 (= server PAID_DAILY_LIMIT)', () => {
+    expect(AI_DAILY_LIMITS.premium).toBe(50);
   });
 });

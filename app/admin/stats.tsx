@@ -32,7 +32,7 @@ interface AdminStats {
     new_week: number;
     new_month: number;
     free: number;
-    standard: number;
+    premium: number;
   };
   trial: {
     in_trial: number;
@@ -214,7 +214,7 @@ export default function AdminStatsScreen() {
           <Row label="今月新規" value={`+${stats.users.new_month}`} />
           <View style={s.divider} />
           <Row label="無料プラン" value={stats.users.free.toString()} />
-          <Row label="プレミアム" value={stats.users.standard.toString()} highlightGreen />
+          <Row label="プレミアム" value={stats.users.premium.toString()} highlightGreen />
         </Section>
 
         {/* トライアル */}

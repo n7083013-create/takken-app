@@ -236,7 +236,7 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'サーバーエラーが発生しました' });
   }
 
-  const isPaid = profile.plan === 'standard' || profile.plan === 'unlimited';
+  const isPaid = profile.plan === 'premium' || profile.plan === 'standard' || profile.plan === 'unlimited';
   const dailyLimit = isPaid ? PAID_DAILY_LIMIT : FREE_DAILY_LIMIT;
 
   // --- レート制限（既存 increment_ai_usage RPC を再利用） ---

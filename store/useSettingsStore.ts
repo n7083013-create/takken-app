@@ -12,6 +12,7 @@ import {
   SubscriptionPlan,
   AI_QUERY_LIMITS,
   AI_DAILY_LIMITS,
+  normalizePlan,
 } from '../types';
 
 function getDayKey(): string {
@@ -134,7 +135,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       return {
         subscription: {
           ...state.subscription,
-          plan,
+          plan: normalizePlan(plan),
           expiresAt,
           aiQueriesUsed: 0,
           firstSubscribedAt: state.subscription.firstSubscribedAt ?? now,
@@ -329,7 +330,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       set({
         subscription: {
           ...get().subscription,
-          plan: data.plan || 'free',
+          plan: normalizePlan(data.plan),
           subscriptionStatus: data.subscriptionStatus || 'none',
           expiresAt: data.subscriptionEndsAt || data.trialEndsAt || undefined,
           trialEndsAt: data.trialEndsAt || undefined,
@@ -381,7 +382,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       set({
         subscription: {
           ...get().subscription,
-          plan: data.plan || 'free',
+          plan: normalizePlan(data.plan),
           subscriptionStatus: data.subscriptionStatus || 'none',
           expiresAt: data.subscriptionEndsAt || data.trialEndsAt || undefined,
           trialEndsAt: data.trialEndsAt || undefined,
@@ -419,6 +420,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           subscription: checkAndResetQueries({
             ...defaultSubscription,
             ...data.subscription,
+            // 旧 'standard' 等が永続に残っていても premium に正規化（降格防止 + 上限ルックアップ安全）
+            plan: normalizePlan(data.subscription?.plan),
           }),
         });
       }

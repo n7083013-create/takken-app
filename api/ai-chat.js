@@ -103,7 +103,9 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'サーバーエラーが発生しました' });
   }
 
-  const isPaid = profile.plan === 'standard';
+  // [統一/降格防止] 正準値は 'premium'。旧 'standard'/'unlimited' も有料扱いにし、
+  // 命名移行期でも課金者を無料 AI 上限に落とさない (P2 安全)。
+  const isPaid = profile.plan === 'premium' || profile.plan === 'standard' || profile.plan === 'unlimited';
   const dailyLimit = isPaid ? PAID_DAILY_LIMIT : FREE_DAILY_LIMIT;
 
   // --- 3〜5. 原子的レート制限 + インクリメント（TOCTOU レース対策） ---
@@ -558,7 +560,8 @@ async function handleVoiceTranscribe(req, res) {
   }
 
   // --- 3. Premium 限定 ---
-  if (profile.plan !== 'standard') {
+  // [統一/降格防止] 正準値は 'premium'。旧 'standard'/'unlimited' も許可（課金者を弾かない）。
+  if (profile.plan !== 'premium' && profile.plan !== 'standard' && profile.plan !== 'unlimited') {
     return res.status(403).json({
       error: '音声入力は Premium プラン限定の機能です',
       code: 'premium_required',

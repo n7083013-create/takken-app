@@ -201,7 +201,9 @@ module.exports = async (req, res) => {
       }
     }
 
-    let isPro = working.plan === 'standard';
+    // [統一/降格防止] 正準値は 'premium'。旧 'standard'/'unlimited' も Pro 扱いにし、
+    // 命名移行期や未マイグレーション行でも課金者を絶対に free へ降格させない (P2 安全)。
+    let isPro = working.plan === 'premium' || working.plan === 'standard' || working.plan === 'unlimited';
 
     if (working.subscription_status === 'trialing' && working.trial_ends_at) {
       isPro = new Date(working.trial_ends_at) > new Date();
@@ -230,7 +232,7 @@ module.exports = async (req, res) => {
     res.setHeader('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
 
     return res.status(200).json({
-      plan: isPro ? 'standard' : 'free',
+      plan: isPro ? 'premium' : 'free',
       isPro,
       subscriptionStatus: working.subscription_status,
       trialEndsAt: working.trial_ends_at,

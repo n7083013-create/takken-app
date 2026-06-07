@@ -166,7 +166,7 @@ async function handleSubscriptionNotification(notification) {
         const expiryTime = sub.lineItems?.[0]?.expiryTime;
         updates = {
           ...updates,
-          plan: 'standard',
+          plan: 'premium',
           subscription_status: 'active',
           payment_provider: 'google_play',
           subscription_ends_at: expiryTime || null,

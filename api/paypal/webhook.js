@@ -130,7 +130,7 @@ module.exports = async (req, res) => {
         if (!userId) break;
         const nextBilling = resource.billing_info?.next_billing_time;
         const r = await updateProfileIdempotent(userId, {
-          plan: 'standard',
+          plan: 'premium',
           subscription_status: 'active',
           paypal_subscription_id: resource.id,
           paypal_subscriber_id: resource.subscriber?.payer_id,
@@ -179,7 +179,7 @@ module.exports = async (req, res) => {
           .maybeSingle();
         const updates = nextBilling ? { subscription_ends_at: nextBilling } : {};
         if (cur?.subscription_status !== 'canceled') {
-          updates.plan = 'standard';
+          updates.plan = 'premium';
           updates.subscription_status = 'active';
         }
         if (Object.keys(updates).length > 0) {

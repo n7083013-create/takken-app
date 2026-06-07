@@ -127,8 +127,7 @@ export const SUBCATEGORIES: Record<Category, Subcategory[]> = {
 // ※サーバー api/ai-chat.js は日次のみ管理（月次キャップなし）。この月次はクライアント予測用。
 export const AI_QUERY_LIMITS: Record<SubscriptionPlan, number> = {
   free: 93,
-  standard: 3000,
-  unlimited: 3000,
+  premium: 3000,
 };
 
 // 問題形式
@@ -244,8 +243,20 @@ export interface StudySession {
 }
 
 // サブスクリプションプラン（2プラン構成: FREE / PREMIUM）
-// 内部キーは 'standard' を維持（DB互換）、UIでは「PREMIUM」表示
-export type SubscriptionPlan = 'free' | 'standard' | 'unlimited';
+// 内部キーを 'premium' に統一（2026-06-07・gas-shunin と同一・DB値も premium）。
+// 旧 'standard'/'unlimited' は normalizePlan() で premium に正規化し、課金者を free に落とさない。
+export type SubscriptionPlan = 'free' | 'premium';
+
+/**
+ * プラン値の正規化。旧内部キー 'standard'/'unlimited'（および想定外の非 free 値）を
+ * 'premium' に寄せ、'free'/未設定は 'free' にする。
+ * 目的(P2 安全): 命名統一の移行期や永続/サーバ応答に 'standard' が残っても、
+ * 課金者を絶対に free へ降格させない。最終的な Pro 認可はサーバ verify-subscription
+ * + lastVerifiedAt が担うため、ここで非 free を premium 扱いにしても不正昇格にはならない。
+ */
+export function normalizePlan(p: string | null | undefined): SubscriptionPlan {
+  return p && p !== 'free' ? 'premium' : 'free';
+}
 
 // 課金サイクル (2026-05 年額プラン追加)
 // monthly: ¥980/月  /  annual: ¥5,980/年 (約 49% OFF / ¥498/月相当)
@@ -290,8 +301,7 @@ export const PLAN_PRICES = {
 //   (2026-05-30 決定A: 数値の過約束を避け gas-shunin と同方式に統一)。
 export const AI_DAILY_LIMITS: Record<SubscriptionPlan, number> = {
   free: 3,        // 無料でも1日3回（体験してもらう）
-  standard: 50,   // Fair Use 上限（通常学習で到達しない設計値）
-  unlimited: 50,
+  premium: 50,    // Fair Use 上限（通常学習で到達しない設計値）
 };
 
 // トライアル中のAI制限（コスト管理）

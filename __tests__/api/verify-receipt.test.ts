@@ -475,7 +475,7 @@ describe('verify-receipt API', () => {
       await handler(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.body.ok).toBe(true);
-      expect(res.body.plan).toBe('standard');
+      expect(res.body.plan).toBe('premium');
       expect(res.body.isTrial).toBe(true);
     });
 

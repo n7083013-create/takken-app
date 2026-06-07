@@ -16,7 +16,7 @@
 │  Vercel Serverless Function                          │
 │   ├── Service Account で Play API 認証               │
 │   ├── purchaseToken を verify                        │
-│   └── profiles.plan = 'standard' に更新              │
+│   └── profiles.plan = 'premium' に更新               │
 └──────────────────────────────────────────────────────┘
                      │
                      │ Pub/Sub Push (RTDN)

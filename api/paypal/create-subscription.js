@@ -124,7 +124,7 @@ module.exports = async (req, res) => {
       if (!profile?.paypal_subscription_id) {
         return res.status(400).json({ error: 'PayPal サブスクリプションが見つかりません' });
       }
-      if (profile.plan !== 'standard') {
+      if (profile.plan !== 'standard' && profile.plan !== 'premium') {
         return res.status(400).json({ error: '有料プランに登録されていません' });
       }
       if (profile.subscription_status === 'canceled') {
@@ -221,7 +221,7 @@ module.exports = async (req, res) => {
       .eq('id', user.id)
       .maybeSingle();
 
-    if (profile?.plan === 'standard' && profile?.paypal_subscription_id && profile?.subscription_status !== 'canceled') {
+    if ((profile?.plan === 'standard' || profile?.plan === 'premium') && profile?.paypal_subscription_id && profile?.subscription_status !== 'canceled') {
       return res.status(400).json({ error: '既に有料プランに登録済みです' });
     }
 

@@ -12,8 +12,10 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
-// 有料プランの plan 値（takken は単一プラン 'standard'）
-const PAID_PLAN = 'standard';
+// 有料プランの plan 値（2026-06-07 'standard'→'premium' に統一）。
+// 旧 'standard'/'unlimited' も集計に含め、命名移行期でも課金者を取りこぼさない。
+const PAID_PLANS = new Set(['premium', 'standard', 'unlimited']);
+const isPaidPlan = (plan) => PAID_PLANS.has(plan);
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
   .split(',')
@@ -252,7 +254,7 @@ module.exports = async (req, res) => {
 
     // ─── プラン別 ───
     const free = profiles.filter((p) => p.plan === 'free').length;
-    const standard = profiles.filter((p) => p.plan === PAID_PLAN).length;
+    const premium = profiles.filter((p) => isPaidPlan(p.plan)).length;
 
     // ─── トライアル状態 ───
     // trial_ends_at が未来 = まだトライアル中
@@ -276,11 +278,11 @@ module.exports = async (req, res) => {
 
     // ─── 課金 ───
     const activePaid = profiles.filter((p) =>
-      p.plan === PAID_PLAN && p.subscription_status === 'active',
+      isPaidPlan(p.plan) && p.subscription_status === 'active',
     ).length;
 
     const trialingPaid = profiles.filter((p) =>
-      p.plan === PAID_PLAN && p.subscription_status === 'trialing',
+      isPaidPlan(p.plan) && p.subscription_status === 'trialing',
     ).length;
 
     const canceled = profiles.filter((p) => p.subscription_status === 'canceled').length;
@@ -289,10 +291,10 @@ module.exports = async (req, res) => {
     // ─── 月間売上 (MRR) ───
     // 月額(¥980)はそのまま、年額(¥5,980/年)は月割で計上する。
     const activeMonthly = profiles.filter((p) =>
-      p.plan === PAID_PLAN && p.subscription_status === 'active' && p.billing_cycle !== 'annual',
+      isPaidPlan(p.plan) && p.subscription_status === 'active' && p.billing_cycle !== 'annual',
     ).length;
     const activeAnnual = profiles.filter((p) =>
-      p.plan === PAID_PLAN && p.subscription_status === 'active' && p.billing_cycle === 'annual',
+      isPaidPlan(p.plan) && p.subscription_status === 'active' && p.billing_cycle === 'annual',
     ).length;
     const mrr = activeMonthly * 980 + Math.floor((activeAnnual * 5980) / 12);
 
@@ -303,7 +305,7 @@ module.exports = async (req, res) => {
 
     // ─── 今月の新規課金数 ───
     const newPaidThisMonth = profiles.filter((p) =>
-      p.plan === PAID_PLAN &&
+      isPaidPlan(p.plan) &&
       p.created_at >= monthAgo,
     ).length;
 
@@ -317,7 +319,7 @@ module.exports = async (req, res) => {
 
     // トライアル → 有料転換率（active / (active + canceled in trial period)）
     // 簡易版: active な人 / 全 standard プランに到達した人
-    const everPaid = profiles.filter((p) => p.payment_provider === 'paypal' || p.plan === 'standard').length;
+    const everPaid = profiles.filter((p) => p.payment_provider === 'paypal' || isPaidPlan(p.plan)).length;
     const trialToActiveRate = everPaid > 0
       ? Math.round((activePaid / everPaid) * 1000) / 10
       : 0;
@@ -325,7 +327,7 @@ module.exports = async (req, res) => {
     // ─── 継続率 ───
     // 1ヶ月以上前に課金開始した人のうち、現在も active な人
     const oldPaidUsers = profiles.filter((p) =>
-      p.plan === PAID_PLAN &&
+      isPaidPlan(p.plan) &&
       p.created_at < monthAgo,
     );
     const stillActive1m = oldPaidUsers.filter((p) => p.subscription_status === 'active').length;
@@ -334,7 +336,7 @@ module.exports = async (req, res) => {
       : 0;
 
     const veryOldPaidUsers = profiles.filter((p) =>
-      p.plan === PAID_PLAN &&
+      isPaidPlan(p.plan) &&
       p.created_at < threeMonthsAgo,
     );
     const stillActive3m = veryOldPaidUsers.filter((p) => p.subscription_status === 'active').length;
@@ -363,7 +365,7 @@ module.exports = async (req, res) => {
     const adSignupsWeek = adUsers.filter((p) => p.created_at >= weekAgo).length;
     const adSignupsMonth = adUsers.filter((p) => p.created_at >= monthAgo).length;
     const adPaidActive = adUsers.filter((p) =>
-      p.plan === PAID_PLAN && p.subscription_status === 'active',
+      isPaidPlan(p.plan) && p.subscription_status === 'active',
     ).length;
     const adConversionRate = adSignupsTotal > 0
       ? Math.round((adPaidActive / adSignupsTotal) * 1000) / 10
@@ -388,7 +390,7 @@ module.exports = async (req, res) => {
         new_week: newWeek,
         new_month: newMonth,
         free,
-        standard,
+        premium,
       },
       trial: {
         in_trial: inTrial,

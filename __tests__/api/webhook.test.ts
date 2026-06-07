@@ -7,7 +7,7 @@
 // 守りたい性質:
 // 1. POST 以外 → 405
 // 2. 署名検証失敗 → 401(不正 webhook を弾く)
-// 3. ACTIVATED → plan:'standard' + status:'active' を書き込む
+// 3. ACTIVATED → plan:'premium' + status:'active' を書き込む
 // 4. CANCELLED → status:'canceled'(plan は据え置き=期間終了まで standard 維持)
 // 5. EXPIRED/SUSPENDED → plan:'free' + status:'canceled'
 // 6. PAYMENT 失敗 → status:'past_due'
@@ -109,13 +109,13 @@ describe('takken PayPal webhook ハンドラ', () => {
     const res = await callWebhook({ event_type: 'BILLING.SUBSCRIPTION.ACTIVATED', resource: RESOURCE });
     expect(res.statusCode).toBe(200);
     const profileUpdate = mockUpdateCalls.find((c) => c.table === 'profiles');
-    expect(profileUpdate?.payload.plan).toBe('standard');
+    expect(profileUpdate?.payload.plan).toBe('premium');
     expect(profileUpdate?.payload.subscription_status).toBe('active');
     expect(profileUpdate?.payload.paypal_subscription_id).toBe('I-SUB-123');
   });
 
   it('CANCELLED → status:canceled(plan は据え置き)', async () => {
-    mockCurrentProfile = { plan: 'standard', subscription_status: 'active' };
+    mockCurrentProfile = { plan: 'premium', subscription_status: 'active' };
     const res = await callWebhook({ event_type: 'BILLING.SUBSCRIPTION.CANCELLED', resource: RESOURCE });
     expect(res.statusCode).toBe(200);
     const profileUpdate = mockUpdateCalls.find((c) => c.table === 'profiles');
@@ -124,7 +124,7 @@ describe('takken PayPal webhook ハンドラ', () => {
   });
 
   it('EXPIRED → plan:free + status:canceled', async () => {
-    mockCurrentProfile = { plan: 'standard', subscription_status: 'active' };
+    mockCurrentProfile = { plan: 'premium', subscription_status: 'active' };
     const res = await callWebhook({ event_type: 'BILLING.SUBSCRIPTION.EXPIRED', resource: RESOURCE });
     expect(res.statusCode).toBe(200);
     const profileUpdate = mockUpdateCalls.find((c) => c.table === 'profiles');
@@ -133,7 +133,7 @@ describe('takken PayPal webhook ハンドラ', () => {
   });
 
   it('課金失敗(PAYMENT.SALE.DENIED) → status:past_due', async () => {
-    mockCurrentProfile = { plan: 'standard', subscription_status: 'active' };
+    mockCurrentProfile = { plan: 'premium', subscription_status: 'active' };
     const res = await callWebhook({ event_type: 'PAYMENT.SALE.DENIED', resource: RESOURCE });
     expect(res.statusCode).toBe(200);
     const profileUpdate = mockUpdateCalls.find((c) => c.table === 'profiles');
@@ -141,7 +141,7 @@ describe('takken PayPal webhook ハンドラ', () => {
   });
 
   it('冪等性: 既に canceled なら update を呼ばない', async () => {
-    mockCurrentProfile = { plan: 'standard', subscription_status: 'canceled' };
+    mockCurrentProfile = { plan: 'premium', subscription_status: 'canceled' };
     const res = await callWebhook({ event_type: 'BILLING.SUBSCRIPTION.CANCELLED', resource: RESOURCE });
     expect(res.statusCode).toBe(200);
     expect(mockUpdateCalls.find((c) => c.table === 'profiles')).toBeUndefined();

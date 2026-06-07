@@ -104,7 +104,7 @@ module.exports = async (req, res) => {
     const { error: updateError } = await supabaseAdmin
       .from('profiles')
       .update({
-        plan: 'standard',
+        plan: 'premium',
         subscription_status: status === 'ACTIVE' ? 'active' : 'trialing',
         paypal_subscription_id: subscription.id,
         paypal_subscriber_id: subscription.subscriber?.payer_id,

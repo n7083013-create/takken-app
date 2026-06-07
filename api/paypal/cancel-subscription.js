@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
       }
     }
 
-    // DB更新（期間終了まで 'standard' 維持、status だけ変更）
+    // DB更新（期間終了まで 'premium' 維持、status だけ変更）
     await supabaseAdmin
       .from('profiles')
       .update({
