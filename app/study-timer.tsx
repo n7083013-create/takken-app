@@ -20,6 +20,7 @@ import { Shadow, FontSize, LineHeight, Spacing, BorderRadius } from '../constant
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { logError } from '../services/errorLogger';
+import { scheduleTimerNotification, cancelTimerNotification } from '../services/notifications';
 import { WebBackButton } from '../components/WebBackButton';
 
 type TimerMode = 'focus' | 'break';
@@ -164,15 +165,25 @@ export default function StudyTimerScreen() {
   const startTimer = () => {
     saveRecent(focusMin);
     setTimerState('running');
+    // [#5] アプリを閉じても/他モードでも、終了時刻に音・バイブで知らせる
+    scheduleTimerNotification(remainingSec, mode);
   };
-  const pauseTimer = () => setTimerState('paused');
-  const resumeTimer = () => setTimerState('running');
+  const pauseTimer = () => {
+    setTimerState('paused');
+    cancelTimerNotification();
+  };
+  const resumeTimer = () => {
+    setTimerState('running');
+    scheduleTimerNotification(remainingSec, mode);
+  };
   const resetTimer = () => {
+    cancelTimerNotification();
     setTimerState('idle');
     setMode('focus');
     setRemainingSec(focusMin * 60);
   };
   const skipToNext = () => {
+    cancelTimerNotification();
     setTimerState('idle');
     if (mode === 'focus') {
       setMode('break');

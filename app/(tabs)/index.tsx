@@ -558,10 +558,6 @@ function HomeScreen() {
 
         {/* ── クイックアクション（厳選4つ・横スクロール風） ── */}
         <View style={s.quickGrid}>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/micro-challenge')} accessibilityRole="button" accessibilityLabel="1分チャレンジを開始">
-            <Text style={s.quickIcon}>⚡</Text>
-            <Text style={s.quickTitle}>1分</Text>
-          </Pressable>
           <Pressable style={[s.quickCard, Shadow.sm]} onPress={startSmartQuestion} accessibilityRole="button" accessibilityLabel="問題を解く">
             <Text style={s.quickIcon}>📝</Text>
             <Text style={s.quickTitle}>問題</Text>

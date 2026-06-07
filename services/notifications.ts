@@ -15,6 +15,7 @@ const REMINDER_IDENTIFIER = 'takken_daily_reminder';
 const WEEKLY_IDENTIFIER = 'takken_weekly_summary';
 const STREAK_DANGER_IDENTIFIER = 'takken_streak_danger';
 const HABIT_PREFIX = 'takken_habit_';
+const TIMER_IDENTIFIER = 'takken_study_timer';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -519,5 +520,54 @@ export async function sendTestNotification(): Promise<void> {
     });
   } catch (e) {
     logError(e, { context: 'notifications.test' });
+  }
+}
+
+// ── 学習タイマー終了通知 ──
+
+/**
+ * 学習タイマーの終了時刻に通知を予約する。
+ * アプリを閉じていても / 他画面に移動していても、終了時に音・バイブで知らせる。
+ * @param seconds 残り秒数
+ * @param mode 'focus' | 'break'
+ */
+export async function scheduleTimerNotification(
+  seconds: number,
+  mode: 'focus' | 'break',
+): Promise<void> {
+  try {
+    if (Platform.OS === 'web') return;
+    if (!Number.isFinite(seconds) || seconds < 1) return;
+    if (!(await hasPermission())) return;
+    // 既存のタイマー通知を必ず消してから予約（多重防止）
+    await Notifications.cancelScheduledNotificationAsync(TIMER_IDENTIFIER).catch(() => {});
+    await Notifications.scheduleNotificationAsync({
+      identifier: TIMER_IDENTIFIER,
+      content: {
+        title: mode === 'focus' ? '🎯 集中タイム終了' : '☕ 休憩終了',
+        body: mode === 'focus'
+          ? 'お疲れさまでした！区切りがつきました。'
+          : '休憩おわり。次の集中、いきましょう！',
+        sound: true,
+        ...(Platform.OS === 'android' ? { channelId: 'default' } : {}),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: Math.ceil(seconds),
+        repeats: false,
+      },
+    });
+  } catch (e) {
+    logError(e, { context: 'notifications.timer' });
+  }
+}
+
+/** 学習タイマー終了通知をキャンセル */
+export async function cancelTimerNotification(): Promise<void> {
+  try {
+    if (Platform.OS === 'web') return;
+    await Notifications.cancelScheduledNotificationAsync(TIMER_IDENTIFIER);
+  } catch (e) {
+    logError(e, { context: 'notifications.cancelTimer' });
   }
 }

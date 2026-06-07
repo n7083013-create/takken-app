@@ -141,7 +141,8 @@ export function StudyHeatmap({ dailyLog, streak = 0, dailyGoal = 20 }: StudyHeat
   // Calculate max value for scaling (at least dailyGoal so goal line is visible)
   const maxVal = useMemo(() => {
     const maxCount = Math.max(...bars.map((b) => b.count));
-    return Math.max(maxCount, dailyGoal, 1);
+    // [Bugfix] 上端に余白を確保（最大値ぴったりだと棒の上の数字と「目標N問」ラベルが上端で重なる）
+    return Math.max(maxCount, dailyGoal, 1) * 1.18;
   }, [bars, dailyGoal]);
 
   const goalLineBottom = Math.min((dailyGoal / maxVal) * BAR_MAX_HEIGHT, BAR_MAX_HEIGHT);
@@ -151,11 +152,6 @@ export function StudyHeatmap({ dailyLog, streak = 0, dailyGoal = 20 }: StudyHeat
       {/* Header */}
       <View style={s.headerRow}>
         <Text style={s.headerTitle} numberOfLines={1}>直近7日間の学習</Text>
-        {streak > 0 && (
-          <View style={s.streakBadge}>
-            <Text style={s.streakText} numberOfLines={1}>🔥 {streak}日連続</Text>
-          </View>
-        )}
       </View>
 
       {/* Chart area */}
@@ -163,8 +159,8 @@ export function StudyHeatmap({ dailyLog, streak = 0, dailyGoal = 20 }: StudyHeat
         {/* Goal line */}
         {dailyGoal > 0 && (
           <View style={[s.goalLine, { bottom: goalLineBottom }]}>
-            <View style={s.goalDash} />
             <Text style={s.goalLabel}>目標 {dailyGoal}問</Text>
+            <View style={s.goalDash} />
           </View>
         )}
 
@@ -301,7 +297,10 @@ function makeStyles(C: ThemeColors) {
       fontSize: 9,
       color: C.textTertiary,
       fontWeight: '600',
-      marginLeft: 6,
+      marginRight: 6,
+      backgroundColor: C.card,
+      paddingHorizontal: 3,
+      borderRadius: 3,
     },
 
     // Bars

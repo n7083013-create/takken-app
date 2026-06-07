@@ -21,6 +21,7 @@ import { initializeIAP, retryPendingPurchases } from '../services/iap';
 import { useThemeColors, useIsDark } from '../hooks/useThemeColors';
 import {
   requestNotificationPermission,
+  scheduleHabitNotifications,
   scheduleDailyReminder,
   scheduleWeeklySummary,
 } from '../services/notifications';
@@ -243,6 +244,8 @@ export default function RootLayout() {
           streak: stats.streak,
           daysUntilExam: getDaysUntilExam(),
         });
+        // [#6] 習慣スタッキング通知を起動時にも再予約（オンボ設定や権限の後付け許可でも確実に有効化）
+        await scheduleHabitNotifications(settings.habitStacks ?? []);
       }
     })();
   }, [settings.notificationsEnabled, settings.notificationTime]);
@@ -277,7 +280,6 @@ export default function RootLayout() {
         <Stack.Screen name="achievements" options={{ headerShown: false }} />
         <Stack.Screen name="study-timer" options={{ headerShown: false }} />
         {/* [Refactor] ai-analysis は (tabs)/ai-analysis.tsx に移動 (タブから直接アクセス可能) */}
-        <Stack.Screen name="micro-challenge" options={{ headerShown: false }} />
         <Stack.Screen name="pre-sleep-review" options={{ headerShown: false }} />
         <Stack.Screen name="weak-drill" options={{ headerShown: false }} />
         <Stack.Screen name="exam/index" options={{ headerShown: false }} />
