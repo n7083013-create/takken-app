@@ -442,16 +442,16 @@ function HomeScreen() {
                 <Text style={s.heroTitle}>宅建士 完全対策</Text>
               </View>
             )}
-            {stats.streak > 0 && (
-              <StreakPulse streak={stats.streak} style={s.streakBadge}>
-                <View style={s.streakBadgeRow}>
-                  <Text style={s.streakBadgeFire}>🔥</Text>
-                  <Text style={s.streakBadgeNum}>{stats.streak}</Text>
-                  <Text style={s.streakBadgeDay}>日</Text>
-                </View>
-                <Text style={s.streakBadgeLabel}>連続</Text>
-              </StreakPulse>
-            )}
+            {/* 連続日数: 0日でもヘッダーに常時表示。
+                以前は streak>0 で隠していたが「記録が消えた」と誤解されるため常時表示に変更。 */}
+            <StreakPulse streak={stats.streak} style={s.streakBadge} breathing={stats.streak > 0}>
+              <View style={s.streakBadgeRow}>
+                <Text style={s.streakBadgeFire}>🔥</Text>
+                <Text style={s.streakBadgeNum}>{stats.streak}</Text>
+                <Text style={s.streakBadgeDay}>日</Text>
+              </View>
+              <Text style={s.streakBadgeLabel}>連続</Text>
+            </StreakPulse>
           </View>
         </View>
 
@@ -663,10 +663,37 @@ function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* ── 直近7日間の学習バーチャート ── */}
+        {/* ── 直近7日間の学習バーチャート + 実績バッジ（記録） ── */}
         {stats.totalQuestions > 0 && (
           <View style={[s.heatmapCard, Shadow.sm]}>
             <StudyHeatmap dailyLog={dailyLog} streak={stats.streak} dailyGoal={dailyGoal} />
+            {/* 実績バッジを「記録」の一部として表示（獲得済みを直近順に最大5個 / タップで一覧へ） */}
+            <Pressable
+              style={s.recordAchieve}
+              onPress={() => router.push('/achievements')}
+              accessibilityRole="button"
+              accessibilityLabel={`実績バッジを開く (${unlockedCount}/${ALL_ACHIEVEMENTS.length}個獲得)`}
+            >
+              <View style={s.recordAchieveHeader}>
+                <Text style={s.recordAchieveTitle}>🏅 実績バッジ</Text>
+                <Text style={s.recordAchieveCount}>{unlockedCount}/{ALL_ACHIEVEMENTS.length} ›</Text>
+              </View>
+              <View style={s.recordAchieveRow}>
+                {ALL_ACHIEVEMENTS
+                  .filter((a) => achievementUnlocked[a.id])
+                  .sort((a, b) => (achievementUnlocked[b.id] || '').localeCompare(achievementUnlocked[a.id] || ''))
+                  .slice(0, 5)
+                  .map((a) => (
+                    <View key={a.id} style={s.recordBadge}>
+                      <Text style={s.recordBadgeIcon}>{a.icon}</Text>
+                      <Text style={s.recordBadgeText} numberOfLines={1}>{a.title}</Text>
+                    </View>
+                  ))}
+                {unlockedCount === 0 && (
+                  <Text style={s.recordAchieveEmpty}>問題を解いてバッジを獲得しよう</Text>
+                )}
+              </View>
+            </Pressable>
           </View>
         )}
 
@@ -1393,6 +1420,56 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     backgroundColor: C.card,
     borderRadius: BorderRadius.xl,
     padding: 16,
+  },
+
+  // ─── 記録カード内の実績バッジ ───
+  recordAchieve: {
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
+    borderTopWidth: 0.5,
+    borderTopColor: C.borderLight,
+  },
+  recordAchieveHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  recordAchieveTitle: {
+    fontSize: FontSize.subhead,
+    fontWeight: '700',
+    color: C.text,
+  },
+  recordAchieveCount: {
+    fontSize: FontSize.caption,
+    fontWeight: '700',
+    color: C.textTertiary,
+  },
+  recordAchieveRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  recordBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.surface,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 4,
+  },
+  recordBadgeIcon: { fontSize: 16 },
+  recordBadgeText: {
+    fontSize: FontSize.caption2,
+    fontWeight: '600',
+    color: C.textSecondary,
+    maxWidth: 80,
+  },
+  recordAchieveEmpty: {
+    fontSize: FontSize.caption,
+    color: C.textTertiary,
+    fontStyle: 'italic',
   },
 
   // ─── 本試験予測スコア ───
