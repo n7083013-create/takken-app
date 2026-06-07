@@ -120,13 +120,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* flashcards is kept as a file but hidden from tabs */}
-      <Tabs.Screen
-        name="flashcards"
-        options={{
-          href: null,
-        }}
-      />
     </Tabs>
     <GlobalAIButton />
     </>
