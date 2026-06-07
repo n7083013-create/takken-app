@@ -1169,6 +1169,19 @@ export default function ProgressScreen() {
 
         {/* Category Analysis */}
         <Text style={s.sectionTitle}>科目別分析</Text>
+        {/* 弱点ヒートマップ導線 (ホームの tile を廃止し、詳細はここから到達) */}
+        <Pressable
+          style={[s.achieveCard, Shadow.sm]}
+          onPress={() => router.push('/heatmap')}
+          accessibilityRole="button"
+          accessibilityLabel="弱点ヒートマップを開く"
+        >
+          <View style={s.achieveHeader}>
+            <Text style={s.achieveTitle}>🗺️ 弱点ヒートマップを見る</Text>
+            <Text style={s.achieveArrow}>›</Text>
+          </View>
+          <Text style={[s.heroLabel, { marginTop: 6 }]}>サブカテゴリ別の正答率を一覧で確認</Text>
+        </Pressable>
         {CATEGORIES.map((cat) => {
           const accuracy = getCategoryAccuracy(cat);
           const cs = stats.categoryStats[cat];

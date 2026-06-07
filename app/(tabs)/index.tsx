@@ -17,7 +17,6 @@ import { useExamPrediction } from '../../hooks/useExamPrediction';
 import { usePredictionHistory } from '../../hooks/usePredictionHistory';
 import { PredictionCard } from '../../components/PredictionCard';
 import { PaywallPromptBanner } from '../../components/PaywallPromptBanner';
-import { WeaknessCoachingCard } from '../../components/WeaknessCoachingCard';
 import { FinalSprintCard } from '../../components/FinalSprintCard';
 import { useFinalSprintMode } from '../../hooks/useFinalSprintMode';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, SUBCATEGORIES } from '../../types';
@@ -257,7 +256,6 @@ function HomeScreen() {
   const nextMission = useMemo(() => questGetNextMission(), [questMissionProgress]);
   const getTodayAnswered = useProgressStore((s) => s.getTodayAnswered);
   const dailyGoal = useSettingsStore((s) => s.settings.dailyGoal);
-  const achievementUnlocked = useAchievementStore((s) => s.unlocked);
   const achievementNewly = useAchievementStore((s) => s.newlyUnlocked);
   const dismissAchievement = useAchievementStore((s) => s.dismissNew);
   const examHistory = useExamStore((s) => s.examHistory);
@@ -345,7 +343,6 @@ function HomeScreen() {
       }
     }
   }, [dailyGoal, todayAnswered, isCelebrated, markCelebrated]);
-  const unlockedCount = useMemo(() => Object.keys(achievementUnlocked).length, [achievementUnlocked]);
   const latestExamScore = useMemo(() => getLatestScore(), [examHistory]);
   const bestExamScore = useMemo(() => getBestScore(), [examHistory]);
   const enabledHabits = useMemo(
@@ -364,6 +361,24 @@ function HomeScreen() {
       router.push(`/question/${q.id}`);
       return;
     }
+    await setAiQueue(
+      {
+        getItem: (k) => AsyncStorage.getItem(k),
+        setItem: (k, v) => AsyncStorage.setItem(k, v),
+        removeItem: (k) => AsyncStorage.removeItem(k),
+      },
+      ids,
+    );
+    router.push(`/question/${ids[0]}?source=ai` as any);
+  }, [router]);
+
+  /** 統合ブロックのワンタップ集中: 最弱カテゴリの AI 推奨 10 問を連続出題で開始
+      (home カテゴリ chip と同一方式: getRecommendedQuestionsByCategory → setAiQueue → source=ai) */
+  const startWeakestFocus = useCallback(async (cat: Category) => {
+    const latestProgress = useProgressStore.getState().progress;
+    const recommended = getRecommendedQuestionsByCategory(latestProgress, cat, 10);
+    if (recommended.length === 0) return;
+    const ids = recommended.map((r) => r.questionId);
     await setAiQueue(
       {
         getItem: (k) => AsyncStorage.getItem(k),
@@ -530,6 +545,76 @@ function HomeScreen() {
           </View>
         </Pressable>
 
+        {/* ── 弱点サマリー + ワンタップ集中（統合ブロック） ──
+            旧: 予測スコア(PredictionCard) / 弱点コーチング(WeaknessCoachingCard) / AI分析バナー(🤖)
+            の三重を1枚に統合。上段=現在地 / 中段=最弱 / 下段=ワンタップ集中。
+            ガード: hasData false → 非表示 / confidence low(20問未満) → 上段のみ /
+                   合格圏(pointsToPass 0) → 下段は「✅合格圏内」。 */}
+        {examPrediction.hasData && (() => {
+          const lowConfidence = examPrediction.confidence === 'low';
+          const weakest = examPrediction.weakestCategory;
+          const weakestPred = weakest
+            ? examPrediction.perCategory.find((c) => c.category === weakest)
+            : undefined;
+          const showWeakness = !lowConfidence && weakest && weakestPred && weakestPred.attempted >= 5;
+          const isPassing = examPrediction.pointsToPass === 0;
+          const weakColor = weakest ? CATEGORY_COLORS[weakest] : colors.primary;
+          const weakAccuracy = weakestPred ? Math.round(weakestPred.accuracy * 100) : 0;
+          const weakGap = weakestPred
+            ? Math.round((weakestPred.allocation - weakestPred.predicted) * 10) / 10
+            : 0;
+          return (
+            <View style={[s.insightCard, Shadow.md]}>
+              {/* 上段: 現在地 (確率%・予測スコア・推移1行・合格ラインゲージ) */}
+              <PredictionCard prediction={examPrediction} history={predictionHistory} compact />
+
+              {/* 中段 + 下段: データ信頼度が十分な時だけ */}
+              {showWeakness && (
+                <View style={s.insightDivider}>
+                  {isPassing ? (
+                    <View style={[s.insightPassRow, { backgroundColor: colors.primarySurface }]}>
+                      <Text style={s.insightPassText}>✅ 合格圏内、この調子で続けましょう</Text>
+                    </View>
+                  ) : (
+                    <>
+                      <View style={s.insightWeakRow}>
+                        <Text style={s.insightWeakIcon}>{CATEGORY_ICONS[weakest]}</Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={s.insightWeakTitle}>
+                            最優先: <Text style={{ color: weakColor }}>{CATEGORY_LABELS[weakest]}</Text>
+                          </Text>
+                          <Text style={s.insightWeakDesc}>
+                            現在 <Text style={s.insightWeakBold}>{weakAccuracy}%</Text> 正答 — あと{weakGap.toFixed(1)}点伸ばせます
+                          </Text>
+                        </View>
+                      </View>
+                      <Pressable
+                        style={[s.insightCTA, { backgroundColor: weakColor }]}
+                        onPress={() => startWeakestFocus(weakest)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${CATEGORY_LABELS[weakest]}を10問集中する`}
+                      >
+                        <Text style={s.insightCTAText}>{CATEGORY_LABELS[weakest]}を10問集中する</Text>
+                        <Text style={s.insightCTAArrow}>→</Text>
+                      </Pressable>
+                    </>
+                  )}
+                </View>
+              )}
+
+              {/* 小リンク: 旧 AI分析バナーの遷移先を吸収 */}
+              <Pressable
+                style={s.insightLink}
+                onPress={() => router.push('/ai-analysis')}
+                accessibilityRole="button"
+                accessibilityLabel="AI学習分析を詳しく見る"
+              >
+                <Text style={s.insightLinkText}>AI学習分析を詳しく見る ›</Text>
+              </Pressable>
+            </View>
+          );
+        })()}
+
         {/* ── 今日の進捗（コンパクトダッシュボード） ── */}
         <View style={[s.dashCard, Shadow.md]}>
           {/* デイリーゴール + ミニ統計 */}
@@ -674,29 +759,12 @@ function HomeScreen() {
         {/* ── 直前モード（試験30日前から自動表示） ── */}
         {sprintMode.isActive && <FinalSprintCard state={sprintMode} />}
 
-        {/* ── ペイウォールプロンプト（スマート訴求） ── */}
+        {/* ── ペイウォール訴求（折りたたみ直前へ降格） ──
+            旧: PredictionCard/WeaknessCoachingCard/🤖バナーは統合ブロックに吸収済。
+            弱点ヒートマップ tile は記録タブへ、実績 tile は記録タブの既存リンクへ退避。 */}
         <PaywallPromptBanner />
-
-        {/* ── 予測スコア・合格確率 ── */}
-        {examPrediction.hasData && (
-          <PredictionCard prediction={examPrediction} history={predictionHistory} />
-        )}
-
-        {/* ── 弱点コーチング（予測スコアから最弱科目を推薦） ── */}
-        <WeaknessCoachingCard prediction={examPrediction} />
-
-        {/* ── バナー群（厳選） ──
-            折りたたみの外に出して常時表示 (AI分析導線 / ¥980 PREMIUM 訴求を殺さない) */}
-        <View style={s.bannerSection}>
-          <Pressable style={[s.bannerCard, s.bannerDarkGreen, Shadow.md]} onPress={() => router.push('/ai-analysis')}>
-            <Text style={s.bannerEmoji}>🤖</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={s.bannerTitle}>AI学習分析</Text>
-              <Text style={s.bannerSub}>弱点・おすすめ問題</Text>
-            </View>
-            <Text style={s.bannerArrow}>›</Text>
-          </Pressable>
-          {!isPro && (
+        {!isPro && (
+          <View style={s.bannerSection}>
             <Pressable style={[s.bannerCard, s.bannerGold, Shadow.md]} onPress={() => router.push('/paywall')}>
               <Text style={s.bannerEmoji}>✨</Text>
               <View style={{ flex: 1 }}>
@@ -705,32 +773,8 @@ function HomeScreen() {
               </View>
               <Text style={s.bannerArrow}>›</Text>
             </Pressable>
-          )}
-        </View>
-
-        {/* ── 詳細ダッシュボードへの導線（C1/B4） ── */}
-        <View style={s.utilityRow}>
-          <Pressable
-            style={[s.utilityCard, Shadow.sm]}
-            onPress={() => router.push('/heatmap')}
-            accessibilityRole="button"
-            accessibilityLabel="弱点ヒートマップを開く"
-          >
-            <Text style={s.utilityIcon}>🗺️</Text>
-            <Text style={s.utilityTitle}>弱点ヒートマップ</Text>
-            <Text style={s.utilitySub}>サブカテゴリ別の正答率</Text>
-          </Pressable>
-          <Pressable
-            style={[s.utilityCard, Shadow.sm]}
-            onPress={() => router.push('/achievements')}
-            accessibilityRole="button"
-            accessibilityLabel={`実績バッジを開く (${unlockedCount}/${ALL_ACHIEVEMENTS.length}個獲得)`}
-          >
-            <Text style={s.utilityIcon}>🏆</Text>
-            <Text style={s.utilityTitle}>実績バッジ</Text>
-            <Text style={s.utilitySub}>{unlockedCount}/{ALL_ACHIEVEMENTS.length} 個獲得</Text>
-          </Pressable>
-        </View>
+          </View>
+        )}
 
         {/* ── 「もっと選んで学習」(決定疲労の最大要因を折りたたみへ) ──
             既定は閉。カテゴリ別 / よく出る論点 / 学習モード / 論点別 全chip を中に格納。
@@ -1527,23 +1571,70 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     color: C.textSecondary,
     marginTop: 3,
   },
-  // C1/B4 ユーティリティカード
-  utilityRow: {
-    flexDirection: 'row',
-    gap: 10,
-    paddingHorizontal: Spacing.xl,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  utilityCard: {
-    flex: 1,
+  // ─── 弱点サマリー + ワンタップ集中 統合ブロック ───
+  insightCard: {
+    marginHorizontal: Spacing.xl,
+    marginTop: Spacing.lg,
     backgroundColor: C.card,
-    borderRadius: BorderRadius.lg,
-    padding: 14,
+    borderRadius: BorderRadius.xl,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: C.borderLight,
   },
-  utilityIcon: { fontSize: 24, marginBottom: 6 },
-  utilityTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: C.text },
-  utilitySub: { fontSize: FontSize.caption, color: C.textSecondary, marginTop: 2 },
+  insightDivider: {
+    marginTop: 14,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: C.borderLight,
+  },
+  insightWeakRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  insightWeakIcon: { fontSize: 32 },
+  insightWeakTitle: {
+    fontSize: FontSize.subhead,
+    fontWeight: '800',
+    color: C.text,
+    marginBottom: 3,
+  },
+  insightWeakDesc: {
+    fontSize: FontSize.caption,
+    color: C.textSecondary,
+    lineHeight: 18,
+  },
+  insightWeakBold: { fontWeight: '800', color: C.text },
+  insightCTA: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 13,
+    borderRadius: BorderRadius.md,
+    gap: 6,
+  },
+  insightCTAText: { fontSize: FontSize.subhead, fontWeight: '800', color: C.white },
+  insightCTAArrow: { fontSize: 18, color: C.white, fontWeight: '800' },
+  insightPassRow: {
+    padding: 12,
+    borderRadius: BorderRadius.md,
+  },
+  insightPassText: {
+    fontSize: FontSize.subhead,
+    fontWeight: '800',
+    color: C.primary,
+    textAlign: 'center',
+  },
+  insightLink: {
+    marginTop: 14,
+    alignItems: 'center',
+  },
+  insightLinkText: {
+    fontSize: FontSize.footnote,
+    fontWeight: '700',
+    color: C.primary,
+  },
 
   // ─── バナー群 ───
   bannerSection: { paddingHorizontal: Spacing.xl, marginTop: Spacing.xl, gap: 10 },
@@ -1554,7 +1645,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     padding: Spacing.lg,
     gap: 12,
   },
-  bannerDarkGreen: { backgroundColor: '#145C2E' },
   bannerGold: { backgroundColor: '#D97706' },
   bannerEmoji: { fontSize: 26 },
   bannerTitle: { fontSize: FontSize.footnote, fontWeight: '700', color: C.white },

@@ -19,6 +19,10 @@ import type { PredictionSnapshot } from '../hooks/usePredictionHistory';
 interface PredictionCardProps {
   prediction: ExamPrediction;
   history: PredictionSnapshot[];
+  /** 統合ブロック内で使う圧縮表示。確率%・予測スコア・推移1行・合格ラインゲージのみ描画し、
+   *  スパークライン/信頼区間/モメンタム/試験日予測/カテゴリ内訳/アドバイスは省く。
+   *  外枠(card)・影・余白も親に委ねるため出さない。 */
+  compact?: boolean;
 }
 
 /** スパークライン（簡易SVG風・View描画） */
@@ -58,7 +62,7 @@ function Sparkline({ data, color, height = 28 }: { data: number[]; color: string
   );
 }
 
-export function PredictionCard({ prediction, history }: PredictionCardProps) {
+export function PredictionCard({ prediction, history, compact = false }: PredictionCardProps) {
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
 
@@ -106,7 +110,7 @@ export function PredictionCard({ prediction, history }: PredictionCardProps) {
   const scoreHistory = useMemo(() => history.map((h) => h.score), [history]);
 
   return (
-    <View style={[s.card, Shadow.md]}>
+    <View style={compact ? s.compactWrap : [s.card, Shadow.md]}>
       {/* ── ヘッダー: 合格確率 % メイン表示 ── */}
       <View style={s.header}>
         <View style={s.headerLeft}>
@@ -159,6 +163,9 @@ export function PredictionCard({ prediction, history }: PredictionCardProps) {
           </View>
         </View>
       </View>
+
+      {/* 圧縮表示は「確率%・ゲージ・推移1行」までで打ち切り (統合ブロックの上段用) */}
+      {compact ? null : (<>
 
       {/* ── 推移スパークライン ── */}
       {scoreHistory.length >= 2 && (
@@ -258,6 +265,7 @@ export function PredictionCard({ prediction, history }: PredictionCardProps) {
           </Text>
         </View>
       )}
+      </>)}
     </View>
   );
 }
@@ -271,6 +279,8 @@ function makeStyles(C: ThemeColors) {
       marginHorizontal: Spacing.lg,
       marginTop: Spacing.md,
     },
+    // 統合ブロック内の上段用: 外枠/余白なし (親カードが chrome を持つ)
+    compactWrap: {},
 
     // Header
     header: {
