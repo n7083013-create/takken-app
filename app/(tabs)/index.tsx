@@ -50,12 +50,27 @@ import LandingPage from '../../components/LandingPage';
 import Onboarding from '../../components/Onboarding';
 import type { Question, QuestionProgress, HabitStack } from '../../types';
 
+/** 連続出題セッションの上限問題数 (1タップで今日の分が続く規模) */
+const SMART_SESSION_SIZE = 20;
+
+/** Fisher-Yates シャッフル (元配列は破壊しない) */
+function shuffled<T>(arr: readonly T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 /**
- * スマート問題選択: 復習期限切れ → 苦手 → 未解答 → ランダム
+ * スマート出題の優先プールを「復習期限切れ → 苦手 → 未解答 → 残り」の順で返す。
+ * pickSmartQuestion / buildSmartQueue 両方の単一ソースにすることで、
+ * 「単発」と「連続セッション」で出題基準がズレないようにする。
  */
-function pickSmartQuestion(
+function smartQuestionTiers(
   progress: Record<string, QuestionProgress>,
-): Question {
+): Question[][] {
   const now = new Date().toISOString();
 
   // 1. 復習期限切れ（SM-2 overdue、ただし手動マスター済みは除外）
@@ -64,11 +79,6 @@ function pickSmartQuestion(
       .filter((p) => p.attempts > 0 && p.mastered !== true && p.nextReviewAt <= now)
       .map((p) => p.questionId),
   );
-  const dueQuestions = ALL_QUESTIONS.filter((q) => dueIds.has(q.id));
-  if (dueQuestions.length > 0) {
-    return dueQuestions[Math.floor(Math.random() * dueQuestions.length)];
-  }
-
   // 2. 苦手（正答率 < 50%、ただし達成済み(3連正解)・手動マスター済みは除外）
   // [統一] useProgressStore.getWeakQuestions と同じロジックに揃える
   const weakIds = new Set(
@@ -81,29 +91,56 @@ function pickSmartQuestion(
       })
       .map((p) => p.questionId),
   );
-  const weakQuestions = ALL_QUESTIONS.filter((q) => weakIds.has(q.id));
-  if (weakQuestions.length > 0) {
-    return weakQuestions[Math.floor(Math.random() * weakQuestions.length)];
-  }
-
   // 3. 未解答（手動マスター済みは除外）
   const attemptedOrMasteredIds = new Set(
     Object.values(progress)
       .filter((p) => p.attempts > 0 || p.mastered === true)
       .map((p) => p.questionId),
   );
-  const unseenQuestions = ALL_QUESTIONS.filter((q) => !attemptedOrMasteredIds.has(q.id));
-  if (unseenQuestions.length > 0) {
-    return unseenQuestions[Math.floor(Math.random() * unseenQuestions.length)];
-  }
-
-  // 4. 全部解いた → ランダム（手動マスター済みは除外）
+  // 4. 残り（手動マスター済みは除外。全部マスター済みなら全問から）
   const masteredIds = new Set(
     Object.values(progress).filter((p) => p.mastered === true).map((p) => p.questionId),
   );
-  const remaining = ALL_QUESTIONS.filter((q) => !masteredIds.has(q.id));
-  const pool = remaining.length > 0 ? remaining : ALL_QUESTIONS;
-  return pool[Math.floor(Math.random() * pool.length)];
+
+  const due = ALL_QUESTIONS.filter((q) => dueIds.has(q.id));
+  const weak = ALL_QUESTIONS.filter((q) => weakIds.has(q.id) && !dueIds.has(q.id));
+  const unseen = ALL_QUESTIONS.filter((q) => !attemptedOrMasteredIds.has(q.id));
+  const remaining = ALL_QUESTIONS.filter(
+    (q) => !masteredIds.has(q.id) && !dueIds.has(q.id) && !weakIds.has(q.id) && attemptedOrMasteredIds.has(q.id),
+  );
+  const fallback = remaining.length > 0 ? remaining : ALL_QUESTIONS;
+  return [due, weak, unseen, fallback];
+}
+
+/**
+ * スマート問題選択: 復習期限切れ → 苦手 → 未解答 → ランダム
+ */
+function pickSmartQuestion(
+  progress: Record<string, QuestionProgress>,
+): Question {
+  for (const tier of smartQuestionTiers(progress)) {
+    if (tier.length > 0) return tier[Math.floor(Math.random() * tier.length)];
+  }
+  return ALL_QUESTIONS[Math.floor(Math.random() * ALL_QUESTIONS.length)];
+}
+
+/**
+ * スマート連続出題キュー: 優先順 (due→苦手→新規→残り) に詰めて最大 SMART_SESSION_SIZE 件。
+ * 各ティア内はシャッフルし「順序は毎回違うが、優先度は守る」。
+ */
+function buildSmartQueue(
+  progress: Record<string, QuestionProgress>,
+  size: number = SMART_SESSION_SIZE,
+): string[] {
+  const ids: string[] = [];
+  for (const tier of smartQuestionTiers(progress)) {
+    for (const q of shuffled(tier)) {
+      if (ids.length >= size) break;
+      if (!ids.includes(q.id)) ids.push(q.id);
+    }
+    if (ids.length >= size) break;
+  }
+  return ids;
 }
 
 const TOTAL_Q = ALL_QUESTIONS.length;
@@ -228,6 +265,21 @@ function HomeScreen() {
   const getBestScore = useExamStore((s) => s.getBestScore);
   const getDailyLog = useProgressStore((s) => s.getDailyLog);
   const [expandedCat, setExpandedCat] = useState<Category | null>(null);
+  // [最初の一手 一本化] 「もっと選んで学習」セクションの開閉。
+  // 既定は閉 (決定疲労の最大要因を畳む)。一度開いたら永続化して次回も開いた状態。
+  const [moreExpanded, setMoreExpanded] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@takken_home_more_expanded')
+      .then((v) => { if (v === 'true') setMoreExpanded(true); })
+      .catch(() => {});
+  }, []);
+  const toggleMore = useCallback(() => {
+    setMoreExpanded((prev) => {
+      const next = !prev;
+      AsyncStorage.setItem('@takken_home_more_expanded', next ? 'true' : 'false').catch(() => {});
+      return next;
+    });
+  }, []);
   // [2026-06-03] ストリーク祝福は「マイルストーン到達時に1回だけ」。
   // 永続フラグ(@takken_celebrated_streak)で、ログイン/再表示の度に再表示しない。
   const [streakCelebVisible, setStreakCelebVisible] = useState(false);
@@ -301,11 +353,27 @@ function HomeScreen() {
     [habitStacks],
   );
 
-  /** スマート問題選択で即スタート */
-  const startSmartQuestion = useCallback(() => {
-    const q = pickSmartQuestion(progress);
-    router.push(`/question/${q.id}`);
-  }, [progress, router]);
+  /** スマート連続出題で即スタート (1タップで今日のセッションが続く)
+      due→苦手→新規→残り の優先キューを作り source=ai で連続出題に入る。
+      キューが空 (= 全マスター等) のときは従来の単発フォールバック。 */
+  const startSmartQuestion = useCallback(async () => {
+    const latestProgress = useProgressStore.getState().progress;
+    const ids = buildSmartQueue(latestProgress);
+    if (ids.length === 0) {
+      const q = pickSmartQuestion(latestProgress);
+      router.push(`/question/${q.id}`);
+      return;
+    }
+    await setAiQueue(
+      {
+        getItem: (k) => AsyncStorage.getItem(k),
+        setItem: (k, v) => AsyncStorage.setItem(k, v),
+        removeItem: (k) => AsyncStorage.removeItem(k),
+      },
+      ids,
+    );
+    router.push(`/question/${ids[0]}?source=ai` as any);
+  }, [router]);
 
   // [UX改善 v2] 「達成率」を「真の習得度」に変更:
   //   - 3回連続正解で「習得」とみなす（間違えると0にリセット）
@@ -455,7 +523,7 @@ function HomeScreen() {
                 {isEvening ? '睡眠中の記憶固定を最大化'
                   : dueCount > 0 ? '忘れる前に記憶を定着'
                   : weakCount > 3 ? `${weakCount}問の苦手問題を集中攻撃`
-                  : `今日 ${todayAnswered}/${dailyGoal}問完了 — AIが最適な問題を選択`}
+                  : `今日 ${todayAnswered}/${dailyGoal}問 — AIが選ぶ問題を連続で`}
               </Text>
             </View>
             <Text style={s.mainCTAArrow}>→</Text>
@@ -556,12 +624,9 @@ function HomeScreen() {
           </View>
         )}
 
-        {/* ── クイックアクション（厳選4つ・横スクロール風） ── */}
+        {/* ── クイックアクション（補助動線・小さい行） ──
+            「問題」は CTA と完全重複のため削除。一問一答 / タイマーは補助として残す。 */}
         <View style={s.quickGrid}>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={startSmartQuestion} accessibilityRole="button" accessibilityLabel="問題を解く">
-            <Text style={s.quickIcon}>📝</Text>
-            <Text style={s.quickTitle}>問題</Text>
-          </Pressable>
           <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/(tabs)/quick-quiz')} accessibilityRole="button" accessibilityLabel="一問一答を開始">
             <Text style={s.quickIcon}>⚡</Text>
             <Text style={s.quickTitle}>一問一答</Text>
@@ -619,6 +684,71 @@ function HomeScreen() {
         {/* ── 弱点コーチング（予測スコアから最弱科目を推薦） ── */}
         <WeaknessCoachingCard prediction={examPrediction} />
 
+        {/* ── バナー群（厳選） ──
+            折りたたみの外に出して常時表示 (AI分析導線 / ¥980 PREMIUM 訴求を殺さない) */}
+        <View style={s.bannerSection}>
+          <Pressable style={[s.bannerCard, s.bannerDarkGreen, Shadow.md]} onPress={() => router.push('/ai-analysis')}>
+            <Text style={s.bannerEmoji}>🤖</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={s.bannerTitle}>AI学習分析</Text>
+              <Text style={s.bannerSub}>弱点・おすすめ問題</Text>
+            </View>
+            <Text style={s.bannerArrow}>›</Text>
+          </Pressable>
+          {!isPro && (
+            <Pressable style={[s.bannerCard, s.bannerGold, Shadow.md]} onPress={() => router.push('/paywall')}>
+              <Text style={s.bannerEmoji}>✨</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={s.bannerTitle}>PREMIUMで合格を目指す</Text>
+                <Text style={s.bannerSub}>全{TOTAL_Q}問・模試・AI解説が使い放題</Text>
+              </View>
+              <Text style={s.bannerArrow}>›</Text>
+            </Pressable>
+          )}
+        </View>
+
+        {/* ── 詳細ダッシュボードへの導線（C1/B4） ── */}
+        <View style={s.utilityRow}>
+          <Pressable
+            style={[s.utilityCard, Shadow.sm]}
+            onPress={() => router.push('/heatmap')}
+            accessibilityRole="button"
+            accessibilityLabel="弱点ヒートマップを開く"
+          >
+            <Text style={s.utilityIcon}>🗺️</Text>
+            <Text style={s.utilityTitle}>弱点ヒートマップ</Text>
+            <Text style={s.utilitySub}>サブカテゴリ別の正答率</Text>
+          </Pressable>
+          <Pressable
+            style={[s.utilityCard, Shadow.sm]}
+            onPress={() => router.push('/achievements')}
+            accessibilityRole="button"
+            accessibilityLabel={`実績バッジを開く (${unlockedCount}/${ALL_ACHIEVEMENTS.length}個獲得)`}
+          >
+            <Text style={s.utilityIcon}>🏆</Text>
+            <Text style={s.utilityTitle}>実績バッジ</Text>
+            <Text style={s.utilitySub}>{unlockedCount}/{ALL_ACHIEVEMENTS.length} 個獲得</Text>
+          </Pressable>
+        </View>
+
+        {/* ── 「もっと選んで学習」(決定疲労の最大要因を折りたたみへ) ──
+            既定は閉。カテゴリ別 / よく出る論点 / 学習モード / 論点別 全chip を中に格納。
+            機能・ハンドラ・データはそのまま (移動のみ)。上級者・直前期向けに残す。 */}
+        <Pressable
+          style={[s.moreToggle, Shadow.sm]}
+          onPress={toggleMore}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: moreExpanded }}
+          accessibilityLabel={moreExpanded ? 'もっと選んで学習を閉じる' : 'もっと選んで学習を開く'}
+        >
+          <Text style={s.moreToggleChevron}>{moreExpanded ? '▾' : '▸'}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={s.moreToggleTitle}>もっと選んで学習</Text>
+            <Text style={s.moreToggleSub}>カテゴリ・論点・模試・弱点ドリルから自分で選ぶ</Text>
+          </View>
+        </Pressable>
+
+        {moreExpanded && (<>
         {/* ── [UX改善] カテゴリ別 / 論点別に解く ──
             「宅建業法だけ集中して解きたい」「固定資産税をピンポイントで」
             のような頻出ニーズに応える。
@@ -720,52 +850,6 @@ function HomeScreen() {
             <Text style={s.modeIcon}>🎓</Text>
             <Text style={s.modeTitle}>マスター済み</Text>
             <Text style={s.modeSub}>復習から除外した問題</Text>
-          </Pressable>
-        </View>
-
-        {/* ── バナー群（厳選） ── */}
-        <View style={s.bannerSection}>
-          <Pressable style={[s.bannerCard, s.bannerDarkGreen, Shadow.md]} onPress={() => router.push('/ai-analysis')}>
-            <Text style={s.bannerEmoji}>🤖</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={s.bannerTitle}>AI学習分析</Text>
-              <Text style={s.bannerSub}>弱点・おすすめ問題</Text>
-            </View>
-            <Text style={s.bannerArrow}>›</Text>
-          </Pressable>
-          {!isPro && (
-            <Pressable style={[s.bannerCard, s.bannerGold, Shadow.md]} onPress={() => router.push('/paywall')}>
-              <Text style={s.bannerEmoji}>✨</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={s.bannerTitle}>PREMIUMで合格を目指す</Text>
-                <Text style={s.bannerSub}>全{TOTAL_Q}問・模試・AI解説が使い放題</Text>
-              </View>
-              <Text style={s.bannerArrow}>›</Text>
-            </Pressable>
-          )}
-        </View>
-
-        {/* ── 詳細ダッシュボードへの導線（C1/B4） ── */}
-        <View style={s.utilityRow}>
-          <Pressable
-            style={[s.utilityCard, Shadow.sm]}
-            onPress={() => router.push('/heatmap')}
-            accessibilityRole="button"
-            accessibilityLabel="弱点ヒートマップを開く"
-          >
-            <Text style={s.utilityIcon}>🗺️</Text>
-            <Text style={s.utilityTitle}>弱点ヒートマップ</Text>
-            <Text style={s.utilitySub}>サブカテゴリ別の正答率</Text>
-          </Pressable>
-          <Pressable
-            style={[s.utilityCard, Shadow.sm]}
-            onPress={() => router.push('/achievements')}
-            accessibilityRole="button"
-            accessibilityLabel={`実績バッジを開く (${unlockedCount}/${ALL_ACHIEVEMENTS.length}個獲得)`}
-          >
-            <Text style={s.utilityIcon}>🏆</Text>
-            <Text style={s.utilityTitle}>実績バッジ</Text>
-            <Text style={s.utilitySub}>{unlockedCount}/{ALL_ACHIEVEMENTS.length} 個獲得</Text>
           </Pressable>
         </View>
 
@@ -903,6 +987,7 @@ function HomeScreen() {
             </View>
           );
         })}
+        </>)}
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -1184,44 +1269,78 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     maxWidth: 120,
   },
 
-  // ─── Main CTA ───
+  // ─── Main CTA (最初の一手・画面で最も目立つ特大カード) ───
   mainCTA: {
     marginHorizontal: Spacing.xl,
     marginTop: Spacing.lg,
     backgroundColor: C.primary,
-    borderRadius: BorderRadius.xl,
-    padding: 20,
+    borderRadius: BorderRadius.xxl,
+    paddingHorizontal: 22,
+    paddingVertical: 26,
   },
   mainCTALabel: {
-    fontSize: FontSize.caption2,
+    fontSize: FontSize.footnote,
     fontWeight: '800',
-    color: 'rgba(255,255,255,0.72)',
+    color: 'rgba(255,255,255,0.85)',
     letterSpacing: LetterSpacing.wide,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   mainCTAContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 16,
   },
   mainCTAIcon: {
-    fontSize: 32,
+    fontSize: 42,
   },
   mainCTATitle: {
-    fontSize: FontSize.callout,
-    fontWeight: '800',
+    fontSize: FontSize.title2,
+    fontWeight: '900',
     color: C.white,
     letterSpacing: LetterSpacing.tight,
   },
   mainCTASub: {
-    fontSize: FontSize.caption,
-    color: 'rgba(255,255,255,0.75)',
-    marginTop: 3,
+    fontSize: FontSize.footnote,
+    color: 'rgba(255,255,255,0.82)',
+    marginTop: 5,
   },
   mainCTAArrow: {
-    fontSize: 24,
+    fontSize: 30,
     color: C.white,
     fontWeight: '300',
+  },
+
+  // ─── 「もっと選んで学習」折りたたみトグル ───
+  moreToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: Spacing.xl,
+    marginTop: 28,
+    backgroundColor: C.card,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: C.borderLight,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  moreToggleChevron: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: C.primary,
+    width: 18,
+    textAlign: 'center',
+  },
+  moreToggleTitle: {
+    fontSize: FontSize.subhead,
+    fontWeight: '800',
+    color: C.text,
+    letterSpacing: LetterSpacing.tight,
+  },
+  moreToggleSub: {
+    fontSize: FontSize.caption,
+    color: C.textSecondary,
+    marginTop: 2,
   },
 
   // ─── Quick Grid（4つ横並び） ───

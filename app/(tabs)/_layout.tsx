@@ -71,14 +71,14 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* [最初の一手 一本化] AI分析はタブから外す (href:null)。
+          ホーム内の「AI学習分析」バナー + GlobalAIButton と重複のため。
+          画面/ルートは残す (直接 URL / バナーから遷移可能)。タブ 5→4。 */}
       <Tabs.Screen
         name="ai-analysis"
         options={{
-          title: 'AI分析',
+          href: null,
           headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon icon="🤖" label="AI分析" focused={focused} colors={colors} />
-          ),
         }}
       />
       {/* [UX改善] 問題集タブを非表示化 (使用頻度低のため AI分析と入替)
