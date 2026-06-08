@@ -61,7 +61,7 @@ interface TimerState {
   endAt: number | null;
   completedSessions: number;
   totalFocusMin: number;
-  /** フローティング表示の非表示フラグ (× で立てる) */
+  /** フローティング表示の最小化フラグ (「–」でドットに畳む。タイマーは動き続ける) */
   hidden: boolean;
 
   // 永続データ

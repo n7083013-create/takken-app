@@ -173,17 +173,22 @@ export default function StudyTimerScreen() {
             </Pressable>
           )}
           {status === 'running' && (
-            <Pressable style={[s.mainBtn, s.btnPause]} onPress={pause} accessibilityRole="button">
-              <Text style={s.mainBtnText}>⏸ 一時停止</Text>
-            </Pressable>
+            <View style={s.pauseControls}>
+              <Pressable style={[s.mainBtn, s.btnPause]} onPress={pause} accessibilityRole="button">
+                <Text style={s.mainBtnText}>⏸ 一時停止</Text>
+              </Pressable>
+              <Pressable style={s.subBtn} onPress={reset} accessibilityRole="button" accessibilityLabel="タイマーを完全に終了する">
+                <Text style={s.subBtnText}>■ 終了</Text>
+              </Pressable>
+            </View>
           )}
           {status === 'paused' && (
             <View style={s.pauseControls}>
               <Pressable style={[s.mainBtn, mode === 'focus' ? s.btnFocus : s.btnBreak]} onPress={resume} accessibilityRole="button">
                 <Text style={s.mainBtnText}>▶ 再開</Text>
               </Pressable>
-              <Pressable style={s.subBtn} onPress={reset} accessibilityRole="button">
-                <Text style={s.subBtnText}>リセット</Text>
+              <Pressable style={s.subBtn} onPress={reset} accessibilityRole="button" accessibilityLabel="タイマーを完全に終了する">
+                <Text style={s.subBtnText}>■ 終了</Text>
               </Pressable>
             </View>
           )}
