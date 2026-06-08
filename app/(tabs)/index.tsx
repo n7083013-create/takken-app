@@ -10,7 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
+import { Shadow, FontSize, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
 import { EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
@@ -47,100 +47,10 @@ import { StreakPulse } from '../../components/StreakPulse';
 import { AnimatedNumber } from '../../components/AnimatedNumber';
 import LandingPage from '../../components/LandingPage';
 import Onboarding from '../../components/Onboarding';
-import type { Question, QuestionProgress, HabitStack } from '../../types';
-
-/** 連続出題セッションの上限問題数 (1タップで今日の分が続く規模) */
-const SMART_SESSION_SIZE = 20;
-
-/** Fisher-Yates シャッフル (元配列は破壊しない) */
-function shuffled<T>(arr: readonly T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-/**
- * スマート出題の優先プールを「復習期限切れ → 苦手 → 未解答 → 残り」の順で返す。
- * pickSmartQuestion / buildSmartQueue 両方の単一ソースにすることで、
- * 「単発」と「連続セッション」で出題基準がズレないようにする。
- */
-function smartQuestionTiers(
-  progress: Record<string, QuestionProgress>,
-): Question[][] {
-  const now = new Date().toISOString();
-
-  // 1. 復習期限切れ（SM-2 overdue、ただし手動マスター済みは除外）
-  const dueIds = new Set(
-    Object.values(progress)
-      .filter((p) => p.attempts > 0 && p.mastered !== true && p.nextReviewAt <= now)
-      .map((p) => p.questionId),
-  );
-  // 2. 苦手（正答率 < 50%、ただし達成済み(3連正解)・手動マスター済みは除外）
-  // [統一] useProgressStore.getWeakQuestions と同じロジックに揃える
-  const weakIds = new Set(
-    Object.values(progress)
-      .filter((p) => {
-        if (p.attempts === 0) return false;
-        if (p.mastered === true) return false;
-        if ((p.correctStreak ?? 0) >= 3) return false;
-        return p.correctCount / p.attempts < 0.5;
-      })
-      .map((p) => p.questionId),
-  );
-  // 3. 未解答（手動マスター済みは除外）
-  const attemptedOrMasteredIds = new Set(
-    Object.values(progress)
-      .filter((p) => p.attempts > 0 || p.mastered === true)
-      .map((p) => p.questionId),
-  );
-  // 4. 残り（手動マスター済みは除外。全部マスター済みなら全問から）
-  const masteredIds = new Set(
-    Object.values(progress).filter((p) => p.mastered === true).map((p) => p.questionId),
-  );
-
-  const due = ALL_QUESTIONS.filter((q) => dueIds.has(q.id));
-  const weak = ALL_QUESTIONS.filter((q) => weakIds.has(q.id) && !dueIds.has(q.id));
-  const unseen = ALL_QUESTIONS.filter((q) => !attemptedOrMasteredIds.has(q.id));
-  const remaining = ALL_QUESTIONS.filter(
-    (q) => !masteredIds.has(q.id) && !dueIds.has(q.id) && !weakIds.has(q.id) && attemptedOrMasteredIds.has(q.id),
-  );
-  const fallback = remaining.length > 0 ? remaining : ALL_QUESTIONS;
-  return [due, weak, unseen, fallback];
-}
-
-/**
- * スマート問題選択: 復習期限切れ → 苦手 → 未解答 → ランダム
- */
-function pickSmartQuestion(
-  progress: Record<string, QuestionProgress>,
-): Question {
-  for (const tier of smartQuestionTiers(progress)) {
-    if (tier.length > 0) return tier[Math.floor(Math.random() * tier.length)];
-  }
-  return ALL_QUESTIONS[Math.floor(Math.random() * ALL_QUESTIONS.length)];
-}
-
-/**
- * スマート連続出題キュー: 優先順 (due→苦手→新規→残り) に詰めて最大 SMART_SESSION_SIZE 件。
- * 各ティア内はシャッフルし「順序は毎回違うが、優先度は守る」。
- */
-function buildSmartQueue(
-  progress: Record<string, QuestionProgress>,
-  size: number = SMART_SESSION_SIZE,
-): string[] {
-  const ids: string[] = [];
-  for (const tier of smartQuestionTiers(progress)) {
-    for (const q of shuffled(tier)) {
-      if (ids.length >= size) break;
-      if (!ids.includes(q.id)) ids.push(q.id);
-    }
-    if (ids.length >= size) break;
-  }
-  return ids;
-}
+import type { HabitStack } from '../../types';
+// 合格エンジン (出題キュー / 今日やること状態マシン) は utils/passEngine に集約。
+// UI から純粋ロジックを切り離し、出題基準を単一ソース化 + jest でテスト可能にしている。
+import { buildPassQueue, pickOneSmart, computeTodayAction, evaluateTodayCompletion } from '../../utils/passEngine';
 
 const TOTAL_Q = ALL_QUESTIONS.length;
 const CATEGORY_STATS = getCategoryStats('takken');
@@ -332,9 +242,19 @@ function HomeScreen() {
     [todayAnsweredRaw, dailyGoal],
   );
 
-  // 日目標達成を検知 → 1日1回だけ祝福演出を発火
+  // 日目標達成を検知 → 1日1回だけ祝福演出を発火。
+  // [完了判定の進化] 「解いた数」だけでなく「今日の due を消化し切ったか」も条件にする
+  // (やみくもに新規/ランダムを回して数だけ満たしても、復習が残っていれば祝福しない = 憲法 P6)。
+  // due が無い日は純粋な積み上げ日として数ノルマのみで達成。
   useEffect(() => {
-    if (dailyGoal > 0 && todayAnsweredRaw >= dailyGoal) {
+    const dueRemaining = getDueForReview().length;
+    const completion = evaluateTodayCompletion({
+      dueAtStartOfDay: dueRemaining, // 残 due があれば「まだ未消化」とみなす保守的判定
+      dueRemaining,
+      todayAnswered: todayAnsweredRaw,
+      dailyGoal,
+    });
+    if (completion.isComplete) {
       const today = new Date().toISOString().slice(0, 10);
       const key = `daily_goal_${today}`;
       if (!isCelebrated(key)) {
@@ -342,7 +262,7 @@ function HomeScreen() {
         markCelebrated(key);
       }
     }
-  }, [dailyGoal, todayAnswered, isCelebrated, markCelebrated]);
+  }, [dailyGoal, todayAnswered, todayAnsweredRaw, getDueForReview, isCelebrated, markCelebrated]);
   const latestExamScore = useMemo(() => getLatestScore(), [examHistory]);
   const bestExamScore = useMemo(() => getBestScore(), [examHistory]);
   const enabledHabits = useMemo(
@@ -351,13 +271,14 @@ function HomeScreen() {
   );
 
   /** スマート連続出題で即スタート (1タップで今日のセッションが続く)
-      due→苦手→新規→残り の優先キューを作り source=ai で連続出題に入る。
-      キューが空 (= 全マスター等) のときは従来の単発フォールバック。 */
+      合格エンジン (buildPassQueue) が due→苦手→新規→残りを試験日逆算で配合し、
+      科目インターリーブまで済ませたキューで source=ai 連続出題に入る。
+      キューが空 (= 全マスター等) のときは単発フォールバック。 */
   const startSmartQuestion = useCallback(async () => {
     const latestProgress = useProgressStore.getState().progress;
-    const ids = buildSmartQueue(latestProgress);
+    const ids = buildPassQueue(latestProgress, { daysUntilExam: getDaysUntilExam() });
     if (ids.length === 0) {
-      const q = pickSmartQuestion(latestProgress);
+      const q = pickOneSmart(latestProgress);
       router.push(`/question/${q.id}`);
       return;
     }
@@ -370,7 +291,7 @@ function HomeScreen() {
       ids,
     );
     router.push(`/question/${ids[0]}?source=ai` as any);
-  }, [router]);
+  }, [router, getDaysUntilExam]);
 
   /** 統合ブロックのワンタップ集中: 最弱カテゴリの AI 推奨 10 問を連続出題で開始
       (home カテゴリ chip と同一方式: getRecommendedQuestionsByCategory → setAiQueue → source=ai) */
@@ -417,6 +338,53 @@ function HomeScreen() {
   // 時間帯に応じた最適アクションのサジェスト
   const hourNow = new Date().getHours();
   const isEvening = hourNow >= 21 || hourNow < 5;
+
+  // ── 単一CTA「今日やること」状態マシン ──
+  // 4分岐の三項を撤廃し、純粋関数 computeTodayAction が決めた 1 つの action を描画する。
+  // 表示文言と a11yLabel は action 側で単一ソース化済 (ズレ防止)。
+  const weakestCategoryLabel = examPrediction.weakestCategory
+    ? CATEGORY_LABELS[examPrediction.weakestCategory]
+    : undefined;
+  const todayAction = useMemo(
+    () =>
+      computeTodayAction({
+        totalAnswered: stats.totalQuestions,
+        examDays,
+        hasMockHistory: examHistory.length > 0,
+        dueCount,
+        weakCount,
+        isEvening,
+        todayAnswered: todayAnsweredRaw,
+        dailyGoal,
+        weakestCategoryLabel,
+      }),
+    [stats.totalQuestions, examDays, examHistory.length, dueCount, weakCount, isEvening, todayAnsweredRaw, dailyGoal, weakestCategoryLabel],
+  );
+
+  // action.kind → 実際の遷移。空 / 全達成でも必ず意味ある 1 手を返す (死んだボタン厳禁)。
+  const onTodayAction = useCallback(() => {
+    switch (todayAction.kind) {
+      case 'mockExam':
+        router.push('/exam');
+        return;
+      case 'preSleep':
+        router.push('/pre-sleep-review');
+        return;
+      case 'review':
+        router.push('/(tabs)/review');
+        return;
+      case 'weakFocus':
+        if (examPrediction.weakestCategory) { startWeakestFocus(examPrediction.weakestCategory); }
+        else { startSmartQuestion(); }
+        return;
+      case 'firstQuestion':
+      case 'continueGoal':
+      case 'goalReachedMore':
+      case 'allCaughtUp':
+      default:
+        startSmartQuestion();
+    }
+  }, [todayAction.kind, router, examPrediction.weakestCategory, startWeakestFocus, startSmartQuestion]);
 
   return (
     <SafeAreaView style={s.safe}>
@@ -505,41 +473,19 @@ function HomeScreen() {
           );
         })()}
 
-        {/* ── 今日やること: 開いた直後に迷わず押せる最優先アクション ── */}
+        {/* ── 今日やること: 開いた直後に迷わず押せる最優先アクション (単一CTA状態マシン) ── */}
         <Pressable
-          style={[s.mainCTA, Shadow.lg]}
+          style={[s.mainCTA, todayAction.tone === 'calm' && s.mainCTACalm, Shadow.lg]}
           accessibilityRole="button"
-          accessibilityLabel={
-            isEvening ? '就寝前復習を始める'
-              : dueCount > 0 ? `復習${dueCount}問を解く`
-              : weakCount > 3 ? '弱点を克服する'
-              : '今日の学習を始める'
-          }
-          onPress={() => {
-            if (isEvening) { router.push('/pre-sleep-review'); }
-            else if (dueCount > 0) { router.push('/(tabs)/review'); }
-            else if (weakCount > 3 && examPrediction.weakestCategory) { startWeakestFocus(examPrediction.weakestCategory); }
-            else { startSmartQuestion(); }
-          }}
+          accessibilityLabel={todayAction.a11yLabel}
+          onPress={onTodayAction}
         >
           <Text style={s.mainCTALabel}>今日やること</Text>
           <View style={s.mainCTAContent}>
-            <Text style={s.mainCTAIcon}>
-              {isEvening ? '🌙' : dueCount > 0 ? '⏰' : weakCount > 3 ? '💪' : '📝'}
-            </Text>
+            <Text style={s.mainCTAIcon}>{todayAction.icon}</Text>
             <View style={{ flex: 1 }}>
-              <Text style={s.mainCTATitle}>
-                {isEvening ? '就寝前復習を始める'
-                  : dueCount > 0 ? `復習${dueCount}問を解く`
-                  : weakCount > 3 ? '弱点を克服する'
-                  : '今日の学習を始める'}
-              </Text>
-              <Text style={s.mainCTASub}>
-                {isEvening ? '睡眠中の記憶固定を最大化'
-                  : dueCount > 0 ? '忘れる前に記憶を定着'
-                  : weakCount > 3 ? `${weakCount}問の苦手問題を集中攻撃`
-                  : `今日 ${todayAnswered}/${dailyGoal}問 — AIが選ぶ問題を連続で`}
-              </Text>
+              <Text style={s.mainCTATitle}>{todayAction.title}</Text>
+              <Text style={s.mainCTASub}>{todayAction.sub}</Text>
             </View>
             <Text style={s.mainCTAArrow}>→</Text>
           </View>
@@ -876,15 +822,12 @@ function HomeScreen() {
         {/* ── その他の学習モード ── */}
         <Text style={s.sectionTitle}>学習モード</Text>
         <View style={s.modeGrid}>
+          {/* 就寝前復習カードは削除 (重複): 夜はメインCTAが自動で /pre-sleep-review へ誘導し、
+              日中にやりたい人向けの入口は復習タブ内に集約した (IA 的に正しい所在)。 */}
           <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/exam')} accessibilityRole="button" accessibilityLabel="模擬試験を開始">
             <Text style={s.modeIcon}>📋</Text>
             <Text style={s.modeTitle}>模擬試験</Text>
             <Text style={s.modeSub}>本番形式50問</Text>
-          </Pressable>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/pre-sleep-review')} accessibilityRole="button" accessibilityLabel="就寝前復習を開始">
-            <Text style={s.modeIcon}>🌙</Text>
-            <Text style={s.modeTitle}>就寝前復習</Text>
-            <Text style={s.modeSub}>記憶固定5問</Text>
           </Pressable>
           <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/mastered')} accessibilityRole="button" accessibilityLabel="マスター済み問題を表示">
             <Text style={s.modeIcon}>🎓</Text>
@@ -1308,6 +1251,10 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     borderRadius: BorderRadius.xxl,
     paddingHorizontal: 22,
     paddingVertical: 26,
+  },
+  // 全達成状態 (allCaughtUp) の弱トーン。ボタンは無効化せず必ず押せる。
+  mainCTACalm: {
+    backgroundColor: C.success,
   },
   mainCTALabel: {
     fontSize: FontSize.footnote,

@@ -50,7 +50,6 @@ export default function PreSleepReviewScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
-  const [confidence, setConfidence] = useState<ConfidenceLevel | null>(null);
   const [answers, setAnswers] = useState<AnswerRecord[]>([]);
   const [shuffledMap, setShuffledMap] = useState<number[]>([0, 1, 2, 3]);
   const [showSummary, setShowSummary] = useState(false);
@@ -82,9 +81,27 @@ export default function PreSleepReviewScreen() {
     scrollRef.current?.scrollTo({ y: 0, animated: true });
   }, [answered, currentQuestion]);
 
-  const handleConfidence = useCallback((conf: ConfidenceLevel) => {
+  const advanceToNext = useCallback(() => {
+    const nextIdx = currentIndex + 1;
+    if (nextIdx >= questionIds.length) {
+      setShowSummary(true);
+      return;
+    }
+    setCurrentIndex(nextIdx);
+    setSelected(null);
+    setAnswered(false);
+    explainAnim.current = new Animated.Value(0);
+    const q = getQuestionById(questionIds[nextIdx]);
+    if (q) {
+      const isSpecial = q.questionFormat === 'count' || q.questionFormat === 'combination';
+      setShuffledMap(isSpecial ? [0, 1, 2, 3] : shuffleIndices(q.choices.length));
+    }
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [currentIndex, questionIds]);
+
+  // 難易度を選んだ瞬間に記録して即・次の問題へ（メイン問題画面と統一＝1タップ）
+  const handleConfidenceAndNext = useCallback((conf: ConfidenceLevel) => {
     if (!currentQuestion || selected === null) return;
-    setConfidence(conf);
     const isCorrect = selected === currentQuestion.correctIndex;
     recordAnswer(currentQuestion.id, currentQuestion.category, isCorrect, conf);
     setTimeout(() => checkAchievements(), 0);
@@ -97,26 +114,8 @@ export default function PreSleepReviewScreen() {
         category: currentQuestion.category,
       },
     ]);
-  }, [currentQuestion, selected, recordAnswer, checkAchievements]);
-
-  const handleNext = useCallback(() => {
-    const nextIdx = currentIndex + 1;
-    if (nextIdx >= questionIds.length) {
-      setShowSummary(true);
-      return;
-    }
-    setCurrentIndex(nextIdx);
-    setSelected(null);
-    setAnswered(false);
-    setConfidence(null);
-    explainAnim.current = new Animated.Value(0);
-    const q = getQuestionById(questionIds[nextIdx]);
-    if (q) {
-      const isSpecial = q.questionFormat === 'count' || q.questionFormat === 'combination';
-      setShuffledMap(isSpecial ? [0, 1, 2, 3] : shuffleIndices(q.choices.length));
-    }
-    scrollRef.current?.scrollTo({ y: 0, animated: false });
-  }, [currentIndex, questionIds]);
+    advanceToNext();
+  }, [currentQuestion, selected, recordAnswer, checkAchievements, advanceToNext]);
 
   const handleGoHome = useCallback(() => {
     if (router.canDismiss()) {
@@ -218,7 +217,7 @@ export default function PreSleepReviewScreen() {
           <View style={s.headerCenter}>
             <Text style={s.headerTitle}>🌙 就寝前復習</Text>
             <Text style={s.headerSubtitle}>
-              睡眠中の記憶固定を最大化する{QUESTION_COUNT}問
+              寝る前の復習で定着を助ける{QUESTION_COUNT}問
             </Text>
           </View>
           <View style={{ width: 32 }} />
@@ -380,47 +379,35 @@ export default function PreSleepReviewScreen() {
             <Text style={s.explainLabel}>解説</Text>
             <Text style={s.explainText} selectable>{q.explanation}</Text>
 
-            {/* Difficulty Selector（選択で次へ進む） */}
-            {!confidence && (
-              <View style={s.confidenceSection}>
-                <View style={s.confidenceRow}>
-                  <Pressable
-                    style={[s.confidenceBtn, s.confidenceNone]}
-                    onPress={() => handleConfidence('none')}
-                    accessibilityRole="button"
-                    accessibilityLabel="難しいと評価"
-                  >
-                    <Text style={s.confidenceNoneText}>難しい</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[s.confidenceBtn, s.confidenceDefault]}
-                    onPress={() => handleConfidence('low')}
-                    accessibilityRole="button"
-                    accessibilityLabel="普通と評価"
-                  >
-                    <Text style={s.confidenceDefaultText}>普通 →</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[s.confidenceBtn, s.confidenceHigh]}
-                    onPress={() => handleConfidence('high')}
-                    accessibilityRole="button"
-                    accessibilityLabel="簡単と評価"
-                  >
-                    <Text style={s.confidenceHighText}>簡単</Text>
-                  </Pressable>
-                </View>
+            {/* Difficulty Selector（選んだ瞬間に記録して次へ＝1タップ。メイン問題画面と統一） */}
+            <View style={s.confidenceSection}>
+              <View style={s.confidenceRow}>
+                <Pressable
+                  style={[s.confidenceBtn, s.confidenceNone]}
+                  onPress={() => handleConfidenceAndNext('none')}
+                  accessibilityRole="button"
+                  accessibilityLabel="難しいと評価して次へ"
+                >
+                  <Text style={s.confidenceNoneText}>難しい</Text>
+                </Pressable>
+                <Pressable
+                  style={[s.confidenceBtn, s.confidenceDefault]}
+                  onPress={() => handleConfidenceAndNext('low')}
+                  accessibilityRole="button"
+                  accessibilityLabel="普通と評価して次へ"
+                >
+                  <Text style={s.confidenceDefaultText}>普通 →</Text>
+                </Pressable>
+                <Pressable
+                  style={[s.confidenceBtn, s.confidenceHigh]}
+                  onPress={() => handleConfidenceAndNext('high')}
+                  accessibilityRole="button"
+                  accessibilityLabel="簡単と評価して次へ"
+                >
+                  <Text style={s.confidenceHighText}>簡単</Text>
+                </Pressable>
               </View>
-            )}
-
-            {/* Show "次へ" only after confidence selected */}
-            {confidence && (
-              <Pressable style={[s.nextBtn, Shadow.md]} onPress={handleNext} accessibilityRole="button" accessibilityLabel={currentIndex + 1 >= questionIds.length ? '結果を見る' : '次の問題へ'}>
-                <Text style={s.nextBtnText}>
-                  {currentIndex + 1 >= questionIds.length ? '結果を見る' : '次へ'}
-                </Text>
-                <Text style={s.nextBtnArrow}>→</Text>
-              </Pressable>
-            )}
+            </View>
           </Animated.View>
         )}
 

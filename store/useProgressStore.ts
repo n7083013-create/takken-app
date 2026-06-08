@@ -6,6 +6,8 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Category, ConfidenceLevel, QuestionProgress, StudyStats, SUBCATEGORIES } from '../types';
 import { ALL_QUESTIONS } from '../data';
+import { daysUntilTakkenExam } from '../constants/exam';
+import { capIntervalToExam, selectPreSleepReview } from '../utils/passEngine';
 import {
   pullFromCloud,
   pushProgressToCloud,
@@ -190,6 +192,7 @@ export function calculateSM2(
   currentEaseFactor: number,
   correctStreak: number,
   confidence: ConfidenceLevel = 'low',
+  daysUntilExam: number | null = null,
 ): { interval: number; easeFactor: number } {
   let interval: number;
   let easeFactor: number;
@@ -233,6 +236,10 @@ export function calculateSM2(
     interval = 1;
     easeFactor = Math.max(MIN_EASE_FACTOR, currentEaseFactor - 0.2);
   }
+
+  // 締切逆算 cap: 正解で interval が試験日を飛び越えると「本試験まで二度と出題されない」
+  // 欠陥が起きる。試験前日までの残り日数で頭打ちにする (試験日未設定なら上限なし)。
+  interval = capIntervalToExam(interval, daysUntilExam);
 
   return { interval, easeFactor };
 }
@@ -448,12 +455,15 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         ? 1
         : 0;
 
+    // 締切逆算: 試験前日までの残り日数で interval を頭打ちにする。
+    // 宅建は試験日固定 (10月第3日曜) のため常に値が返るが、未設定資格は null=上限なし。
     const { interval, easeFactor } = calculateSM2(
       isCorrect,
       currentInterval,
       currentEaseFactor,
       correctStreak,
       confidence,
+      daysUntilTakkenExam(),
     );
 
     // 次の復習日を計算
@@ -806,40 +816,28 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   },
 
   /**
-   * 就寝前復習（Pre-Sleep Review）
-   * 認知科学: 就寝前の復習は睡眠中の記憶固定（consolidation）を最大化
-   * アルゴリズム: 「もうすぐ忘れそう」な問題を忘却曲線で選出
-   *  - 復習期限が近い or やや過ぎた問題を優先
-   *  - 低確信正解を優先（浅い記憶を深化）
+   * 就寝前復習（Pre-Sleep Review・夜版）
+   * 認知科学: 就寝前の復習は睡眠中の記憶固定（consolidation）を助ける。
+   * 夜セッションの差別化 (selectPreSleepReview):
+   *  (i)  新規 (attempts==0) を除外 = 寝る前に新しい負荷をかけない
+   *  (ii) その日間違えた / 低確信だった問題を最優先で再露出 (睡眠固定化に乗せる)
+   *  (iii) 残りは「もうすぐ忘れそう」を忘却曲線で選出
    */
   getPreSleepReview(count: number): string[] {
     const { progress } = get();
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
-
-    const candidates = Object.values(progress)
-      .filter((p) => p.attempts > 0 && p.mastered !== true)
-      .map((p) => {
-        const reviewTime = new Date(p.nextReviewAt).getTime();
-        const timeUntilDue = reviewTime - now;
-        // スコア: 期限に近いほど高い（-1日〜+2日の範囲が最適）
-        let urgency = 0;
-        if (timeUntilDue < -2 * oneDay) urgency = 3; // 大幅超過
-        else if (timeUntilDue < 0) urgency = 5; // やや超過（最重要）
-        else if (timeUntilDue < oneDay) urgency = 4; // 明日期限
-        else if (timeUntilDue < 3 * oneDay) urgency = 2; // 3日以内
-        else urgency = 1;
-
-        // 低確信ボーナス
-        if (p.lastConfidence === 'low') urgency += 2;
-        // 低正答率ボーナス
-        if (p.correctCount / p.attempts < 0.6) urgency += 1;
-
-        return { id: p.questionId, urgency, rand: Math.random() };
+    const todayKey = getDateKey(new Date());
+    // その日に「間違えた or 難しい(低確信)」と評価した問題を優先再露出する。
+    const todaysStruggleIds = Object.values(progress)
+      .filter((p) => {
+        if (!p.lastAttemptAt) return false;
+        if (getDateKey(new Date(p.lastAttemptAt)) !== todayKey) return false;
+        // 当日の最後の解答が不正解 (correctStreak===0) か、難しいと評価した問題。
+        const struggled = (p.correctStreak ?? 0) === 0 || p.lastConfidence === 'none' || p.lastConfidence === 'low';
+        return struggled;
       })
-      .sort((a, b) => b.urgency - a.urgency || a.rand - b.rand);
+      .map((p) => p.questionId);
 
-    return candidates.slice(0, count).map((c) => c.id);
+    return selectPreSleepReview(progress, { count, todaysStruggleIds });
   },
 
   /**

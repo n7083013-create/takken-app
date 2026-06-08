@@ -503,6 +503,25 @@ export default function ReviewScreen() {
           </View>
         )}
 
+        {/* 就寝前モード 二次入口: 夜はホームのCTAが自動誘導するが、日中にやりたい人向けの導線。 */}
+        <Pressable
+          style={[s.queueCard, Shadow.sm]}
+          onPress={() => router.push('/pre-sleep-review')}
+          accessibilityRole="button"
+          accessibilityLabel="就寝前モードで復習する"
+        >
+          <View style={[s.queueIcon, { backgroundColor: colors.primary + '14' }]}>
+            <Text style={s.queueIconText}>🌙</Text>
+          </View>
+          <View style={s.queueBody}>
+            <Text style={s.queueTitle}>就寝前モードで復習</Text>
+            <Text style={s.queueDesc}>寝る前の5問で定着を助けます</Text>
+          </View>
+          <View style={s.queueRight}>
+            <Text style={s.queueArrow}>›</Text>
+          </View>
+        </Pressable>
+
         {/* Science Note */}
         <View style={[s.scienceCard, Shadow.sm]}>
           <Text style={s.scienceTitle}>📊 間隔反復の効果</Text>
