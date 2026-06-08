@@ -178,7 +178,7 @@ export default function ExamResultScreen() {
             ))}
             <PressableScale
               style={s.nextStudyBtn}
-              onPress={() => router.push('/weak-drill')}
+              onPress={() => router.push('/(tabs)/review')}
               accessibilityRole="button"
               accessibilityLabel="弱点を集中学習する"
             >

@@ -261,13 +261,13 @@ export default function QuestionDetailScreen() {
         switchToQuestion(nextId);
         return;
       }
-      // キュー完了: AI分析画面に戻る
+      // キュー完了: 記録タブ (科目別分析) に戻る
       await clearAiQueue({
         getItem: (k) => AsyncStorage.getItem(k),
         setItem: (k, v) => AsyncStorage.setItem(k, v),
         removeItem: (k) => AsyncStorage.removeItem(k),
       });
-      router.replace('/(tabs)/ai-analysis' as any);
+      router.replace('/(tabs)/progress' as any);
       return;
     }
     // 通常モード: ALL_QUESTIONS の次へ

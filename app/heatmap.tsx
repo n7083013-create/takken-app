@@ -28,6 +28,10 @@ import { useThemeColors, useIsDark, type ThemeColors } from '../hooks/useThemeCo
 import { useHeatmap, HeatmapCell, HeatmapStatus } from '../hooks/useHeatmap';
 import { CATEGORY_LABELS, type Category } from '../types';
 import { WebBackButton } from '../components/WebBackButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useProgressStore } from '../store/useProgressStore';
+import { setAiQueue } from '../utils/aiQueue';
+import { getRecommendedQuestionsByCategory } from '../services/aiAnalysis';
 
 /** ステータスごとのセル色（ライト/ダーク両対応） */
 function statusColors(status: HeatmapStatus, C: ThemeColors, isDark: boolean) {
@@ -192,14 +196,25 @@ export default function HeatmapScreen() {
     return 3;
   }, [width]);
 
-  const handleCellPress = (category: Category, _cell: HeatmapCell) => {
-    // 既存の questions タブは category パラメータをサポート
-    // サブカテゴリの自動展開は QuestionsScreen 側で対応
-    router.push({ pathname: '/(tabs)/questions', params: { category } });
+  // セルタップ = そのカテゴリの AI 推奨問題を連続出題 (home 論点 chip と同方式)
+  const handleCellPress = async (category: Category, _cell: HeatmapCell) => {
+    const progress = useProgressStore.getState().progress;
+    const recommended = getRecommendedQuestionsByCategory(progress, category, 15);
+    if (recommended.length === 0) return;
+    const ids = recommended.map((r) => r.questionId);
+    await setAiQueue(
+      {
+        getItem: (k) => AsyncStorage.getItem(k),
+        setItem: (k, v) => AsyncStorage.setItem(k, v),
+        removeItem: (k) => AsyncStorage.removeItem(k),
+      },
+      ids,
+    );
+    router.push(`/question/${ids[0]}?source=ai` as any);
   };
 
   const handleStartDrill = () => {
-    router.push('/weak-drill');
+    router.push('/(tabs)/review');
   };
 
   return (

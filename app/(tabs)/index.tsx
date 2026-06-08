@@ -518,7 +518,7 @@ function HomeScreen() {
           onPress={() => {
             if (isEvening) { router.push('/pre-sleep-review'); }
             else if (dueCount > 0) { router.push('/(tabs)/review'); }
-            else if (weakCount > 3) { router.push('/weak-drill'); }
+            else if (weakCount > 3 && examPrediction.weakestCategory) { startWeakestFocus(examPrediction.weakestCategory); }
             else { startSmartQuestion(); }
           }}
         >
@@ -546,7 +546,7 @@ function HomeScreen() {
         </Pressable>
 
         {/* ── 弱点サマリー + ワンタップ集中（統合ブロック） ──
-            旧: 予測スコア(PredictionCard) / 弱点コーチング(WeaknessCoachingCard) / AI分析バナー(🤖)
+            旧: 予測スコア(PredictionCard) / 弱点コーチング / AI分析バナー(🤖)
             の三重を1枚に統合。上段=現在地 / 中段=最弱 / 下段=ワンタップ集中。
             ガード: hasData false → 非表示 / confidence low(20問未満) → 上段のみ /
                    合格圏(pointsToPass 0) → 下段は「✅合格圏内」。 */}
@@ -602,14 +602,14 @@ function HomeScreen() {
                 </View>
               )}
 
-              {/* 小リンク: 旧 AI分析バナーの遷移先を吸収 */}
+              {/* 小リンク: 詳しい科目別分析は記録タブが担う */}
               <Pressable
                 style={s.insightLink}
-                onPress={() => router.push('/ai-analysis')}
+                onPress={() => router.push('/(tabs)/progress')}
                 accessibilityRole="button"
-                accessibilityLabel="AI学習分析を詳しく見る"
+                accessibilityLabel="科目別の詳しい分析を見る"
               >
-                <Text style={s.insightLinkText}>AI学習分析を詳しく見る ›</Text>
+                <Text style={s.insightLinkText}>科目別の詳しい分析を見る ›</Text>
               </Pressable>
             </View>
           );
@@ -760,7 +760,7 @@ function HomeScreen() {
         {sprintMode.isActive && <FinalSprintCard state={sprintMode} />}
 
         {/* ── ペイウォール訴求（折りたたみ直前へ降格） ──
-            旧: PredictionCard/WeaknessCoachingCard/🤖バナーは統合ブロックに吸収済。
+            旧: 予測スコア/弱点コーチング/🤖バナーは統合ブロックに吸収済。
             弱点ヒートマップ tile は記録タブへ、実績 tile は記録タブの既存リンクへ退避。 */}
         <PaywallPromptBanner />
         {!isPro && (
@@ -876,11 +876,6 @@ function HomeScreen() {
         {/* ── その他の学習モード ── */}
         <Text style={s.sectionTitle}>学習モード</Text>
         <View style={s.modeGrid}>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/weak-drill')} accessibilityRole="button" accessibilityLabel="弱点ドリルを開始">
-            <Text style={s.modeIcon}>💪</Text>
-            <Text style={s.modeTitle}>弱点ドリル</Text>
-            <Text style={s.modeSub}>苦手を集中攻撃</Text>
-          </Pressable>
           <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/exam')} accessibilityRole="button" accessibilityLabel="模擬試験を開始">
             <Text style={s.modeIcon}>📋</Text>
             <Text style={s.modeTitle}>模擬試験</Text>
@@ -1020,15 +1015,6 @@ function HomeScreen() {
                   );
                 })()}
               </View>
-              {/* リスト表示で全問題を見たい派向け (副導線) */}
-              <Pressable
-                style={[s.subAllBtn, { borderColor: catColor + '30' }]}
-                onPress={() => router.push({ pathname: '/(tabs)/questions', params: { category } } as any)}
-              >
-                <Text style={[s.subAllText, { color: catColor }]}>
-                  {CATEGORY_LABELS[category]}の全問題をリスト表示 ›
-                </Text>
-              </Pressable>
             </View>
           );
         })}
@@ -1757,13 +1743,4 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   subFill: { height: '100%', borderRadius: 2 },
   subCount: { fontSize: FontSize.caption2, fontWeight: '500', color: C.textTertiary, marginLeft: 10, width: 32, textAlign: 'right' },
   subPct: { fontSize: FontSize.footnote, fontWeight: '800', width: 38, textAlign: 'right' },
-  subAllBtn: {
-    marginTop: 8,
-    marginBottom: 6,
-    paddingVertical: 10,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  subAllText: { fontSize: FontSize.footnote, fontWeight: '700' },
 }); }

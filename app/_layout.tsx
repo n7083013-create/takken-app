@@ -301,9 +301,7 @@ export default function RootLayout() {
         <Stack.Screen name="feedback" options={{ headerShown: false }} />
         <Stack.Screen name="achievements" options={{ headerShown: false }} />
         <Stack.Screen name="study-timer" options={{ headerShown: false }} />
-        {/* [Refactor] ai-analysis は (tabs)/ai-analysis.tsx に移動 (タブから直接アクセス可能) */}
         <Stack.Screen name="pre-sleep-review" options={{ headerShown: false }} />
-        <Stack.Screen name="weak-drill" options={{ headerShown: false }} />
         <Stack.Screen name="exam/index" options={{ headerShown: false }} />
         <Stack.Screen name="exam/session" options={{ headerShown: false }} />
         <Stack.Screen name="exam/result" options={{ headerShown: false }} />

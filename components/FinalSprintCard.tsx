@@ -4,7 +4,7 @@
 // - カウントダウンが大きく表示される
 // - 緊急度に応じて色調変化（赤・オレンジ・青）
 // - 今日の推奨学習量・進捗
-// - ワンタップで模試・弱点ドリル開始
+// - ワンタップで模試・苦手克服開始
 
 import { useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
@@ -98,12 +98,12 @@ export function FinalSprintCard({ state }: FinalSprintCardProps) {
         </Pressable>
         <Pressable
           style={[s.actionBtn, s.actionBtnSecondary]}
-          onPress={() => router.push('/weak-drill')}
+          onPress={() => router.push('/(tabs)/review')}
           accessibilityRole="button"
-          accessibilityLabel="弱点ドリルを開始"
+          accessibilityLabel="苦手克服を開始"
         >
           <Text style={s.actionIcon}>💪</Text>
-          <Text style={[s.actionText, { color: urgencyColor }]}>弱点ドリル</Text>
+          <Text style={[s.actionText, { color: urgencyColor }]}>苦手克服</Text>
         </Pressable>
       </View>
     </View>
