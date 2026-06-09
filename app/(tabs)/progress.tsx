@@ -28,6 +28,7 @@ import { useExamStore } from '../../store/useExamStore';
 import { APP_VERSION, API_BASE_URL } from '../../constants/config';
 import { HABIT_PRESETS } from '../../constants/habitPresets';
 import HabitStackingSetup from '../../components/HabitStackingSetup';
+import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { planLabel as computePlanLabel } from '../../utils/subscriptionLabel';
 import { WeeklyEmailToggle } from '../../components/WeeklyEmailToggle';
 import {
@@ -974,7 +975,9 @@ export default function ProgressScreen() {
   const getBookmarkedQuestions = useProgressStore((s) => s.getBookmarkedQuestions);
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
   const getManuallyMasteredIds = useProgressStore((s) => s.getManuallyMasteredIds);
+  const getDailyLog = useProgressStore((s) => s.getDailyLog);
   const resetProgress = useProgressStore((s) => s.resetProgress);
+  const dailyGoal = useSettingsStore((s) => s.settings.dailyGoal);
   const subscription = useSettingsStore((s) => s.subscription);
   const achievementUnlocked = useAchievementStore((s) => s.unlocked);
   const examHistory = useExamStore((s) => s.examHistory);
@@ -996,6 +999,10 @@ export default function ProgressScreen() {
   const masteredCount = useProgressStore((st) => st.getMasteredCount)();
   const rate = TOTAL_Q > 0
     ? Math.round((Math.min(masteredCount, TOTAL_Q) / TOTAL_Q) * 100) : 0;
+  // 進捗率 = 一度でも解いた問題のカバー率 (ホームの統計から集約。達成率=習得率とは別指標)。
+  const progressPct = TOTAL_Q > 0
+    ? Math.round((Math.min(stats.totalQuestions, TOTAL_Q) / TOTAL_Q) * 100) : 0;
+  const dailyLog = useMemo(() => getDailyLog(), [getDailyLog, stats]);
   const bookmarks = getBookmarkedQuestions().length;
   const weak = getWeakQuestions().length;
   const masteredManualCount = getManuallyMasteredIds().length;
@@ -1074,6 +1081,17 @@ export default function ProgressScreen() {
             <Text style={s.metricLabel}>AI解説 (今日)</Text>
           </View>
         </View>
+
+        {/* ── 直近7日間の学習バーチャート + 進捗率（ホームから集約） ── */}
+        {stats.totalQuestions > 0 && (
+          <View style={[s.heatmapCard, Shadow.sm]}>
+            <StudyHeatmap dailyLog={dailyLog} streak={stats.streak} dailyGoal={dailyGoal} />
+            <View style={s.heatmapProgressRow}>
+              <Text style={s.heatmapProgressLabel}>学習進捗（出題範囲のカバー率）</Text>
+              <Text style={[s.heatmapProgressValue, { color: colors.primary }]}>{progressPct}%</Text>
+            </View>
+          </View>
+        )}
 
         {/* ── 本試験予測スコア（詳細版） ── */}
         <View style={[s.examCard, Shadow.md]}>
@@ -1434,6 +1452,32 @@ function makeStyles(C: ThemeColors) {
       marginTop: 3,
       fontWeight: '500',
       letterSpacing: LetterSpacing.wide,
+    },
+
+    // ─── 直近7日グラフ (ホームから集約) ───
+    heatmapCard: {
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.xl,
+      padding: 16,
+      marginBottom: Spacing.lg,
+    },
+    heatmapProgressRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 14,
+      paddingTop: 14,
+      borderTopWidth: 1,
+      borderTopColor: C.borderLight,
+    },
+    heatmapProgressLabel: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.text,
+    },
+    heatmapProgressValue: {
+      fontSize: FontSize.headline,
+      fontWeight: '800',
     },
 
     // ─── 本試験予測 ───

@@ -14,8 +14,6 @@ import { Shadow, FontSize, LetterSpacing, Spacing, BorderRadius } from '../../co
 import { EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
-import { usePredictionHistory } from '../../hooks/usePredictionHistory';
-import { PredictionCard } from '../../components/PredictionCard';
 import { PaywallPromptBanner } from '../../components/PaywallPromptBanner';
 import { FinalSprintCard } from '../../components/FinalSprintCard';
 import { useFinalSprintMode } from '../../hooks/useFinalSprintMode';
@@ -30,13 +28,11 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { decideOnboardingState, ONBOARDING_KEYS } from '../../utils/onboarding';
 import { markOnboardingComplete } from '../../services/cloudSync';
 import { setAiQueue } from '../../utils/aiQueue';
-import { infoAlert } from '../../services/alert';
 import {
   getRecommendedQuestionsByCategory,
   getRecommendedQuestionsBySubcategory,
   getRecommendedQuestionsForOther,
 } from '../../services/aiAnalysis';
-import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { StreakCelebration } from '../../components/AnswerFeedback';
 import { DailyGoalCelebration } from '../../components/DailyGoalCelebration';
 import { useSessionStore } from '../../store/useSessionStore';
@@ -152,7 +148,7 @@ function HomeScreen() {
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
   const isPro = useSettingsStore((s) => s.isPro());
   const getDaysUntilExam = useSettingsStore((s) => s.getDaysUntilExam);
-  const habitStacks = useSettingsStore((s) => s.settings.habitStacks);
+  // 習慣スタッキング: 設定=記録タブ / 通知=_layout で継続。ホームには出さない（シンプル化）
   const isTrialActive = useSettingsStore((s) => s.isTrialActive);
   const trialDaysLeft = useSettingsStore((s) => s.trialDaysLeft);
   const startTrial = useSettingsStore((s) => s.startTrial);
@@ -171,7 +167,6 @@ function HomeScreen() {
   const examHistory = useExamStore((s) => s.examHistory);
   const getLatestScore = useExamStore((s) => s.getLatestScore);
   const getBestScore = useExamStore((s) => s.getBestScore);
-  const getDailyLog = useProgressStore((s) => s.getDailyLog);
   const [expandedCat, setExpandedCat] = useState<Category | null>(null);
   // [最初の一手 一本化] 「もっと選んで学習」セクションの開閉。
   // 既定は閉 (決定疲労の最大要因を畳む)。一度開いたら永続化して次回も開いた状態。
@@ -225,7 +220,6 @@ function HomeScreen() {
   const markCelebrated = useSessionStore((st) => st.markCelebrated);
   const isCelebrated = useSessionStore((st) => st.isCelebrated);
   const s = useMemo(() => makeStyles(colors), [colors]);
-  const dailyLog = useMemo(() => getDailyLog(), [stats]);
 
   // [2026-05-22] getTodayAnswered は 4択 + 一問一答×0.2 の float を返す。
   // 目標判定 / 進捗バーは float のまま使う (滑らかな進捗表示)。
@@ -265,10 +259,6 @@ function HomeScreen() {
   }, [dailyGoal, todayAnswered, todayAnsweredRaw, getDueForReview, isCelebrated, markCelebrated]);
   const latestExamScore = useMemo(() => getLatestScore(), [examHistory]);
   const bestExamScore = useMemo(() => getBestScore(), [examHistory]);
-  const enabledHabits = useMemo(
-    () => (habitStacks ?? []).filter((h) => h.enabled),
-    [habitStacks],
-  );
 
   /** スマート連続出題で即スタート (1タップで今日のセッションが続く)
       合格エンジン (buildPassQueue) が due→苦手→新規→残りを試験日逆算で配合し、
@@ -320,20 +310,11 @@ function HomeScreen() {
     () => TOTAL_Q > 0 ? Math.round((Math.min(masteredCount, TOTAL_Q) / TOTAL_Q) * 100) : 0,
     [masteredCount],
   );
-  const progressPct = useMemo(
-    () => TOTAL_Q > 0 ? Math.round((Math.min(stats.totalQuestions, TOTAL_Q) / TOTAL_Q) * 100) : 0,
-    [stats.totalQuestions],
-  );
   const dueCount = useMemo(() => getDueForReview().length, [getDueForReview]);
   const weakCount = useMemo(() => getWeakQuestions().length, [getWeakQuestions]);
 
   const examPrediction = useExamPrediction();
   const sprintMode = useFinalSprintMode();
-  const predictionHistory = usePredictionHistory(
-    examPrediction.totalPredicted,
-    examPrediction.passProbability,
-    examPrediction.hasData,
-  );
 
   // 時間帯に応じた最適アクションのサジェスト
   const hourNow = new Date().getHours();
@@ -491,79 +472,13 @@ function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* ── 弱点サマリー + ワンタップ集中（統合ブロック） ──
-            旧: 予測スコア(PredictionCard) / 弱点コーチング / AI分析バナー(🤖)
-            の三重を1枚に統合。上段=現在地 / 中段=最弱 / 下段=ワンタップ集中。
-            ガード: hasData false → 非表示 / confidence low(20問未満) → 上段のみ /
-                   合格圏(pointsToPass 0) → 下段は「✅合格圏内」。 */}
-        {examPrediction.hasData && (() => {
-          const lowConfidence = examPrediction.confidence === 'low';
-          const weakest = examPrediction.weakestCategory;
-          const weakestPred = weakest
-            ? examPrediction.perCategory.find((c) => c.category === weakest)
-            : undefined;
-          const showWeakness = !lowConfidence && weakest && weakestPred && weakestPred.attempted >= 5;
-          const isPassing = examPrediction.pointsToPass === 0;
-          const weakColor = weakest ? CATEGORY_COLORS[weakest] : colors.primary;
-          const weakAccuracy = weakestPred ? Math.round(weakestPred.accuracy * 100) : 0;
-          const weakGap = weakestPred
-            ? Math.round((weakestPred.allocation - weakestPred.predicted) * 10) / 10
-            : 0;
-          return (
-            <View style={[s.insightCard, Shadow.md]}>
-              {/* 上段: 現在地 (確率%・予測スコア・推移1行・合格ラインゲージ) */}
-              <PredictionCard prediction={examPrediction} history={predictionHistory} compact />
-
-              {/* 中段 + 下段: データ信頼度が十分な時だけ */}
-              {showWeakness && (
-                <View style={s.insightDivider}>
-                  {isPassing ? (
-                    <View style={[s.insightPassRow, { backgroundColor: colors.primarySurface }]}>
-                      <Text style={s.insightPassText}>✅ 合格圏内、この調子で続けましょう</Text>
-                    </View>
-                  ) : (
-                    <>
-                      <View style={s.insightWeakRow}>
-                        <Text style={s.insightWeakIcon}>{CATEGORY_ICONS[weakest]}</Text>
-                        <View style={{ flex: 1 }}>
-                          <Text style={s.insightWeakTitle}>
-                            最優先: <Text style={{ color: weakColor }}>{CATEGORY_LABELS[weakest]}</Text>
-                          </Text>
-                          <Text style={s.insightWeakDesc}>
-                            現在 <Text style={s.insightWeakBold}>{weakAccuracy}%</Text> 正答 — あと{weakGap.toFixed(1)}点伸ばせます
-                          </Text>
-                        </View>
-                      </View>
-                      <Pressable
-                        style={[s.insightCTA, { backgroundColor: weakColor }]}
-                        onPress={() => startWeakestFocus(weakest)}
-                        accessibilityRole="button"
-                        accessibilityLabel={`${CATEGORY_LABELS[weakest]}を10問集中する`}
-                      >
-                        <Text style={s.insightCTAText}>{CATEGORY_LABELS[weakest]}を10問集中する</Text>
-                        <Text style={s.insightCTAArrow}>→</Text>
-                      </Pressable>
-                    </>
-                  )}
-                </View>
-              )}
-
-              {/* 小リンク: 詳しい科目別分析は記録タブが担う */}
-              <Pressable
-                style={s.insightLink}
-                onPress={() => router.push('/(tabs)/progress')}
-                accessibilityRole="button"
-                accessibilityLabel="科目別の詳しい分析を見る"
-              >
-                <Text style={s.insightLinkText}>科目別の詳しい分析を見る ›</Text>
-              </Pressable>
-            </View>
-          );
-        })()}
+        {/* 弱点サマリー/予測スコア/科目別分析リンクの統合ブロックは廃止。
+            弱点は「今日やること」CTA(状態⑤ startWeakestFocus)が主役で扱い、
+            予測スコア詳細・科目別分析・弱点ヒートマップは記録タブに集約済 → 重複解消(P4)。 */}
 
         {/* ── 今日の進捗（コンパクトダッシュボード） ── */}
         <View style={[s.dashCard, Shadow.md]}>
-          {/* デイリーゴール + ミニ統計 */}
+          {/* デイリーゴール (統計3つ=達成率/累計/進捗% は記録タブに集約 → ホームは目標と合格距離の2指標に圧縮) */}
           <View style={s.dashTop}>
             <View style={s.dashGoal}>
               <View style={s.dashGoalRing}>
@@ -573,26 +488,6 @@ function HomeScreen() {
               <Text style={s.dashGoalLabel}>
                 {dailyGoalPct >= 100 ? '達成！' : '今日の目標'}
               </Text>
-            </View>
-            <View style={s.dashStats}>
-              <Pressable
-                style={s.dashStatItem}
-                onPress={() => infoAlert(
-                  '達成率について',
-                  '「3回連続で正解した問題」の割合です。\n間違えると0からカウントし直しになります。\nまぐれ正解ではなく「本当に理解した問題」を把握できます。',
-                )}
-              >
-                <AnimatedNumber value={rate} style={s.dashStatNum} suffix="%" duration={600} />
-                <Text style={s.dashStatLabel}>達成率 ⓘ</Text>
-              </Pressable>
-              <View style={s.dashStatItem}>
-                <AnimatedNumber value={stats.totalQuestions} style={s.dashStatNum} duration={600} />
-                <Text style={s.dashStatLabel}>累計解答</Text>
-              </View>
-              <View style={s.dashStatItem}>
-                <AnimatedNumber value={progressPct} style={[s.dashStatNum, { color: colors.primary }]} suffix="%" duration={600} />
-                <Text style={s.dashStatLabel}>進捗</Text>
-              </View>
             </View>
           </View>
           {/* 進捗バー */}
@@ -630,38 +525,11 @@ function HomeScreen() {
           })()}
         </View>
 
-        {/* ── 今日の習慣（習慣スタッキング） ── */}
-        {enabledHabits.length > 0 && (
-          <View style={s.habitRow}>
-            <Text style={s.habitRowTitle}>今日の習慣</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={s.habitScroll}
-            >
-              {enabledHabits.map((habit) => (
-                <Pressable
-                  key={habit.id}
-                  style={[s.habitChip, Shadow.sm]}
-                  onPress={() => router.push('/(tabs)/quick-quiz')}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${habit.trigger} ${habit.action}`}
-                >
-                  <Text style={s.habitChipIcon}>{habit.icon}</Text>
-                  <Text style={s.habitChipText} numberOfLines={1}>{habit.trigger}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        )}
+        {/* 「今日の習慣」セクションは廃止（習慣設定=記録タブ・通知=_layoutで継続）→ ホームの下スクロールを削減（P1迷い/P4シンプル） */}
 
-        {/* ── クイックアクション（補助動線・小さい行） ──
-            「問題」は CTA と完全重複のため削除。一問一答 / タイマーは補助として残す。 */}
+        {/* ── クイックアクション（補助動線） ──
+            「問題」は CTA と、「一問一答」は下タブと重複するため削除。タイマーのみ補助として残す。 */}
         <View style={s.quickGrid}>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/(tabs)/quick-quiz')} accessibilityRole="button" accessibilityLabel="一問一答を開始">
-            <Text style={s.quickIcon}>⚡</Text>
-            <Text style={s.quickTitle}>一問一答</Text>
-          </Pressable>
           <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/study-timer')} accessibilityRole="button" accessibilityLabel="学習タイマーを開く">
             <Text style={s.quickIcon}>⏱️</Text>
             <Text style={s.quickTitle}>タイマー</Text>
@@ -694,13 +562,7 @@ function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* ── 直近7日間の学習バーチャート ──
-            ※実績バッジは「記録」タブ(progress)に一覧があるためホームには出さない(2026-06-07 ユーザー判断) */}
-        {stats.totalQuestions > 0 && (
-          <View style={[s.heatmapCard, Shadow.sm]}>
-            <StudyHeatmap dailyLog={dailyLog} streak={stats.streak} dailyGoal={dailyGoal} />
-          </View>
-        )}
+        {/* 直近7日の学習バーチャートは記録タブ(progress)へ移設(ホーム簡素化 P4)。 */}
 
         {/* ── 直前モード（試験30日前から自動表示） ── */}
         {sprintMode.isActive && <FinalSprintCard state={sprintMode} />}
@@ -776,48 +638,7 @@ function HomeScreen() {
           ))}
         </View>
 
-        <Text style={s.subSectionLabel}>よく出る論点</Text>
-        <View style={s.topicChipRow}>
-          {[
-            { category: 'kenri' as Category, key: 'tanpo', label: '🔒 抵当権・担保' },
-            { category: 'takkengyoho' as Category, key: 'baikai', label: '📋 媒介契約' },
-            { category: 'takkengyoho' as Category, key: '35jou', label: '📑 重要事項説明' },
-            { category: 'horei_seigen' as Category, key: 'toshi', label: '🗺️ 都市計画法' },
-            { category: 'tax_other' as Category, key: 'kotei', label: '🏠 固定資産税' },
-            { category: 'tax_other' as Category, key: 'shutoku', label: '🏷️ 不動産取得税' },
-          ].map((t) => (
-            <Pressable
-              key={`${t.category}-${t.key}`}
-              style={s.topicChip}
-              onPress={async () => {
-                const progress = useProgressStore.getState().progress;
-                const subcat = SUBCATEGORIES[t.category].find((sc) => sc.key === t.key);
-                const matchTags = subcat?.matchTags ?? [];
-                const recommended = getRecommendedQuestionsBySubcategory(
-                  progress,
-                  t.category,
-                  matchTags,
-                  15,
-                );
-                if (recommended.length === 0) return;
-                const ids = recommended.map((r) => r.questionId);
-                await setAiQueue(
-                  {
-                    getItem: (k) => AsyncStorage.getItem(k),
-                    setItem: (k, v) => AsyncStorage.setItem(k, v),
-                    removeItem: (k) => AsyncStorage.removeItem(k),
-                  },
-                  ids,
-                );
-                router.push(`/question/${ids[0]}?source=ai` as any);
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={`${t.label}の弱点問題を連続で解く`}
-            >
-              <Text style={s.topicChipText}>{t.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+        {/* 「よく出る論点」プリセットchip(緑6個)は廃止（ホーム簡素化。論点別は下の「📚 論点を選んで解く」で全論点から選べる） */}
 
         {/* ── その他の学習モード ── */}
         <Text style={s.sectionTitle}>学習モード</Text>
@@ -1137,25 +958,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     color: C.textSecondary,
     marginTop: 6,
   },
-  dashStats: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  dashStatItem: {
-    alignItems: 'center',
-  },
-  dashStatNum: {
-    fontSize: FontSize.headline,
-    fontWeight: '800',
-    color: C.text,
-  },
-  dashStatLabel: {
-    fontSize: FontSize.caption2,
-    fontWeight: '500',
-    color: C.textTertiary,
-    marginTop: 2,
-  },
   dashProgress: {
     height: 6,
     backgroundColor: C.borderLight,
@@ -1364,16 +1166,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   questBannerFill: { height: '100%', backgroundColor: C.primary, borderRadius: 3 },
   questBannerPercent: { fontSize: FontSize.caption, fontWeight: '700', color: C.primary },
 
-  // ─── Heatmap ───
-  heatmapCard: {
-    marginHorizontal: Spacing.xl,
-    marginTop: Spacing.lg,
-    backgroundColor: C.card,
-    borderRadius: BorderRadius.xl,
-    padding: 16,
-  },
-
-
   // ─── 本試験予測スコア ───
   scoreCard: {
     marginHorizontal: Spacing.xl,
@@ -1504,71 +1296,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     color: C.textSecondary,
     marginTop: 3,
   },
-  // ─── 弱点サマリー + ワンタップ集中 統合ブロック ───
-  insightCard: {
-    marginHorizontal: Spacing.xl,
-    marginTop: Spacing.lg,
-    backgroundColor: C.card,
-    borderRadius: BorderRadius.xl,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: C.borderLight,
-  },
-  insightDivider: {
-    marginTop: 14,
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: C.borderLight,
-  },
-  insightWeakRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-  },
-  insightWeakIcon: { fontSize: 32 },
-  insightWeakTitle: {
-    fontSize: FontSize.subhead,
-    fontWeight: '800',
-    color: C.text,
-    marginBottom: 3,
-  },
-  insightWeakDesc: {
-    fontSize: FontSize.caption,
-    color: C.textSecondary,
-    lineHeight: 18,
-  },
-  insightWeakBold: { fontWeight: '800', color: C.text },
-  insightCTA: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 13,
-    borderRadius: BorderRadius.md,
-    gap: 6,
-  },
-  insightCTAText: { fontSize: FontSize.subhead, fontWeight: '800', color: C.white },
-  insightCTAArrow: { fontSize: 18, color: C.white, fontWeight: '800' },
-  insightPassRow: {
-    padding: 12,
-    borderRadius: BorderRadius.md,
-  },
-  insightPassText: {
-    fontSize: FontSize.subhead,
-    fontWeight: '800',
-    color: C.primary,
-    textAlign: 'center',
-  },
-  insightLink: {
-    marginTop: 14,
-    alignItems: 'center',
-  },
-  insightLinkText: {
-    fontSize: FontSize.footnote,
-    fontWeight: '700',
-    color: C.primary,
-  },
-
   // ─── バナー群 ───
   bannerSection: { paddingHorizontal: Spacing.xl, marginTop: Spacing.xl, gap: 10 },
   bannerCard: {

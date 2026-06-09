@@ -7,6 +7,9 @@ import { Shadow } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamStore, getExamQuestions } from '../../store/useExamStore';
 import { CATEGORY_LABELS } from '../../types';
+import { StrikeHint } from '../../components/StrikeHint';
+import { useStrikethrough } from '../../hooks/useStrikethrough';
+import { hapticLight } from '../../services/haptics';
 
 function formatTime(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -40,6 +43,10 @@ export default function ExamSessionScreen() {
       router.replace('/exam/result');
     }
   }, [current?.submitted, router]);
+
+  // 消去法: 選択肢の打ち消し線（長押しで切替・問題が変わると自動リセット）
+  const activeQId = current ? questions[index]?.id : undefined;
+  const { toggleStrike, isStruck } = useStrikethrough(activeQId);
 
   if (!current || questions.length === 0) {
     return (
@@ -153,20 +160,30 @@ export default function ExamSessionScreen() {
               </View>
             )}
 
-            {q.choices.map((c, i) => (
+            {/* 消去法ヒント（長押しで打ち消し線） */}
+            <StrikeHint />
+
+            {q.choices.map((c, i) => {
+              const struck = isStruck(i);
+              return (
               <Pressable
                 key={i}
-                style={[s.choice, chosen === i && s.choiceSelected]}
+                style={[s.choice, chosen === i && s.choiceSelected, struck && s.choiceStruck]}
                 onPress={() => answerQuestion(q.id, i)}
+                onLongPress={() => { hapticLight(); toggleStrike(i); }}
+                delayLongPress={350}
                 accessibilityRole="button"
-                accessibilityLabel={`選択肢${i + 1}: ${c}`}
+                accessibilityLabel={`選択肢${i + 1}: ${c}${struck ? '(消去済み)' : ''}`}
+                accessibilityHint="長押しで打ち消し線の切り替え"
               >
-                <Text style={[s.choiceNum, chosen === i && s.choiceNumSelected]}>
+                <Text style={[s.choiceNum, chosen === i && s.choiceNumSelected, struck && s.choiceNumStruck]}>
                   {i + 1}
                 </Text>
-                <Text style={[s.choiceText, chosen === i && s.choiceTextSelected]}>{c}</Text>
+                <Text style={[s.choiceText, chosen === i && s.choiceTextSelected, struck && s.choiceTextStruck]}>{c}</Text>
+                {struck && <Text style={s.strikeMark}>✕</Text>}
               </Pressable>
-            ))}
+              );
+            })}
           </ScrollView>
 
           <View style={s.footer}>
@@ -278,6 +295,10 @@ function makeStyles(C: ThemeColors) {
     choiceNumSelected: { color: C.primary },
     choiceText: { flex: 1, fontSize: 14, lineHeight: 22, color: C.text },
     choiceTextSelected: { color: C.text, fontWeight: '600' },
+    choiceStruck: { backgroundColor: C.background, opacity: 0.55 },
+    choiceNumStruck: { color: C.textTertiary },
+    choiceTextStruck: { textDecorationLine: 'line-through', color: C.textTertiary },
+    strikeMark: { fontSize: 16, color: C.textTertiary, fontWeight: '800', marginLeft: 8, alignSelf: 'center' },
     footer: {
       flexDirection: 'row',
       padding: 12,
