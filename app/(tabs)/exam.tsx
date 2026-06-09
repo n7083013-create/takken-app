@@ -1,17 +1,22 @@
 import { useEffect, useState, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { confirmAlert } from '../../services/alert';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shadow, FontSize, Spacing, BorderRadius } from '../../constants/theme';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamStore, EXAM_COMPOSITION, scoreExam } from '../../store/useExamStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { useProgressStore } from '../../store/useProgressStore';
 import { CATEGORY_LABELS, Category } from '../../types';
 import { getMockPresetCount, getMockPresetByNumber } from '../../data';
 import { PASS_LINE } from '../../constants/exam';
-import { WebBackButton } from '../../components/WebBackButton';
 import { LimitReachedScreen } from '../../components/LimitReachedScreen';
+import { phaseForDays } from '../../utils/passEngine';
+
+/** 範囲未学習で 50 問模試に挑むと低得点→離脱に繋がるため、初学者ガードを出す総解答数の閾値。
+    本試験は 50 問なので、最低でもその程度は触れてから模試を主役にする。 */
+const EXAM_READY_MIN_ANSWERED = 50;
 
 export default function ExamHomeScreen() {
   const router = useRouter();
@@ -22,6 +27,8 @@ export default function ExamHomeScreen() {
   const resumeExam = useExamStore((s) => s.resumeExam);
   const abandonExam = useExamStore((s) => s.abandonExam);
   const isPro = useSettingsStore((s) => s.isPro());
+  const getDaysUntilExam = useSettingsStore((s) => s.getDaysUntilExam);
+  const totalAnswered = useProgressStore((st) => st.stats.totalQuestions);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -31,29 +38,51 @@ export default function ExamHomeScreen() {
   const hasActive = current && !current.submitted;
   const hasResult = current && current.submitted;
 
+  // 初学者ガード: 範囲未学習(総解答数が本試験規模未満)かつ直前期でないときに基礎誘導を出す。
+  // 直前期(final)は残り日数が少なく、実力把握のため模試を主役化すべきなのでガードを外す。
+  const isFinalPhase = phaseForDays(getDaysUntilExam()) === 'final';
+  const showBeginnerGuard = loaded && totalAnswered < EXAM_READY_MIN_ANSWERED && !isFinalPhase;
+
   // [UX改善 2026-05] 共通 LimitReachedScreen に統一。CTA を trial-first 文言に。
   if (loaded && !isPro) {
     return (
-      <>
-        <Stack.Screen options={{ title: '模擬試験' }} />
+      <SafeAreaView style={s.safe}>
         <LimitReachedScreen
           mode={{ kind: 'feature_locked_exam' }}
           onUpgrade={() => router.push('/paywall')}
         />
-      </>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={s.safe}>
-      <Stack.Screen options={{ title: '模擬試験', headerBackTitle: '戻る' }} />
-      <WebBackButton />
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.hero}>
           <Text style={s.heroIcon}>📝</Text>
           <Text style={s.heroTitle}>本試験形式 模擬試験</Text>
           <Text style={s.heroSub}>50問 / 120分 / {PASS_LINE}点で合格</Text>
         </View>
+
+        {/* 初学者ガード: まだ範囲を学んでいない人が 50 問で低得点 → 離脱するのを防ぐ。
+            模試開始ボタンは残す (挑戦を禁止しない) が、まず基礎固めを強く推奨する。 */}
+        {showBeginnerGuard && (
+          <View style={[s.guardCard, Shadow.sm]}>
+            <Text style={s.guardTitle}>💡 まず基礎を固めてから挑戦しましょう</Text>
+            <Text style={s.guardText}>
+              模試は本番形式50問です。今の学習量({totalAnswered}問)では実力を測りきれず、
+              低い点数で落ち込みやすくなります。まずは基礎問題で土台を作るのがおすすめです。
+            </Text>
+            <Pressable
+              style={s.guardBtn}
+              onPress={() => router.push('/(tabs)')}
+              accessibilityRole="button"
+              accessibilityLabel="まず基礎問題から始める"
+            >
+              <Text style={s.guardBtnText}>📚 まず基礎問題から始める</Text>
+            </Pressable>
+          </View>
+        )}
 
         <View style={[s.card, Shadow.sm]}>
           <Text style={s.cardTitle}>出題構成</Text>
@@ -201,6 +230,24 @@ function makeStyles(C: ThemeColors) {
     safe: { flex: 1, backgroundColor: C.background },
     scroll: { padding: 20, paddingBottom: 40 },
     hero: { alignItems: 'center', paddingVertical: 24 },
+    // ─── 初学者ガード ───
+    guardCard: {
+      backgroundColor: C.warningSurface,
+      borderRadius: 16,
+      padding: 18,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: C.accent + '40',
+    },
+    guardTitle: { fontSize: 15, fontWeight: '800', color: C.text, marginBottom: 8 },
+    guardText: { fontSize: 13, color: C.textSecondary, lineHeight: 20, marginBottom: 14 },
+    guardBtn: {
+      backgroundColor: C.primary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+    },
+    guardBtnText: { color: C.white, fontSize: 15, fontWeight: '800' },
     heroIcon: { fontSize: 56, marginBottom: 8 },
     heroTitle: { fontSize: 22, fontWeight: '800', color: C.text },
     heroSub: { fontSize: 14, color: C.textSecondary, marginTop: 6 },

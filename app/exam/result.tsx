@@ -178,7 +178,7 @@ export default function ExamResultScreen() {
             ))}
             <PressableScale
               style={s.nextStudyBtn}
-              onPress={() => router.push('/(tabs)/review')}
+              onPress={() => router.push({ pathname: '/review', params: { q: 'weak' } })}
               accessibilityRole="button"
               accessibilityLabel="弱点を集中学習する"
             >

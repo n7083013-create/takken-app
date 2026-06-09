@@ -82,12 +82,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="review"
+        name="exam"
         options={{
-          title: '復習',
+          title: '模試',
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon icon="🔄" label="復習" focused={focused} colors={colors} />
+            <TabIcon icon="📝" label="模試" focused={focused} colors={colors} />
           ),
         }}
       />

@@ -1181,6 +1181,7 @@ export default function ProgressScreen() {
   const getCategoryAccuracy = useProgressStore((s) => s.getCategoryAccuracy);
   const getBookmarkedQuestions = useProgressStore((s) => s.getBookmarkedQuestions);
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
+  const getDueForReview = useProgressStore((s) => s.getDueForReview);
   const getManuallyMasteredIds = useProgressStore((s) => s.getManuallyMasteredIds);
   const getDailyLog = useProgressStore((s) => s.getDailyLog);
   const resetProgress = useProgressStore((s) => s.resetProgress);
@@ -1212,6 +1213,7 @@ export default function ProgressScreen() {
   const dailyLog = useMemo(() => getDailyLog(), [getDailyLog, stats]);
   const bookmarks = getBookmarkedQuestions().length;
   const weak = getWeakQuestions().length;
+  const dueCount = useMemo(() => getDueForReview().length, [getDueForReview, stats]);
   const masteredManualCount = getManuallyMasteredIds().length;
   // [Bugfix] 旧: 月間累計 (subscription.aiQueriesUsed) を表示していたが、
   // ローカル加算でずれが蓄積し「使ってないのに100回超え」と表示される問題があった。
@@ -1309,18 +1311,54 @@ export default function ProgressScreen() {
           )}
         </View>
 
-        {/* Quick Metrics */}
+        {/* ── 復習ハブ: 手動で選ぶ4つの復習入口 (due は今日やることCTAが自動で拾うが、
+            ブックマーク等 CTA に導線が無いキューもここから必ず到達できる) ── */}
+        <Text style={s.sectionTitle}>復習する</Text>
+        <View style={s.reviewHubGrid}>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push({ pathname: '/review', params: { q: 'due' } })}
+            accessibilityRole="button"
+            accessibilityLabel={`全体復習 ${dueCount}問`}
+          >
+            <Text style={s.reviewHubIcon}>📖</Text>
+            <Text style={[s.reviewHubValue, dueCount > 0 ? { color: colors.accent } : {}]}>{dueCount}</Text>
+            <Text style={s.reviewHubLabel}>全体復習</Text>
+          </Pressable>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push({ pathname: '/review', params: { q: 'weak' } })}
+            accessibilityRole="button"
+            accessibilityLabel={`苦手 ${weak}問`}
+          >
+            <Text style={s.reviewHubIcon}>💪</Text>
+            <Text style={[s.reviewHubValue, weak > 0 ? { color: colors.error } : {}]}>{weak}</Text>
+            <Text style={s.reviewHubLabel}>苦手</Text>
+          </Pressable>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push({ pathname: '/review', params: { q: 'bookmarked' } })}
+            accessibilityRole="button"
+            accessibilityLabel={`ブックマーク ${bookmarks}問`}
+          >
+            <Text style={s.reviewHubIcon}>🔖</Text>
+            <Text style={[s.reviewHubValue, { color: colors.primary }]}>{bookmarks}</Text>
+            <Text style={s.reviewHubLabel}>ブックマーク</Text>
+          </Pressable>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push('/pre-sleep-review')}
+            accessibilityRole="button"
+            accessibilityLabel="就寝前の復習"
+          >
+            <Text style={s.reviewHubIcon}>🌙</Text>
+            <Text style={[s.reviewHubValue, { color: colors.primary }]}>5</Text>
+            <Text style={s.reviewHubLabel}>就寝前</Text>
+          </Pressable>
+        </View>
+
+        {/* AI解説の今日の残数 (旧 Quick Metrics から残置・情報表示) */}
         <View style={s.metricRow}>
-          <View style={[s.metricCard, Shadow.sm]}>
-            <Text style={s.metricIcon}>🔖</Text>
-            <Text style={s.metricValue}>{bookmarks}</Text>
-            <Text style={s.metricLabel}>ブックマーク</Text>
-          </View>
-          <View style={[s.metricCard, Shadow.sm]}>
-            <Text style={s.metricIcon}>⚠️</Text>
-            <Text style={[s.metricValue, weak > 0 ? { color: colors.error } : {}]}>{weak}</Text>
-            <Text style={s.metricLabel}>苦手問題</Text>
-          </View>
           <View style={[s.metricCard, Shadow.sm]}>
             <Text style={s.metricIcon}>🤖</Text>
             <Text style={s.metricValue}>
@@ -1670,6 +1708,31 @@ function makeStyles(C: ThemeColors) {
     },
 
     // ─── Metrics ───
+    // ─── 復習ハブ (4入口) ───
+    reviewHubGrid: { flexDirection: 'row', gap: 10, marginBottom: Spacing.lg },
+    reviewHubCard: {
+      flex: 1,
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.lg,
+      paddingVertical: 14,
+      paddingHorizontal: 6,
+      alignItems: 'center',
+    },
+    reviewHubIcon: { fontSize: 22, marginBottom: 6 },
+    reviewHubValue: {
+      fontSize: FontSize.title3,
+      fontWeight: '800',
+      color: C.text,
+    },
+    reviewHubLabel: {
+      fontSize: FontSize.caption2,
+      color: C.textSecondary,
+      marginTop: 3,
+      fontWeight: '600',
+      letterSpacing: LetterSpacing.wide,
+      textAlign: 'center',
+    },
+
     metricRow: { flexDirection: 'row', gap: 10, marginBottom: Spacing.lg },
     metricCard: {
       flex: 1,

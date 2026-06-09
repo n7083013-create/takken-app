@@ -297,8 +297,8 @@ export default function RootLayout() {
         <Stack.Screen name="feedback" options={{ headerShown: false }} />
         <Stack.Screen name="achievements" options={{ headerShown: false }} />
         <Stack.Screen name="study-timer" options={{ headerShown: false }} />
+        <Stack.Screen name="review" options={{ headerShown: false }} />
         <Stack.Screen name="pre-sleep-review" options={{ headerShown: false }} />
-        <Stack.Screen name="exam/index" options={{ headerShown: false }} />
         <Stack.Screen name="exam/session" options={{ headerShown: false }} />
         <Stack.Screen name="exam/result" options={{ headerShown: false }} />
         <Stack.Screen name="admin/stats" options={{ headerShown: true, headerBackTitle: '戻る' }} />

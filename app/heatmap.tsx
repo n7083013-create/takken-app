@@ -214,7 +214,7 @@ export default function HeatmapScreen() {
   };
 
   const handleStartDrill = () => {
-    router.push('/(tabs)/review');
+    router.push({ pathname: '/review', params: { q: 'weak' } });
   };
 
   return (

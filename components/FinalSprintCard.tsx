@@ -98,7 +98,7 @@ export function FinalSprintCard({ state }: FinalSprintCardProps) {
         </Pressable>
         <Pressable
           style={[s.actionBtn, s.actionBtnSecondary]}
-          onPress={() => router.push('/(tabs)/review')}
+          onPress={() => router.push({ pathname: '/review', params: { q: 'weak' } })}
           accessibilityRole="button"
           accessibilityLabel="苦手克服を開始"
         >

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,9 @@ import {
   ScrollView,
   Animated,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { WebBackButton } from '../components/WebBackButton';
 import {
   Shadow,
   FontSize,
@@ -18,21 +19,21 @@ import {
   BorderRadius,
   DifficultyLabel,
   DifficultyColor,
-} from '../../constants/theme';
-import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
+} from '../constants/theme';
+import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import {
   CATEGORY_LABELS,
   CATEGORY_ICONS,
   CATEGORY_COLORS,
   Category,
   ConfidenceLevel,
-} from '../../types';
-import { getQuestionById } from '../../data';
-import { useProgressStore } from '../../store/useProgressStore';
-import { useAchievementChecker } from '../../hooks/useAchievementChecker';
-import { useAnswerFeedback } from '../../components/AnswerFeedback';
-import { EmptyState } from '../../components/EmptyState';
-import { LawAmendmentBadge } from '../../components/LawAmendmentBadge';
+} from '../types';
+import { getQuestionById } from '../data';
+import { useProgressStore } from '../store/useProgressStore';
+import { useAchievementChecker } from '../hooks/useAchievementChecker';
+import { useAnswerFeedback } from '../components/AnswerFeedback';
+import { EmptyState } from '../components/EmptyState';
+import { LawAmendmentBadge } from '../components/LawAmendmentBadge';
 
 type ReviewMode = 'menu' | 'session';
 type ReviewType = 'due' | 'weak' | 'bookmarked';
@@ -87,6 +88,22 @@ export default function ReviewScreen() {
     setSessionTotal(0);
     explainAnim.setValue(0);
   }, []);
+
+  // 記録タブの復習ハブから ?q=due|weak|bookmarked で来たら該当キューを自動オープン。
+  // 在庫が無いキューはメニュー表示のまま (空セッションの完了画面で混乱させない)。
+  const params = useLocalSearchParams<{ q?: string }>();
+  const autoOpenedRef = useRef(false);
+  useEffect(() => {
+    if (autoOpenedRef.current) return;
+    const q = params.q;
+    if (q !== 'due' && q !== 'weak' && q !== 'bookmarked') return;
+    autoOpenedRef.current = true;
+    const hasStock =
+      (q === 'due' && dueIds.length > 0) ||
+      (q === 'weak' && weakIds.length > 0) ||
+      (q === 'bookmarked' && bookmarkedIds.length > 0);
+    if (hasStock) startSession(q);
+  }, [params.q, dueIds.length, weakIds.length, bookmarkedIds.length, startSession]);
 
   // 確信度選択前の一時保存
   const [pendingAnswer, setPendingAnswer] = useState<{ questionId: string; category: Category; isCorrect: boolean } | null>(null);
@@ -149,6 +166,7 @@ export default function ReviewScreen() {
     if (!currentQuestion) {
       return (
         <SafeAreaView style={s.safe}>
+          <Stack.Screen options={{ headerShown: false }} />
           <View style={s.doneContainer}>
             <Text style={s.doneEmoji}>🎉</Text>
             <Text style={s.doneTitle}>復習完了！</Text>
@@ -180,6 +198,7 @@ export default function ReviewScreen() {
 
     return (
       <SafeAreaView style={s.safe}>
+        <Stack.Screen options={{ headerShown: false }} />
         <FeedbackOverlay />
         <ScrollView contentContainerStyle={s.sessionScroll} showsVerticalScrollIndicator={false}>
           {/* Top Bar */}
@@ -354,6 +373,8 @@ export default function ReviewScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <WebBackButton />
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={s.header}>

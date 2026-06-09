@@ -387,7 +387,10 @@ function HomeScreen() {
         router.push('/pre-sleep-review');
         return;
       case 'review':
-        router.push('/(tabs)/review');
+        // [一本化] 復習メニュー画面への遷移をやめ、buildPassQueue の due 優先連続出題を即開始。
+        // メニュー経路 (DUE_CAP なし全件) と buildPassQueue (DUE_CAP あり) の二重化を解消し、
+        // due の取りこぼしを防ぐ (passEngine 単一ソース思想と整合)。
+        startSmartQuestion();
         return;
       case 'weakFocus':
         if (examPrediction.weakestCategory) { startWeakestFocus(examPrediction.weakestCategory); }
@@ -600,20 +603,7 @@ function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* ── 模擬試験（クエスト直下に常時表示・本試験直結の主要導線） ── */}
-        <Pressable
-          style={[s.examCard, Shadow.sm]}
-          onPress={() => router.push('/exam')}
-          accessibilityRole="button"
-          accessibilityLabel="模擬試験を開始"
-        >
-          <Text style={s.examCardIcon}>📋</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={s.examCardTitle}>模擬試験</Text>
-            <Text style={s.examCardSub}>本番形式50問で実力チェック</Text>
-          </View>
-          <Text style={s.examCardArrow}>›</Text>
-        </Pressable>
+        {/* 模試カードは下タブ「模試」へ昇格したため削除 (タブと重複・P4)。 */}
 
         {/* 直近7日の学習バーチャートは記録タブ(progress)へ移設(ホーム簡素化 P4)。 */}
 
@@ -650,7 +640,7 @@ function HomeScreen() {
           <Text style={s.moreToggleChevron}>{moreExpanded ? '▾' : '▸'}</Text>
           <View style={{ flex: 1 }}>
             <Text style={s.moreToggleTitle}>もっと選んで学習</Text>
-            <Text style={s.moreToggleSub}>カテゴリ・論点・模試・弱点ドリルから自分で選ぶ</Text>
+            <Text style={s.moreToggleSub}>カテゴリ・論点・弱点ドリルから自分で選ぶ</Text>
           </View>
         </Pressable>
 
@@ -1287,21 +1277,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ─── 模擬試験カード（クエスト直下） ───
-  examCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginHorizontal: Spacing.xl,
-    marginTop: Spacing.md,
-    backgroundColor: C.card,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-  },
-  examCardIcon: { fontSize: 26 },
-  examCardTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: C.text },
-  examCardSub: { fontSize: FontSize.caption, color: C.textSecondary, marginTop: 2 },
-  examCardArrow: { fontSize: 24, color: C.textTertiary, fontWeight: '300' },
   // ─── バナー群 ───
   bannerSection: { paddingHorizontal: Spacing.xl, marginTop: Spacing.xl, gap: 10 },
   bannerCard: {
