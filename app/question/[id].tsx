@@ -549,7 +549,7 @@ export default function QuestionDetailScreen() {
                   )}
                   {(() => {
                     const stmtExpl = getStatementExplanation(q, answered, i);
-                    return stmtExpl ? <Text style={s.statementExpl}>{stmtExpl}</Text> : null;
+                    return stmtExpl ? <Text style={s.statementExpl} selectable>{stmtExpl}</Text> : null;
                   })()}
                 </View>
                 {stmtStruck && !answered && <Text style={s.strikeMark}>✕</Text>}
@@ -624,7 +624,7 @@ export default function QuestionDetailScreen() {
                 <View style={[s.choiceLabel, { backgroundColor: labelBg }, struck && s.choiceLabelStruck]}>
                   <Text style={[s.choiceLabelText, { color: labelColor }, struck && s.choiceLabelTextStruck]}>{LABELS[displayIdx]}</Text>
                 </View>
-                <Text style={[s.choiceText, struck && s.choiceTextStruck]}>{choice}</Text>
+                <Text style={[s.choiceText, struck && s.choiceTextStruck]} selectable={answered}>{choice}</Text>
                 {answered && isCorrect && <Text style={s.checkMark}>✓</Text>}
                 {isWrongAnswer && <Text style={s.crossMark}>✗</Text>}
                 {struck && !answered && <Text style={s.strikeMark}>✕</Text>}
@@ -632,7 +632,7 @@ export default function QuestionDetailScreen() {
               {/* Per-choice explanation */}
               {choiceExpl && (
                 <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
-                  <Text style={s.choiceExplText}>{choiceExpl}</Text>
+                  <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
                   {isPro && (
                     <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
                       <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>

@@ -363,7 +363,7 @@ export default function QuickQuizScreen() {
                   <Text style={s.feedbackAnswer}>
                     正しい答え: {currentQuiz.isCorrect ? '○（正しい）' : '✗（誤り）'}
                   </Text>
-                  <Text style={s.feedbackExplanation}>
+                  <Text style={s.feedbackExplanation} selectable>
                     {currentQuiz.explanation}
                   </Text>
                   {isPro && (

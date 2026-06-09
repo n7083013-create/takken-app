@@ -494,7 +494,7 @@ export default function QuestSessionScreen() {
                         answerState !== 'idle',
                         i,
                       );
-                      return stmtExpl ? <Text style={s.statementExpl}>{stmtExpl}</Text> : null;
+                      return stmtExpl ? <Text style={s.statementExpl} selectable>{stmtExpl}</Text> : null;
                     })()}
                   </View>
                   {stmtStruck && <Text style={s.strikeMark}>✕</Text>}
@@ -560,7 +560,7 @@ export default function QuestSessionScreen() {
                       {LABELS[displayIdx]}
                     </Text>
                   </View>
-                  <Text style={[s.choiceText, answered && isCorrectChoice && { color: colors.success, fontWeight: '700' }, answered && isSelected && !isCorrectChoice && { color: colors.error }, struck && s.choiceTextStruck]}>
+                  <Text style={[s.choiceText, answered && isCorrectChoice && { color: colors.success, fontWeight: '700' }, answered && isSelected && !isCorrectChoice && { color: colors.error }, struck && s.choiceTextStruck]} selectable={answered}>
                     {choice}
                   </Text>
                   {struck && !answered && <Text style={s.strikeMark}>✕</Text>}
@@ -576,7 +576,7 @@ export default function QuestSessionScreen() {
                   if (!choiceExpl) return null;
                   return (
                     <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
-                      <Text style={s.choiceExplText}>{choiceExpl}</Text>
+                      <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
                       {isPro && (
                         <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)}>
                           <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
@@ -596,7 +596,7 @@ export default function QuestSessionScreen() {
             <Text style={s.explanationLabel}>
               {answerState === 'correct' ? '✅ 正解！' : '❌ 不正解'}
             </Text>
-            <Text style={s.explanationText}>{currentQuestion.explanation}</Text>
+            <Text style={s.explanationText} selectable>{currentQuestion.explanation}</Text>
             {isPro && (
               <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()}>
                 <Text style={s.aiBtnIcon}>🤖</Text>
