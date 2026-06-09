@@ -1216,7 +1216,9 @@ export default function ProgressScreen() {
   const weak = getWeakQuestions().length;
   const dueCount = useMemo(() => getDueForReview().length, [getDueForReview, stats]);
   // 就寝前は実際に出せる問題数を表示（固定「5」だと中身0でも5表示→押すと空、のバグ防止）
-  const preSleepCount = useMemo(() => getPreSleepReview(5).length, [getPreSleepReview, stats]);
+  // progress(確信度/復習日/連続正解)も購読: stats不変の操作(マスター/確信度変更等)でもズレないように
+  const progressMap = useProgressStore((s) => s.progress);
+  const preSleepCount = useMemo(() => getPreSleepReview(5).length, [getPreSleepReview, stats, progressMap]);
   const masteredManualCount = getManuallyMasteredIds().length;
   // [Bugfix] 旧: 月間累計 (subscription.aiQueriesUsed) を表示していたが、
   // ローカル加算でずれが蓄積し「使ってないのに100回超え」と表示される問題があった。

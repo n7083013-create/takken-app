@@ -125,6 +125,11 @@ export default function QuestSessionScreen() {
       setShuffledMap(isSpecial ? [0, 1, 2, 3] : shuffleIndices(currentQuestion.choices.length));
       setSelected(null);
       setAnswerState('idle');
+      // [Bugfix] AIパネルを開いたまま次の問題へ進むと前問の選択肢紐付け(aiTargetChoice)が残り
+      // 新問のshuffledMapに無いindexで「選択肢undefined」表示になる。問題遷移でAI文脈をリセット
+      // (question/[id].tsx の switchToQuestion と対称)
+      setAiTargetChoice(null);
+      setAiMessages([]);
     }
   }, [currentIndex, currentQuestion?.id]);
 

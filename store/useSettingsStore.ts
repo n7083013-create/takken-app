@@ -23,12 +23,13 @@ function getDayKey(): string {
 /**
  * 永続化された settings から通知時刻配列を復元する（後方互換つき）。
  * - 旧スキーマ: notificationTime(単一 string) のみ → [その値] に変換
- * - 新スキーマ: notificationTimes(配列) があればそれを採用
- * - どちらも無ければ既定 ['20:00']
+ * - 新スキーマ: notificationTimes(配列) があれば空配列でもそれを採用(全削除の意思を尊重)
+ * - どちらも無ければ(=未設定の初回のみ)既定 ['20:00']
  */
 function migrateNotificationTimes(stored: unknown): string[] {
   const s = (stored ?? {}) as { notificationTimes?: unknown; notificationTime?: unknown };
-  if (Array.isArray(s.notificationTimes) && s.notificationTimes.length > 0) {
+  // [Bugfix] 「length>0」条件だと全時刻削除→再起動で20:00が勝手に復活していた
+  if (Array.isArray(s.notificationTimes)) {
     return s.notificationTimes.filter((t): t is string => typeof t === 'string');
   }
   if (typeof s.notificationTime === 'string' && s.notificationTime) {

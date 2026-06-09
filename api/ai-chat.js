@@ -438,6 +438,8 @@ async function handleFeedback(req, res) {
     const subjectBody = body.slice(0, 30).replace(/[\r\n\t\x00-\x1F\x7F]/g, ' ');
     const subject = `[宅建アプリ] ${catLabel}: ${subjectBody}${body.length > 30 ? '...' : ''}`;
     const safe = (s) => String(s || '').replace(/[<>]/g, (c) => ({ '<': '&lt;', '>': '&gt;' }[c]));
+    // meta.* はクライアント任意文字列のため長さ上限で整形（巨大ペイロード/表示崩し対策）
+    const clamp = (v, n = 64) => (typeof v === 'string' ? v.slice(0, n) : '');
     const html = `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;">
         <h2 style="color:#1B7A3D;">${catLabel}</h2>
@@ -450,9 +452,9 @@ async function handleFeedback(req, res) {
           <li>ご連絡先: ${safe(contactEmail)}</li>
           <li>登録メール: ${safe(userEmail) || '(未ログイン)'}</li>
           <li>ユーザーID: ${safe(userId) || '(匿名)'}</li>
-          <li>アプリバージョン: ${safe(meta?.appVersion)}</li>
-          <li>プラットフォーム: ${safe(meta?.platform)} ${safe(meta?.platformVersion)}</li>
-          <li>端末: ${safe(meta?.device)}</li>
+          <li>アプリバージョン: ${safe(clamp(meta?.appVersion))}</li>
+          <li>プラットフォーム: ${safe(clamp(meta?.platform))} ${safe(clamp(meta?.platformVersion))}</li>
+          <li>端末: ${safe(clamp(meta?.device))}</li>
           <li>送信日時: ${new Date().toISOString()}</li>
         </ul>
       </div>
