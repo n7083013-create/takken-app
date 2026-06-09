@@ -33,10 +33,20 @@ const BAYES_BETA = 2;
 /** 本試験の難易度分布 (易20% / 標準45% / 難35%) — 難易度較正の再重み */
 const DIFFICULTY_WEIGHTS: Record<1 | 2 | 3, number> = { 1: 0.2, 2: 0.45, 3: 0.35 };
 
-/** 楽観バイアス補正 θ_calib = γ0 + γ1·θ。練習は本番より甘いので一律10%引き。
- *  TODO(Phase1.5): 模試5件以上で個人ごとの (γ0,γ1) を回帰学習する。今は固定。 */
-const GAMMA0 = 0;
-const GAMMA1 = 0.9;
+/** 楽観バイアス補正 θ_calib = γ0/満点 + γ1·θ の既定値。
+ *  練習は本番より甘いので一律10%引き (γ1=0.90)。模試<5件のユーザーはこの堅実値のまま。
+ *  Phase1.5: 模試が貯まると calibrateGamma で個人ごとの (γ0,γ1) を回帰学習し置換する。 */
+const DEFAULT_GAMMA0 = 0;
+const DEFAULT_GAMMA1 = 0.9;
+
+// ── 個人γ回帰 (Phase1.5・data-analyst しきい値) ───────────────────────
+/** 個人回帰を一切使わない下限 (これ未満は既定 0.90 のまま = データ薄に無影響) */
+export const GAMMA_MIN_PAIRS = 5;
+/** 個人回帰を全面採用する下限 (これ以上で既定を混ぜない) */
+export const GAMMA_FULL_PAIRS = 20;
+/** 暴走防止クランプ: 傾き γ1∈[0.7, 1.05]、切片 γ0∈[-10, 10] 点 */
+export const GAMMA1_CLAMP: readonly [number, number] = [0.7, 1.05];
+export const GAMMA0_CLAMP: readonly [number, number] = [-10, 10];
 
 /** 模試ブレンドの収束定数 λ_c = N_mock_c/(N_mock_c+K)。K問解くと模試と練習が半々。 */
 const MOCK_BLEND_K = 20;
@@ -90,6 +100,23 @@ export interface PredictionProgress {
 export interface PredictionMockResult<C extends string> {
   date: string;
   byCategory: Record<C, { total: number; correct: number }>;
+  /** この模試の実測点 (= 正答数)。個人γ回帰の actual。後方互換のため任意 */
+  score?: number;
+  /** この模試"直前"の予測点 (提出時に保存)。個人γ回帰の predicted。
+   *  これが無い既存模試は較正ペアから除外される (後方互換)。 */
+  predictedBefore?: number;
+}
+
+/** 較正の素データ: (模試直前予測点, 模試実測点) のペア */
+export interface CalibrationPair {
+  predicted: number;
+  actual: number;
+}
+
+/** 個人γ回帰の結果 (θ_calib = gamma0/満点 + gamma1·θ で適用) */
+export interface GammaCoefficients {
+  gamma0: number;
+  gamma1: number;
 }
 
 export interface ExamPredictionConfig<C extends string> {
@@ -244,6 +271,83 @@ function aggregateMock<C extends string>(
   return out;
 }
 
+/** 数値を [lo, hi] に収める */
+function clamp(x: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, x));
+}
+
+/**
+ * 模試履歴から較正ペア (predictedBefore, score) を抽出する。
+ * predictedBefore を持つ模試のみ対象 (= Phase1.5 導入後に提出された模試)。
+ * 後方互換: predictedBefore / score が無い既存模試は黙って除外される。
+ */
+export function extractCalibrationPairs<C extends string>(
+  examHistory: ReadonlyArray<PredictionMockResult<C>>,
+): CalibrationPair[] {
+  const pairs: CalibrationPair[] = [];
+  for (const r of examHistory) {
+    if (typeof r.predictedBefore !== 'number' || typeof r.score !== 'number') continue;
+    if (!Number.isFinite(r.predictedBefore) || !Number.isFinite(r.score)) continue;
+    pairs.push({ predicted: r.predictedBefore, actual: r.score });
+  }
+  return pairs;
+}
+
+/**
+ * 個人γ較正 (data-analyst・層B 全体較正)。
+ * (模試直前予測点, 模試実測点) のペアから actual = γ0 + γ1·predicted を OLS 回帰し、
+ * 件数に応じて既定 (γ0=0, γ1=0.90) と線形加重・クランプして返す純粋関数。
+ *
+ * しきい値:
+ *  - ペア < 5         : 既定のまま (γ0=0, γ1=0.90)。データ薄ユーザーに無影響。
+ *  - 5 ≤ ペア < 20    : 既定と個人回帰を件数で線形加重 (増えるほど個人寄り)。
+ *  - ペア ≥ 20        : 個人回帰を採用。
+ * クランプ: γ1∈[0.7, 1.05]、γ0∈[-10, 10] (暴走防止)。
+ *
+ * 注: 戻り値の gamma0 は「点」単位 (満点スケール)。エンジン側で gamma0/examTotal して
+ *     θ(0-1) に適用する。gamma1 は無次元なのでそのまま θ に掛かる。
+ */
+export function calibrateGamma(pairs: ReadonlyArray<CalibrationPair>): GammaCoefficients {
+  const n = pairs.length;
+  if (n < GAMMA_MIN_PAIRS) return { gamma0: DEFAULT_GAMMA0, gamma1: DEFAULT_GAMMA1 };
+
+  // OLS: γ1 = Σ(x-x̄)(y-ȳ)/Σ(x-x̄)², γ0 = ȳ - γ1·x̄
+  let sumX = 0;
+  let sumY = 0;
+  for (const p of pairs) {
+    sumX += p.predicted;
+    sumY += p.actual;
+  }
+  const meanX = sumX / n;
+  const meanY = sumY / n;
+  let sxx = 0;
+  let sxy = 0;
+  for (const p of pairs) {
+    const dx = p.predicted - meanX;
+    sxx += dx * dx;
+    sxy += dx * (p.actual - meanY);
+  }
+
+  // x の分散ゼロ (全模試で同じ予測点) は傾きを推定不能 → 既定を返す
+  if (sxx === 0) return { gamma0: DEFAULT_GAMMA0, gamma1: DEFAULT_GAMMA1 };
+
+  const rawGamma1 = sxy / sxx;
+  const rawGamma0 = meanY - rawGamma1 * meanX;
+  const fittedGamma1 = clamp(rawGamma1, GAMMA1_CLAMP[0], GAMMA1_CLAMP[1]);
+  const fittedGamma0 = clamp(rawGamma0, GAMMA0_CLAMP[0], GAMMA0_CLAMP[1]);
+
+  // ペア ≥ 20 は個人回帰を全面採用
+  if (n >= GAMMA_FULL_PAIRS) return { gamma0: fittedGamma0, gamma1: fittedGamma1 };
+
+  // 5 ≤ n < 20: 既定と個人回帰を件数で線形加重 (n が増えるほど個人寄り)
+  const personalWeight = (n - GAMMA_MIN_PAIRS) / (GAMMA_FULL_PAIRS - GAMMA_MIN_PAIRS);
+  const defaultWeight = 1 - personalWeight;
+  return {
+    gamma0: defaultWeight * DEFAULT_GAMMA0 + personalWeight * fittedGamma0,
+    gamma1: defaultWeight * DEFAULT_GAMMA1 + personalWeight * fittedGamma1,
+  };
+}
+
 // ── メインエンジン ─────────────────────────────────────────────────
 
 /**
@@ -264,6 +368,11 @@ export function computeExamPrediction<C extends string>(
     !!p && p.attempts > 0 && p.mastered !== true;
 
   const mockByCat = aggregateMock(config.categories, examHistory);
+
+  // (c) 楽観バイアス補正の係数。模試<5件なら既定 (γ0=0,γ1=0.90)、貯まるほど個人最適化。
+  // gamma0 は満点スケールなので θ(0-1) に効かせるため examTotal で正規化する。
+  const { gamma0, gamma1 } = calibrateGamma(extractCalibrationPairs(examHistory));
+  const gamma0Theta = config.examTotal > 0 ? gamma0 / config.examTotal : 0;
 
   // 科目別に掲載問題を引くためのインデックス
   const questionsByCat = new Map<C, PredictionQuestion<C>[]>();
@@ -316,8 +425,8 @@ export function computeExamPrediction<C extends string>(
       DIFFICULTY_WEIGHTS[2] * thetaByDifficulty[1] +
       DIFFICULTY_WEIGHTS[3] * thetaByDifficulty[2];
 
-    // (c) 楽観バイアス補正
-    const thetaCalib = GAMMA0 + GAMMA1 * thetaCalibInput;
+    // (c) 楽観バイアス補正 (個人γ較正・θ は [0,1] に収める)
+    const thetaCalib = clamp(gamma0Theta + gamma1 * thetaCalibInput, 0, 1);
 
     // (d) 模試ブレンド
     const mock = mockByCat[cat];

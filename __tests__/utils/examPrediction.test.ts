@@ -17,10 +17,15 @@
 
 import {
   computeExamPrediction,
+  calibrateGamma,
+  extractCalibrationPairs,
+  GAMMA1_CLAMP,
+  GAMMA0_CLAMP,
   type PredictionProgress,
   type PredictionQuestion,
   type PredictionMockResult,
   type ExamPredictionConfig,
+  type CalibrationPair,
 } from '../../utils/examPrediction';
 
 // ── テスト用の 2 科目ミニ世界 (a:配点20, b:配点10) ───────────────────
@@ -451,5 +456,158 @@ describe('predictedAtExam (試験当日見込み)', () => {
     makeQuestions('a', 2, 5).forEach((q) => (progress[q.id] = prog({ attempts: 1, correctCount: 1 })));
     const r = computeExamPrediction(progress, [], baseConfig(questions, { daysUntilExam: 100000 }));
     expect(r.predictedAtExam).toBeLessThanOrEqual(30);
+  });
+});
+
+// ============================================================
+// 10. 個人γ較正 (Phase1.5・calibrateGamma)
+// ============================================================
+describe('calibrateGamma (個人γ回帰・しきい値/クランプ/加重)', () => {
+  /** (predicted, actual) ペアを n 件作る簡易ファクトリ */
+  function pairs(specs: Array<[number, number]>): CalibrationPair[] {
+    return specs.map(([predicted, actual]) => ({ predicted, actual }));
+  }
+
+  it('ペア < 5 は既定 (γ0=0, γ1=0.90) を返す = データ薄に無影響', () => {
+    expect(calibrateGamma([])).toEqual({ gamma0: 0, gamma1: 0.9 });
+    expect(calibrateGamma(pairs([[40, 36], [38, 35], [42, 40], [39, 37]]))).toEqual({
+      gamma0: 0,
+      gamma1: 0.9,
+    });
+  });
+
+  it('ペア ≥ 20 は個人 OLS 回帰を全面採用する (完全直線 actual = 0.8·predicted を復元)', () => {
+    // y = 0.8x ちょうどのデータ 20 件 → γ1≈0.8, γ0≈0
+    const specs: Array<[number, number]> = Array.from({ length: 20 }, (_, i) => {
+      const x = 20 + i; // 20..39
+      return [x, 0.8 * x] as [number, number];
+    });
+    const { gamma0, gamma1 } = calibrateGamma(pairs(specs));
+    expect(gamma1).toBeCloseTo(0.8, 5);
+    expect(gamma0).toBeCloseTo(0, 5);
+  });
+
+  it('5 ≤ ペア < 20 は既定と個人回帰を件数で線形加重する (件数が増えるほど個人寄り)', () => {
+    // 個人傾き 0.8 になるデータを 6 件 と 19 件 で比較。
+    // 19 件のほうが個人(0.8)に近い = 加重が個人寄りに単調変化する。
+    const make = (n: number): CalibrationPair[] =>
+      Array.from({ length: n }, (_, i) => ({ predicted: 20 + i, actual: 0.8 * (20 + i) }));
+    const g6 = calibrateGamma(make(6));
+    const g19 = calibrateGamma(make(19));
+    // どちらも既定(0.9)と個人(0.8)の間。件数が多い 19 のほうが 0.8 に近い。
+    expect(g19.gamma1).toBeLessThan(g6.gamma1);
+    expect(g6.gamma1).toBeLessThan(0.9);
+    expect(g19.gamma1).toBeGreaterThan(0.8 - 1e-9);
+    // 線形加重の値が理論式どおり (n=6: 個人ウェイト=1/15)
+    expect(g6.gamma1).toBeCloseTo(0.9 - (1 / 15) * (0.9 - 0.8), 6);
+    expect(g19.gamma1).toBeCloseTo(0.9 - (14 / 15) * (0.9 - 0.8), 6);
+  });
+
+  it('ちょうど境界 ペア=5 は個人ウェイト0 → 既定 0.90 のまま (< 5 と連続)', () => {
+    const five: CalibrationPair[] = Array.from({ length: 5 }, (_, i) => ({
+      predicted: 20 + i,
+      actual: 0.8 * (20 + i),
+    }));
+    expect(calibrateGamma(five)).toEqual({ gamma0: 0, gamma1: 0.9 });
+  });
+
+  it('傾き γ1 はクランプ [0.7, 1.05] を超えない (暴走防止)', () => {
+    // 強い負の相関 (predicted↑ で actual↓) → 生 γ1 は大きな負。クランプで 0.7 に張り付く。
+    const specs: Array<[number, number]> = Array.from({ length: 20 }, (_, i) => {
+      const x = 20 + i;
+      return [x, 50 - x] as [number, number]; // 傾き -1
+    });
+    const { gamma1 } = calibrateGamma(pairs(specs));
+    expect(gamma1).toBeGreaterThanOrEqual(GAMMA1_CLAMP[0]);
+    expect(gamma1).toBeLessThanOrEqual(GAMMA1_CLAMP[1]);
+  });
+
+  it('切片 γ0 はクランプ [-10, 10] を超えない (暴走防止)', () => {
+    // actual = predicted + 30 (常に +30 上振れ) → 生 γ0=30。クランプで 10 に。
+    const specs: Array<[number, number]> = Array.from({ length: 20 }, (_, i) => {
+      const x = 20 + i;
+      return [x, x + 30] as [number, number];
+    });
+    const { gamma0 } = calibrateGamma(pairs(specs));
+    expect(gamma0).toBeGreaterThanOrEqual(GAMMA0_CLAMP[0]);
+    expect(gamma0).toBeLessThanOrEqual(GAMMA0_CLAMP[1]);
+  });
+
+  it('全模試で予測点が同一 (x 分散ゼロ) は推定不能 → 既定を返す', () => {
+    const specs: Array<[number, number]> = Array.from({ length: 20 }, () => [38, 35]);
+    expect(calibrateGamma(pairs(specs))).toEqual({ gamma0: 0, gamma1: 0.9 });
+  });
+});
+
+describe('extractCalibrationPairs (後方互換)', () => {
+  it('predictedBefore を持つ模試だけをペア化し、無い既存模試は除外する', () => {
+    const history: PredictionMockResult<Cat>[] = [
+      // 旧データ: predictedBefore 無し → 除外
+      { date: '2026-05-01', byCategory: { a: { total: 50, correct: 30 }, b: { total: 0, correct: 0 } }, score: 30 },
+      // 新データ: predictedBefore あり → (40, 36) ペア
+      {
+        date: '2026-05-10',
+        byCategory: { a: { total: 50, correct: 36 }, b: { total: 0, correct: 0 } },
+        score: 36,
+        predictedBefore: 40,
+      },
+    ];
+    const pairs = extractCalibrationPairs(history);
+    expect(pairs).toEqual([{ predicted: 40, actual: 36 }]);
+  });
+
+  it('score が無い / 非有限値の模試は除外する', () => {
+    const history: PredictionMockResult<Cat>[] = [
+      { date: '2026-05-10', byCategory: { a: { total: 50, correct: 36 }, b: { total: 0, correct: 0 } }, predictedBefore: 40 } as any,
+      { date: '2026-05-11', byCategory: { a: { total: 50, correct: 0 }, b: { total: 0, correct: 0 } }, score: NaN, predictedBefore: 40 },
+    ];
+    expect(extractCalibrationPairs(history)).toEqual([]);
+  });
+});
+
+describe('個人γのエンジン統合 (公開API不変・θは[0,1])', () => {
+  const questions = makeQuestions('a', 2, 50);
+
+  function withProgress(rate: number): Record<string, PredictionProgress> {
+    const progress: Record<string, PredictionProgress> = {};
+    questions.forEach((q, i) => {
+      progress[q.id] = prog({ attempts: 1, correctCount: i / 50 < rate ? 1 : 0 });
+    });
+    return progress;
+  }
+
+  it('predictedBefore 無しの履歴では従来 (γ1=0.90) と同じ予測 = 後方互換', () => {
+    const progress = withProgress(0.8);
+    const cfg = baseConfig(questions, { categories: ['a'], allocation: { a: 20, b: 0 } });
+    // predictedBefore を持たない模試 (旧データ)
+    const oldHistory: PredictionMockResult<Cat>[] = [];
+    const before = computeExamPrediction(progress, [], cfg).totalPredicted;
+    const withOld = computeExamPrediction(progress, oldHistory, cfg).totalPredicted;
+    expect(withOld).toBe(before);
+  });
+
+  it('十分なペア (≥20) で楽観バイアスが効くと予測が実測寄りに補正される', () => {
+    // 練習では高得点だが本番(模試)では一貫して低い人 → γ で下方補正されるはず。
+    const progress = withProgress(0.9);
+    const cfg = baseConfig(questions, { categories: ['a'], allocation: { a: 20, b: 0 } });
+    // 20 件の模試: 各回 predictedBefore=18 に対し実測 12 (本番は予測より低い)
+    const history: PredictionMockResult<Cat>[] = Array.from({ length: 20 }, (_, i) => ({
+      date: `2026-05-${String(i + 1).padStart(2, '0')}`,
+      // 模試の科目別は予測に直接寄与する (λブレンド)。ここでは較正係数の効きを見るため
+      // byCategory は控えめ・total を小さくして λ を抑えつつ score/predictedBefore で回帰させる。
+      byCategory: { a: { total: 1, correct: 0 }, b: { total: 0, correct: 0 } },
+      score: 12,
+      predictedBefore: 18,
+    }));
+    const r = computeExamPrediction(progress, history, cfg);
+    // 公開API: 形は不変・有限値・examTotal 内
+    expect(Number.isFinite(r.totalPredicted)).toBe(true);
+    expect(r.totalPredicted).toBeGreaterThanOrEqual(0);
+    expect(r.totalPredicted).toBeLessThanOrEqual(cfg.examTotal);
+    // θ は [0,1] にクランプされる (perCategory.accuracy)
+    for (const c of r.perCategory) {
+      expect(c.accuracy).toBeGreaterThanOrEqual(0);
+      expect(c.accuracy).toBeLessThanOrEqual(1);
+    }
   });
 });

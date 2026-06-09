@@ -447,4 +447,6 @@ export interface ExamResult {
   passed: boolean;
   byCategory: Record<Category, { total: number; correct: number }>;
   durationSec: number;      // 所要時間（秒）
+  /** この模試"直前"の本試験予測点 (個人γ較正の素データ)。Phase1.5 以降の模試のみ持つ */
+  predictedBefore?: number;
 }

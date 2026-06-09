@@ -13,13 +13,38 @@ import {
   pushExamResultToCloud,
   mergeExamHistory,
 } from '../services/cloudSync';
-import { EXAM_ALLOCATION, PASS_LINE, DIFFICULTY_DISTRIBUTION } from '../constants/exam';
+import { EXAM_ALLOCATION, PASS_LINE, DIFFICULTY_DISTRIBUTION, CATEGORIES, EXAM_TOTAL } from '../constants/exam';
+import { computeExamPrediction, type PredictionQuestion } from '../utils/examPrediction';
 
 const STORAGE_KEY = '@takken_exam_session';
 const HISTORY_KEY = '@takken_exam_history';
 
 // O(1) lookup map — avoids repeated ALL_QUESTIONS.find() in hot paths
 const questionMap = new Map(ALL_QUESTIONS.map((q) => [q.id, q]));
+
+/** 掲載問題を予測エンジンが必要とする最小形に射影 (module 内で1度だけ) */
+const PREDICTION_QUESTIONS: PredictionQuestion<Category>[] = ALL_QUESTIONS.map((q) => ({
+  id: q.id,
+  category: q.category,
+  difficulty: q.difficulty,
+}));
+
+/**
+ * この模試"直前"の本試験予測点を算出する (個人γ較正の素データ = predictedBefore)。
+ * 新しい模試結果を examHistory に追加する"前"の状態で純粋エンジンを呼ぶだけ (副作用なし)。
+ * useExamPrediction フックと同一の config を使う (takken/gas 共通エンジン)。
+ */
+function computePredictedBefore(historyBefore: ExamResult[]): number {
+  const progress = require('./useProgressStore').useProgressStore.getState().progress;
+  return computeExamPrediction(progress, historyBefore, {
+    categories: CATEGORIES,
+    allocation: EXAM_ALLOCATION,
+    passLine: PASS_LINE,
+    examTotal: EXAM_TOTAL,
+    questions: PREDICTION_QUESTIONS,
+    daysUntilExam: null, // スナップショットは現時点 PE で十分 (当日見込みの外挿は不要)
+  }).totalPredicted;
+}
 
 export const EXAM_DURATION_SEC = 120 * 60; // 120分
 /** @deprecated EXAM_ALLOCATION from constants/exam を使用してください */
@@ -351,6 +376,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
     // 模試結果を履歴に保存
     const result = scoreExam(submitted);
     const durationSec = EXAM_DURATION_SEC - submitted.remainingSec;
+    // 個人γ較正の素データ: この模試を履歴に追加する"前"の予測点を記録する。
+    const predictedBefore = computePredictedBefore(get().examHistory);
     const examResult: ExamResult = {
       id: submitted.id,
       date: submitted.endedAt!,
@@ -359,6 +386,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
       passed: result.passed,
       byCategory: result.byCategory,
       durationSec,
+      predictedBefore,
     };
     set((state) => ({
       examHistory: [...state.examHistory, examResult],

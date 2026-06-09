@@ -436,6 +436,9 @@ export async function pullExamHistoryFromCloud(
       passed: row.passed,
       byCategory: row.by_category,
       durationSec: row.duration_sec,
+      // predictedBefore はローカル専用 (個人γ較正の素データ)。クラウドへは送らず、
+      // mergeExamHistory が id 一致時に local を優先するためデバイス内で保持される。
+      // 別デバイスで pull のみした模試は predictedBefore 無し → 較正ペアから除外 (後方互換・安全側)。
     }));
   } catch (e) {
     logError(e, { context: 'cloudSync.pullExamHistory' });
