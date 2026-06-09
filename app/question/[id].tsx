@@ -293,10 +293,11 @@ export default function QuestionDetailScreen() {
     setAiVisible(true);
   }, [aiVisible]);
 
-  const askAboutChoice = useCallback((choiceIdx: number) => {
+  // origIdx=シャッフル前のデータ添字(テキスト/正誤/解説の参照用)、displayIdx=画面表示位置(A/B/C/Dラベル用)
+  const askAboutChoice = useCallback((origIdx: number, displayIdx: number) => {
     if (!q) return;
-    const label = LABELS[choiceIdx];
-    openAI(`選択肢${label}「${q.choices[choiceIdx]}」について詳しく教えて`, choiceIdx);
+    const label = LABELS[displayIdx];
+    openAI(`選択肢${label}「${q.choices[origIdx]}」について詳しく教えて`, origIdx);
   }, [q, openAI]);
 
   const sendAIMessage = useCallback(async () => {
@@ -308,7 +309,7 @@ export default function QuestionDetailScreen() {
     setAiLoading(true);
 
     try {
-      const context = buildAIContext(q, selected, state);
+      const context = buildAIContext(q, selected, state, shuffledMap);
       const history = [...aiMessages, { role: 'user' as const, content: userMsg }];
       const result = await askAI(context, history);
       if (result.remaining !== null) {
@@ -385,11 +386,11 @@ export default function QuestionDetailScreen() {
           {aiTargetChoice !== null ? (
             <View style={s.aiContextCard}>
               <View style={s.aiContextHeader}>
-                <Text style={s.aiContextTitle}>📋 選択肢{LABELS[aiTargetChoice]}について質問中</Text>
+                <Text style={s.aiContextTitle}>📋 選択肢{LABELS[shuffledMap.indexOf(aiTargetChoice)]}について質問中</Text>
               </View>
               <View style={s.aiContextBody}>
                 <View style={[s.aiContextChoice, aiTargetChoice === q.correctIndex ? s.aiContextChoiceCorrect : s.aiContextChoiceWrong]}>
-                  <Text style={[s.aiContextChoiceLabel, aiTargetChoice === q.correctIndex ? s.aiContextChoiceLabelCorrect : s.aiContextChoiceLabelWrong]}>{LABELS[aiTargetChoice]}</Text>
+                  <Text style={[s.aiContextChoiceLabel, aiTargetChoice === q.correctIndex ? s.aiContextChoiceLabelCorrect : s.aiContextChoiceLabelWrong]}>{LABELS[shuffledMap.indexOf(aiTargetChoice)]}</Text>
                   <Text style={s.aiContextChoiceText}>{q.choices[aiTargetChoice]}</Text>
                   <Text style={{ fontSize: 12 }}>{aiTargetChoice === q.correctIndex ? ' ✓' : ' ✗'}</Text>
                 </View>
@@ -634,7 +635,7 @@ export default function QuestionDetailScreen() {
                 <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
                   <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
                   {isPro && (
-                    <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
+                    <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
                       <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
                     </Pressable>
                   )}
@@ -791,6 +792,7 @@ function buildAIContext(
   q: NonNullable<ReturnType<typeof getQuestionById>>,
   selected: number | null,
   state: State,
+  shuffledMap: number[],
 ): string {
   const format = q.questionFormat ?? 'standard';
   const lines = [
@@ -808,15 +810,16 @@ function buildAIContext(
   }
   lines.push(
     '',
-    ...q.choices.map((c, i) => `${LABELS[i]}. ${c}${i === q.correctIndex ? ' ← 正解' : ''}`),
+    ...shuffledMap.map((origIdx, i) => `${LABELS[i]}. ${q.choices[origIdx]}${origIdx === q.correctIndex ? ' ← 正解' : ''}`),
     '',
-    `ユーザーの回答: ${selected !== null ? LABELS[selected] : '未回答'} (${state === 'correct' ? '正解' : '不正解'})`,
+    `ユーザーの回答: ${selected !== null ? LABELS[shuffledMap.indexOf(selected)] : '未回答'} (${state === 'correct' ? '正解' : '不正解'})`,
     '',
     `解説: ${q.explanation}`,
   );
   if (q.choiceExplanations) {
     lines.push('', '各選択肢の解説:');
-    q.choiceExplanations.forEach((e, i) => lines.push(`${LABELS[i]}: ${e}`));
+    const expls = q.choiceExplanations;
+    shuffledMap.forEach((origIdx, i) => lines.push(`${LABELS[i]}: ${expls[origIdx]}`));
   }
   return lines.join('\n');
 }

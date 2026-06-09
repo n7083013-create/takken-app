@@ -152,9 +152,10 @@ export default function QuestSessionScreen() {
     setAiVisible(true);
   }, [aiVisible]);
 
-  const askAboutChoice = useCallback((choiceIdx: number) => {
+  // origIdx=シャッフル前のデータ添字(テキスト/正誤/解説の参照用)、displayIdx=画面表示位置(A/B/C/Dラベル用)
+  const askAboutChoice = useCallback((origIdx: number, displayIdx: number) => {
     if (!currentQuestion) return;
-    openAI(`選択肢${LABELS[choiceIdx]}「${currentQuestion.choices[choiceIdx]}」について詳しく教えて`, choiceIdx);
+    openAI(`選択肢${LABELS[displayIdx]}「${currentQuestion.choices[origIdx]}」について詳しく教えて`, origIdx);
   }, [currentQuestion, openAI]);
 
   const sendAIMessage = useCallback(async () => {
@@ -164,7 +165,7 @@ export default function QuestSessionScreen() {
     setAiMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setAiLoading(true);
     try {
-      const context = buildQuestAIContext(currentQuestion, selected, answerState);
+      const context = buildQuestAIContext(currentQuestion, selected, answerState, shuffledMap);
       const history = [...aiMessages, { role: 'user' as const, content: userMsg }];
       const result = await askAI(context, history);
       if (result.remaining !== null) {
@@ -350,7 +351,7 @@ export default function QuestSessionScreen() {
           <View style={s.aiContextCard}>
             <View style={s.aiContextHeader}>
               <Text style={s.aiContextTitle}>
-                {aiTargetChoice !== null ? `📋 選択肢${LABELS[aiTargetChoice]}について質問中` : '📋 問題について質問中'}
+                {aiTargetChoice !== null ? `📋 選択肢${LABELS[shuffledMap.indexOf(aiTargetChoice)]}について質問中` : '📋 問題について質問中'}
               </Text>
             </View>
             <View style={s.aiContextBody}>
@@ -578,7 +579,7 @@ export default function QuestSessionScreen() {
                     <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
                       <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
                       {isPro && (
-                        <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx)}>
+                        <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)}>
                           <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
                         </Pressable>
                       )}
@@ -664,21 +665,23 @@ function buildQuestAIContext(
   q: NonNullable<ReturnType<typeof getQuestionById>>,
   selected: number | null,
   state: AnswerState,
+  shuffledMap: number[],
 ): string {
   const lines = [
     `【宅建試験問題】`,
     `カテゴリ: ${CATEGORY_LABELS[q.category]}`,
     `問題: ${q.text}`,
     '',
-    ...q.choices.map((c, i) => `${LABELS[i]}. ${c}${i === q.correctIndex ? ' ← 正解' : ''}`),
+    ...shuffledMap.map((origIdx, i) => `${LABELS[i]}. ${q.choices[origIdx]}${origIdx === q.correctIndex ? ' ← 正解' : ''}`),
     '',
-    `ユーザーの回答: ${selected !== null ? LABELS[selected] : '未回答'} (${state === 'correct' ? '正解' : '不正解'})`,
+    `ユーザーの回答: ${selected !== null ? LABELS[shuffledMap.indexOf(selected)] : '未回答'} (${state === 'correct' ? '正解' : '不正解'})`,
     '',
     `解説: ${q.explanation}`,
   ];
   if (q.choiceExplanations) {
     lines.push('', '各選択肢の解説:');
-    q.choiceExplanations.forEach((e, i) => lines.push(`${LABELS[i]}: ${e}`));
+    const expls = q.choiceExplanations;
+    shuffledMap.forEach((origIdx, i) => lines.push(`${LABELS[i]}: ${expls[origIdx]}`));
   }
   return lines.join('\n');
 }
