@@ -1,29 +1,36 @@
 // ============================================================
-// 予測スコアカード（合格確率・推移・試験日予測）
+// 予測スコアカード（本試験予測点数 統一システム / Phase2）
 // ============================================================
-// - 大きい合格確率 % をメインに表示
-// - 現在スコア vs 合格ライン のバー
-// - 直近30日の推移スパークライン
-// - 試験日までの予測スコア
-// - データ信頼度表示
+// compact: ホームの 1 行プレビュー。主役は「予測点数」1つ (合格確率%は出さない)。
+//          合格ライン併記 + 合格圏内/あと◯点 + 信頼度 + 「あと◯問で精度↑」。
+// full   : 記録タブ予測ハブ①。予測点数 + 95%信頼区間 + 合格ライン + 合格可能性 +
+//          当日見込 + 科目別内訳。passProbability はハブでは併記してよい。
+//
+// 設計の正本: Vault/.../2026-06-09_本試験予測点数_統一システム設計.md (designer)
+//   死蔵だった本コンポーネントを「予測点数主役」へ小改修して配線で復活させる。
 
 import { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { FontSize, Spacing, BorderRadius, Shadow, LetterSpacing } from '../constants/theme';
 import { EXAM_TOTAL, PASS_LINE } from '../constants/exam';
 import { useThemeColors, type ThemeColors } from '../hooks/useThemeColors';
-import { CATEGORY_LABELS, CATEGORY_COLORS, type Category } from '../types';
+import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { ExamPrediction } from '../hooks/useExamPrediction';
 import type { PredictionSnapshot } from '../hooks/usePredictionHistory';
+import { questionsToNextConfidence } from '../utils/predictionDisplay';
 
 interface PredictionCardProps {
   prediction: ExamPrediction;
   history: PredictionSnapshot[];
-  /** 統合ブロック内で使う圧縮表示。確率%・予測スコア・推移1行・合格ラインゲージのみ描画し、
-   *  スパークライン/信頼区間/モメンタム/試験日予測/カテゴリ内訳/アドバイスは省く。
-   *  外枠(card)・影・余白も親に委ねるため出さない。 */
+  /** ホームの 1 行プレビュー (予測点数主役・確率%なし・外枠は親に委ねる) */
   compact?: boolean;
 }
+
+const CONFIDENCE_LABEL: Record<ExamPrediction['confidence'], string> = {
+  high: 'データ信頼度：高',
+  medium: 'データ信頼度：中',
+  low: '測定中（データ少）',
+};
 
 /** スパークライン（簡易SVG風・View描画） */
 function Sparkline({ data, color, height = 28 }: { data: number[]; color: string; height?: number }) {
@@ -78,22 +85,18 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
     predictionInterval,
     growthPerDay,
     momentum,
+    effectiveSampleSize,
   } = prediction;
 
   const isPassing = totalPredicted >= PASS_LINE;
-  const probColor = passProbability >= 80
-    ? colors.success
-    : passProbability >= 50
-      ? colors.primary
-      : passProbability >= 30
-        ? colors.accent
-        : colors.error;
+  const scoreColor = isPassing ? colors.primary : colors.error;
+  const margin = totalPredicted - PASS_LINE;
+  const toPrecision = questionsToNextConfidence(effectiveSampleSize, confidence);
 
   // 推移: 1週間前との比較
   const trend = useMemo(() => {
     if (history.length < 2) return null;
     const now = history[history.length - 1].score;
-    // 7日前に最も近いスナップを探す
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() - 7);
     const targetStr = targetDate.toISOString().slice(0, 10);
@@ -109,33 +112,48 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
 
   const scoreHistory = useMemo(() => history.map((h) => h.score), [history]);
 
+  // ── compact: ホームの 1 行プレビュー (予測点数だけが主役) ──
+  if (compact) {
+    return (
+      <View style={s.compactWrap}>
+        <View style={s.compactTop}>
+          <Text style={s.compactLabel}>本試験 予測点数</Text>
+          <Text style={s.compactConfidence}>{CONFIDENCE_LABEL[confidence]}</Text>
+        </View>
+        <View style={s.compactScoreRow}>
+          <Text style={[s.compactScore, { color: scoreColor }]}>{totalPredicted}</Text>
+          <Text style={s.compactDenom}>点 / {EXAM_TOTAL}</Text>
+          <View style={s.compactPassPill}>
+            <Text style={s.compactPassPillText}>合格 {PASS_LINE}点</Text>
+          </View>
+        </View>
+        <Text style={[s.compactVerdict, { color: isPassing ? colors.success : colors.error }]}>
+          {isPassing ? `✓ 合格圏内 +${margin}点` : `あと ${pointsToPass}点`}
+          {toPrecision > 0 && (
+            <Text style={s.compactHint}>{`　・あと${toPrecision}問で精度↑`}</Text>
+          )}
+        </Text>
+      </View>
+    );
+  }
+
+  // ── full: 記録タブ予測ハブ① ──
   return (
-    <View style={compact ? s.compactWrap : [s.card, Shadow.md]}>
-      {/* ── ヘッダー: 合格確率 % メイン表示 ── */}
+    <View style={[s.card, Shadow.md]}>
+      {/* ── ヘッダー: 予測点数を主役に。合格可能性は副指標として併記 ── */}
       <View style={s.header}>
         <View style={s.headerLeft}>
-          <Text style={s.headerLabel}>合格確率</Text>
-          <View style={s.probRow}>
-            <Text style={[s.probNum, { color: probColor }]}>{passProbability}</Text>
-            <Text style={[s.probUnit, { color: probColor }]}>%</Text>
-          </View>
-          <Text style={s.confidence}>
-            {confidence === 'high' ? '📊 データ信頼度：高' :
-             confidence === 'medium' ? '📊 データ信頼度：中' :
-             '📊 データ信頼度：低（もっと解こう）'}
-          </Text>
-        </View>
-        <View style={s.headerRight}>
-          <Text style={s.scoreLabel}>予測スコア</Text>
-          <View style={[
-            s.scoreBox,
-            { backgroundColor: isPassing ? colors.primarySurface : colors.errorSurface },
-          ]}>
-            <Text style={[s.scoreNum, { color: isPassing ? colors.primary : colors.error }]}>
-              {totalPredicted}
-            </Text>
+          <Text style={s.headerLabel}>本試験 予測点数</Text>
+          <View style={s.scoreRow}>
+            <Text style={[s.scoreNum, { color: scoreColor }]}>{totalPredicted}</Text>
+            <Text style={s.scoreUnit}>点</Text>
             <Text style={s.scoreDenom}>/{EXAM_TOTAL}</Text>
           </View>
+          <Text style={s.confidence}>📊 {CONFIDENCE_LABEL[confidence]}</Text>
+        </View>
+        <View style={s.headerRight}>
+          <Text style={s.probLabel}>合格可能性</Text>
+          <Text style={[s.probNum, { color: scoreColor }]}>{passProbability}<Text style={s.probUnit}>%</Text></Text>
           {trend && (
             <Text style={[
               s.trend,
@@ -157,15 +175,25 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
               backgroundColor: isPassing ? colors.primary : colors.accent,
             },
           ]} />
-          {/* 合格ラインマーカー */}
           <View style={[s.passLine, { left: `${(PASS_LINE / EXAM_TOTAL) * 100}%` }]}>
-            <Text style={s.passLineLabel}>合格ライン {PASS_LINE}</Text>
+            <Text style={s.passLineLabel}>合格 {PASS_LINE}</Text>
           </View>
         </View>
       </View>
 
-      {/* 圧縮表示は「確率%・ゲージ・推移1行」までで打ち切り (統合ブロックの上段用) */}
-      {compact ? null : (<>
+      {/* ── 95%信頼区間 (常時表示・科学的透明性) ── */}
+      {predictionInterval && (
+        <View style={s.ciBox}>
+          <Text style={s.ciLabel}>95%の確率で</Text>
+          <Text style={s.ciRange}>
+            {predictionInterval.lower}〜{predictionInterval.upper}点 の範囲に入る
+            {confidence === 'low' && <Text style={s.ciMeasuring}>（測定中）</Text>}
+          </Text>
+          {toPrecision > 0 && (
+            <Text style={s.ciHint}>あと{toPrecision}問解くと予測の精度が上がります</Text>
+          )}
+        </View>
+      )}
 
       {/* ── 推移スパークライン ── */}
       {scoreHistory.length >= 2 && (
@@ -174,16 +202,6 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
           <View style={s.sparkLine}>
             <Sparkline data={scoreHistory} color={colors.primary} />
           </View>
-        </View>
-      )}
-
-      {/* ── 95%信頼区間 (科学的透明性) ── */}
-      {confidence !== 'low' && predictionInterval && (
-        <View style={s.ciBox}>
-          <Text style={s.ciLabel}>95%の確率で</Text>
-          <Text style={s.ciRange}>
-            {predictionInterval.lower}〜{predictionInterval.upper}点 の範囲に入る
-          </Text>
         </View>
       )}
 
@@ -201,13 +219,13 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
         </View>
       )}
 
-      {/* ── 試験日予測 ── */}
+      {/* ── 当日見込 (このペースで当日◯点) ── */}
       {daysUntilExam !== null && predictedAtExam !== null && (
         <View style={s.examRow}>
           <Text style={s.examDaysLabel}>試験まで {daysUntilExam} 日</Text>
           <View style={s.examPredictionBox}>
             <Text style={s.examPredictionLabel}>
-              このペースで続けると（個人別成長率: {growthPerDay >= 0 ? '+' : ''}{growthPerDay.toFixed(2)}点/日）
+              このペースで続けると（成長率: {growthPerDay >= 0 ? '+' : ''}{growthPerDay.toFixed(2)}点/日）
             </Text>
             <Text style={[
               s.examPredictionValue,
@@ -219,7 +237,7 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
         </View>
       )}
 
-      {/* ── カテゴリ別内訳 ── */}
+      {/* ── 科目別内訳 (ハブ②) ── */}
       <View style={s.catGrid}>
         {perCategory.map((item) => {
           const catColor = CATEGORY_COLORS[item.category];
@@ -247,25 +265,6 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
           );
         })}
       </View>
-
-      {/* ── アドバイス ── */}
-      {weakestCategory && pointsToPass > 0 && (
-        <View style={s.adviceBox}>
-          <Text style={s.adviceIcon}>💡</Text>
-          <Text style={s.adviceText}>
-            <Text style={{ fontWeight: '800' }}>{CATEGORY_LABELS[weakestCategory]}</Text>を集中強化すると合格ラインに届きやすいです
-          </Text>
-        </View>
-      )}
-      {pointsToPass === 0 && (
-        <View style={[s.adviceBox, { backgroundColor: colors.primarySurface }]}>
-          <Text style={s.adviceIcon}>🎉</Text>
-          <Text style={[s.adviceText, { color: colors.primary, fontWeight: '700' }]}>
-            合格圏内！このペースを維持しましょう
-          </Text>
-        </View>
-      )}
-      </>)}
     </View>
   );
 }
@@ -276,11 +275,63 @@ function makeStyles(C: ThemeColors) {
       backgroundColor: C.card,
       borderRadius: BorderRadius.xl,
       padding: Spacing.lg,
-      marginHorizontal: Spacing.lg,
-      marginTop: Spacing.md,
     },
-    // 統合ブロック内の上段用: 外枠/余白なし (親カードが chrome を持つ)
+
+    // ── compact (ホーム 1 行プレビュー) ──
     compactWrap: {},
+    compactTop: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 4,
+    },
+    compactLabel: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.text,
+    },
+    compactConfidence: {
+      fontSize: FontSize.caption2,
+      fontWeight: '600',
+      color: C.textTertiary,
+    },
+    compactScoreRow: {
+      flexDirection: 'row',
+      alignItems: 'baseline',
+      gap: 6,
+    },
+    compactScore: {
+      fontSize: 40,
+      fontWeight: '900',
+      letterSpacing: -1,
+    },
+    compactDenom: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.textSecondary,
+    },
+    compactPassPill: {
+      marginLeft: 'auto',
+      backgroundColor: C.surface,
+      borderRadius: BorderRadius.full,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+    },
+    compactPassPillText: {
+      fontSize: FontSize.caption,
+      fontWeight: '700',
+      color: C.textSecondary,
+    },
+    compactVerdict: {
+      fontSize: FontSize.footnote,
+      fontWeight: '800',
+      marginTop: 4,
+    },
+    compactHint: {
+      fontSize: FontSize.caption,
+      fontWeight: '600',
+      color: C.textTertiary,
+    },
 
     // Header
     header: {
@@ -298,52 +349,49 @@ function makeStyles(C: ThemeColors) {
       color: C.textSecondary,
       letterSpacing: LetterSpacing.wide,
     },
-    probRow: {
+    scoreRow: {
       flexDirection: 'row',
       alignItems: 'baseline',
       marginTop: 2,
     },
-    probNum: {
+    scoreNum: {
       fontSize: 48,
       fontWeight: '900',
       letterSpacing: -1,
     },
-    probUnit: {
+    scoreUnit: {
       fontSize: 20,
       fontWeight: '800',
+      color: C.textSecondary,
+      marginLeft: 2,
+    },
+    scoreDenom: {
+      fontSize: FontSize.subhead,
+      fontWeight: '600',
+      color: C.textTertiary,
       marginLeft: 2,
     },
     confidence: {
       fontSize: FontSize.caption2,
       color: C.textTertiary,
-      marginTop: -2,
+      marginTop: 2,
       fontWeight: '600',
     },
     headerRight: {
       alignItems: 'flex-end',
     },
-    scoreLabel: {
+    probLabel: {
       fontSize: FontSize.caption2,
       color: C.textTertiary,
       fontWeight: '600',
-      marginBottom: 4,
     },
-    scoreBox: {
-      flexDirection: 'row',
-      alignItems: 'baseline',
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: BorderRadius.md,
+    probNum: {
+      fontSize: FontSize.title2,
+      fontWeight: '900',
     },
-    scoreNum: {
-      fontSize: FontSize.title3,
+    probUnit: {
+      fontSize: FontSize.subhead,
       fontWeight: '800',
-    },
-    scoreDenom: {
-      fontSize: FontSize.caption,
-      color: C.textTertiary,
-      fontWeight: '600',
-      marginLeft: 2,
     },
     trend: {
       fontSize: FontSize.caption2,
@@ -403,12 +451,12 @@ function makeStyles(C: ThemeColors) {
       flex: 1,
     },
 
-    // Exam prediction
+    // CI
     ciBox: {
       marginTop: Spacing.sm,
       paddingVertical: Spacing.sm,
       paddingHorizontal: Spacing.md,
-      backgroundColor: C.card,
+      backgroundColor: C.surface,
       borderRadius: BorderRadius.md,
       borderLeftWidth: 3,
       borderLeftColor: C.primary,
@@ -423,6 +471,17 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '700',
       color: C.text,
     },
+    ciMeasuring: {
+      fontSize: 12,
+      fontWeight: '700',
+      color: C.accent,
+    },
+    ciHint: {
+      fontSize: 11,
+      color: C.textTertiary,
+      marginTop: 3,
+      fontWeight: '600',
+    },
     momentumBox: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -430,7 +489,7 @@ function makeStyles(C: ThemeColors) {
       marginTop: Spacing.sm,
       paddingVertical: Spacing.sm,
       paddingHorizontal: Spacing.md,
-      backgroundColor: C.card,
+      backgroundColor: C.surface,
       borderRadius: BorderRadius.md,
     },
     momentumIcon: {
@@ -448,7 +507,7 @@ function makeStyles(C: ThemeColors) {
       backgroundColor: C.background,
       borderRadius: BorderRadius.md,
       padding: 10,
-      marginBottom: Spacing.md,
+      marginTop: Spacing.md,
       gap: 10,
     },
     examDaysLabel: {
@@ -475,6 +534,7 @@ function makeStyles(C: ThemeColors) {
     // Category grid
     catGrid: {
       gap: 8,
+      marginTop: Spacing.md,
     },
     catRow: {
       flexDirection: 'row',
@@ -519,26 +579,6 @@ function makeStyles(C: ThemeColors) {
     catMax: {
       fontSize: FontSize.caption2,
       color: C.textTertiary,
-    },
-
-    // Advice
-    adviceBox: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-      backgroundColor: C.warningSurface,
-      padding: 10,
-      borderRadius: BorderRadius.md,
-      marginTop: Spacing.md,
-    },
-    adviceIcon: {
-      fontSize: 18,
-    },
-    adviceText: {
-      flex: 1,
-      fontSize: FontSize.caption,
-      color: C.textSecondary,
-      lineHeight: 18,
     },
   });
 }

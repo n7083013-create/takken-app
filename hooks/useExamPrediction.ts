@@ -53,6 +53,12 @@ export interface ExamPrediction {
   growthPerDay: number;
   /** 直近7日のモメンタム判定 */
   momentum: 'rising' | 'stable' | 'falling' | 'insufficient';
+  /** 予測の不確実性 (√Var)。信頼区間の幅の根拠 [Phase2] */
+  uncertainty: number;
+  /** 総有効標本数 n_eff。「あと◯問で精度↑」の逆算に使う [Phase2] */
+  effectiveSampleSize: number;
+  /** 全体カバレッジ = 演習済/掲載 (0-1, allocation 加重)。低いほど予測が粗い [Phase2] */
+  coverage: number;
 }
 
 /** 掲載問題をエンジンが必要とする最小形に射影 (module 内で1度だけ) */
@@ -132,6 +138,14 @@ export function useExamPrediction(): ExamPrediction {
       predictionInterval: result.predictionInterval,
       growthPerDay: result.growthPerDay,
       momentum: calcMomentum(progress),
+      uncertainty: result.uncertainty,
+      effectiveSampleSize: result.effectiveSampleSize,
+      // 全体カバレッジ: 配点で加重した平均 (配点の重い科目の網羅を重く見る)。
+      coverage: (() => {
+        const totalAlloc = result.perCategory.reduce((sum, c) => sum + c.allocation, 0);
+        if (totalAlloc <= 0) return 0;
+        return result.perCategory.reduce((sum, c) => sum + c.allocation * c.coverage, 0) / totalAlloc;
+      })(),
     };
   }, [progress, examHistory]);
 }

@@ -16,6 +16,10 @@ import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } fr
 import { CATEGORIES, EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
 import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
+import { usePredictionHistory } from '../../hooks/usePredictionHistory';
+import { useHeatmap } from '../../hooks/useHeatmap';
+import { PredictionCard } from '../../components/PredictionCard';
+import { distributePointsLostToSubcategories, recoverablePoints, type SubcategoryStat } from '../../utils/predictionDisplay';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category } from '../../types';
 import { getCategoryStats, ALL_QUESTIONS } from '../../data';
 import { useMemo, useState, useCallback } from 'react';
@@ -990,6 +994,75 @@ function makeAccountStyles(C: ThemeColors) {
   });
 }
 
+/**
+ * 予測ハブ④ 模試突合: 予測点 ↔ 直近模試の実測点を並べ、誤差を示す。
+ * 誤差±3以内なら「予測はあなたの実力をほぼ正確に捉えています」。未受験なら受験CTA。
+ * 推移バー(直近10回)も内包し、別セクションの重複を解消する。
+ */
+function MockReconciliation({
+  s,
+  colors,
+  router,
+  predicted,
+  latestMockScore,
+  mockError,
+}: {
+  s: ReturnType<typeof makeStyles>;
+  colors: ThemeColors;
+  router: ReturnType<typeof useRouter>;
+  predicted: number;
+  latestMockScore: number | null;
+  mockError: number | null;
+}) {
+  return (
+    <View style={[s.hubSection, Shadow.sm]}>
+      <Text style={s.hubSectionTitle}>④ 模試突合 — 予測 vs 実測</Text>
+      {latestMockScore === null || mockError === null ? (
+        <Pressable
+          style={s.mockCta}
+          onPress={() => router.push('/exam')}
+          accessibilityRole="button"
+          accessibilityLabel="模擬試験を受けて予測を実測で確かめる"
+        >
+          <Text style={s.mockCtaText}>
+            模試を受けると、予測があなたの実力を正しく捉えているか実測で確かめられます
+          </Text>
+          <Text style={s.mockCtaBtn}>模擬試験を受ける →</Text>
+        </Pressable>
+      ) : (
+        <>
+          <View style={s.mockCompareRow}>
+            <View style={s.mockCompareItem}>
+              <Text style={s.mockCompareLabel}>予測</Text>
+              <Text style={[s.mockCompareVal, { color: colors.primary }]}>{predicted}点</Text>
+            </View>
+            <Text style={s.mockCompareVs}>↔</Text>
+            <View style={s.mockCompareItem}>
+              <Text style={s.mockCompareLabel}>直近模試</Text>
+              <Text style={s.mockCompareVal}>{latestMockScore}点</Text>
+            </View>
+            <View style={s.mockCompareItem}>
+              <Text style={s.mockCompareLabel}>誤差</Text>
+              <Text style={[s.mockCompareVal, { color: Math.abs(mockError) <= 3 ? colors.success : colors.accent }]}>
+                {mockError > 0 ? '+' : ''}{mockError}
+              </Text>
+            </View>
+          </View>
+          <Text style={[
+            s.mockVerdict,
+            { color: Math.abs(mockError) <= 3 ? colors.success : colors.textSecondary },
+          ]}>
+            {Math.abs(mockError) <= 3
+              ? '✓ 予測はあなたの実力をほぼ正確に捉えています'
+              : '模試を重ねるほど予測が実測へ寄っていきます'}
+          </Text>
+          <Text style={s.mockTrendHint}>スコアの推移は下の「模試スコア推移」で確認できます</Text>
+        </>
+      )}
+    </View>
+  );
+}
+
 export default function ProgressScreen() {
   const colors = useThemeColors();
   const s = useMemo(() => makeStyles(colors), [colors]);
@@ -1044,6 +1117,47 @@ export default function ProgressScreen() {
   const aiUsedToday = Math.max(0, aiDailyLimit - aiDailyRemaining);
 
   const examPrediction = useExamPrediction();
+  const predictionHistory = usePredictionHistory(
+    examPrediction.totalPredicted,
+    examPrediction.passProbability,
+    examPrediction.hasData,
+  );
+  const heatmap = useHeatmap();
+
+  // ── 予測ハブ③ 失点ランキング (サブカテゴリ粒度) ──
+  // 科目失点 (allocation·(1−θ)) を、その科目のサブカテゴリへ「取りこぼし度合い」比で按分。
+  // 色だけに頼らず ▲記号 + 点数 の三重符号化で弱点を示す (アクセシビリティ)。
+  const pointsLostRanking = useMemo(() => {
+    const rows = examPrediction.perCategory.flatMap((cat) => {
+      if (cat.pointsLost <= 0) return [];
+      const row = heatmap.rows.find((r) => r.category === cat.category);
+      if (!row) return [];
+      const subStats: SubcategoryStat[] = row.cells.map((cell) => ({
+        label: cell.label,
+        categoryLabel: CATEGORY_LABELS[cat.category],
+        // 取りこぼし度合い = 掲載数 × (1 − 達成率)。未着手も「これから失点しうる」ので残す。
+        missWeight: cell.total * (1 - cell.masteryRate),
+      }));
+      return distributePointsLostToSubcategories(cat.pointsLost, subStats);
+    });
+    return rows.sort((a, b) => b.pointsLost - a.pointsLost).slice(0, 5);
+  }, [examPrediction.perCategory, heatmap.rows]);
+
+  // 上位3つ攻略で何点伸びるか (失点合計 → 予測+◯点 → ◯点)
+  const top3Recoverable = useMemo(
+    () => recoverablePoints(pointsLostRanking, 3),
+    [pointsLostRanking],
+  );
+
+  // ── 予測ハブ④ 模試突合 ──
+  const latestMockScore = useMemo(
+    () => (examHistory.length > 0 ? examHistory[examHistory.length - 1].score : null),
+    [examHistory],
+  );
+  const mockError = latestMockScore !== null ? examPrediction.totalPredicted - latestMockScore : null;
+
+  // 直前期(試験30日以内)は ④模試突合 を上位に・当日見込を主役に
+  const isFinalSprint = examPrediction.daysUntilExam !== null && examPrediction.daysUntilExam <= 30;
 
   const handleReset = () => {
     confirmAlert('学習データのリセット', '全ての学習記録が削除されます。この操作は取り消せません。', () => resetProgress());
@@ -1065,12 +1179,12 @@ export default function ProgressScreen() {
             <Pressable
               style={s.heroItem}
               onPress={() => infoAlert(
-                '達成率について',
-                '「3回連続で正解した問題」の割合です。\n間違えると0からカウントし直しになります。\nまぐれ正解ではなく「本当に理解した問題」を把握できます。',
+                '習得カバー率について',
+                'これは合格判定ではなく「学習の網羅度」です。\n「3回連続で正解した問題」が全問題に占める割合を表します。\n\n合格の目安は予測スコア（予測ハブ）で確認してください。',
               )}
             >
               <Text style={[s.heroValue, { color: colors.primary }]}>{rate}%</Text>
-              <Text style={s.heroLabel}>達成率 ⓘ</Text>
+              <Text style={s.heroLabel}>習得カバー率 ⓘ</Text>
             </Pressable>
             <View style={s.heroDivider} />
             <View style={s.heroItem}>
@@ -1117,81 +1231,74 @@ export default function ProgressScreen() {
           </View>
         )}
 
-        {/* ── 本試験予測スコア（詳細版） ── */}
-        <View style={[s.examCard, Shadow.md]}>
-          <View style={s.examHeader}>
-            <View>
-              <Text style={s.examTitle}>本試験 予測スコア</Text>
-              <Text style={s.examSub}>正答率から本番の得点を予測</Text>
-            </View>
-            {examPrediction.hasData ? (
-              <View style={[
-                s.examBigScore,
-                { backgroundColor: examPrediction.totalPredicted >= PASS_LINE ? colors.primarySurface : colors.errorSurface },
-              ]}>
-                <Text style={[
-                  s.examBigNum,
-                  { color: examPrediction.totalPredicted >= PASS_LINE ? colors.primary : colors.error },
-                ]}>
-                  {examPrediction.totalPredicted}
-                </Text>
-                <Text style={s.examBigDenom}>/{EXAM_TOTAL}</Text>
-              </View>
-            ) : (
-              <Text style={s.examNoData}>--/{EXAM_TOTAL}</Text>
+        {/* ════════ 予測ハブ: 1つの予測を解剖する流れ (① → ② → ③ → ④) ════════ */}
+        <Text style={s.hubTitle}>🎯 本試験 予測ハブ</Text>
+
+        {!examPrediction.hasData ? (
+          <View style={[s.examCard, Shadow.md]}>
+            <Text style={s.examTitle}>本試験 予測点数</Text>
+            <Text style={s.examHint}>問題を解き始めると、あなた専用の予測点数が表示されます</Text>
+          </View>
+        ) : (
+          <>
+            {/* ── ① 予測点数 + 95%信頼区間 + 合格ライン + 合格可能性 + 当日見込 + ②科目別内訳 ── */}
+            <PredictionCard prediction={examPrediction} history={predictionHistory} />
+
+            {/* 直前期は ④模試突合 を ③ より上に (実測で予測の正しさを示すのが最優先) */}
+            {isFinalSprint && (
+              <MockReconciliation
+                s={s}
+                colors={colors}
+                router={router}
+                predicted={examPrediction.totalPredicted}
+                latestMockScore={latestMockScore}
+                mockError={mockError}
+              />
             )}
-          </View>
 
-          {examPrediction.hasData && (
-            <View style={[
-              s.examVerdict,
-              { backgroundColor: examPrediction.totalPredicted >= PASS_LINE ? colors.successSurface : colors.errorSurface },
-            ]}>
-              <Text style={[
-                s.examVerdictText,
-                { color: examPrediction.totalPredicted >= PASS_LINE ? colors.success : colors.error },
-              ]}>
-                {examPrediction.totalPredicted >= PASS_LINE
-                  ? `合格圏内 — 合格ライン(${PASS_LINE}点)を${examPrediction.totalPredicted - PASS_LINE}点上回っています`
-                  : `合格ラインまであと${PASS_LINE - examPrediction.totalPredicted}点 — 苦手科目を重点的に対策しましょう`}
-              </Text>
-            </View>
-          )}
-
-          <View style={s.examGrid}>
-            {examPrediction.perCategory.map((item) => {
-              const catColor = CATEGORY_COLORS[item.category];
-              const pctOfAllocation = item.allocation > 0 ? (item.predicted / item.allocation) * 100 : 0;
-              return (
-                <View key={item.category} style={s.examRow}>
-                  <View style={s.examRowTop}>
-                    <View style={s.examRowLeft}>
-                      <View style={[s.examDot, { backgroundColor: catColor }]} />
-                      <Text style={s.examRowLabel}>{CATEGORY_LABELS[item.category]}</Text>
+            {/* ── ③ 弱点 = 失点ランキング (▲記号 + 点数 の三重符号化) ── */}
+            {pointsLostRanking.length > 0 && (
+              <View style={[s.hubSection, Shadow.sm]}>
+                <Text style={s.hubSectionTitle}>③ 弱点 — どこで何点 失っているか</Text>
+                {pointsLostRanking.map((row, i) => (
+                  <View key={`${row.label}-${i}`} style={s.lossRow}>
+                    <Text style={s.lossRank}>▲{i + 1}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.lossLabel}>{row.label}</Text>
+                      <Text style={s.lossCat}>{row.categoryLabel}</Text>
                     </View>
-                    <View style={s.examRowRight}>
-                      <Text style={[s.examRowScore, { color: catColor }]}>
-                        {examPrediction.hasData ? item.predicted.toFixed(1) : '-'}
-                      </Text>
-                      <Text style={s.examRowAlloc}>/{item.allocation}問</Text>
-                    </View>
+                    <Text style={s.lossPoints}>−{row.pointsLost.toFixed(1)}点</Text>
                   </View>
-                  <View style={s.examRowTrack}>
-                    <View style={[s.examRowFill, {
-                      width: `${examPrediction.hasData ? pctOfAllocation : 0}%`,
-                      backgroundColor: catColor,
-                    }]} />
-                    <View style={[s.examPassMark, { left: `${(PASS_LINE / EXAM_TOTAL) * 100}%` }]} />
-                  </View>
-                </View>
-              );
-            })}
-          </View>
+                ))}
+                {top3Recoverable > 0 && (
+                  <Text style={s.lossSummary}>
+                    上位3つを攻略すると 予測 +{top3Recoverable.toFixed(1)}点 → {Math.min(EXAM_TOTAL, Math.round(examPrediction.totalPredicted + top3Recoverable))}点
+                  </Text>
+                )}
+                <Pressable
+                  style={s.heatmapLink}
+                  onPress={() => router.push('/heatmap')}
+                  accessibilityRole="button"
+                  accessibilityLabel="弱点マップ全体を見る"
+                >
+                  <Text style={s.heatmapLinkText}>▦ 弱点マップ全体を見る →</Text>
+                </Pressable>
+              </View>
+            )}
 
-          {!examPrediction.hasData && (
-            <Text style={s.examHint}>問題を解き始めると予測スコアが表示されます</Text>
-          )}
-        </View>
+            {/* ── ④ 模試突合 (直前期以外はここ) ── */}
+            {!isFinalSprint && (
+              <MockReconciliation
+                s={s}
+                colors={colors}
+                router={router}
+                predicted={examPrediction.totalPredicted}
+                latestMockScore={latestMockScore}
+                mockError={mockError}
+              />
+            )}
+          </>
+        )}
 
         {/* Upgrade Banner */}
         {subscription.plan === 'free' && (
@@ -1501,126 +1608,144 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '800',
     },
 
-    // ─── 本試験予測 ───
+    // ─── 本試験予測 (データ0 フォールバック用の最小スタイル) ───
     examCard: {
       backgroundColor: C.card,
       borderRadius: BorderRadius.xl,
       padding: 20,
       marginBottom: Spacing.lg,
     },
-    examHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
     examTitle: {
       fontSize: FontSize.headline,
       fontWeight: '800',
       color: C.text,
-    },
-    examSub: {
-      fontSize: FontSize.caption,
-      color: C.textSecondary,
-      marginTop: 2,
-    },
-    examBigScore: {
-      flexDirection: 'row',
-      alignItems: 'baseline',
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: BorderRadius.full,
-    },
-    examBigNum: {
-      fontSize: 32,
-      fontWeight: '900',
-      letterSpacing: LetterSpacing.tight,
-    },
-    examBigDenom: {
-      fontSize: FontSize.footnote,
-      fontWeight: '600',
-      color: C.textSecondary,
-      marginLeft: 2,
-    },
-    examNoData: {
-      fontSize: FontSize.headline,
-      fontWeight: '600',
-      color: C.textTertiary,
-    },
-    examVerdict: {
-      marginTop: 14,
-      padding: 12,
-      borderRadius: BorderRadius.md,
-    },
-    examVerdictText: {
-      fontSize: FontSize.caption,
-      fontWeight: '700',
-      textAlign: 'center',
-      lineHeight: LineHeight.caption * 1.3,
-    },
-    examGrid: {
-      marginTop: 18,
-      gap: 14,
-    },
-    examRow: {},
-    examRowTop: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 6,
-    },
-    examRowLeft: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    examDot: {
-      width: 10,
-      height: 10,
-      borderRadius: 5,
-      marginRight: 8,
-    },
-    examRowLabel: {
-      fontSize: FontSize.footnote,
-      fontWeight: '600',
-      color: C.text,
-    },
-    examRowRight: {
-      flexDirection: 'row',
-      alignItems: 'baseline',
-    },
-    examRowScore: {
-      fontSize: FontSize.headline,
-      fontWeight: '800',
-    },
-    examRowAlloc: {
-      fontSize: FontSize.caption,
-      fontWeight: '500',
-      color: C.textTertiary,
-      marginLeft: 2,
-    },
-    examRowTrack: {
-      height: 8,
-      backgroundColor: C.borderLight,
-      borderRadius: 4,
-      overflow: 'hidden',
-      position: 'relative' as const,
-    },
-    examRowFill: {
-      height: '100%',
-      borderRadius: 4,
-    },
-    examPassMark: {
-      position: 'absolute' as const,
-      top: 0,
-      bottom: 0,
-      width: 2,
-      backgroundColor: C.textTertiary,
-      opacity: 0.4,
     },
     examHint: {
       fontSize: FontSize.caption,
       color: C.textTertiary,
       textAlign: 'center',
       marginTop: 14,
+    },
+
+    // ─── 予測ハブ (① PredictionCard + ③ 失点 + ④ 模試突合) ───
+    hubTitle: {
+      fontSize: FontSize.title3,
+      fontWeight: '800',
+      color: C.text,
+      marginBottom: Spacing.md,
+      letterSpacing: LetterSpacing.tight,
+    },
+    hubSection: {
+      backgroundColor: C.card,
+      borderRadius: BorderRadius.xl,
+      padding: Spacing.lg,
+      marginTop: Spacing.md,
+      marginBottom: Spacing.lg,
+    },
+    hubSectionTitle: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.text,
+      marginBottom: Spacing.md,
+    },
+    // 失点ランキング (▲記号 + 点数 の三重符号化)
+    lossRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      paddingVertical: 10,
+      borderBottomWidth: 0.5,
+      borderBottomColor: C.borderLight,
+    },
+    lossRank: {
+      fontSize: FontSize.subhead,
+      fontWeight: '900',
+      color: C.error,
+      width: 32,
+    },
+    lossLabel: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.text,
+    },
+    lossCat: {
+      fontSize: FontSize.caption2,
+      color: C.textSecondary,
+      marginTop: 2,
+    },
+    lossPoints: {
+      fontSize: FontSize.headline,
+      fontWeight: '900',
+      color: C.error,
+    },
+    lossSummary: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.primary,
+      marginTop: Spacing.md,
+      lineHeight: LineHeight.footnote * 1.3,
+    },
+    heatmapLink: {
+      marginTop: Spacing.md,
+      paddingTop: Spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: C.borderLight,
+    },
+    heatmapLinkText: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      color: C.primary,
+    },
+    // 模試突合 ④
+    mockCta: {
+      backgroundColor: C.background,
+      borderRadius: BorderRadius.md,
+      padding: Spacing.md,
+    },
+    mockCtaText: {
+      fontSize: FontSize.caption,
+      color: C.textSecondary,
+      lineHeight: LineHeight.caption * 1.4,
+    },
+    mockCtaBtn: {
+      fontSize: FontSize.footnote,
+      fontWeight: '800',
+      color: C.primary,
+      marginTop: 8,
+    },
+    mockCompareRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      marginBottom: Spacing.sm,
+    },
+    mockCompareItem: { alignItems: 'center' },
+    mockCompareLabel: {
+      fontSize: FontSize.caption2,
+      color: C.textTertiary,
+      fontWeight: '600',
+    },
+    mockCompareVal: {
+      fontSize: FontSize.title3,
+      fontWeight: '900',
+      color: C.text,
+      marginTop: 2,
+    },
+    mockCompareVs: {
+      fontSize: FontSize.headline,
+      color: C.textTertiary,
+    },
+    mockVerdict: {
+      fontSize: FontSize.footnote,
+      fontWeight: '700',
+      textAlign: 'center',
+      marginTop: Spacing.sm,
+    },
+    mockTrendHint: {
+      fontSize: FontSize.caption2,
+      color: C.textTertiary,
+      textAlign: 'center',
+      marginTop: 6,
     },
 
     // ─── Upgrade ───

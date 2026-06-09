@@ -11,9 +11,11 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Shadow, FontSize, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
-import { EXAM_TOTAL, PASS_LINE } from '../../constants/exam';
+import { PASS_LINE } from '../../constants/exam';
 import { useThemeColors, type ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
+import { usePredictionHistory } from '../../hooks/usePredictionHistory';
+import { PredictionCard } from '../../components/PredictionCard';
 import { PaywallPromptBanner } from '../../components/PaywallPromptBanner';
 import { FinalSprintCard } from '../../components/FinalSprintCard';
 import { useFinalSprintMode } from '../../hooks/useFinalSprintMode';
@@ -300,20 +302,22 @@ function HomeScreen() {
     router.push(`/question/${ids[0]}?source=ai` as any);
   }, [router]);
 
-  // [UX改善 v2] 「達成率」を「真の習得度」に変更:
-  //   - 3回連続正解で「習得」とみなす（間違えると0にリセット）
-  //   - 単なる totalCorrect では「まぐれ正解」もカウントされてしまう
-  //   - 連続3回正解 = 偶然ではなく本当に理解しているという指標
-  const masteredCount = useProgressStore((s) => s.getMasteredCount)();
-  const rate = useMemo(
-    () => TOTAL_Q > 0 ? Math.round((Math.min(masteredCount, TOTAL_Q) / TOTAL_Q) * 100) : 0,
-    [masteredCount],
-  );
+  // 達成率(習得率)はホームの「合格の物差し」から降格 (合格判定は予測点数に一本化・P6)。
+  // 習得カバー率は記録タブで「学習の網羅度」として表示する。
   const dueCount = useMemo(() => getDueForReview().length, [getDueForReview]);
   const weakCount = useMemo(() => getWeakQuestions().length, [getWeakQuestions]);
 
   const examPrediction = useExamPrediction();
+  const predictionHistory = usePredictionHistory(
+    examPrediction.totalPredicted,
+    examPrediction.passProbability,
+    examPrediction.hasData,
+  );
   const sprintMode = useFinalSprintMode();
+
+  // データ0(未着手): 点を出さず「あと◯問で予測開始」。閾値はエンジンの low ティア相当(演習10問)で十分。
+  const PREDICTION_MIN_QUESTIONS = 10;
+  const answeredForPrediction = stats.totalQuestions;
 
   // 時間帯に応じた最適アクションのサジェスト
   const hourNow = new Date().getHours();
@@ -499,34 +503,39 @@ function HomeScreen() {
             <View style={[s.dashProgressFill, { width: `${dailyGoalPct}%` }]} />
           </View>
 
-          {/* [Quick Win D] 合格距離 視覚化バー
-              世界基準: Duolingo の「合格までのキロメートル」風。
-              ・色: < 30%(赤) / 30-70%(黄) / 70+(緑)
-              ・残り問題数を視覚化 → 「あと N問でマスター」 */}
-          {(() => {
-            const distanceColor = rate >= 70 ? colors.success : rate >= 30 ? '#E8860C' : colors.error;
-            const remainingMastery = Math.max(0, TOTAL_Q - Math.round(TOTAL_Q * (rate / 100)));
-            return (
-              <View style={s.distanceBox}>
-                <View style={s.distanceHeader}>
-                  <Text style={s.distanceLabel}>🎯 合格までの距離</Text>
-                  <Text style={[s.distanceValue, { color: distanceColor }]}>
-                    あと {remainingMastery}問 マスター
-                  </Text>
-                </View>
-                <View style={s.distanceTrack}>
-                  <View style={[s.distanceFill, { width: `${rate}%`, backgroundColor: distanceColor }]} />
-                </View>
-                <Text style={s.distanceSub}>
-                  {rate >= 70
-                    ? '🏆 合格圏内！あと一息で本試験レベル到達'
-                    : rate >= 30
-                      ? '⚡ 順調に進んでいます。この調子で続けよう'
-                      : '🌱 まずは1日5問から。継続が合格への鍵'}
+          {/* ── 合格の物差し = 本試験予測点数の 1 行プレビュー ──
+              旧「合格までの距離」(達成率ベース) を廃止し、合格判定は予測点数に一本化(P6・役割分離)。
+              タップ → 記録タブの予測ハブ。データ0/測定中は誠実に状態別表示。 */}
+          <Pressable
+            style={s.predPreview}
+            onPress={() => router.push('/(tabs)/progress')}
+            accessibilityRole="button"
+            accessibilityLabel={
+              examPrediction.hasData
+                ? `本試験予測 ${examPrediction.totalPredicted}点、合格ライン${PASS_LINE}点。タップで予測の詳細を見る`
+                : '予測はまだ出ていません。タップで学習記録を見る'
+            }
+          >
+            {examPrediction.hasData ? (
+              <PredictionCard prediction={examPrediction} history={predictionHistory} compact />
+            ) : (
+              <View>
+                <Text style={s.predEmptyTitle}>📊 本試験 予測点数</Text>
+                <Text style={s.predEmptyMsg}>
+                  まだ予測できません — あと {Math.max(1, PREDICTION_MIN_QUESTIONS - answeredForPrediction)}問 解くと予測開始
                 </Text>
+                <View style={s.predDotsRow}>
+                  {Array.from({ length: PREDICTION_MIN_QUESTIONS }).map((_, i) => (
+                    <View
+                      key={i}
+                      style={[s.predDot, i < answeredForPrediction && s.predDotFilled]}
+                    />
+                  ))}
+                </View>
               </View>
-            );
-          })()}
+            )}
+            <Text style={s.predPreviewArrow}>詳細を見る ›</Text>
+          </Pressable>
         </View>
 
         {/* 「今日の習慣」セクションは廃止（習慣設定=記録タブ・通知=_layoutで継続）→ ホームの下スクロールを削減（P1迷い/P4シンプル） */}
@@ -982,43 +991,44 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     borderRadius: 3,
   },
 
-  // ─── [Quick Win D] 合格距離 視覚化 ───
-  distanceBox: {
+  // ─── 本試験予測点数 1 行プレビュー (旧 distanceBox の位置) ───
+  predPreview: {
     marginTop: 16,
     paddingTop: 14,
     borderTopWidth: 1,
     borderTopColor: C.borderLight,
   },
-  distanceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+  predPreviewArrow: {
+    fontSize: FontSize.caption,
+    fontWeight: '700',
+    color: C.primary,
+    textAlign: 'right',
+    marginTop: 8,
   },
-  distanceLabel: {
+  predEmptyTitle: {
     fontSize: FontSize.footnote,
     fontWeight: '700',
     color: C.text,
   },
-  distanceValue: {
-    fontSize: FontSize.subhead,
-    fontWeight: '800',
-  },
-  distanceTrack: {
-    height: 10,
-    backgroundColor: C.borderLight,
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  distanceFill: {
-    height: '100%',
-    borderRadius: 5,
-  },
-  distanceSub: {
-    fontSize: FontSize.caption2,
+  predEmptyMsg: {
+    fontSize: FontSize.caption,
     color: C.textSecondary,
-    marginTop: 8,
+    marginTop: 6,
     fontWeight: '600',
+  },
+  predDotsRow: {
+    flexDirection: 'row',
+    gap: 4,
+    marginTop: 10,
+  },
+  predDot: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: C.borderLight,
+  },
+  predDotFilled: {
+    backgroundColor: C.primary,
   },
 
   // ─── Main CTA (最初の一手・画面で最も目立つ特大カード) ───

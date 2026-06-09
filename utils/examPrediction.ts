@@ -48,12 +48,12 @@ const MOCK_RECENCY_RHO = 0.85;
 const PRIOR_VARIANCE = 0.25 ** 2; // σ=0.25 (正答率の標準偏差として保守的)
 
 /** n_eff の重み: 練習1問は模試1問より情報が薄い (甘い/単発)。模試を厚く効かせる。 */
-const PRACTICE_NEFF_WEIGHT = 0.5;
-const MOCK_NEFF_WEIGHT = 2;
+export const PRACTICE_NEFF_WEIGHT = 0.5;
+export const MOCK_NEFF_WEIGHT = 2;
 
-/** confidence 閾値 (n_eff ベース) */
-const CONFIDENCE_LOW_MAX = 30;
-const CONFIDENCE_HIGH_MIN = 80;
+/** confidence 閾値 (n_eff ベース)。Phase2 UI の「あと◯問で精度↑」も同じ閾値で逆算する。 */
+export const CONFIDENCE_LOW_MAX = 30;
+export const CONFIDENCE_HIGH_MIN = 80;
 
 /** growthPerDay (実測成長) の現実的クランプ (点/日) */
 const GROWTH_MIN = -0.05;
