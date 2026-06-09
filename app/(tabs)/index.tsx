@@ -43,7 +43,6 @@ import { StreakPulse } from '../../components/StreakPulse';
 import { AnimatedNumber } from '../../components/AnimatedNumber';
 import LandingPage from '../../components/LandingPage';
 import Onboarding from '../../components/Onboarding';
-import type { HabitStack } from '../../types';
 // 合格エンジン (出題キュー / 今日やること状態マシン) は utils/passEngine に集約。
 // UI から純粋ロジックを切り離し、出題基準を単一ソース化 + jest でテスト可能にしている。
 import { buildPassQueue, pickOneSmart, computeTodayAction, evaluateTodayCompletion } from '../../utils/passEngine';
@@ -560,6 +559,21 @@ function HomeScreen() {
           </View>
         </Pressable>
 
+        {/* ── 模擬試験（クエスト直下に常時表示・本試験直結の主要導線） ── */}
+        <Pressable
+          style={[s.examCard, Shadow.sm]}
+          onPress={() => router.push('/exam')}
+          accessibilityRole="button"
+          accessibilityLabel="模擬試験を開始"
+        >
+          <Text style={s.examCardIcon}>📋</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={s.examCardTitle}>模擬試験</Text>
+            <Text style={s.examCardSub}>本番形式50問で実力チェック</Text>
+          </View>
+          <Text style={s.examCardArrow}>›</Text>
+        </Pressable>
+
         {/* 直近7日の学習バーチャートは記録タブ(progress)へ移設(ホーム簡素化 P4)。 */}
 
         {/* ── 直前モード（試験30日前から自動表示） ── */}
@@ -638,14 +652,7 @@ function HomeScreen() {
 
         {/* 「よく出る論点」プリセットchip(緑6個)は廃止（ホーム簡素化。論点別は下の「📚 論点を選んで解く」で全論点から選べる） */}
 
-        {/* 「学習モード」見出しは廃止＋「マスター済み」は記録タブへ集約(重複解消 P4)。模擬試験はカード単独で残置(C で下タブ昇格予定)。 */}
-        <View style={s.modeGrid}>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/exam')} accessibilityRole="button" accessibilityLabel="模擬試験を開始">
-            <Text style={s.modeIcon}>📋</Text>
-            <Text style={s.modeTitle}>模擬試験</Text>
-            <Text style={s.modeSub}>本番形式50問</Text>
-          </Pressable>
-        </View>
+        {/* 模擬試験カードはクエスト直下へ常時表示に昇格(折りたたみ外へ移動)。 */}
 
         {/* ── [UX改善] 科目別 → 全論点 chip 一覧 (タップで即連続出題)
             旧: カードタップで展開 → サブカテゴリの「正答率%」表示
@@ -1014,41 +1021,6 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     fontWeight: '600',
   },
 
-  // ─── Habit Row ───
-  habitRow: {
-    marginTop: Spacing.md,
-    paddingLeft: Spacing.xl,
-  },
-  habitRowTitle: {
-    fontSize: FontSize.caption,
-    fontWeight: '700',
-    color: C.textSecondary,
-    marginBottom: 8,
-    letterSpacing: LetterSpacing.wide,
-  },
-  habitScroll: {
-    gap: 8,
-    paddingRight: Spacing.xl,
-  },
-  habitChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: C.card,
-    borderRadius: BorderRadius.full,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    gap: 6,
-  },
-  habitChipIcon: {
-    fontSize: 16,
-  },
-  habitChipText: {
-    fontSize: FontSize.caption,
-    fontWeight: '600',
-    color: C.text,
-    maxWidth: 120,
-  },
-
   // ─── Main CTA (最初の一手・画面で最も目立つ特大カード) ───
   mainCTA: {
     marginHorizontal: Spacing.xl,
@@ -1273,33 +1245,21 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ─── Mode Grid（2列） ───
-  modeGrid: {
+  // ─── 模擬試験カード（クエスト直下） ───
+  examCard: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    paddingHorizontal: Spacing.xl,
-  },
-  modeCard: {
-    width: '48%',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: Spacing.xl,
+    marginTop: Spacing.md,
     backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
-    padding: 16,
+    padding: Spacing.lg,
   },
-  modeIcon: {
-    fontSize: 26,
-    marginBottom: 8,
-  },
-  modeTitle: {
-    fontSize: FontSize.subhead,
-    fontWeight: '700',
-    color: C.text,
-  },
-  modeSub: {
-    fontSize: FontSize.caption,
-    color: C.textSecondary,
-    marginTop: 3,
-  },
+  examCardIcon: { fontSize: 26 },
+  examCardTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: C.text },
+  examCardSub: { fontSize: FontSize.caption, color: C.textSecondary, marginTop: 2 },
+  examCardArrow: { fontSize: 24, color: C.textTertiary, fontWeight: '300' },
   // ─── バナー群 ───
   bannerSection: { paddingHorizontal: Spacing.xl, marginTop: Spacing.xl, gap: 10 },
   bannerCard: {

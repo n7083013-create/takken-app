@@ -320,30 +320,20 @@ export const FREE_LIMITS = {
 export interface UserSettings {
   dailyGoal: number;
   notificationsEnabled: boolean;
-  notificationTime: string;
+  /** 学習リマインダー通知時刻（"HH:MM" の配列・複数時刻対応） */
+  notificationTimes: string[];
   soundEnabled: boolean;
   vibrationEnabled: boolean;
   studyReminderDays: number[];
   fontSize: 'small' | 'medium' | 'large';
   themeMode: 'system' | 'light' | 'dark';
   examDate?: string; // ISO string — 試験日
-  habitStacks?: HabitStack[];
   /** アニメーション表示レベル
    * - full: 通常演出（コンボ・祝福・エフェクトすべて）
    * - subtle: 控えめ（コンボ数のみ・祝福なし）
    * - off: 最小限（チェックマークのみ・バイブと音は別設定）
    */
   animationLevel?: 'full' | 'subtle' | 'off';
-}
-
-// 習慣スタッキング
-export interface HabitStack {
-  id: string;
-  trigger: string;     // "朝コーヒーを淹れたら"
-  action: string;      // "一問一答を5問解く"
-  icon: string;        // emoji
-  enabled: boolean;
-  notifyAt?: string;   // "HH:MM" 形式（例: "07:00"）通知時刻
 }
 
 // 一問一答（○✗クイズ）

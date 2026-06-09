@@ -12,10 +12,13 @@ import { useSettingsStore } from '../store/useSettingsStore';
 import { Brand } from '../constants/theme';
 
 const REMINDER_IDENTIFIER = 'takken_daily_reminder';
+const REMINDER_PREFIX = 'takken_daily_reminder_'; // 複数時刻リマインダーの識別子接頭辞
 const WEEKLY_IDENTIFIER = 'takken_weekly_summary';
 const STREAK_DANGER_IDENTIFIER = 'takken_streak_danger';
-const HABIT_PREFIX = 'takken_habit_';
 const TIMER_IDENTIFIER = 'takken_study_timer';
+
+/** 学習リマインダーに設定できる時刻の最大数 */
+export const MAX_REMINDER_TIMES = 4;
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -190,63 +193,101 @@ export function buildDailyReminderText(ctx: ReminderContext): {
   };
 }
 
-// ── 日次リマインダー ──
+// ── 日次リマインダー（複数時刻対応） ──
+
+/** 1 件の日次リマインダー通知の予約計画（純粋データ） */
+export interface ReminderPlanEntry {
+  identifier: string;
+  hour: number;
+  minute: number;
+}
 
 /**
- * 毎日の学習リマインダーをスケジュール
+ * 時刻配列 → 通知予約計画 への純粋変換（副作用なし・jest 対象）。
+ *
+ * - "HH:MM" として解釈できない要素は捨てる
+ * - 重複時刻は 1 件に畳む（同一識別子になるため）
+ * - 識別子は時刻別（REMINDER_PREFIX + "HHMM"）で安定 → 再設定時に取りこぼしなく上書き
+ * - 多すぎる入力は先頭 MAX_REMINDER_TIMES 件に丸める（OS の 64 件上限を圧迫しない）
+ */
+export function buildReminderPlan(times: string[]): ReminderPlanEntry[] {
+  const seen = new Set<string>();
+  const plan: ReminderPlanEntry[] = [];
+  for (const t of times) {
+    const [hStr, mStr] = (t ?? '').split(':');
+    const hour = Number(hStr);
+    const minute = Number(mStr);
+    if (!Number.isInteger(hour) || !Number.isInteger(minute)) continue;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) continue;
+    const key = `${String(hour).padStart(2, '0')}${String(minute).padStart(2, '0')}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    plan.push({ identifier: `${REMINDER_PREFIX}${key}`, hour, minute });
+    if (plan.length >= MAX_REMINDER_TIMES) break;
+  }
+  return plan;
+}
+
+/**
+ * 毎日の学習リマインダーを複数時刻でスケジュール
  *
  * 仕組み:
- *  - 通知をスケジュールする時点で stores から状態を取得して動的本文生成
- *  - expo-notifications の CALENDAR repeats: true で毎日同時刻に発火
- *  - 本文を毎晩更新したい場合、recordAnswer 後など主要イベントで再呼び出し
+ *  - 各時刻に 1 通ずつ、スケジュール時点の store 状態から動的本文を生成
+ *  - 既存の日次リマインダーを全キャンセルしてから全時刻で再スケジュール
+ *  - CALENDAR repeats: true で毎日同時刻に発火
  *
- * @param time "HH:MM" 形式 (例: "20:00")
- * @param _legacyDueCount 旧 API 互換用（無視。store から最新値を取得する）
+ * @param times "HH:MM" の配列（例: ["08:00", "20:00"]）
  */
-export async function scheduleDailyReminder(
-  time: string,
-  _legacyDueCount: number = 0,
-): Promise<void> {
+export async function scheduleDailyReminder(times: string[]): Promise<void> {
   try {
     if (Platform.OS === 'web') return;
     if (!(await hasPermission())) return;
 
-    // 既存をキャンセル
+    // 旧 identifier・全時刻 identifier を一掃してから貼り直す（重複・取り残し防止）
     await cancelDailyReminder();
 
-    const [hour, minute] = time.split(':').map(Number);
-    if (isNaN(hour) || isNaN(minute)) return;
+    const plan = buildReminderPlan(times);
+    if (plan.length === 0) return;
 
     const ctx = getReminderContext();
     const { title, body } = buildDailyReminderText(ctx);
 
-    await Notifications.scheduleNotificationAsync({
-      identifier: REMINDER_IDENTIFIER,
-      content: {
-        title,
-        body,
-        sound: true,
-        ...(Platform.OS === 'android' ? { channelId: 'default' } : {}),
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-        hour,
-        minute,
-        repeats: true,
-      },
-    });
+    for (const entry of plan) {
+      await Notifications.scheduleNotificationAsync({
+        identifier: entry.identifier,
+        content: {
+          title,
+          body,
+          sound: true,
+          ...(Platform.OS === 'android' ? { channelId: 'default' } : {}),
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+          hour: entry.hour,
+          minute: entry.minute,
+          repeats: true,
+        },
+      });
+    }
   } catch (e) {
     logError(e, { context: 'notifications.schedule' });
   }
 }
 
 /**
- * 日次リマインダーをキャンセル
+ * 日次リマインダーをすべてキャンセル
+ * 旧単一 identifier と、時刻別 identifier(REMINDER_PREFIX) の両方を掃除する
  */
 export async function cancelDailyReminder(): Promise<void> {
   try {
     if (Platform.OS === 'web') return;
-    await Notifications.cancelScheduledNotificationAsync(REMINDER_IDENTIFIER);
+    await Notifications.cancelScheduledNotificationAsync(REMINDER_IDENTIFIER).catch(() => {});
+    const all = await Notifications.getAllScheduledNotificationsAsync();
+    for (const n of all) {
+      if (n.identifier.startsWith(REMINDER_PREFIX)) {
+        await Notifications.cancelScheduledNotificationAsync(n.identifier);
+      }
+    }
   } catch (e) {
     logError(e, { context: 'notification.cancelDaily' });
   }
@@ -367,8 +408,8 @@ export async function refreshNotificationsAfterAnswer(): Promise<void> {
     if (!settings.notificationsEnabled) return;
     if (!(await hasPermission())) return;
 
-    // 日次リマインダーの本文を最新の状態で更新
-    await scheduleDailyReminder(settings.notificationTime);
+    // 日次リマインダーの本文を最新の状態で更新（全設定時刻に対して）
+    await scheduleDailyReminder(settings.notificationTimes);
     // ストリーク維持通知を再予約（最終学習から 20-22h 後）
     await scheduleStreakDangerNotification();
   } catch (e) {
@@ -441,65 +482,6 @@ export async function scheduleWeeklySummary(weeklyStats: {
     });
   } catch (e) {
     logError(e, { context: 'notifications.weeklySummary' });
-  }
-}
-
-// ── 習慣スタッキング通知 ──
-
-/**
- * 習慣スタッキング通知を一括スケジュール
- * 既存の習慣通知をすべてキャンセルしてから再設定
- */
-export async function scheduleHabitNotifications(
-  habits: { id: string; trigger: string; action: string; icon: string; notifyAt?: string; enabled: boolean }[],
-): Promise<void> {
-  try {
-    if (Platform.OS === 'web') return;
-    if (!(await hasPermission())) return;
-
-    // 既存の習慣通知をすべてキャンセル
-    await cancelHabitNotifications();
-
-    const enabled = habits.filter((h) => h.enabled && h.notifyAt);
-    for (const habit of enabled) {
-      const [hour, minute] = (habit.notifyAt ?? '').split(':').map(Number);
-      if (isNaN(hour) || isNaN(minute)) continue;
-
-      await Notifications.scheduleNotificationAsync({
-        identifier: `${HABIT_PREFIX}${habit.id}`,
-        content: {
-          title: `${habit.icon} ${habit.trigger}`,
-          body: `→ ${habit.action}`,
-          sound: true,
-          ...(Platform.OS === 'android' ? { channelId: 'default' } : {}),
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-          hour,
-          minute,
-          repeats: true,
-        },
-      });
-    }
-  } catch (e) {
-    logError(e, { context: 'notifications.habitSchedule' });
-  }
-}
-
-/**
- * 習慣スタッキング通知をすべてキャンセル
- */
-export async function cancelHabitNotifications(): Promise<void> {
-  try {
-    if (Platform.OS === 'web') return;
-    const all = await Notifications.getAllScheduledNotificationsAsync();
-    for (const n of all) {
-      if (n.identifier.startsWith(HABIT_PREFIX)) {
-        await Notifications.cancelScheduledNotificationAsync(n.identifier);
-      }
-    }
-  } catch (e) {
-    logError(e, { context: 'notifications.cancelHabit' });
   }
 }
 

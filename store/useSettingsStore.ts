@@ -20,6 +20,23 @@ function getDayKey(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/**
+ * 永続化された settings から通知時刻配列を復元する（後方互換つき）。
+ * - 旧スキーマ: notificationTime(単一 string) のみ → [その値] に変換
+ * - 新スキーマ: notificationTimes(配列) があればそれを採用
+ * - どちらも無ければ既定 ['20:00']
+ */
+function migrateNotificationTimes(stored: unknown): string[] {
+  const s = (stored ?? {}) as { notificationTimes?: unknown; notificationTime?: unknown };
+  if (Array.isArray(s.notificationTimes) && s.notificationTimes.length > 0) {
+    return s.notificationTimes.filter((t): t is string => typeof t === 'string');
+  }
+  if (typeof s.notificationTime === 'string' && s.notificationTime) {
+    return [s.notificationTime];
+  }
+  return ['20:00'];
+}
+
 const STORAGE_KEY = '@takken_settings';
 
 interface SettingsState {
@@ -62,7 +79,7 @@ import { getNextTakkenExamDate, daysUntilTakkenExam } from '../constants/exam';
 const defaultSettings: UserSettings = {
   dailyGoal: 10,
   notificationsEnabled: true,
-  notificationTime: '20:00',
+  notificationTimes: ['20:00'], // 零設定で 1 つ既定 ON（低摩擦）
   soundEnabled: false,        // 図書館・電車など音を出せない環境が多いためデフォOFF
   vibrationEnabled: true,
   studyReminderDays: [0, 1, 2, 3, 4, 5, 6], // 毎日
@@ -416,7 +433,12 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       if (raw) {
         const data = JSON.parse(raw);
         set({
-          settings: { ...defaultSettings, ...data.settings },
+          settings: {
+            ...defaultSettings,
+            ...data.settings,
+            // 後方互換: 旧 notificationTime(単一) → notificationTimes(配列)へ移行
+            notificationTimes: migrateNotificationTimes(data.settings),
+          },
           subscription: checkAndResetQueries({
             ...defaultSubscription,
             ...data.subscription,

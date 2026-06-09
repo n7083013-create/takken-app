@@ -22,7 +22,6 @@ import { initializeIAP, retryPendingPurchases } from '../services/iap';
 import { useThemeColors, useIsDark } from '../hooks/useThemeColors';
 import {
   requestNotificationPermission,
-  scheduleHabitNotifications,
   scheduleDailyReminder,
   scheduleWeeklySummary,
 } from '../services/notifications';
@@ -43,7 +42,6 @@ export default function RootLayout() {
   const loadExamHistory = useExamStore((s) => s.loadHistory);
   const loadCelebrated = useSessionStore((s) => s.loadCelebrated);
   const settings = useSettingsStore((s) => s.settings);
-  const getDueForReview = useProgressStore((s) => s.getDueForReview);
   const colors = useThemeColors();
   const isDark = useIsDark();
   const router = useRouter();
@@ -257,7 +255,7 @@ export default function RootLayout() {
     (async () => {
       const ok = await requestNotificationPermission();
       if (ok) {
-        await scheduleDailyReminder(settings.notificationTime, getDueForReview().length);
+        await scheduleDailyReminder(settings.notificationTimes);
         // 週間サマリー通知もスケジュール
         const accuracy = stats.totalQuestions > 0 ? stats.totalCorrect / stats.totalQuestions : 0;
         await scheduleWeeklySummary({
@@ -266,11 +264,9 @@ export default function RootLayout() {
           streak: stats.streak,
           daysUntilExam: getDaysUntilExam(),
         });
-        // [#6] 習慣スタッキング通知を起動時にも再予約（オンボ設定や権限の後付け許可でも確実に有効化）
-        await scheduleHabitNotifications(settings.habitStacks ?? []);
       }
     })();
-  }, [settings.notificationsEnabled, settings.notificationTime]);
+  }, [settings.notificationsEnabled, settings.notificationTimes]);
 
   return (
     <ErrorBoundary>

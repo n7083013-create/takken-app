@@ -18,7 +18,6 @@ import { useThemeColors, ThemeColors } from '../../hooks/useThemeColors';
 import { useExamPrediction } from '../../hooks/useExamPrediction';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category } from '../../types';
 import { getCategoryStats, ALL_QUESTIONS } from '../../data';
-import type { HabitStack } from '../../types';
 import { useMemo, useState, useCallback } from 'react';
 import { useProgressStore } from '../../store/useProgressStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -26,8 +25,6 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../store/useAchievementStore';
 import { useExamStore } from '../../store/useExamStore';
 import { APP_VERSION, API_BASE_URL } from '../../constants/config';
-import { HABIT_PRESETS } from '../../constants/habitPresets';
-import HabitStackingSetup from '../../components/HabitStackingSetup';
 import { StudyHeatmap } from '../../components/StudyHeatmap';
 import { planLabel as computePlanLabel } from '../../utils/subscriptionLabel';
 import { WeeklyEmailToggle } from '../../components/WeeklyEmailToggle';
@@ -35,7 +32,7 @@ import {
   requestNotificationPermission,
   scheduleDailyReminder,
   cancelDailyReminder,
-  scheduleHabitNotifications,
+  MAX_REMINDER_TIMES,
 } from '../../services/notifications';
 
 function SettingsSection() {
@@ -43,7 +40,6 @@ function SettingsSection() {
   const sset = useMemo(() => makeSettingsStyles(colors), [colors]);
   const settings = useSettingsStore((s) => s.settings);
   const updateSettings = useSettingsStore((s) => s.updateSettings);
-  const getDueForReview = useProgressStore((s) => s.getDueForReview);
 
   const themeModes: Array<{ key: 'system' | 'light' | 'dark'; label: string; icon: string }> = [
     { key: 'system', label: '自動', icon: '🌓' },
@@ -59,20 +55,41 @@ function SettingsSection() {
         return;
       }
       updateSettings({ notificationsEnabled: true });
-      await scheduleDailyReminder(settings.notificationTime, getDueForReview().length);
+      await scheduleDailyReminder(settings.notificationTimes);
     } else {
       updateSettings({ notificationsEnabled: false });
       await cancelDailyReminder();
     }
   };
 
-  const timeOptions = ['07:00', '12:00', '18:00', '20:00', '22:00'];
+  // 追加候補の時刻（既に設定済みのものは UI 側で除外）
+  const timePresets = ['07:00', '08:00', '12:00', '18:00', '20:00', '22:00'];
 
-  const handleTimeChange = async (t: string) => {
-    updateSettings({ notificationTime: t });
+  const applyTimes = async (times: string[]) => {
+    updateSettings({ notificationTimes: times });
     if (settings.notificationsEnabled) {
-      await scheduleDailyReminder(t, getDueForReview().length);
+      await scheduleDailyReminder(times);
     }
+  };
+
+  // 1 つの時刻を別候補に置き換える（同じ時刻が既にあれば無視）
+  const replaceTime = async (index: number, next: string) => {
+    if (settings.notificationTimes.includes(next)) return;
+    const updated = settings.notificationTimes.map((t, i) => (i === index ? next : t));
+    await applyTimes(updated);
+  };
+
+  const removeTime = async (index: number) => {
+    // 最低 1 つは残す（全削除なら通知 OFF 側で対応）
+    if (settings.notificationTimes.length <= 1) return;
+    await applyTimes(settings.notificationTimes.filter((_, i) => i !== index));
+  };
+
+  const addTime = async () => {
+    if (settings.notificationTimes.length >= MAX_REMINDER_TIMES) return;
+    const next = timePresets.find((t) => !settings.notificationTimes.includes(t));
+    if (!next) return;
+    await applyTimes([...settings.notificationTimes, next]);
   };
 
   const goalOptions = [5, 10, 15, 20, 30, 50];
@@ -170,27 +187,63 @@ function SettingsSection() {
       {settings.notificationsEnabled && (
         <>
           <Text style={sset.label}>通知時刻</Text>
-          <View style={sset.timeRow}>
-            {timeOptions.map((t) => (
-              <Pressable
-                key={t}
-                style={[
-                  sset.timeBtn,
-                  settings.notificationTime === t && sset.timeBtnActive,
-                ]}
-                onPress={() => handleTimeChange(t)}
+          <Text style={sset.labelDesc}>
+            朝・昼・就寝前など、続けやすい時刻に追加できます（最大{MAX_REMINDER_TIMES}つ）
+          </Text>
+          {settings.notificationTimes.map((time, index) => (
+            <View key={`${time}-${index}`} style={sset.timeListRow}>
+              <Text style={sset.timeListIcon}>🔔</Text>
+              {/* 時刻はプリセットから 1 タップで切替（横スクロール） */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={sset.timeRow}
+                style={sset.timeListPickerScroll}
               >
-                <Text
-                  style={[
-                    sset.timeText,
-                    settings.notificationTime === t && sset.timeTextActive,
-                  ]}
+                {timePresets.map((t) => {
+                  const selected = t === time;
+                  // 他行で使用済みの時刻は重複設定できないので無効化
+                  const usedElsewhere = !selected && settings.notificationTimes.includes(t);
+                  return (
+                    <Pressable
+                      key={t}
+                      disabled={usedElsewhere}
+                      style={[
+                        sset.timeBtn,
+                        selected && sset.timeBtnActive,
+                        usedElsewhere && sset.timeBtnDisabled,
+                      ]}
+                      onPress={() => replaceTime(index, t)}
+                    >
+                      <Text style={[sset.timeText, selected && sset.timeTextActive]}>{t}</Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+              {settings.notificationTimes.length > 1 && (
+                <Pressable
+                  onPress={() => removeTime(index)}
+                  style={sset.timeRemoveBtn}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${time} の通知を削除`}
                 >
-                  {t}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+                  <Text style={sset.timeRemoveText}>×</Text>
+                </Pressable>
+              )}
+            </View>
+          ))}
+          {settings.notificationTimes.length < MAX_REMINDER_TIMES && (
+            <Pressable
+              style={sset.timeAddBtn}
+              onPress={addTime}
+              accessibilityRole="button"
+              accessibilityLabel="通知時刻を追加"
+            >
+              <Text style={sset.timeAddPlus}>＋</Text>
+              <Text style={sset.timeAddText}>時刻を追加</Text>
+            </Pressable>
+          )}
         </>
       )}
 
@@ -384,7 +437,7 @@ function makeSettingsStyles(C: ThemeColors) {
       ...Shadow.sm,
     },
     toggleKnobOn: { transform: [{ translateX: 20 }] },
-    timeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+    timeRow: { flexDirection: 'row', gap: 6 },
     timeBtn: {
       paddingHorizontal: 14,
       paddingVertical: 8,
@@ -394,83 +447,54 @@ function makeSettingsStyles(C: ThemeColors) {
       borderColor: C.border,
     },
     timeBtnActive: { backgroundColor: C.primary, borderColor: C.primary },
+    timeBtnDisabled: { opacity: 0.35 },
     timeText: { fontSize: FontSize.footnote, color: C.textSecondary, fontWeight: '600' },
     timeTextActive: { color: C.white },
-  });
-}
-
-function HabitStackingSection() {
-  const colors = useThemeColors();
-  const hs = useMemo(() => makeHabitStyles(colors), [colors]);
-  const settings = useSettingsStore((s) => s.settings);
-  const updateSettings = useSettingsStore((s) => s.updateSettings);
-
-  // Initialize from store or fall back to presets
-  // プリセット + カスタム習慣の両方を保持
-  const currentHabits: HabitStack[] = useMemo(() => {
-    if (settings.habitStacks && settings.habitStacks.length > 0) {
-      // Merge stored habits with presets (in case new presets were added)
-      const merged = HABIT_PRESETS.map((preset) => {
-        const stored = settings.habitStacks?.find((h) => h.id === preset.id);
-        return stored ?? preset;
-      });
-      // カスタム習慣も追加（プリセットIDに一致しないもの）
-      const presetIds = new Set(HABIT_PRESETS.map((p) => p.id));
-      const customHabits = settings.habitStacks.filter((h) => !presetIds.has(h.id));
-      return [...merged, ...customHabits];
-    }
-    return HABIT_PRESETS;
-  }, [settings.habitStacks]);
-
-  const handleUpdate = useCallback(
-    async (newHabits: HabitStack[]) => {
-      // 全習慣を保存（テキスト編集・カスタム習慣を保持するため）
-      updateSettings({ habitStacks: newHabits });
-      // 通知を再スケジュール
-      const hasNotify = newHabits.some((h) => h.enabled && h.notifyAt);
-      if (hasNotify) {
-        const granted = await requestNotificationPermission();
-        if (granted) {
-          await scheduleHabitNotifications(newHabits);
-        }
-      }
+    // ── 複数時刻リマインダー行 ──
+    timeListRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 8,
     },
-    [updateSettings],
-  );
-
-  return (
-    <View style={hs.box}>
-      <Text style={hs.sectionHeader}>⚡ 習慣スタッキング</Text>
-      <HabitStackingSetup
-        selectedHabits={currentHabits}
-        onUpdate={handleUpdate}
-        compact
-      />
-      <Text style={hs.desc}>習慣にくっつけて学習を続けやすく</Text>
-    </View>
-  );
-}
-
-function makeHabitStyles(C: ThemeColors) {
-  return StyleSheet.create({
-    box: {
-      marginTop: Spacing.xxl,
-      backgroundColor: C.card,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
+    timeListIcon: { fontSize: 16 },
+    timeListPickerScroll: { flex: 1 },
+    timeRemoveBtn: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: C.error + '20',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
-    sectionHeader: {
-      fontSize: FontSize.caption,
+    timeRemoveText: {
+      fontSize: 16,
+      fontWeight: '800',
+      color: C.error,
+      lineHeight: 20,
+    },
+    timeAddBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 4,
+      paddingVertical: 10,
+      borderRadius: BorderRadius.md,
+      borderWidth: 1,
+      borderColor: C.border,
+      borderStyle: 'dashed',
+      backgroundColor: C.background,
+    },
+    timeAddPlus: {
+      fontSize: FontSize.subhead,
       fontWeight: '700',
-      color: C.textTertiary,
-      marginBottom: 6,
-      letterSpacing: LetterSpacing.wide,
+      color: C.primary,
+      marginRight: 6,
     },
-    desc: {
-      fontSize: FontSize.caption,
-      color: C.textTertiary,
-      marginTop: 10,
-      textAlign: 'center',
+    timeAddText: {
+      fontSize: FontSize.footnote,
+      fontWeight: '600',
+      color: C.primary,
     },
   });
 }
@@ -1324,9 +1348,6 @@ export default function ProgressScreen() {
 
         {/* 設定 */}
         <SettingsSection />
-
-        {/* 習慣スタッキング */}
-        <HabitStackingSection />
 
         {/* サブスクリプション管理 */}
         <SubscriptionSection />
