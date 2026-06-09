@@ -236,10 +236,12 @@ function HomeScreen() {
     AsyncStorage.setItem('@takken_celebrated_streak', String(celebrated)).catch(() => {});
   }, [stats.streak, setActiveStreakCeleb]);
 
-  // 日目標達成祝福
+  // 日目標達成祝福（再マウント耐性: streak と同方式 activeGoalCeleb + marks-on-dismiss）
   const [goalCelebVisible, setGoalCelebVisible] = useState(false);
   const markCelebrated = useSessionStore((st) => st.markCelebrated);
   const isCelebrated = useSessionStore((st) => st.isCelebrated);
+  const activeGoalCeleb = useSessionStore((st) => st.activeGoalCeleb);
+  const setActiveGoalCeleb = useSessionStore((st) => st.setActiveGoalCeleb);
   const s = useMemo(() => makeStyles(colors), [colors]);
 
   // [2026-05-22] getTodayAnswered は 4択 + 一問一答×0.2 の float を返す。
@@ -262,6 +264,13 @@ function HomeScreen() {
   // (やみくもに新規/ランダムを回して数だけ満たしても、復習が残っていれば祝福しない = 憲法 P6)。
   // due が無い日は純粋な積み上げ日として数ノルマのみで達成。
   useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const key = `daily_goal_${today}`;
+    // 再マウントしても表示中ならそのまま出し切る (メモリ flag が生存)。
+    if (activeGoalCeleb === key) {
+      setGoalCelebVisible(true);
+      return;
+    }
     const dueRemaining = getDueForReview().length;
     const completion = evaluateTodayCompletion({
       dueAtStartOfDay: dueRemaining, // 残 due があれば「まだ未消化」とみなす保守的判定
@@ -269,15 +278,18 @@ function HomeScreen() {
       todayAnswered: todayAnsweredRaw,
       dailyGoal,
     });
-    if (completion.isComplete) {
-      const today = new Date().toISOString().slice(0, 10);
-      const key = `daily_goal_${today}`;
-      if (!isCelebrated(key)) {
-        setGoalCelebVisible(true);
-        markCelebrated(key);
-      }
+    if (completion.isComplete && !isCelebrated(key)) {
+      setActiveGoalCeleb(key); // 再マウント耐性: 出し切るまで保持
+      setGoalCelebVisible(true);
+      // 永続記録(markCelebrated)は閉じた時(dismissGoalCeleb)に = marks-on-dismiss
     }
-  }, [dailyGoal, todayAnswered, todayAnsweredRaw, getDueForReview, isCelebrated, markCelebrated]);
+  }, [dailyGoal, todayAnswered, todayAnsweredRaw, getDueForReview, isCelebrated, activeGoalCeleb, setActiveGoalCeleb]);
+  const dismissGoalCeleb = useCallback(() => {
+    setGoalCelebVisible(false);
+    const key = activeGoalCeleb ?? `daily_goal_${new Date().toISOString().slice(0, 10)}`;
+    setActiveGoalCeleb(null);
+    markCelebrated(key); // 閉じて初めて永続記録（この日の祝福はもう出さない）
+  }, [activeGoalCeleb, setActiveGoalCeleb, markCelebrated]);
   const latestExamScore = useMemo(() => getLatestScore(), [examHistory]);
   const bestExamScore = useMemo(() => getBestScore(), [examHistory]);
 
@@ -407,7 +419,7 @@ function HomeScreen() {
         visible={goalCelebVisible}
         dailyGoal={dailyGoal}
         answered={todayAnswered}
-        onDismiss={() => setGoalCelebVisible(false)}
+        onDismiss={dismissGoalCeleb}
       />
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 

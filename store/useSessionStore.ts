@@ -36,6 +36,8 @@ interface SessionState {
    * 再マウント後もこの値があれば祝福を再表示する。閉じたら null。
    */
   activeStreakCeleb: number | null;
+  /** 現在「表示中」の日目標祝福キー(daily_goal_YYYY-MM-DD)。再マウント耐性(streakと同方式)。閉じたら null。 */
+  activeGoalCeleb: string | null;
 
   // Actions
   /** 正解を記録 → コンボ+1 */
@@ -54,6 +56,8 @@ interface SessionState {
   loadCelebrated(): Promise<void>;
   /** ストリーク祝福の表示開始/終了を記録（再マウント耐性） */
   setActiveStreakCeleb(streak: number | null): void;
+  /** 日目標祝福の表示開始/終了を記録（再マウント耐性） */
+  setActiveGoalCeleb(key: string | null): void;
 }
 
 export const useSessionStore = create<SessionState>((set, get) => ({
@@ -63,6 +67,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   celebratedDate: todayStr(),
   celebratedLoaded: false,
   activeStreakCeleb: null,
+  activeGoalCeleb: null,
 
   recordCorrect() {
     const next = get().combo + 1;
@@ -140,5 +145,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
   setActiveStreakCeleb(streak: number | null) {
     set({ activeStreakCeleb: streak });
+  },
+
+  setActiveGoalCeleb(key: string | null) {
+    set({ activeGoalCeleb: key });
   },
 }));
