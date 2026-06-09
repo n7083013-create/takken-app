@@ -489,6 +489,11 @@ function HomeScreen() {
                 {dailyGoalPct >= 100 ? '達成！' : '今日の目標'}
               </Text>
             </View>
+            {/* 学習タイマー: 大きいカードをやめ「今日の目標」の隣に小さく配置 */}
+            <Pressable style={s.dashTimerBtn} onPress={() => router.push('/study-timer')} accessibilityRole="button" accessibilityLabel="学習タイマーを開く">
+              <Text style={s.dashTimerIcon}>⏱️</Text>
+              <Text style={s.dashTimerText}>タイマー</Text>
+            </Pressable>
           </View>
           {/* 進捗バー */}
           <View style={s.dashProgress}>
@@ -527,14 +532,7 @@ function HomeScreen() {
 
         {/* 「今日の習慣」セクションは廃止（習慣設定=記録タブ・通知=_layoutで継続）→ ホームの下スクロールを削減（P1迷い/P4シンプル） */}
 
-        {/* ── クイックアクション（補助動線） ──
-            「問題」は CTA と、「一問一答」は下タブと重複するため削除。タイマーのみ補助として残す。 */}
-        <View style={s.quickGrid}>
-          <Pressable style={[s.quickCard, Shadow.sm]} onPress={() => router.push('/study-timer')} accessibilityRole="button" accessibilityLabel="学習タイマーを開く">
-            <Text style={s.quickIcon}>⏱️</Text>
-            <Text style={s.quickTitle}>タイマー</Text>
-          </Pressable>
-        </View>
+        {/* クイックアクション(タイマー)は「今日の目標」隣の小ボタンへ移動(大カード廃止・P4) */}
 
         {/* ── クエスト学習（メインの学習パス） ── */}
         <Pressable
@@ -918,8 +916,22 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
   dashTop: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 16,
   },
+  dashTimerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  dashTimerIcon: { fontSize: 15 },
+  dashTimerText: { fontSize: FontSize.footnote, fontWeight: '700', color: C.textSecondary },
   dashGoal: {
     alignItems: 'center',
   },
