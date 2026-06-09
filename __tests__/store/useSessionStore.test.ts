@@ -38,6 +38,7 @@ function resetStore() {
     celebratedToday: new Set(),
     celebratedDate: todayStr(),
     celebratedLoaded: false,
+    activeStreakCeleb: null,
   });
 }
 
@@ -156,6 +157,42 @@ describe('useSessionStore - celebratedToday 永続化', () => {
       const s = useSessionStore.getState();
       expect(s.celebratedToday.size).toBe(0);
       expect(mockRemove).toHaveBeenCalledWith(STORAGE_KEY);
+    });
+  });
+
+  // ─── activeStreakCeleb: 再マウント耐性 ─────────────────
+  // 背景: 2026-06-09 ユーザー報告「ストリーク祝福が一瞬で表示されて消える」。
+  // 原因: HomeScreen は HomeScreenWrapper 配下で onboarding/sync 確定時に
+  //   再マウントされる。旧実装は表示と同時に永続フラグを立てていたため、
+  //   再マウント後の再評価で「祝福済み」となり再表示されず、初回の祝福が
+  //   unmount されてフラッシュして消えていた。
+  // 修正: 表示中は activeStreakCeleb (メモリ・store はコンポーネント木の外なので
+  //   再マウントで消えない) を保持し、再マウント後もこの値で再表示する。
+  describe('🔥 回帰: activeStreakCeleb で再マウントしても祝福が消えない', () => {
+    test('初期値は null', () => {
+      expect(useSessionStore.getState().activeStreakCeleb).toBeNull();
+    });
+
+    test('setActiveStreakCeleb で値を保持/クリアできる', () => {
+      useSessionStore.getState().setActiveStreakCeleb(7);
+      expect(useSessionStore.getState().activeStreakCeleb).toBe(7);
+      useSessionStore.getState().setActiveStreakCeleb(null);
+      expect(useSessionStore.getState().activeStreakCeleb).toBeNull();
+    });
+
+    test('表示開始 → コンポーネント再マウント (state リセット) しても store の値は生存', () => {
+      // 表示開始: トリガーが値をセット
+      useSessionStore.getState().setActiveStreakCeleb(7);
+      // HomeScreen の useState は再マウントで失われるが、store は別。
+      // (store 自体は resetStore しない = コンポーネント木の外にあることの再現)
+      expect(useSessionStore.getState().activeStreakCeleb).toBe(7);
+    });
+
+    test('dismiss 相当 (null セット) 後はもう再表示トリガーにならない', () => {
+      useSessionStore.getState().setActiveStreakCeleb(7);
+      // 閉じた
+      useSessionStore.getState().setActiveStreakCeleb(null);
+      expect(useSessionStore.getState().activeStreakCeleb).toBeNull();
     });
   });
 

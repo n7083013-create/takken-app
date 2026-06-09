@@ -28,6 +28,14 @@ interface SessionState {
   celebratedDate: string;
   /** AsyncStorage からの初回ロード完了フラグ */
   celebratedLoaded: boolean;
+  /**
+   * 現在「表示中」のストリーク祝福の streak 値（メモリのみ・セッション内）。
+   * [Bugfix 2026-06-09] HomeScreen は HomeScreenWrapper 配下で
+   * onboarding/sync 完了時に再マウントされ得る。再マウントで祝福が
+   * 一瞬で消えるのを防ぐため、「出し切るまで」この値を保持し、
+   * 再マウント後もこの値があれば祝福を再表示する。閉じたら null。
+   */
+  activeStreakCeleb: number | null;
 
   // Actions
   /** 正解を記録 → コンボ+1 */
@@ -44,6 +52,8 @@ interface SessionState {
   resetDailyFlags(): void;
   /** アプリ起動時に AsyncStorage から celebratedToday を復元 */
   loadCelebrated(): Promise<void>;
+  /** ストリーク祝福の表示開始/終了を記録（再マウント耐性） */
+  setActiveStreakCeleb(streak: number | null): void;
 }
 
 export const useSessionStore = create<SessionState>((set, get) => ({
@@ -52,6 +62,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   celebratedToday: new Set(),
   celebratedDate: todayStr(),
   celebratedLoaded: false,
+  activeStreakCeleb: null,
 
   recordCorrect() {
     const next = get().combo + 1;
@@ -125,5 +136,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       // 異常時もロード完了扱い (祝福を永久に抑制しないため)
       set({ celebratedLoaded: true });
     }
+  },
+
+  setActiveStreakCeleb(streak: number | null) {
+    set({ activeStreakCeleb: streak });
   },
 }));

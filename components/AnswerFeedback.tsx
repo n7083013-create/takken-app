@@ -384,50 +384,86 @@ interface StreakCelebrationProps {
   onDismiss: () => void;
 }
 
+// 表示時間（読了に十分な長さ）とフェード時間。
+const STREAK_DISPLAY_MS = 3800;
+const STREAK_FADE_OUT_MS = 350;
+
 export function StreakCelebration({ streak, visible, onDismiss }: StreakCelebrationProps) {
   const colors = useThemeColors();
-  const milestone = STREAK_MILESTONES[streak];
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
+  // [Bugfix 2026-06-09] 表示開始時に streak/milestone を「キャプチャ」して保持する。
+  // 親の stats.streak が同期(syncWithCloud)後に変わっても、表示中の祝福が
+  // milestone=undefined になって即 return null で消えるのを防ぐ。
+  const [shown, setShown] = useState<{ emoji: string; title: string; sub: string } | null>(null);
+  const closingRef = useRef(false);
+
+  // フェードアウトしてから onDismiss を呼ぶ（突然消えない）。二重発火防止。
+  const close = useRef(onDismiss);
+  close.current = onDismiss;
+  const dismissWithFade = useRef(() => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    Animated.timing(opacityAnim, {
+      toValue: 0,
+      duration: STREAK_FADE_OUT_MS,
+      useNativeDriver: true,
+    }).start(() => {
+      setShown(null);
+      close.current();
+    });
+  }).current;
 
   useEffect(() => {
-    if (visible && milestone) {
-      const level = getAnimationLevel();
-
-      // off の場合は表示せず、バイブのみ
-      if (level === 'off') {
-        hapticSuccess();
-        setTimeout(onDismiss, 500);
-        return;
-      }
-
-      scaleAnim.setValue(0);
-      opacityAnim.setValue(0);
-      Animated.parallel([
-        Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 100, useNativeDriver: true }),
-        Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
-      ]).start();
-
-      hapticSuccess();
-
-      // 自動消去
-      const timer = setTimeout(onDismiss, 3000);
-      return () => clearTimeout(timer);
+    if (!visible) {
+      // 親が visible=false に戻した（=閉じ確定）→ 内部表示も畳む
+      setShown(null);
+      closingRef.current = false;
+      return;
     }
-  }, [visible, milestone]);
+    const milestone = STREAK_MILESTONES[streak];
+    if (!milestone) return; // 非マイルストーンでは何もしない（表示中なら shown が保持する）
 
-  if (!visible || !milestone) return null;
+    const level = getAnimationLevel();
+    // off は「最初から出さない」= 一瞬チラ見えゼロ。バイブのみで即閉じ。
+    if (level === 'off') {
+      hapticSuccess();
+      const t = setTimeout(() => close.current(), 0);
+      return () => clearTimeout(t);
+    }
+
+    // ここで milestone をキャプチャ。以後 streak が変わっても表示は固定。
+    closingRef.current = false;
+    setShown({ emoji: milestone.emoji, title: milestone.title, sub: milestone.sub });
+    scaleAnim.setValue(0);
+    opacityAnim.setValue(0);
+    Animated.parallel([
+      Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 100, useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+    ]).start();
+
+    hapticSuccess();
+
+    const timer = setTimeout(dismissWithFade, STREAK_DISPLAY_MS);
+    return () => clearTimeout(timer);
+    // streak は意図的に依存に含めない: 表示中の同期で streak が動いても
+    // 祝福を再起動/破棄しない（キャプチャ済みの shown を出し切る）。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
+
+  if (!visible || !shown) return null;
 
   const level = getAnimationLevel();
   if (level === 'off') return null;
 
   return (
     <Animated.View
-      style={[
-        streakStyles.overlay,
-        { opacity: opacityAnim },
-      ]}
-      pointerEvents="box-none"
+      style={[streakStyles.overlay, { opacity: opacityAnim }]}
+      // タップで閉じられる最重要の保険。オーバーレイ全体が閉じるトリガー。
+      pointerEvents="auto"
+      accessibilityRole="button"
+      accessibilityLabel={`${shown.title} ${shown.sub}。タップして閉じる`}
+      onTouchEnd={dismissWithFade}
     >
       {level === 'full' && <ConfettiOverlay active={visible} />}
       <Animated.View
@@ -446,9 +482,10 @@ export function StreakCelebration({ streak, visible, onDismiss }: StreakCelebrat
           },
         ]}
       >
-        <Text style={streakStyles.emoji}>{milestone.emoji}</Text>
-        <Text style={[streakStyles.title, { color: colors.text }]}>{milestone.title}</Text>
-        <Text style={[streakStyles.sub, { color: colors.textSecondary }]}>{milestone.sub}</Text>
+        <Text style={streakStyles.emoji}>{shown.emoji}</Text>
+        <Text style={[streakStyles.title, { color: colors.text }]}>{shown.title}</Text>
+        <Text style={[streakStyles.sub, { color: colors.textSecondary }]}>{shown.sub}</Text>
+        <Text style={[streakStyles.tapHint, { color: colors.textSecondary }]}>タップして閉じる</Text>
       </Animated.View>
     </Animated.View>
   );
@@ -486,6 +523,13 @@ const streakStyles = StyleSheet.create({
     fontSize: FontSize.subhead,
     fontWeight: '500',
     marginTop: 6,
+    textAlign: 'center',
+  },
+  tapHint: {
+    fontSize: FontSize.caption,
+    fontWeight: '500',
+    marginTop: 16,
+    opacity: 0.6,
     textAlign: 'center',
   },
 });

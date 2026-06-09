@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -186,10 +186,30 @@ function HomeScreen() {
   }, []);
   // [2026-06-03] ストリーク祝福は「マイルストーン到達時に1回だけ」。
   // 永続フラグ(@takken_celebrated_streak)で、ログイン/再表示の度に再表示しない。
+  // [Bugfix 2026-06-09] 「一瞬で消える」修正:
+  //  ① HomeScreen は HomeScreenWrapper 配下で sync/onboarding 確定時に再マウント
+  //     され得る。旧実装は「表示を決めた瞬間に永続フラグ記録」だったため、
+  //     再マウント後の再評価で last===streak となり再表示されず、初回の祝福が
+  //     unmount されてフラッシュして消えていた。
+  //     → 永続記録は「閉じた時(dismiss)」に戻し、表示中は useSessionStore の
+  //        activeStreakCeleb(メモリ・再マウント耐性) で出し続ける。
+  //  ② 永続記録を dismiss に戻すと「見た瞬間に終了→再起動で再表示」が
+  //     復活し得るが、祝福側がフェードアウト＋十分な表示時間＋タップ閉じを
+  //     持つようになったため、ユーザーは確実に閉じられる(=記録される)。
   const [streakCelebVisible, setStreakCelebVisible] = useState(false);
+  const activeStreakCeleb = useSessionStore((st) => st.activeStreakCeleb);
+  const setActiveStreakCeleb = useSessionStore((st) => st.setActiveStreakCeleb);
+  // dismiss 時に「祝福した streak 値」を確実に保存するためキャプチャ。
+  const celebratingStreakRef = useRef<number | null>(null);
   useEffect(() => {
     const milestones = [3, 5, 7, 10, 14, 21, 30, 50, 100];
     let cancelled = false;
+    // 再マウントしても表示中ならそのまま出し切る (メモリ flag が生存)。
+    if (activeStreakCeleb != null && milestones.includes(activeStreakCeleb)) {
+      celebratingStreakRef.current = activeStreakCeleb;
+      setStreakCelebVisible(true);
+      return;
+    }
     (async () => {
       const raw = await AsyncStorage.getItem('@takken_celebrated_streak').catch(() => null);
       let last = raw ? Number(raw) : 0;
@@ -199,22 +219,22 @@ function HomeScreen() {
         await AsyncStorage.setItem('@takken_celebrated_streak', '0').catch(() => {});
       }
       if (!cancelled && milestones.includes(stats.streak) && stats.streak > last) {
+        celebratingStreakRef.current = stats.streak;
+        setActiveStreakCeleb(stats.streak); // 再マウント耐性: 出し切るまで保持
         setStreakCelebVisible(true);
-        // [2026-06-05] 「表示を決めた瞬間」にフラグを記録する。
-        // 旧実装は閉じた時(dismiss)のみ記録だったため、祝福を閉じる/3秒の
-        // 自動消去の前にアプリを終了→再起動すると毎回再表示されていた
-        // (ネイティブで「見た瞬間にアプリ切替/終了」すると多発)。
-        await AsyncStorage.setItem('@takken_celebrated_streak', String(stats.streak)).catch(() => {});
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [stats.streak]);
+  }, [stats.streak, activeStreakCeleb, setActiveStreakCeleb]);
   const dismissStreakCeleb = useCallback(() => {
     setStreakCelebVisible(false);
-    AsyncStorage.setItem('@takken_celebrated_streak', String(stats.streak)).catch(() => {});
-  }, [stats.streak]);
+    setActiveStreakCeleb(null);
+    const celebrated = celebratingStreakRef.current ?? stats.streak;
+    // 閉じて初めて永続記録（=この milestone はもう祝福しない）。
+    AsyncStorage.setItem('@takken_celebrated_streak', String(celebrated)).catch(() => {});
+  }, [stats.streak, setActiveStreakCeleb]);
 
   // 日目標達成祝福
   const [goalCelebVisible, setGoalCelebVisible] = useState(false);
