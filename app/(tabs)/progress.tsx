@@ -1182,6 +1182,7 @@ export default function ProgressScreen() {
   const getBookmarkedQuestions = useProgressStore((s) => s.getBookmarkedQuestions);
   const getWeakQuestions = useProgressStore((s) => s.getWeakQuestions);
   const getDueForReview = useProgressStore((s) => s.getDueForReview);
+  const getPreSleepReview = useProgressStore((s) => s.getPreSleepReview);
   const getManuallyMasteredIds = useProgressStore((s) => s.getManuallyMasteredIds);
   const getDailyLog = useProgressStore((s) => s.getDailyLog);
   const resetProgress = useProgressStore((s) => s.resetProgress);
@@ -1214,6 +1215,8 @@ export default function ProgressScreen() {
   const bookmarks = getBookmarkedQuestions().length;
   const weak = getWeakQuestions().length;
   const dueCount = useMemo(() => getDueForReview().length, [getDueForReview, stats]);
+  // 就寝前は実際に出せる問題数を表示（固定「5」だと中身0でも5表示→押すと空、のバグ防止）
+  const preSleepCount = useMemo(() => getPreSleepReview(5).length, [getPreSleepReview, stats]);
   const masteredManualCount = getManuallyMasteredIds().length;
   // [Bugfix] 旧: 月間累計 (subscription.aiQueriesUsed) を表示していたが、
   // ローカル加算でずれが蓄積し「使ってないのに100回超え」と表示される問題があった。
@@ -1280,106 +1283,7 @@ export default function ProgressScreen() {
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
         <Text style={s.title}>学習記録</Text>
 
-        {/* Hero Stats */}
-        <View style={[s.heroCard, Shadow.md]}>
-          <View style={s.heroRow}>
-            <View style={s.heroItem}>
-              <Text style={s.heroValue}>{stats.totalQuestions}</Text>
-              <Text style={s.heroLabel}>総解答数</Text>
-            </View>
-            <View style={s.heroDivider} />
-            <Pressable
-              style={s.heroItem}
-              onPress={() => infoAlert(
-                '習得カバー率について',
-                'これは合格判定ではなく「学習の網羅度」です。\n「3回連続で正解した問題」が全問題に占める割合を表します。\n\n合格の目安は予測スコア（予測ハブ）で確認してください。',
-              )}
-            >
-              <Text style={[s.heroValue, { color: colors.primary }]}>{rate}%</Text>
-              <Text style={s.heroLabel}>習得カバー率 ⓘ</Text>
-            </Pressable>
-            <View style={s.heroDivider} />
-            <View style={s.heroItem}>
-              <Text style={[s.heroValue, { color: colors.accent }]}>{stats.streak}</Text>
-              <Text style={s.heroLabel}>連続日数</Text>
-            </View>
-          </View>
-          {stats.longestStreak > 0 && (
-            <View style={s.heroFooter}>
-              <Text style={s.heroFooterText}>🏆 最長記録：{stats.longestStreak}日連続</Text>
-            </View>
-          )}
-        </View>
-
-        {/* ── 復習ハブ: 手動で選ぶ4つの復習入口 (due は今日やることCTAが自動で拾うが、
-            ブックマーク等 CTA に導線が無いキューもここから必ず到達できる) ── */}
-        <Text style={s.sectionTitle}>復習する</Text>
-        <View style={s.reviewHubGrid}>
-          <Pressable
-            style={[s.reviewHubCard, Shadow.sm]}
-            onPress={() => router.push({ pathname: '/review', params: { q: 'due' } })}
-            accessibilityRole="button"
-            accessibilityLabel={`全体復習 ${dueCount}問`}
-          >
-            <Text style={s.reviewHubIcon}>📖</Text>
-            <Text style={[s.reviewHubValue, dueCount > 0 ? { color: colors.accent } : {}]}>{dueCount}</Text>
-            <Text style={s.reviewHubLabel}>全体復習</Text>
-          </Pressable>
-          <Pressable
-            style={[s.reviewHubCard, Shadow.sm]}
-            onPress={() => router.push({ pathname: '/review', params: { q: 'weak' } })}
-            accessibilityRole="button"
-            accessibilityLabel={`苦手 ${weak}問`}
-          >
-            <Text style={s.reviewHubIcon}>💪</Text>
-            <Text style={[s.reviewHubValue, weak > 0 ? { color: colors.error } : {}]}>{weak}</Text>
-            <Text style={s.reviewHubLabel}>苦手</Text>
-          </Pressable>
-          <Pressable
-            style={[s.reviewHubCard, Shadow.sm]}
-            onPress={() => router.push({ pathname: '/review', params: { q: 'bookmarked' } })}
-            accessibilityRole="button"
-            accessibilityLabel={`ブックマーク ${bookmarks}問`}
-          >
-            <Text style={s.reviewHubIcon}>🔖</Text>
-            <Text style={[s.reviewHubValue, { color: colors.primary }]}>{bookmarks}</Text>
-            <Text style={s.reviewHubLabel}>ブックマーク</Text>
-          </Pressable>
-          <Pressable
-            style={[s.reviewHubCard, Shadow.sm]}
-            onPress={() => router.push('/pre-sleep-review')}
-            accessibilityRole="button"
-            accessibilityLabel="就寝前の復習"
-          >
-            <Text style={s.reviewHubIcon}>🌙</Text>
-            <Text style={[s.reviewHubValue, { color: colors.primary }]}>5</Text>
-            <Text style={s.reviewHubLabel}>就寝前</Text>
-          </Pressable>
-        </View>
-
-        {/* AI解説の今日の残数 (旧 Quick Metrics から残置・情報表示) */}
-        <View style={s.metricRow}>
-          <View style={[s.metricCard, Shadow.sm]}>
-            <Text style={s.metricIcon}>🤖</Text>
-            <Text style={s.metricValue}>
-              {`${aiUsedToday}/${aiDailyLimit}`}
-            </Text>
-            <Text style={s.metricLabel}>AI解説 (今日)</Text>
-          </View>
-        </View>
-
-        {/* ── 直近7日間の学習バーチャート + 進捗率（ホームから集約） ── */}
-        {stats.totalQuestions > 0 && (
-          <View style={[s.heatmapCard, Shadow.sm]}>
-            <StudyHeatmap dailyLog={dailyLog} streak={stats.streak} dailyGoal={dailyGoal} />
-            <View style={s.heatmapProgressRow}>
-              <Text style={s.heatmapProgressLabel}>学習進捗（出題範囲のカバー率）</Text>
-              <Text style={[s.heatmapProgressValue, { color: colors.primary }]}>{progressPct}%</Text>
-            </View>
-          </View>
-        )}
-
-        {/* ════════ 予測ハブ: 1つの予測を解剖する流れ (① → ② → ③ → ④) ════════ */}
+        {/* ════════ 予測ハブ: 記録タブで最も価値ある「今どれくらい合格に近いか」を最上部に ════════ */}
         <Text style={s.hubTitle}>🎯 本試験 予測ハブ</Text>
 
         {!examPrediction.hasData ? (
@@ -1448,6 +1352,52 @@ export default function ProgressScreen() {
           </>
         )}
 
+        {/* ── 復習ハブ: 手動で選ぶ4つの復習入口 (due は今日やることCTAが自動で拾うが、
+            ブックマーク等 CTA に導線が無いキューもここから必ず到達できる) ── */}
+        <Text style={s.sectionTitle}>📖 復習する</Text>
+        <View style={s.reviewHubGrid}>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push({ pathname: '/review', params: { q: 'due' } })}
+            accessibilityRole="button"
+            accessibilityLabel={`全体復習 ${dueCount}問`}
+          >
+            <Text style={s.reviewHubIcon}>📖</Text>
+            <Text style={[s.reviewHubValue, dueCount > 0 ? { color: colors.accent } : {}]}>{dueCount}</Text>
+            <Text style={s.reviewHubLabel}>全体復習</Text>
+          </Pressable>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push({ pathname: '/review', params: { q: 'weak' } })}
+            accessibilityRole="button"
+            accessibilityLabel={`苦手 ${weak}問`}
+          >
+            <Text style={s.reviewHubIcon}>💪</Text>
+            <Text style={[s.reviewHubValue, weak > 0 ? { color: colors.error } : {}]}>{weak}</Text>
+            <Text style={s.reviewHubLabel}>苦手</Text>
+          </Pressable>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push({ pathname: '/review', params: { q: 'bookmarked' } })}
+            accessibilityRole="button"
+            accessibilityLabel={`ブックマーク ${bookmarks}問`}
+          >
+            <Text style={s.reviewHubIcon}>🔖</Text>
+            <Text style={[s.reviewHubValue, { color: colors.primary }]}>{bookmarks}</Text>
+            <Text style={s.reviewHubLabel}>ブックマーク</Text>
+          </Pressable>
+          <Pressable
+            style={[s.reviewHubCard, Shadow.sm]}
+            onPress={() => router.push('/pre-sleep-review')}
+            accessibilityRole="button"
+            accessibilityLabel="就寝前の復習"
+          >
+            <Text style={s.reviewHubIcon}>🌙</Text>
+            <Text style={[s.reviewHubValue, preSleepCount > 0 ? { color: colors.primary } : {}]}>{preSleepCount}</Text>
+            <Text style={s.reviewHubLabel}>就寝前</Text>
+          </Pressable>
+        </View>
+
         {/* Upgrade Banner */}
         {subscription.plan === 'free' && (
           <Pressable style={s.upgradeBanner} onPress={() => router.push('/paywall')}>
@@ -1463,6 +1413,62 @@ export default function ProgressScreen() {
             </View>
           </Pressable>
         )}
+
+        {/* ════════ 学習の記録: stats/履歴をこのグループに集約 ════════ */}
+        <Text style={s.hubTitle}>📊 学習の記録</Text>
+
+        {/* Hero Stats */}
+        <View style={[s.heroCard, Shadow.md]}>
+          <View style={s.heroRow}>
+            <View style={s.heroItem}>
+              <Text style={s.heroValue}>{stats.totalQuestions}</Text>
+              <Text style={s.heroLabel}>総解答数</Text>
+            </View>
+            <View style={s.heroDivider} />
+            <Pressable
+              style={s.heroItem}
+              onPress={() => infoAlert(
+                '習得カバー率について',
+                'これは合格判定ではなく「学習の網羅度」です。\n「3回連続で正解した問題」が全問題に占める割合を表します。\n\n合格の目安は予測スコア（予測ハブ）で確認してください。',
+              )}
+            >
+              <Text style={[s.heroValue, { color: colors.primary }]}>{rate}%</Text>
+              <Text style={s.heroLabel}>習得カバー率 ⓘ</Text>
+            </Pressable>
+            <View style={s.heroDivider} />
+            <View style={s.heroItem}>
+              <Text style={[s.heroValue, { color: colors.accent }]}>{stats.streak}</Text>
+              <Text style={s.heroLabel}>連続日数</Text>
+            </View>
+          </View>
+          {stats.longestStreak > 0 && (
+            <View style={s.heroFooter}>
+              <Text style={s.heroFooterText}>🏆 最長記録：{stats.longestStreak}日連続</Text>
+            </View>
+          )}
+        </View>
+
+        {/* ── 直近7日間の学習バーチャート + 進捗率（ホームから集約） ── */}
+        {stats.totalQuestions > 0 && (
+          <View style={[s.heatmapCard, Shadow.sm]}>
+            <StudyHeatmap dailyLog={dailyLog} streak={stats.streak} dailyGoal={dailyGoal} />
+            <View style={s.heatmapProgressRow}>
+              <Text style={s.heatmapProgressLabel}>学習進捗（出題範囲のカバー率）</Text>
+              <Text style={[s.heatmapProgressValue, { color: colors.primary }]}>{progressPct}%</Text>
+            </View>
+          </View>
+        )}
+
+        {/* AI解説の今日の残数 (旧 Quick Metrics から残置・情報表示) */}
+        <View style={s.metricRow}>
+          <View style={[s.metricCard, Shadow.sm]}>
+            <Text style={s.metricIcon}>🤖</Text>
+            <Text style={s.metricValue}>
+              {`${aiUsedToday}/${aiDailyLimit}`}
+            </Text>
+            <Text style={s.metricLabel}>AI解説 (今日)</Text>
+          </View>
+        </View>
 
         {/* Category Analysis */}
         <Text style={s.sectionTitle}>科目別分析</Text>
@@ -1600,6 +1606,9 @@ export default function ProgressScreen() {
             )}
           </View>
         </Pressable>
+
+        {/* ════════ 設定 ════════ */}
+        <Text style={s.hubTitle}>⚙️ 設定</Text>
 
         {/* 設定 */}
         <SettingsSection />
