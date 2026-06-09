@@ -160,10 +160,20 @@ export function AIChatModal(props: AIChatModalProps) {
         <Pressable style={s.pcBackdrop} onPress={handleClose} accessibilityLabel="閉じる" />
       )}
       <View style={isWideScreen ? s.pcPanel : s.container}>
-        {/* Header */}
-        <View style={[s.header, !isWideScreen && Platform.OS !== 'ios' && insets.top > 0 && { paddingTop: insets.top + 14 }]}>
-          <Text style={s.headerTitle}>🤖 AIに質問</Text>
-          <Pressable onPress={handleClose} hitSlop={12}>
+        {/* Header
+            - PC: フローティングパネル内なのでセーフエリア余白不要
+            - iOS (pageSheet): カードが上端から下がるが Dynamic Island/詰まり対策で最低限の余白を確保
+            - Android/Web (fullScreen): ステータスバー分の insets.top を必ず加算 */}
+        <View
+          style={[
+            s.header,
+            !isWideScreen && {
+              paddingTop: Platform.OS === 'ios' ? 14 : insets.top + 14,
+            },
+          ]}
+        >
+          <Text style={s.headerTitle} numberOfLines={1}>🤖 AIに質問</Text>
+          <Pressable onPress={handleClose} hitSlop={12} style={s.closeBtnHit} accessibilityRole="button" accessibilityLabel="AIチャットを閉じる">
             <Text style={s.closeBtn}>✕</Text>
           </Pressable>
         </View>
@@ -308,13 +318,18 @@ function makeStyles(C: ThemeColors) {
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: Spacing.xl,
-      paddingVertical: 14,
+      // paddingTop は JSX で動的に適用（セーフエリア回避）。fallback として 14 を確保
+      paddingTop: 14,
+      paddingBottom: 14,
       borderBottomWidth: 0.5,
       borderBottomColor: C.borderLight,
       backgroundColor: C.card,
+      zIndex: 10,
     },
-    headerTitle: { fontSize: FontSize.subhead, fontWeight: '700', color: C.text },
-    closeBtn: { fontSize: 18, color: C.textTertiary, fontWeight: '600', padding: 4 },
+    headerTitle: { flex: 1, fontSize: FontSize.subhead, fontWeight: '700', color: C.text },
+    // ✕ ボタン: 文字に被らずタップ可能な 44pt タップ領域を確保
+    closeBtnHit: { minWidth: 44, minHeight: 44, marginLeft: 12, alignItems: 'center', justifyContent: 'center' },
+    closeBtn: { fontSize: 18, color: C.textTertiary, fontWeight: '600' },
 
     chat: { flex: 1 },
     chatContent: { padding: 14, paddingBottom: 16 },

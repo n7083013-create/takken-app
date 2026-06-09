@@ -361,9 +361,9 @@ export default function QuestionDetailScreen() {
   const renderAIChat = () => (
     <>
       {/* Header */}
-      <View style={s.aiHeader}>
-        <Text style={s.aiHeaderTitle}>🤖 AI解説アシスタント</Text>
-        <Pressable onPress={() => setAiVisible(false)} hitSlop={12}>
+      <View style={[s.aiHeader, !isWideScreen && { paddingTop: insets.top + 12 }]}>
+        <Text style={s.aiHeaderTitle} numberOfLines={1}>🤖 AI解説アシスタント</Text>
+        <Pressable onPress={() => setAiVisible(false)} hitSlop={12} style={s.aiCloseBtn} accessibilityRole="button" accessibilityLabel="AIチャットを閉じる">
           <Text style={s.aiClose}>✕</Text>
         </Pressable>
       </View>
@@ -1080,16 +1080,25 @@ function makeStyles(C: ThemeColors, isWide = false) {
       backgroundColor: C.card,
       borderBottomWidth: 1,
       borderBottomColor: C.border,
+      zIndex: 10,
     },
     aiHeaderTitle: {
+      flex: 1,
       fontSize: FontSize.headline,
       fontWeight: '800',
       color: C.text,
     },
+    // ✕ ボタン: 文字に被らずタップ可能な 44pt タップ領域を確保
+    aiCloseBtn: {
+      minWidth: 44,
+      minHeight: 44,
+      marginLeft: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     aiClose: {
       fontSize: 22,
       color: C.textTertiary,
-      padding: 4,
     },
     aiChat: {
       flex: 1,

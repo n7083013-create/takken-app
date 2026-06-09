@@ -11,7 +11,7 @@ import {
   Platform,
   useWindowDimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Shadow, FontSize, LineHeight, LetterSpacing, Spacing, BorderRadius } from '../../constants/theme';
 import { CATEGORIES } from '../../constants/exam';
@@ -47,6 +47,7 @@ export default function QuickQuizScreen() {
   // [UX改善] PC では AI質問を全画面 Modal ではなくフローティングパネルで表示
   const { width: screenWidth } = useWindowDimensions();
   const isWideScreen = screenWidth >= 768;
+  const insets = useSafeAreaInsets();
 
   const quickQuizStats = useProgressStore((s) => s.quickQuizStats);
   const recordQuickQuizAnswer = useProgressStore((s) => s.recordQuickQuizAnswer);
@@ -438,9 +439,9 @@ export default function QuickQuizScreen() {
           edges={isWideScreen ? [] : undefined}
         >
           {/* Header */}
-          <View style={s.aiHeader}>
-            <Text style={s.aiHeaderTitle}>🤖 AI解説アシスタント</Text>
-            <Pressable onPress={() => setAiVisible(false)} hitSlop={12} accessibilityRole="button" accessibilityLabel="AIチャットを閉じる">
+          <View style={[s.aiHeader, !isWideScreen && { paddingTop: insets.top + 12 }]}>
+            <Text style={s.aiHeaderTitle} numberOfLines={1}>🤖 AI解説アシスタント</Text>
+            <Pressable onPress={() => setAiVisible(false)} hitSlop={12} style={s.aiCloseBtn} accessibilityRole="button" accessibilityLabel="AIチャットを閉じる">
               <Text style={s.aiClose}>✕</Text>
             </Pressable>
           </View>
@@ -878,9 +879,11 @@ function makeStyles(C: ThemeColors) { return StyleSheet.create({
     shadowRadius: 24,
     elevation: 12,
   },
-  aiHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12, backgroundColor: C.card, borderBottomWidth: 1, borderBottomColor: C.border },
-  aiHeaderTitle: { fontSize: FontSize.headline, fontWeight: '800', color: C.text },
-  aiClose: { fontSize: 22, color: C.textTertiary, padding: 4 },
+  aiHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12, backgroundColor: C.card, borderBottomWidth: 1, borderBottomColor: C.border, zIndex: 10 },
+  aiHeaderTitle: { flex: 1, fontSize: FontSize.headline, fontWeight: '800', color: C.text },
+  // ✕ ボタン: 文字に被らずタップ可能な 44pt タップ領域を確保
+  aiCloseBtn: { minWidth: 44, minHeight: 44, marginLeft: 12, alignItems: 'center', justifyContent: 'center' },
+  aiClose: { fontSize: 22, color: C.textTertiary },
   aiChat: { flex: 1 },
   aiChatContent: { padding: 16, paddingBottom: 10 },
 

@@ -129,8 +129,8 @@ export function GlobalAIButton() {
           edges={isWideScreen ? [] : ['bottom', 'left', 'right']}
         >
           <View style={[s.header, !isWideScreen && { paddingTop: insets.top + 12 }]}>
-            <Text style={s.headerTitle}>🤖 AI学習アシスタント</Text>
-            <Pressable onPress={() => setVisible(false)} hitSlop={12}>
+            <Text style={s.headerTitle} numberOfLines={1}>🤖 AI学習アシスタント</Text>
+            <Pressable onPress={() => setVisible(false)} hitSlop={12} style={s.closeBtn} accessibilityRole="button" accessibilityLabel="AIチャットを閉じる">
               <Text style={s.close}>✕</Text>
             </Pressable>
           </View>
@@ -307,9 +307,12 @@ function makeStyles(C: ThemeColors) {
       backgroundColor: C.card,
       borderBottomWidth: 1,
       borderBottomColor: C.border,
+      zIndex: 10,
     },
-    headerTitle: { fontSize: FontSize.subhead, fontWeight: '800', color: C.text },
-    close: { fontSize: 20, color: C.textTertiary, padding: 4 },
+    headerTitle: { flex: 1, fontSize: FontSize.subhead, fontWeight: '800', color: C.text },
+    // ✕ ボタン: 文字に被らずタップ可能な 44pt タップ領域を確保
+    closeBtn: { minWidth: 44, minHeight: 44, marginLeft: 12, alignItems: 'center', justifyContent: 'center' },
+    close: { fontSize: 20, color: C.textTertiary },
 
     chat: { flex: 1 },
     chatContent: { padding: 14, paddingBottom: 10 },
