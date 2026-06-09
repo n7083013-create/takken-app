@@ -20,7 +20,40 @@ jest.mock('../../store/useProgressStore', () => ({ useProgressStore: { getState:
 jest.mock('../../store/useSettingsStore', () => ({ useSettingsStore: { getState: () => ({}) } }));
 jest.mock('../../services/errorLogger', () => ({ logError: jest.fn() }));
 
-import { buildReminderPlan, MAX_REMINDER_TIMES } from '../../services/notifications';
+import { buildReminderPlan, normalizeTime, MAX_REMINDER_TIMES } from '../../services/notifications';
+
+describe('normalizeTime — カスタム HH:MM 入力の clamp + ゼロ埋め', () => {
+  it('正常値はゼロ埋めのみ', () => {
+    expect(normalizeTime(7, 0)).toBe('07:00');
+    expect(normalizeTime(21, 30)).toBe('21:30');
+  });
+
+  it('"9:5" 相当 → "09:05"（1 桁ゼロ埋め）', () => {
+    expect(normalizeTime(9, 5)).toBe('09:05');
+  });
+
+  it('"25:70" 相当 → "23:59"（上限クランプ）', () => {
+    expect(normalizeTime(25, 70)).toBe('23:59');
+  });
+
+  it('負数は 0 にクランプ', () => {
+    expect(normalizeTime(-1, -5)).toBe('00:00');
+  });
+
+  it('境界値 0:0 / 23:59 はそのまま', () => {
+    expect(normalizeTime(0, 0)).toBe('00:00');
+    expect(normalizeTime(23, 59)).toBe('23:59');
+  });
+
+  it('NaN（空入力確定）は 0 に倒す', () => {
+    expect(normalizeTime(NaN, NaN)).toBe('00:00');
+    expect(normalizeTime(12, NaN)).toBe('12:00');
+  });
+
+  it('小数は切り捨て', () => {
+    expect(normalizeTime(8.9, 30.7)).toBe('08:30');
+  });
+});
 
 describe('buildReminderPlan', () => {
   it('単一時刻 → 時刻別 identifier の 1 件', () => {

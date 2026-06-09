@@ -195,6 +195,17 @@ export function buildDailyReminderText(ctx: ReminderContext): {
 
 // ── 日次リマインダー（複数時刻対応） ──
 
+/**
+ * 時(0-23)・分(0-59)を範囲内にクランプし "HH:MM" にゼロ埋め整形する純粋関数。
+ * カスタム時刻入力の確定時に使用（"25:70"→"23:59"、"9:5"→"09:05"）。
+ * NaN は 0 に倒す（空入力確定時の安全側）。
+ */
+export function normalizeTime(hour: number, minute: number): string {
+  const h = Number.isFinite(hour) ? Math.min(23, Math.max(0, Math.trunc(hour))) : 0;
+  const m = Number.isFinite(minute) ? Math.min(59, Math.max(0, Math.trunc(minute))) : 0;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
 /** 1 件の日次リマインダー通知の予約計画（純粋データ） */
 export interface ReminderPlanEntry {
   identifier: string;

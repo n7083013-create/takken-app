@@ -36,8 +36,93 @@ import {
   requestNotificationPermission,
   scheduleDailyReminder,
   cancelDailyReminder,
+  normalizeTime,
   MAX_REMINDER_TIMES,
 } from '../../services/notifications';
+
+/** よく使う時刻のワンタップ fill（主役は自由入力・補助） */
+const QUICK_TIME_CHIPS = ['07:00', '12:00', '21:00'];
+
+/**
+ * 1 行ぶんのカスタム HH:MM 入力。
+ * 入力中は親 store に書かずローカル state で編集し、確定(onEndEditing/onBlur)時のみ
+ * normalizeTime でクランプ整形して onCommit に渡す（毎キー書き込みでカーソルと喧嘩しない）。
+ * 親はクイック chip fill 等で value が変わると key で remount → ローカル state を再初期化する。
+ */
+function TimeInputRow({
+  value,
+  canRemove,
+  onCommit,
+  onRemove,
+  styles: t,
+  colors,
+}: {
+  value: string;
+  canRemove: boolean;
+  onCommit: (next: string) => void;
+  onRemove: () => void;
+  styles: ReturnType<typeof makeSettingsStyles>;
+  colors: ThemeColors;
+}) {
+  const [hStr, mStr] = value.split(':');
+  const [hour, setHour] = useState(hStr ?? '');
+  const [minute, setMinute] = useState(mStr ?? '');
+
+  const commit = () => {
+    const next = normalizeTime(parseInt(hour, 10), parseInt(minute, 10));
+    // 表示をゼロ埋め済みの確定値へ揃える（"9"/"5" → "09"/"05"）
+    const [nh, nm] = next.split(':');
+    setHour(nh);
+    setMinute(nm);
+    if (next !== value) onCommit(next); // 同値は no-op（無駄な再スケジュール回避）
+  };
+
+  return (
+    <View style={t.timeListRow}>
+      <Text style={t.timeListIcon}>🔔</Text>
+      <View style={t.timeInputWrap}>
+        <TextInput
+          style={t.timeInput}
+          keyboardType="number-pad"
+          value={hour}
+          selectTextOnFocus
+          onChangeText={(text) => setHour(text.replace(/[^0-9]/g, '').slice(0, 2))}
+          onEndEditing={commit}
+          onBlur={commit}
+          maxLength={2}
+          placeholder="00"
+          placeholderTextColor={colors.textTertiary}
+          accessibilityLabel="通知時刻 時"
+        />
+        <Text style={t.timeColon}>:</Text>
+        <TextInput
+          style={t.timeInput}
+          keyboardType="number-pad"
+          value={minute}
+          selectTextOnFocus
+          onChangeText={(text) => setMinute(text.replace(/[^0-9]/g, '').slice(0, 2))}
+          onEndEditing={commit}
+          onBlur={commit}
+          maxLength={2}
+          placeholder="00"
+          placeholderTextColor={colors.textTertiary}
+          accessibilityLabel="通知時刻 分"
+        />
+      </View>
+      {canRemove && (
+        <Pressable
+          onPress={onRemove}
+          style={t.timeRemoveBtn}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`${value} の通知を削除`}
+        >
+          <Text style={t.timeRemoveText}>×</Text>
+        </Pressable>
+      )}
+    </View>
+  );
+}
 
 function SettingsSection() {
   const colors = useThemeColors();
@@ -66,9 +151,6 @@ function SettingsSection() {
     }
   };
 
-  // 追加候補の時刻（既に設定済みのものは UI 側で除外）
-  const timePresets = ['07:00', '08:00', '12:00', '18:00', '20:00', '22:00'];
-
   const applyTimes = async (times: string[]) => {
     updateSettings({ notificationTimes: times });
     if (settings.notificationsEnabled) {
@@ -76,8 +158,9 @@ function SettingsSection() {
     }
   };
 
-  // 1 つの時刻を別候補に置き換える（同じ時刻が既にあれば無視）
+  // 1 つの時刻を確定値で置き換える（重複は畳まれるため同値・既存値なら何もしない）
   const replaceTime = async (index: number, next: string) => {
+    if (settings.notificationTimes[index] === next) return;
     if (settings.notificationTimes.includes(next)) return;
     const updated = settings.notificationTimes.map((t, i) => (i === index ? next : t));
     await applyTimes(updated);
@@ -91,9 +174,18 @@ function SettingsSection() {
 
   const addTime = async () => {
     if (settings.notificationTimes.length >= MAX_REMINDER_TIMES) return;
-    const next = timePresets.find((t) => !settings.notificationTimes.includes(t));
-    if (!next) return;
+    // 妥当な未使用デフォルト（21:00 が埋まっていれば近傍をずらす）
+    const fallbacks = ['21:00', '07:00', '12:00', '19:00', '22:00'];
+    const next = fallbacks.find((t) => !settings.notificationTimes.includes(t)) ?? '21:00';
+    if (settings.notificationTimes.includes(next)) return;
     await applyTimes([...settings.notificationTimes, next]);
+  };
+
+  // よく使う時刻をワンタップで未使用の行に追加（既に全行埋まっていれば何もしない）
+  const quickFill = async (t: string) => {
+    if (settings.notificationTimes.includes(t)) return;
+    if (settings.notificationTimes.length >= MAX_REMINDER_TIMES) return;
+    await applyTimes([...settings.notificationTimes, t]);
   };
 
   const goalOptions = [5, 10, 15, 20, 30, 50];
@@ -192,61 +284,49 @@ function SettingsSection() {
         <>
           <Text style={sset.label}>通知時刻</Text>
           <Text style={sset.labelDesc}>
-            朝・昼・就寝前など、続けやすい時刻に追加できます（最大{MAX_REMINDER_TIMES}つ）
+            時・分を入力して、続けやすい時刻を自由に設定できます（最大{MAX_REMINDER_TIMES}つ）
           </Text>
           {settings.notificationTimes.map((time, index) => (
-            <View key={`${time}-${index}`} style={sset.timeListRow}>
-              <Text style={sset.timeListIcon}>🔔</Text>
-              {/* 時刻はプリセットから 1 タップで切替（横スクロール） */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={sset.timeRow}
-                style={sset.timeListPickerScroll}
-              >
-                {timePresets.map((t) => {
-                  const selected = t === time;
-                  // 他行で使用済みの時刻は重複設定できないので無効化
-                  const usedElsewhere = !selected && settings.notificationTimes.includes(t);
+            <TimeInputRow
+              key={`${time}-${index}`}
+              value={time}
+              canRemove={settings.notificationTimes.length > 1}
+              onCommit={(next) => replaceTime(index, next)}
+              onRemove={() => removeTime(index)}
+              styles={sset}
+              colors={colors}
+            />
+          ))}
+          {settings.notificationTimes.length < MAX_REMINDER_TIMES && (
+            <>
+              {/* よく使う時刻のワンタップ追加（主役は上の自由入力・補助） */}
+              <View style={sset.quickChipRow}>
+                {QUICK_TIME_CHIPS.map((t) => {
+                  const used = settings.notificationTimes.includes(t);
                   return (
                     <Pressable
                       key={t}
-                      disabled={usedElsewhere}
-                      style={[
-                        sset.timeBtn,
-                        selected && sset.timeBtnActive,
-                        usedElsewhere && sset.timeBtnDisabled,
-                      ]}
-                      onPress={() => replaceTime(index, t)}
+                      disabled={used}
+                      style={[sset.quickChip, used && sset.timeBtnDisabled]}
+                      onPress={() => quickFill(t)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${t} を追加`}
                     >
-                      <Text style={[sset.timeText, selected && sset.timeTextActive]}>{t}</Text>
+                      <Text style={sset.quickChipText}>＋{t}</Text>
                     </Pressable>
                   );
                 })}
-              </ScrollView>
-              {settings.notificationTimes.length > 1 && (
-                <Pressable
-                  onPress={() => removeTime(index)}
-                  style={sset.timeRemoveBtn}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${time} の通知を削除`}
-                >
-                  <Text style={sset.timeRemoveText}>×</Text>
-                </Pressable>
-              )}
-            </View>
-          ))}
-          {settings.notificationTimes.length < MAX_REMINDER_TIMES && (
-            <Pressable
-              style={sset.timeAddBtn}
-              onPress={addTime}
-              accessibilityRole="button"
-              accessibilityLabel="通知時刻を追加"
-            >
-              <Text style={sset.timeAddPlus}>＋</Text>
-              <Text style={sset.timeAddText}>時刻を追加</Text>
-            </Pressable>
+              </View>
+              <Pressable
+                style={sset.timeAddBtn}
+                onPress={addTime}
+                accessibilityRole="button"
+                accessibilityLabel="通知時刻を追加"
+              >
+                <Text style={sset.timeAddPlus}>＋</Text>
+                <Text style={sset.timeAddText}>時刻を追加</Text>
+              </Pressable>
+            </>
           )}
         </>
       )}
@@ -441,20 +521,8 @@ function makeSettingsStyles(C: ThemeColors) {
       ...Shadow.sm,
     },
     toggleKnobOn: { transform: [{ translateX: 20 }] },
-    timeRow: { flexDirection: 'row', gap: 6 },
-    timeBtn: {
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: BorderRadius.sm,
-      backgroundColor: C.background,
-      borderWidth: 1,
-      borderColor: C.border,
-    },
-    timeBtnActive: { backgroundColor: C.primary, borderColor: C.primary },
     timeBtnDisabled: { opacity: 0.35 },
-    timeText: { fontSize: FontSize.footnote, color: C.textSecondary, fontWeight: '600' },
-    timeTextActive: { color: C.white },
-    // ── 複数時刻リマインダー行 ──
+    // ── 複数時刻リマインダー行（カスタム HH:MM 入力） ──
     timeListRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -462,7 +530,49 @@ function makeSettingsStyles(C: ThemeColors) {
       marginBottom: 8,
     },
     timeListIcon: { fontSize: 16 },
-    timeListPickerScroll: { flex: 1 },
+    timeInputWrap: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    timeInput: {
+      width: 64,
+      backgroundColor: C.background,
+      borderRadius: BorderRadius.md,
+      paddingVertical: 10,
+      borderWidth: 1,
+      borderColor: C.border,
+      fontSize: FontSize.subhead,
+      color: C.text,
+      textAlign: 'center',
+      fontWeight: '700',
+    },
+    timeColon: {
+      fontSize: FontSize.subhead,
+      fontWeight: '800',
+      color: C.text,
+    },
+    quickChipRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 6,
+      marginTop: 4,
+      marginBottom: 8,
+    },
+    quickChip: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: BorderRadius.sm,
+      backgroundColor: C.primarySurface,
+      borderWidth: 1,
+      borderColor: C.primary,
+    },
+    quickChipText: {
+      fontSize: FontSize.caption,
+      color: C.primary,
+      fontWeight: '700',
+    },
     timeRemoveBtn: {
       width: 26,
       height: 26,
