@@ -640,20 +640,12 @@ function HomeScreen() {
 
         {/* 「よく出る論点」プリセットchip(緑6個)は廃止（ホーム簡素化。論点別は下の「📚 論点を選んで解く」で全論点から選べる） */}
 
-        {/* ── その他の学習モード ── */}
-        <Text style={s.sectionTitle}>学習モード</Text>
+        {/* 「学習モード」見出しは廃止＋「マスター済み」は記録タブへ集約(重複解消 P4)。模擬試験はカード単独で残置(C で下タブ昇格予定)。 */}
         <View style={s.modeGrid}>
-          {/* 就寝前復習カードは削除 (重複): 夜はメインCTAが自動で /pre-sleep-review へ誘導し、
-              日中にやりたい人向けの入口は復習タブ内に集約した (IA 的に正しい所在)。 */}
           <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/exam')} accessibilityRole="button" accessibilityLabel="模擬試験を開始">
             <Text style={s.modeIcon}>📋</Text>
             <Text style={s.modeTitle}>模擬試験</Text>
             <Text style={s.modeSub}>本番形式50問</Text>
-          </Pressable>
-          <Pressable style={[s.modeCard, Shadow.sm]} onPress={() => router.push('/mastered')} accessibilityRole="button" accessibilityLabel="マスター済み問題を表示">
-            <Text style={s.modeIcon}>🎓</Text>
-            <Text style={s.modeTitle}>マスター済み</Text>
-            <Text style={s.modeSub}>復習から除外した問題</Text>
           </Pressable>
         </View>
 
