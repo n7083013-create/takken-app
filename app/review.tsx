@@ -41,6 +41,16 @@ type AnswerState = 'idle' | 'correct' | 'wrong';
 
 const LABELS = ['A', 'B', 'C', 'D'] as const;
 
+/** Fisher-Yates シャッフル（選択肢の順番をランダム化、question/[id].tsx と同方式） */
+function shuffleIndices(length: number): number[] {
+  const arr = Array.from({ length }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export default function ReviewScreen() {
   const colors = useThemeColors();
   const router = useRouter();
@@ -78,7 +88,21 @@ export default function ReviewScreen() {
     return id ? getQuestionById(id) : undefined;
   }, [reviewIds, currentIndex]);
 
+  // [C-6 2026-06-10] 選択肢の表示順シャッフル (位置暗記の防止)。
+  // question/[id].tsx と同じ shuffleIndices 方式: 表示位置 → 元index のマッピングを持ち、
+  // 正誤判定・recordAnswer は元index (origIdx) で行う。問題切替時に再シャッフル。
+  // 個数問題・組み合わせ問題 (1つ/2つ…) はシャッフルしない (question/[id] と同基準)。
+  const [shuffledMap, setShuffledMap] = useState<number[]>([0, 1, 2, 3]);
+  const reshuffleFor = useCallback((questionId: string | undefined) => {
+    const nq = questionId ? getQuestionById(questionId) : undefined;
+    if (!nq) return;
+    const special = nq.questionFormat === 'count' || nq.questionFormat === 'combination';
+    setShuffledMap(special ? nq.choices.map((_, i) => i) : shuffleIndices(nq.choices.length));
+  }, []);
+
   const startSession = useCallback((type: ReviewType) => {
+    const ids = type === 'due' ? dueIds : type === 'weak' ? weakIds : bookmarkedIds;
+    reshuffleFor(ids[0]);
     setReviewType(type);
     setMode('session');
     setCurrentIndex(0);
@@ -87,7 +111,7 @@ export default function ReviewScreen() {
     setSessionCorrect(0);
     setSessionTotal(0);
     explainAnim.setValue(0);
-  }, []);
+  }, [dueIds, weakIds, bookmarkedIds, reshuffleFor]);
 
   // 記録タブの復習ハブから ?q=due|weak|bookmarked で来たら該当キューを自動オープン。
   // 在庫が無いキューはメニュー表示のまま (空セッションの完了画面で混乱させない)。
@@ -129,6 +153,7 @@ export default function ReviewScreen() {
       setPendingAnswer(null);
     }
     if (currentIndex < reviewIds.length - 1) {
+      reshuffleFor(reviewIds[currentIndex + 1]);
       setCurrentIndex((p) => p + 1);
     } else {
       setMode('menu');
@@ -137,7 +162,7 @@ export default function ReviewScreen() {
     setSelected(null);
     setAnswerState('idle');
     explainAnim.setValue(0);
-  }, [currentIndex, reviewIds.length, pendingAnswer, recordAnswer]);
+  }, [currentIndex, reviewIds, pendingAnswer, recordAnswer, reshuffleFor]);
 
   /** 確信度を選んで記録 → 次へ */
   const handleConfidenceAndNext = useCallback((confidence: ConfidenceLevel) => {
@@ -147,6 +172,7 @@ export default function ReviewScreen() {
       setTimeout(() => checkAchievements(), 0);
     }
     if (currentIndex < reviewIds.length - 1) {
+      reshuffleFor(reviewIds[currentIndex + 1]);
       setCurrentIndex((p) => p + 1);
     } else {
       setMode('menu');
@@ -155,7 +181,7 @@ export default function ReviewScreen() {
     setSelected(null);
     setAnswerState('idle');
     explainAnim.setValue(0);
-  }, [currentIndex, reviewIds.length, pendingAnswer, recordAnswer, checkAchievements]);
+  }, [currentIndex, reviewIds, pendingAnswer, recordAnswer, checkAchievements, reshuffleFor]);
 
   const sessionAccuracy = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 0;
 
@@ -280,11 +306,15 @@ export default function ReviewScreen() {
             </View>
           )}
 
-          {/* Choices */}
+          {/* Choices (シャッフル済み: origIdx=元のデータ添字 / displayIdx=表示位置・A-Dラベル用) */}
           <View style={s.choiceList}>
-            {currentQuestion.choices.map((choice, i) => {
-              const isCorrect = i === currentQuestion.correctIndex;
-              const isSelected = i === selected;
+            {(shuffledMap.length === currentQuestion.choices.length
+              ? shuffledMap
+              : currentQuestion.choices.map((_, i) => i)
+            ).map((origIdx, displayIdx) => {
+              const choice = currentQuestion.choices[origIdx];
+              const isCorrect = origIdx === currentQuestion.correctIndex;
+              const isSelected = origIdx === selected;
               const answered = answerState !== 'idle';
               const isCorrectAnswer = answered && isCorrect;
               const isWrongAnswer = answered && isSelected && !isCorrect;
@@ -298,15 +328,15 @@ export default function ReviewScreen() {
 
               return (
                 <Pressable
-                  key={i}
+                  key={origIdx}
                   style={[s.choiceCard, cardExtra, Shadow.sm]}
-                  onPress={() => handleSelect(i)}
+                  onPress={() => handleSelect(origIdx)}
                   disabled={answered}
                   accessibilityRole="button"
-                  accessibilityLabel={`選択肢${LABELS[i]}: ${choice}`}
+                  accessibilityLabel={`選択肢${LABELS[displayIdx]}: ${choice}`}
                 >
                   <View style={[s.choiceLabel, { backgroundColor: labelBg }]}>
-                    <Text style={[s.choiceLabelText, { color: labelColor }]}>{LABELS[i]}</Text>
+                    <Text style={[s.choiceLabelText, { color: labelColor }]}>{LABELS[displayIdx]}</Text>
                   </View>
                   <Text style={s.choiceText} selectable>{choice}</Text>
                   {answered && isCorrect && <Text style={s.checkMark}>✓</Text>}

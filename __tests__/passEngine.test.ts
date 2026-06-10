@@ -22,6 +22,7 @@ import {
   pickOneSmart,
   NEW_FLOOR,
   DUE_CAP,
+  INPUT_NEW_PACE_FLOOR,
 } from '../utils/passEngine';
 import { ALL_QUESTIONS } from '../data';
 import type { Category, QuestionProgress } from '../types';
@@ -275,15 +276,16 @@ describe('buildPassQueue - 合格エンジン キュー構成', () => {
     expect(consecutive).toBeLessThanOrEqual(2);
   });
 
-  it('新規ペース上限 = ceil(残り未出題 / 残り日数) — 残り日数が多いほど1日の新規は絞られる', () => {
+  it('新規ペース上限 — 残り日数が多いほど絞られるが、インプット期は下限8で底打ち [C-4]', () => {
     // 進捗ゼロ (全問 unseen)。due/苦手も無いので新規だけで埋まる。
     const farQueue = buildPassQueue({}, { daysUntilExam: 100000, sessionSize: 50 });
-    // 残り日数が極端に多い → ペース上限は最低保証(5)まで縮む
-    expect(farQueue.length).toBe(NEW_FLOOR.input);
+    // [C-4] 旧仕様はペース上限が最低保証(5)まで縮みコールドスタートの一巡が遅すぎた
+    // → インプット期は INPUT_NEW_PACE_FLOOR(8) を下限に保証する
+    expect(farQueue.length).toBe(INPUT_NEW_PACE_FLOOR);
 
     // 残り日数が短い → 1日に多く出してよい (セッション上限まで埋まる)
     const nearQueue = buildPassQueue({}, { daysUntilExam: 1, sessionSize: 50 });
-    expect(nearQueue.length).toBeGreaterThan(NEW_FLOOR.input);
+    expect(nearQueue.length).toBeGreaterThan(INPUT_NEW_PACE_FLOOR);
   });
 
   it('全問 mastered でも空キューを返さない (死んだボタン防止のフォールバック)', () => {
@@ -411,6 +413,15 @@ describe('computeTodayAction - 単一CTA状態マシン', () => {
     todayAnswered: 10,
     dailyGoal: 10,
   };
+
+  it("②' [C-5] 試験30日以内+前回模試から14日経過 → 再受験CTA(mockExam)、14日未満/試験遠方は出ない", () => {
+    const a = computeTodayAction({ ...base, examDays: 25, daysSinceLastMock: 14 });
+    expect(a.kind).toBe('mockExam');
+    const b = computeTodayAction({ ...base, examDays: 25, daysSinceLastMock: 5 });
+    expect(b.kind).not.toBe('mockExam');
+    const c = computeTodayAction({ ...base, examDays: 45, daysSinceLastMock: 30 });
+    expect(c.kind).not.toBe('mockExam');
+  });
 
   it('① 初日 (解答ゼロ) は最初の1問', () => {
     const a = computeTodayAction({ ...base, totalAnswered: 0 });

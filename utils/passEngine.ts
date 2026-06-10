@@ -47,6 +47,19 @@ export const WEAK_SLOT: Record<StudyPhase, number> = {
   final: 8,
 };
 
+/**
+ * [C-4 2026-06-10] インプット期の新規ペース下限 / セッション。
+ * 試験が遠い (例: 150日前×在庫600 → ceil(600/150)=4) とコールドスタートの新規が
+ * 細りすぎて全範囲の一巡が遅れるため、序盤だけ下限を保証する (セッションサイズで頭打ち)。
+ * 定着期・直前期は現行ペース式のまま (新規を絞る設計を維持)。
+ */
+export const INPUT_NEW_PACE_FLOOR = 8;
+
+/** 模試の再受験を促すまでの経過日数 (前回模試からこの日数で実力の変化が測れる) */
+export const MOCK_RETAKE_INTERVAL_DAYS = 14;
+/** 模試再受験CTAを出す試験接近ウィンドウ (この日数以内) */
+export const MOCK_RETAKE_EXAM_WINDOW_DAYS = 30;
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const CATEGORIES: Category[] = ['kenri', 'takkengyoho', 'horei_seigen', 'tax_other'];
@@ -217,10 +230,16 @@ export function buildPassQueue(
   // --- 新規ペース上限: 最終日までに未出題を一周できる 1日あたり本数 ---
   // (試験日未設定なら在庫数 = ペース制約なし。最低保証 NEW_FLOOR だけが効く。)
   const remainingDays = opts.daysUntilExam == null ? null : Math.max(1, opts.daysUntilExam);
-  const pacedNewLimit =
+  const rawPacedNewLimit =
     remainingDays == null
       ? tiers.unseen.length
       : Math.ceil(tiers.unseen.length / remainingDays);
+  // [C-4] インプット期だけ新規ペースに下限 INPUT_NEW_PACE_FLOOR を設ける
+  // (コールドスタートで新規が 4-5 問に細る事故の救済)。セッションサイズでクランプ。
+  const pacedNewLimit =
+    phase === 'input'
+      ? Math.min(size, Math.max(INPUT_NEW_PACE_FLOOR, rawPacedNewLimit))
+      : rawPacedNewLimit;
   // 新規は「ペース上限」と「最低保証」の大きい方を狙う (在庫で頭打ち)。
   // ⚠️ これはセッション全体を通した新規の "総数上限" であり、後段の穴埋めでも超えない
   //    (= far-exam ユーザーに新規を出しすぎない / 直前期は 0 に絞る)。
@@ -288,14 +307,14 @@ export function pickOneSmart(
 export interface PreSleepOptions {
   count: number;
   now?: Date;
-  /** その日間違えた / 低確信だった問題を優先再露出する (睡眠固定化に乗せる) */
+  /** その日間違えた /「難しい」評価だった問題を優先再露出する (睡眠固定化に乗せる) [C-3 真の苦戦のみ] */
   todaysStruggleIds?: Iterable<string>;
 }
 
 /**
  * 就寝前復習の選出 (夜版に差別化)。
  *  (i)  新規 (attempts==0) を除外 = 寝る前に新しい負荷をかけない
- *  (ii) その日間違えた / 低確信だった問題を最優先で再露出 (睡眠中の記憶固定に乗せる)
+ *  (ii) その日間違えた /「難しい」評価だった問題を最優先で再露出 (睡眠中の記憶固定に乗せる)
  *  (iii) 残りは忘却曲線で「もうすぐ忘れそう」を選ぶ (従来ロジック)
  */
 export function selectPreSleepReview(
@@ -392,6 +411,11 @@ export interface TodayActionInput {
   totalAnswered: number;
   examDays: number | null;
   hasMockHistory: boolean;
+  /**
+   * 前回模試からの経過日数。null/undefined = 模試履歴なし or 呼び出し側未配線。
+   * [C-5] examDays<=30 かつ 14日以上経過で再受験CTAを出す (定期的な実力チェック)。
+   */
+  daysSinceLastMock?: number | null;
   dueCount: number;
   weakCount: number;
   isEvening: boolean;
@@ -429,6 +453,24 @@ export function computeTodayAction(input: TodayActionInput): TodayActionView {
     return make('mockExam', '📋', '本番形式で力試し(50問)', '試験が近づいています。一度通しで実力を確認しましょう');
   }
 
+  // ②' [C-5] 試験接近 (0〜30日) かつ 前回模試から14日以上経過 → 定期的な実力チェック
+  // (受けっぱなしだと実力の変化が見えない。文言は事実ベース・誇張なし = P6)
+  if (
+    input.examDays !== null &&
+    input.examDays >= 0 &&
+    input.examDays <= MOCK_RETAKE_EXAM_WINDOW_DAYS &&
+    input.hasMockHistory &&
+    input.daysSinceLastMock != null &&
+    input.daysSinceLastMock >= MOCK_RETAKE_INTERVAL_DAYS
+  ) {
+    return make(
+      'mockExam',
+      '📋',
+      '模試で実力チェック(50問)',
+      `前回の模試から${input.daysSinceLastMock}日。実力チェックの時期です`,
+    );
+  }
+
   // ③ due>0 かつ 夜 → 就寝前の復習
   if (input.dueCount > 0 && input.isEvening) {
     return make('preSleep', '🌙', `就寝前の復習(${input.dueCount}問)`, '寝る前の復習で定着を助けます');
@@ -439,14 +481,14 @@ export function computeTodayAction(input: TodayActionInput): TodayActionView {
     return make('review', '⏰', `復習${input.dueCount}問を解く`, '忘れる前に解くと記憶が定着しやすくなります');
   }
 
-  // ⑤ weak>3 → 弱点克服
+  // ⑤ weak>3 → 苦手克服 (呼称は「苦手」に統一 — 「弱点」「攻略」との表記ブレ防止)
   if (input.weakCount > 3) {
     const label = input.weakestCategoryLabel;
     return make(
       'weakFocus',
       '💪',
-      label ? `${label}を克服する` : '弱点を克服する',
-      `${input.weakCount}問の苦手を集中的に攻略します`,
+      label ? `${label}を克服する` : '苦手を克服する',
+      `${input.weakCount}問の苦手を集中的に克服します`,
     );
   }
 

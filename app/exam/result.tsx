@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -23,6 +24,7 @@ import { AnimatedNumber } from '../../components/AnimatedNumber';
 import { PressableScale } from '../../components/PressableScale';
 import { WebBackButton } from '../../components/WebBackButton';
 import { trackEvent } from '../../services/analytics';
+import { setAiQueue } from '../../utils/aiQueue';
 
 export default function ExamResultScreen() {
   const router = useRouter();
@@ -39,6 +41,9 @@ export default function ExamResultScreen() {
     let correctCount = 0;
     questions.forEach((q) => {
       const ans = current.answers[q.id];
+      // [C-2 2026-06-10] 未回答 (時間切れ) は SM-2 に流さない。知識の誤りではなく
+      // 時間切れであり、誤答扱いすると翌日の復習キューを汚すため (画面では件数を分けて表示)。
+      if (ans === undefined) return;
       const correct = ans === q.correctIndex;
       if (correct) correctCount++;
       recordAnswer(q.id, q.category, correct);
@@ -120,6 +125,38 @@ export default function ExamResultScreen() {
       .slice(0, 3);
   }, [questions, current]);
 
+  // [C-2] 誤答 (回答して間違えた問題) と未回答 (時間切れ) を分離。
+  // 誤答は「今すぐ復習」CTAの対象、未回答は SM-2 に流さず件数のみ表示する。
+  const wrongIds = useMemo(
+    () =>
+      questions
+        .filter((q) => {
+          const ans = current.answers[q.id];
+          return ans !== undefined && ans !== q.correctIndex;
+        })
+        .map((q) => q.id),
+    [questions, current],
+  );
+  const unansweredCount = useMemo(
+    () => questions.filter((q) => current.answers[q.id] === undefined).length,
+    [questions, current],
+  );
+
+  // [C-2] 誤答だけを既存の連続出題メカニズム (aiQueue + source=ai) で順に解き直す。
+  // 新規画面は作らず question/[id] の連続出題に乗せる (P4)。
+  const startWrongReview = useCallback(async () => {
+    if (wrongIds.length === 0) return;
+    await setAiQueue(
+      {
+        getItem: (k) => AsyncStorage.getItem(k),
+        setItem: (k, v) => AsyncStorage.setItem(k, v),
+        removeItem: (k) => AsyncStorage.removeItem(k),
+      },
+      wrongIds,
+    );
+    router.push(`/question/${wrongIds[0]}?source=ai` as any);
+  }, [wrongIds, router]);
+
   return (
     <SafeAreaView style={s.safe}>
       <Stack.Screen options={{ title: '試験結果', headerBackTitle: '戻る' }} />
@@ -141,6 +178,23 @@ export default function ExamResultScreen() {
           </Animated.View>
           <Text style={s.gradeDesc}>{gradeInfo.description}</Text>
         </View>
+
+        {/* [C-2] 誤答だけ即復習CTA + 未回答の分離表示 */}
+        {wrongIds.length > 0 && (
+          <PressableScale
+            style={[s.wrongReviewBtn, Shadow.md]}
+            onPress={startWrongReview}
+            accessibilityRole="button"
+            accessibilityLabel={`誤答${wrongIds.length}問だけ今すぐ復習`}
+          >
+            <Text style={s.wrongReviewText}>誤答{wrongIds.length}問だけ今すぐ復習 →</Text>
+          </PressableScale>
+        )}
+        {unansweredCount > 0 && (
+          <Text style={s.unansweredNote}>
+            時間切れ・未回答 {unansweredCount}問（誤答と区別し、復習記録には含めません）
+          </Text>
+        )}
 
         <View style={[s.card, Shadow.sm]}>
           <Text style={s.cardTitle}>科目別成績</Text>
@@ -191,6 +245,7 @@ export default function ExamResultScreen() {
           <Text style={s.cardTitle}>問題別 結果</Text>
           {questions.map((q, i) => {
             const ans = current.answers[q.id];
+            const unanswered = ans === undefined;
             const correct = ans === q.correctIndex;
             return (
               <Pressable
@@ -198,8 +253,8 @@ export default function ExamResultScreen() {
                 style={s.qRow}
                 onPress={() => router.push(`/question/${q.id}`)}
               >
-                <Text style={[s.qIdx, correct ? s.qOk : s.qNg]}>
-                  {correct ? '○' : '✗'} {i + 1}
+                <Text style={[s.qIdx, unanswered ? s.qNone : correct ? s.qOk : s.qNg]}>
+                  {unanswered ? '−' : correct ? '○' : '✗'} {i + 1}
                 </Text>
                 <Text style={s.qText} numberOfLines={3}>
                   {q.text}
@@ -266,6 +321,23 @@ function makeStyles(C: ThemeColors) {
     qIdx: { width: 44, fontSize: 13, fontWeight: '800' },
     qOk: { color: C.success },
     qNg: { color: C.error },
+    qNone: { color: C.textTertiary },
+
+    // [C-2] 誤答だけ即復習CTA + 未回答ノート
+    wrongReviewBtn: {
+      backgroundColor: C.accent,
+      borderRadius: 14,
+      paddingVertical: 16,
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    wrongReviewText: { color: C.white, fontSize: 15, fontWeight: '800' },
+    unansweredNote: {
+      fontSize: 12,
+      color: C.textSecondary,
+      textAlign: 'center',
+      marginBottom: 16,
+    },
     qText: { flex: 1, fontSize: 12, color: C.textSecondary },
     primaryBtn: {
       backgroundColor: C.primary,

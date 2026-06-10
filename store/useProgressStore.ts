@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Category, ConfidenceLevel, QuestionProgress, StudyStats, SUBCATEGORIES } from '../types';
-import { ALL_QUESTIONS } from '../data';
+import { ALL_QUESTIONS, ALL_QUICK_QUIZZES } from '../data';
 import { daysUntilTakkenExam } from '../constants/exam';
 import { capIntervalToExam, selectPreSleepReview } from '../utils/passEngine';
 import {
@@ -353,6 +353,59 @@ function getDateKey(date?: Date): string {
 }
 
 /**
+ * SM-2 を1解答分適用した QuestionProgress を生成する純粋ヘルパー。
+ * recordAnswer (4択) と recordQuickQuizAnswer の誤答波及 [C-1] で共用する。
+ * stats / dailyLog には一切触れない — 波及時の二重計上防止はこの分離が担保する。
+ */
+function buildAnsweredProgress(
+  existing: QuestionProgress | undefined,
+  questionId: string,
+  isCorrect: boolean,
+  confidence: ConfidenceLevel,
+  daysUntilExam: number | null,
+): QuestionProgress {
+  const currentInterval = existing?.interval ?? 0;
+  const currentEaseFactor = existing?.easeFactor ?? INITIAL_EASE_FACTOR;
+  // [FIX ED1] correctStreak は「連続正答数」を使う（correctCount は累計なので不適切）
+  const correctStreak = existing
+    ? isCorrect
+      ? (existing.correctStreak ?? 0) + 1
+      : 0
+    : isCorrect
+      ? 1
+      : 0;
+
+  // 締切逆算: 試験前日までの残り日数で interval を頭打ちにする。
+  const { interval, easeFactor } = calculateSM2(
+    isCorrect,
+    currentInterval,
+    currentEaseFactor,
+    correctStreak,
+    confidence,
+    daysUntilExam,
+  );
+
+  const nextReview = new Date();
+  nextReview.setDate(nextReview.getDate() + interval);
+
+  return {
+    questionId,
+    attempts: (existing?.attempts ?? 0) + 1,
+    correctCount: (existing?.correctCount ?? 0) + (isCorrect ? 1 : 0),
+    correctStreak,
+    lastAttemptAt: new Date().toISOString(),
+    bookmarked: existing?.bookmarked ?? false,
+    // 手動マスター(永久除外)は解答では消さない (解除はユーザー操作のみ)。
+    // ※旧 recordAnswer も落としていた潜在バグの是正 (2026-06-10)
+    mastered: existing?.mastered,
+    nextReviewAt: nextReview.toISOString(),
+    easeFactor,
+    interval,
+    lastConfidence: confidence,
+  };
+}
+
+/**
  * [2026-06-03] 厳密ストリーク: 解答した日だけカウント。1日でも空けばリセット。
  * （旧フリーズ「1日休んでも維持」は廃止 = 表示を実際の学習日数と一致させ正直に。
  *   4択・一問一答どちらも「1問解いたら」その日を学習日として +1 する。）
@@ -417,8 +470,32 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       todayDate: today,
     };
 
+    // [C-1 2026-06-10] 一問一答の誤答を関連4択 (relatedQuestionId) の SM-2 へ波及し、
+    // 復習キューに載せる。毎日一問一答だけ解いても忘却で抜ける穴を塞ぐ。
+    //  - 誤答のみ波及 (正解は4択での実出題なしに復習を消化扱いしないため)
+    //  - progress のみ更新 (stats/dailyLog は触らない = 二重計上なし。一問一答の
+    //    カウントは quickQuizStats が単一ソース)
+    let progress = state.progress;
+    if (!isCorrect) {
+      const relatedId = ALL_QUICK_QUIZZES.find((qq) => qq.id === quizId)?.relatedQuestionId;
+      if (relatedId && ALL_QUESTIONS.some((q) => q.id === relatedId)) {
+        progress = {
+          ...state.progress,
+          [relatedId]: buildAnsweredProgress(
+            state.progress[relatedId],
+            relatedId,
+            false,
+            'low',
+            daysUntilTakkenExam(),
+          ),
+        };
+        markDirty(relatedId);
+      }
+    }
+
     // [2026-06-03] 一問一答も「1問解いたら」その日を学習日にカウント（4択と同じ厳密ストリーク）
     set({
+      progress,
       quickQuizStats: updatedQuickQuizStats,
       stats: { ...state.stats, ...applyStudyDay(state.stats) },
     });
@@ -437,51 +514,19 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   recordAnswer(questionId: string, category: Category, isCorrect: boolean, confidence: ConfidenceLevel = 'low') {
     const state = get();
-    const existing = state.progress[questionId];
-    const now = new Date().toISOString();
     // [Phase 1.3] アクティベーション計測: 初めて正解したタイミングで広告コンバージョン発火
     // → 「広告クリック→ユーザー学習着手」までの導線が Google Ads に可視化される
     const isFirstCorrect = isCorrect && state.stats.totalCorrect === 0;
 
-    // 確信度ベース SM-2 計算
-    const currentInterval = existing?.interval ?? 0;
-    const currentEaseFactor = existing?.easeFactor ?? INITIAL_EASE_FACTOR;
-    // [FIX ED1] correctStreak は「連続正答数」を使う（correctCount は累計なので不適切）
-    const correctStreak = existing
-      ? isCorrect
-        ? (existing.correctStreak ?? 0) + 1
-        : 0
-      : isCorrect
-        ? 1
-        : 0;
-
-    // 締切逆算: 試験前日までの残り日数で interval を頭打ちにする。
+    // 確信度ベース SM-2 + 締切逆算 cap (buildAnsweredProgress に集約)。
     // 宅建は試験日固定 (10月第3日曜) のため常に値が返るが、未設定資格は null=上限なし。
-    const { interval, easeFactor } = calculateSM2(
+    const updatedProgress = buildAnsweredProgress(
+      state.progress[questionId],
+      questionId,
       isCorrect,
-      currentInterval,
-      currentEaseFactor,
-      correctStreak,
       confidence,
       daysUntilTakkenExam(),
     );
-
-    // 次の復習日を計算
-    const nextReview = new Date();
-    nextReview.setDate(nextReview.getDate() + interval);
-
-    const updatedProgress: QuestionProgress = {
-      questionId,
-      attempts: (existing?.attempts ?? 0) + 1,
-      correctCount: (existing?.correctCount ?? 0) + (isCorrect ? 1 : 0),
-      correctStreak,
-      lastAttemptAt: now,
-      bookmarked: existing?.bookmarked ?? false,
-      nextReviewAt: nextReview.toISOString(),
-      easeFactor,
-      interval,
-      lastConfidence: confidence,
-    };
 
     // [2026-06-03] 厳密ストリーク（applyStudyDay）+ 4択のヒートマップ用 日次ログ
     const studyDay = applyStudyDay(state.stats);
@@ -820,19 +865,21 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
    * 認知科学: 就寝前の復習は睡眠中の記憶固定（consolidation）を助ける。
    * 夜セッションの差別化 (selectPreSleepReview):
    *  (i)  新規 (attempts==0) を除外 = 寝る前に新しい負荷をかけない
-   *  (ii) その日間違えた / 低確信だった問題を最優先で再露出 (睡眠固定化に乗せる)
+   *  (ii) その日間違えた /「難しい」評価だった問題を最優先で再露出 (睡眠固定化に乗せる)
    *  (iii) 残りは「もうすぐ忘れそう」を忘却曲線で選出
    */
   getPreSleepReview(count: number): string[] {
     const { progress } = get();
     const todayKey = getDateKey(new Date());
-    // その日に「間違えた or 難しい(低確信)」と評価した問題を優先再露出する。
+    // その日に「間違えた or 難しいと評価した」問題 = 真の苦戦のみを優先再露出する。
+    // [C-3 2026-06-10] 'low' は既定値 (=普通評価) なので含めると当日解答のほぼ全問が
+    // struggle 扱いになり、本当の誤答が就寝前5問の枠から押し出されていた。
     const todaysStruggleIds = Object.values(progress)
       .filter((p) => {
         if (!p.lastAttemptAt) return false;
         if (getDateKey(new Date(p.lastAttemptAt)) !== todayKey) return false;
-        // 当日の最後の解答が不正解 (correctStreak===0) か、難しいと評価した問題。
-        const struggled = (p.correctStreak ?? 0) === 0 || p.lastConfidence === 'none' || p.lastConfidence === 'low';
+        // 当日の最後の解答が不正解 (correctStreak===0) か、「難しい」と評価した問題。
+        const struggled = (p.correctStreak ?? 0) === 0 || p.lastConfidence === 'none';
         return struggled;
       })
       .map((p) => p.questionId);
