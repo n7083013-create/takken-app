@@ -181,12 +181,12 @@ export function PredictionCard({ prediction, history, compact = false }: Predict
         </View>
       </View>
 
-      {/* ── 95%信頼区間 (常時表示・科学的透明性) ── */}
+      {/* ── 95%信頼区間 (常時表示)。UI では「◯%の確率で入る」と断定せず推定として示す (P6) ── */}
       {predictionInterval && (
         <View style={s.ciBox}>
-          <Text style={s.ciLabel}>95%の確率で</Text>
+          <Text style={s.ciLabel}>予測レンジ（統計推定）</Text>
           <Text style={s.ciRange}>
-            {predictionInterval.lower}〜{predictionInterval.upper}点 の範囲に入る
+            {predictionInterval.lower}〜{predictionInterval.upper}点 に収まる見込み
             {confidence === 'low' && <Text style={s.ciMeasuring}>（測定中）</Text>}
           </Text>
           {toPrecision > 0 && (

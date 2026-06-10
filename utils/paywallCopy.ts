@@ -71,7 +71,8 @@ export function getLimitCopy(mode: LimitMode): LimitCopy {
       return {
         emoji: '📝',
         title: '本試験形式 50問・120分',
-        subtitle: '時間配分の練習は合格率を最も左右する要素。\n7日間無料で何回でも模試を受けられる。',
+        // [P6] 「合格率を最も左右する」は根拠を示せない最上級表現のため使わない
+        subtitle: '本番で差がつきやすい時間配分の練習。\n7日間無料で何回でも模試を受けられる。',
         primaryCta: '7日間無料で模試を受ける',
       };
 

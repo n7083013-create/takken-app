@@ -1106,8 +1106,8 @@ function makeAccountStyles(C: ThemeColors) {
 
 /**
  * 予測ハブ④ 模試突合: 予測点 ↔ 直近模試の実測点を並べ、誤差を示す。
- * 誤差±3以内なら「予測はあなたの実力をほぼ正確に捉えています」。未受験なら受験CTA。
- * 推移バー(直近10回)も内包し、別セクションの重複を解消する。
+ * 文言は事実 (誤差±◯点) のみ述べ、「実力を正確に捉えている」等の断定はしない (P6)。
+ * 未受験なら受験CTA。推移バーは下の「模試スコア推移」が担う (重複回避)。
  */
 function MockReconciliation({
   s,
@@ -1163,7 +1163,7 @@ function MockReconciliation({
             { color: Math.abs(mockError) <= 3 ? colors.success : colors.textSecondary },
           ]}>
             {Math.abs(mockError) <= 3
-              ? '✓ 予測はあなたの実力をほぼ正確に捉えています'
+              ? `✓ 直近模試との誤差は±${Math.abs(mockError)}点でした`
               : '模試を重ねるほど予測が実測へ寄っていきます'}
           </Text>
           <Text style={s.mockTrendHint}>スコアの推移は下の「模試スコア推移」で確認できます</Text>
@@ -1329,14 +1329,7 @@ export default function ProgressScreen() {
                     上位3つを攻略すると 予測 +{top3Recoverable.toFixed(1)}点 → {Math.min(EXAM_TOTAL, Math.round(examPrediction.totalPredicted + top3Recoverable))}点
                   </Text>
                 )}
-                <Pressable
-                  style={s.heatmapLink}
-                  onPress={() => router.push('/heatmap')}
-                  accessibilityRole="button"
-                  accessibilityLabel="弱点マップ全体を見る"
-                >
-                  <Text style={s.heatmapLinkText}>▦ 弱点マップ全体を見る →</Text>
-                </Pressable>
+                {/* /heatmap への導線は「科目別分析」内の 1 本に集約 (二重導線の解消 P4) */}
               </View>
             )}
 
@@ -1362,11 +1355,12 @@ export default function ProgressScreen() {
             style={[s.reviewHubCard, Shadow.sm]}
             onPress={() => router.push({ pathname: '/review', params: { q: 'due' } })}
             accessibilityRole="button"
-            accessibilityLabel={`全体復習 ${dueCount}問`}
+            accessibilityLabel={`今日の復習 ${dueCount}問`}
           >
             <Text style={s.reviewHubIcon}>📖</Text>
             <Text style={[s.reviewHubValue, dueCount > 0 ? { color: colors.accent } : {}]}>{dueCount}</Text>
-            <Text style={s.reviewHubLabel}>全体復習</Text>
+            {/* タップ先の review 画面 (due) と同じ呼称に統一 (P1 迷い防止) */}
+            <Text style={s.reviewHubLabel}>今日の復習</Text>
           </Pressable>
           <Pressable
             style={[s.reviewHubCard, Shadow.sm]}
@@ -1443,11 +1437,13 @@ export default function ProgressScreen() {
               <Text style={s.heroLabel}>連続日数</Text>
             </View>
           </View>
-          {stats.longestStreak > 0 && (
-            <View style={s.heroFooter}>
+          <View style={s.heroFooter}>
+            {stats.longestStreak > 0 && (
               <Text style={s.heroFooterText}>🏆 最長記録：{stats.longestStreak}日連続</Text>
-            </View>
-          )}
+            )}
+            {/* AI解説残数: 専用カード1枚は過剰なのでヒーローの小さな1行に吸収 (P4) */}
+            <Text style={s.heroAiText}>🤖 AI解説 今日 {aiUsedToday}/{aiDailyLimit}回</Text>
+          </View>
         </View>
 
         {/* ── 直近7日間の学習バーチャート + 進捗率（ホームから集約） ── */}
@@ -1461,16 +1457,7 @@ export default function ProgressScreen() {
           </View>
         )}
 
-        {/* AI解説の今日の残数 (旧 Quick Metrics から残置・情報表示) */}
-        <View style={s.metricRow}>
-          <View style={[s.metricCard, Shadow.sm]}>
-            <Text style={s.metricIcon}>🤖</Text>
-            <Text style={s.metricValue}>
-              {`${aiUsedToday}/${aiDailyLimit}`}
-            </Text>
-            <Text style={s.metricLabel}>AI解説 (今日)</Text>
-          </View>
-        </View>
+        {/* AI解説の今日の残数はヒーローカード下部の1行に吸収済み (カード削除・P4) */}
 
         {/* Category Analysis */}
         <Text style={s.sectionTitle}>科目別分析</Text>
@@ -1717,6 +1704,12 @@ function makeStyles(C: ThemeColors) {
       color: C.accent,
       fontWeight: '700',
     },
+    heroAiText: {
+      fontSize: FontSize.caption,
+      color: C.textSecondary,
+      fontWeight: '600',
+      marginTop: 4,
+    },
 
     // ─── Metrics ───
     // ─── 復習ハブ (4入口) ───
@@ -1742,28 +1735,6 @@ function makeStyles(C: ThemeColors) {
       fontWeight: '600',
       letterSpacing: LetterSpacing.wide,
       textAlign: 'center',
-    },
-
-    metricRow: { flexDirection: 'row', gap: 10, marginBottom: Spacing.lg },
-    metricCard: {
-      flex: 1,
-      backgroundColor: C.card,
-      borderRadius: BorderRadius.lg,
-      padding: 14,
-      alignItems: 'center',
-    },
-    metricIcon: { fontSize: 22, marginBottom: 6 },
-    metricValue: {
-      fontSize: FontSize.title3,
-      fontWeight: '800',
-      color: C.text,
-    },
-    metricLabel: {
-      fontSize: FontSize.caption2,
-      color: C.textSecondary,
-      marginTop: 3,
-      fontWeight: '500',
-      letterSpacing: LetterSpacing.wide,
     },
 
     // ─── 直近7日グラフ (ホームから集約) ───
@@ -1868,17 +1839,6 @@ function makeStyles(C: ThemeColors) {
       color: C.primary,
       marginTop: Spacing.md,
       lineHeight: LineHeight.footnote * 1.3,
-    },
-    heatmapLink: {
-      marginTop: Spacing.md,
-      paddingTop: Spacing.md,
-      borderTopWidth: 1,
-      borderTopColor: C.borderLight,
-    },
-    heatmapLinkText: {
-      fontSize: FontSize.footnote,
-      fontWeight: '700',
-      color: C.primary,
     },
     // 模試突合 ④
     mockCta: {

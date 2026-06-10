@@ -17,6 +17,7 @@ import { useExamPrediction } from '../../hooks/useExamPrediction';
 import { usePredictionHistory } from '../../hooks/usePredictionHistory';
 import { PredictionCard } from '../../components/PredictionCard';
 import { PaywallPromptBanner } from '../../components/PaywallPromptBanner';
+import { useSmartPaywall } from '../../hooks/useSmartPaywall';
 import { FinalSprintCard } from '../../components/FinalSprintCard';
 import { useFinalSprintMode } from '../../hooks/useFinalSprintMode';
 import { CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, Category, SUBCATEGORIES } from '../../types';
@@ -346,6 +347,8 @@ function HomeScreen() {
     examPrediction.hasData,
   );
   const sprintMode = useFinalSprintMode();
+  // smart prompt (PaywallPromptBanner) 表示中はゴールドバナーを出さない (売り込み2連の解消 P1)
+  const { prompt: smartPrompt } = useSmartPaywall();
 
   // データ0(未着手): 点を出さず「あと◯問で予測開始」。閾値はエンジンの low ティア相当(演習10問)で十分。
   const PREDICTION_MIN_QUESTIONS = 10;
@@ -361,12 +364,20 @@ function HomeScreen() {
   const weakestCategoryLabel = examPrediction.weakestCategory
     ? CATEGORY_LABELS[examPrediction.weakestCategory]
     : undefined;
+  // [C-5] 前回模試からの経過日数 (試験30日以内×14日経過で再受験CTA。較正データも貯まる)
+  const daysSinceLastMock = useMemo(() => {
+    if (examHistory.length === 0) return null;
+    const latest = Math.max(...examHistory.map((e) => new Date(e.date).getTime()));
+    if (!Number.isFinite(latest)) return null;
+    return Math.floor((Date.now() - latest) / (24 * 60 * 60 * 1000));
+  }, [examHistory]);
   const todayAction = useMemo(
     () =>
       computeTodayAction({
         totalAnswered: stats.totalQuestions,
         examDays,
         hasMockHistory: examHistory.length > 0,
+        daysSinceLastMock,
         dueCount,
         weakCount,
         isEvening,
@@ -374,7 +385,7 @@ function HomeScreen() {
         dailyGoal,
         weakestCategoryLabel,
       }),
-    [stats.totalQuestions, examDays, examHistory.length, dueCount, weakCount, isEvening, todayAnsweredRaw, dailyGoal, weakestCategoryLabel],
+    [stats.totalQuestions, examDays, examHistory.length, daysSinceLastMock, dueCount, weakCount, isEvening, todayAnsweredRaw, dailyGoal, weakestCategoryLabel],
   );
 
   // action.kind → 実際の遷移。空 / 全達成でも必ず意味ある 1 手を返す (死んだボタン厳禁)。
@@ -614,7 +625,8 @@ function HomeScreen() {
             旧: 予測スコア/弱点コーチング/🤖バナーは統合ブロックに吸収済。
             弱点ヒートマップ tile は記録タブへ、実績 tile は記録タブの既存リンクへ退避。 */}
         <PaywallPromptBanner />
-        {!isPro && (
+        {/* smart prompt 表示中はゴールドバナーを抑制 (ペイウォール訴求は同時に1つまで) */}
+        {!isPro && !smartPrompt && (
           <View style={s.bannerSection}>
             <Pressable style={[s.bannerCard, s.bannerGold, Shadow.md]} onPress={() => router.push('/paywall')}>
               <Text style={s.bannerEmoji}>✨</Text>

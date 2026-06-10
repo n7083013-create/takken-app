@@ -30,6 +30,9 @@ export default function ExamHomeScreen() {
   const getDaysUntilExam = useSettingsStore((s) => s.getDaysUntilExam);
   const totalAnswered = useProgressStore((st) => st.stats.totalQuestions);
   const [loaded, setLoaded] = useState(false);
+  // [UX改善 2026-06-10] 無料でも出題構成・初学者ガード・模試一覧・受験のコツは閲覧可。
+  // ロックは「開始」操作時に提示する (タブ全体が販売画面=第一印象悪化を防ぐ)。
+  const [lockVisible, setLockVisible] = useState(false);
 
   useEffect(() => {
     resumeExam().finally(() => setLoaded(true));
@@ -43,13 +46,31 @@ export default function ExamHomeScreen() {
   const isFinalPhase = phaseForDays(getDaysUntilExam()) === 'final';
   const showBeginnerGuard = loaded && totalAnswered < EXAM_READY_MIN_ANSWERED && !isFinalPhase;
 
-  // [UX改善 2026-05] 共通 LimitReachedScreen に統一。CTA を trial-first 文言に。
-  if (loaded && !isPro) {
+  // 固定セット模試の表示数 (UI 上限 12・実データ件数とズレた見出しを出さない)
+  const presetCount = Math.min(12, getMockPresetCount());
+
+  // 模試の開始系操作の入口で呼ぶ。無料ならロック画面を出して true を返す (Pro 判定・paywall 遷移は不変)。
+  const guardStart = () => {
+    if (!isPro) {
+      setLockVisible(true);
+      return true;
+    }
+    return false;
+  };
+
+  // [UX改善 2026-05→2026-06-10] 共通 LimitReachedScreen は維持しつつ、表示タイミングを
+  // 「タブを開いた瞬間」から「開始ボタン押下時」へ変更 (見せ方の順序のみ変更)。
+  if (loaded && !isPro && lockVisible) {
     return (
       <SafeAreaView style={s.safe}>
         <LimitReachedScreen
           mode={{ kind: 'feature_locked_exam' }}
           onUpgrade={() => router.push('/paywall')}
+          onSecondary={() => {
+            setLockVisible(false);
+            if (showBeginnerGuard) router.push('/(tabs)');
+          }}
+          secondaryLabel={showBeginnerGuard ? 'まず基礎問題から始める' : '戻る'}
         />
       </SafeAreaView>
     );
@@ -125,6 +146,7 @@ export default function ExamHomeScreen() {
         <Pressable
           style={[s.primaryBtn, Shadow.md, hasActive && s.secondaryBtn]}
           onPress={() => {
+            if (guardStart()) return;
             if (hasActive) {
               confirmAlert(
                 '新しい試験を開始',
@@ -144,15 +166,17 @@ export default function ExamHomeScreen() {
           <Text style={s.primaryBtnText}>
             {hasActive ? '🔄 新しい試験を開始' : '🚀 模擬試験を開始'}
           </Text>
+          <Text style={s.primaryBtnSub}>おまかせ: 本試験の科目比率で50問</Text>
         </Pressable>
 
-        {/* ─── 模擬試験プリセット (本試験形式) ─── */}
+        {/* ─── 模擬試験プリセット (固定セット) ─── */}
+        {/* 見出しはヒーロー「本試験形式 模擬試験」との重複を避け「固定セット模試」に (P4) */}
         <View style={[s.card, Shadow.sm, { marginTop: 8 }]}>
-          <Text style={s.cardTitle}>📋 本試験形式 模擬試験</Text>
+          <Text style={s.cardTitle}>📋 固定セット模試 1〜{presetCount}</Text>
           <Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 14, lineHeight: 18 }}>
             本試験と同じ出題比率の模擬試験です。順番に挑戦して合格レベルを目指しましょう。
           </Text>
-          {Array.from({ length: getMockPresetCount() }, (_, i) => i + 1).slice(0, 12).map((n) => {
+          {Array.from({ length: presetCount }, (_, i) => i + 1).map((n) => {
             const count = getMockPresetByNumber(n).length;
             return (
               <Pressable
@@ -161,6 +185,7 @@ export default function ExamHomeScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={`模擬${n}を開始`}
                 onPress={() => {
+                  if (guardStart()) return;
                   const start = () => {
                     useExamStore.getState().startMockPreset(n);
                     router.push('/exam/session');
@@ -191,6 +216,7 @@ export default function ExamHomeScreen() {
             accessibilityRole="button"
             accessibilityLabel="ランダム模擬を開始"
             onPress={() => {
+              if (guardStart()) return;
               const start = () => {
                 useExamStore.getState().startRandomMock();
                 router.push('/exam/session');
