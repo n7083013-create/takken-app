@@ -123,17 +123,27 @@ export function getAvailableExamYears(): number[] {
   return [...QUESTIONS_BY_YEAR.keys()].sort((a, b) => b - a);
 }
 
+/** 本試験の科目配分 (権利14・法令制限8・業法20[5問免除含む実データ準拠]・税その他8 = 50問) */
+export const EXAM_YEAR_COMPOSITION: { category: Category; count: number }[] = [
+  { category: 'kenri', count: 14 },
+  { category: 'horei_seigen', count: 8 },
+  { category: 'takkengyoho', count: 20 },
+  { category: 'tax_other', count: 8 },
+];
+
 /** 指定年度の問題を本試験と同じ配分で取得（50問） */
 export function getExamByYear(year: number): Question[] {
   const yearQuestions = QUESTIONS_BY_YEAR.get(year) ?? [];
-  // 本試験と同じ科目配分で出題順にソート
+  // ⚠️ [Bugfix 2026-06-10] 旧実装はカテゴリ連結後に slice(0,50) しており、問題数の多い年度
+  //   (2024=141問: 権利45/業法49/法令17/税30) で「権利45+法令5・業法と税0問」という
+  //   本試験と乖離した模試になっていた。各カテゴリを本試験配分で頭打ちにする。
+  //   データ順で先頭から取る = 決定的なので「模擬N」は毎回同じセット(プリセットの意味を保つ)。
+  //   配分を満たせない年度は 50問未満を返し、getMockPresetYears の「ちょうど50問」条件で除外される。
   const result: Question[] = [];
-  const categories: Category[] = ['kenri', 'horei_seigen', 'takkengyoho', 'tax_other'];
-  for (const cat of categories) {
-    const catQuestions = yearQuestions.filter(q => q.category === cat);
-    result.push(...catQuestions);
+  for (const { category, count } of EXAM_YEAR_COMPOSITION) {
+    result.push(...yearQuestions.filter((q) => q.category === category).slice(0, count));
   }
-  return result.slice(0, 50);
+  return result;
 }
 
 /** 年度を和暦表示に変換 */

@@ -12,6 +12,7 @@ import {
   getMockPresetByNumber,
   getRandomMockExam,
   getAvailableExamYears,
+  EXAM_YEAR_COMPOSITION,
 } from '../../data';
 
 describe('模擬試験プリセット (C-1 回帰防止)', () => {
@@ -46,5 +47,23 @@ describe('模擬試験プリセット (C-1 回帰防止)', () => {
 
   it('ランダム模擬も 50問', () => {
     expect(getRandomMockExam().length).toBe(50);
+  });
+
+  it('[Bugfix 2026-06-10] 全プリセットが本試験配分(権利14/法令8/業法20/税他8)を守る', () => {
+    // 旧実装はカテゴリ連結後 slice(0,50) で、2024年度(141問)が
+    // 「権利45+法令5・業法0」の模試になっていた回帰を防ぐ。
+    const count = getMockPresetCount();
+    for (let n = 1; n <= count; n++) {
+      const qs = getMockPresetByNumber(n);
+      for (const { category, count: c } of EXAM_YEAR_COMPOSITION) {
+        expect(qs.filter((q) => q.category === category).length).toBe(c);
+      }
+    }
+  });
+
+  it('模擬プリセットは決定的(同じ番号は毎回同じ問題セット)', () => {
+    const a = getMockPresetByNumber(1).map((q) => q.id);
+    const b = getMockPresetByNumber(1).map((q) => q.id);
+    expect(a).toEqual(b);
   });
 });
