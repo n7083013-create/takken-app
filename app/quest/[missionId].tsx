@@ -80,7 +80,6 @@ export default function QuestSessionScreen() {
   const recordMissionResult = useQuestStore((st) => st.recordMissionResult);
   const checkAchievements = useAchievementChecker();
   const canAI = useSettingsStore((st) => st.canUseAI());
-  const isPro = useSettingsStore((st) => st.isPro());
   const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
   const aiDailyRemaining = useSettingsStore((st) => st.getAIDailyRemaining());
   const aiDailyLimit = useSettingsStore((st) => st.getAIDailyLimit());
@@ -583,11 +582,9 @@ export default function QuestSessionScreen() {
                   return (
                     <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
                       <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
-                      {isPro && (
-                        <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)}>
-                          <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
-                        </Pressable>
-                      )}
+                      <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)}>
+                        <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
+                      </Pressable>
                     </View>
                   );
                 })()}
@@ -603,15 +600,14 @@ export default function QuestSessionScreen() {
               {answerState === 'correct' ? '✅ 正解！' : '❌ 不正解'}
             </Text>
             <Text style={s.explanationText} selectable>{currentQuestion.explanation}</Text>
-            {isPro && (
-              <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()}>
-                <Text style={s.aiBtnIcon}>🤖</Text>
-                <View>
-                  <Text style={s.aiBtnText}>AIに質問する</Text>
-                  <Text style={s.aiBtnSub}>解説でわからない部分を聞こう</Text>
-                </View>
-              </Pressable>
-            )}
+            {/* [2026-06-XX] 無料も1日3回までAI質問可(案A)。回数ゲートはモーダル内 canUseAI()+上限CTA。 */}
+            <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()}>
+              <Text style={s.aiBtnIcon}>🤖</Text>
+              <View>
+                <Text style={s.aiBtnText}>AIに質問する</Text>
+                <Text style={s.aiBtnSub}>解説でわからない部分を聞こう</Text>
+              </View>
+            </Pressable>
           </View>
         )}
 

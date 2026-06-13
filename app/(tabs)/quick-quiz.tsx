@@ -366,11 +366,9 @@ export default function QuickQuizScreen() {
                   <Text style={s.feedbackExplanation} selectable>
                     {currentQuiz.explanation}
                   </Text>
-                  {isPro && (
-                    <Pressable style={s.feedbackAiBtn} onPress={openAI} accessibilityRole="button" accessibilityLabel="AIに質問する">
-                      <Text style={s.feedbackAiBtnText}>🤖 AIに質問する</Text>
-                    </Pressable>
-                  )}
+                  <Pressable style={s.feedbackAiBtn} onPress={openAI} accessibilityRole="button" accessibilityLabel="AIに質問する">
+                    <Text style={s.feedbackAiBtnText}>🤖 AIに質問する</Text>
+                  </Pressable>
                 </View>
               )}
             </View>

@@ -634,11 +634,9 @@ export default function QuestionDetailScreen() {
               {choiceExpl && (
                 <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
                   <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
-                  {isPro && (
-                    <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
-                      <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
-                    </Pressable>
-                  )}
+                  <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
+                    <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
+                  </Pressable>
                 </View>
               )}
             </View>
@@ -665,15 +663,14 @@ export default function QuestionDetailScreen() {
           <Text style={s.explainText} selectable>{q.explanation}</Text>
 
           {/* AI Button */}
-          {isPro && (
-            <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()} accessibilityRole="button" accessibilityLabel="AIに質問する">
-              <Text style={s.aiBtnIcon}>🤖</Text>
-              <View>
-                <Text style={s.aiBtnText}>AIに質問する</Text>
-                <Text style={s.aiBtnSub}>解説でわからない部分を聞こう</Text>
-              </View>
-            </Pressable>
-          )}
+          {/* [2026-06-XX] 無料も1日3回までAI質問可(案A)。回数ゲートはモーダル内 canUseAI()+InlineAILimitCTA。 */}
+          <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()} accessibilityRole="button" accessibilityLabel="AIに質問する">
+            <Text style={s.aiBtnIcon}>🤖</Text>
+            <View>
+              <Text style={s.aiBtnText}>AIに質問する</Text>
+              <Text style={s.aiBtnSub}>解説でわからない部分を聞こう</Text>
+            </View>
+          </Pressable>
 
           {/* [UX改善] 難易度セレクター
               - 不正解時: 自動的に「難しい」(confidence='none') として記録し、

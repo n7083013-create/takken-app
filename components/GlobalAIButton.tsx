@@ -35,7 +35,6 @@ export function GlobalAIButton() {
   const isWideScreen = screenWidth >= 768;
 
   const canAI = useSettingsStore((st) => st.canUseAI());
-  const isPro = useSettingsStore((st) => st.isPro());
   const setAIRemainingFromServer = useSettingsStore((st) => st.setAIRemainingFromServer);
 
   const [visible, setVisible] = useState(false);
@@ -96,7 +95,7 @@ export function GlobalAIButton() {
     }
   }, [isListening, startListening, stopListening]);
 
-  if (!isPro) return null;
+  // [2026-06-10] 案A: 無料も1日3回までAI質問可。FABは全員に表示し、回数はモーダル内 canUseAI()+上限表示で制御。
 
   return (
     <>
