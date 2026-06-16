@@ -170,7 +170,10 @@ export default function QuestSessionScreen() {
     setAiMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setAiLoading(true);
     try {
-      const context = buildQuestAIContext(currentQuestion, selected, answerState, shuffledMap);
+      // AIを開けるのは解答後のみ。解答後の表示順は常に元データ順 (恒等マップ) なので
+      // 画面ラベルと完全一致する。
+      const displayMap = currentQuestion.choices.map((_, i) => i);
+      const context = buildQuestAIContext(currentQuestion, selected, answerState, displayMap);
       const history = [...aiMessages, { role: 'user' as const, content: userMsg }];
       const result = await askAI(context, history);
       if (result.remaining !== null) {
@@ -336,6 +339,16 @@ export default function QuestSessionScreen() {
     );
   }
 
+  // [2026-06-16] 解答後は選択肢を元データ順 (恒等マップ) で表示し、解説の「選択肢N」と番号を
+  // 一致させる。未回答中は位置暗記防止で shuffledMap のまま。個数/組み合わせは元々 [0,1,2,3]。
+  // 正誤判定・selected/correctIndex は origIdx 基準のまま不変 (並べ替えは表示のみ)。
+  const isSpecialFormat =
+    currentQuestion.questionFormat === 'count' || currentQuestion.questionFormat === 'combination';
+  const displayMap =
+    answerState !== 'idle' && !isSpecialFormat
+      ? currentQuestion.choices.map((_, i) => i)
+      : shuffledMap;
+
   /** AI チャット UI（モーダル内 or サイドパネル共通） */
   const renderQuestAIChat = () => (
     <>
@@ -356,7 +369,7 @@ export default function QuestSessionScreen() {
           <View style={s.aiContextCard}>
             <View style={s.aiContextHeader}>
               <Text style={s.aiContextTitle}>
-                {aiTargetChoice !== null ? `📋 選択肢${LABELS[shuffledMap.indexOf(aiTargetChoice)]}について質問中` : '📋 問題について質問中'}
+                {aiTargetChoice !== null ? `📋 選択肢${LABELS[displayMap.indexOf(aiTargetChoice)]}について質問中` : '📋 問題について質問中'}
               </Text>
             </View>
             <View style={s.aiContextBody}>
@@ -523,9 +536,9 @@ export default function QuestSessionScreen() {
           />
         )}
 
-        {/* 選択肢 */}
+        {/* 選択肢 (未回答: シャッフル / 解答後: 元データ順) */}
         <View style={s.choicesWrap}>
-          {shuffledMap.map((origIdx, displayIdx) => {
+          {displayMap.map((origIdx, displayIdx) => {
             const choice = currentQuestion.choices[origIdx];
             const isSelected = selected === origIdx;
             const isCorrectChoice = origIdx === currentQuestion.correctIndex;
@@ -582,7 +595,7 @@ export default function QuestSessionScreen() {
                   if (!choiceExpl) return null;
                   return (
                     <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
-                      <Text style={s.choiceExplText} selectable>{relabelChoiceRefs(choiceExpl, shuffledMap)}</Text>
+                      <Text style={s.choiceExplText} selectable>{relabelChoiceRefs(choiceExpl, displayMap)}</Text>
                       <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)}>
                         <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
                       </Pressable>
@@ -600,7 +613,7 @@ export default function QuestSessionScreen() {
             <Text style={s.explanationLabel}>
               {answerState === 'correct' ? '✅ 正解！' : '❌ 不正解'}
             </Text>
-            <Text style={s.explanationText} selectable>{relabelChoiceRefs(currentQuestion.explanation, shuffledMap)}</Text>
+            <Text style={s.explanationText} selectable>{relabelChoiceRefs(currentQuestion.explanation, displayMap)}</Text>
             {/* [2026-06-XX] 無料も1日3回までAI質問可(案A)。回数ゲートはモーダル内 canUseAI()+上限CTA。 */}
             <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()}>
               <Text style={s.aiBtnIcon}>🤖</Text>

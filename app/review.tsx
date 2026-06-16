@@ -307,12 +307,23 @@ export default function ReviewScreen() {
             </View>
           )}
 
-          {/* Choices (シャッフル済み: origIdx=元のデータ添字 / displayIdx=表示位置・A-Dラベル用) */}
+          {/* Choices (未回答: シャッフル / 解答後: 元データ順)。
+              origIdx=元のデータ添字 / displayIdx=表示位置・A-Dラベル用。
+              [2026-06-16] 解答後は元順 (恒等マップ) にして解説の「選択肢N」と番号一致。
+              正誤判定・recordAnswer は origIdx 基準で不変 (並べ替えは表示のみ)。
+              shuffledMap が問題切替直後でまだ前問の長さの場合は安全側で元順にフォールバック。 */}
           <View style={s.choiceList}>
-            {(shuffledMap.length === currentQuestion.choices.length
-              ? shuffledMap
-              : currentQuestion.choices.map((_, i) => i)
-            ).map((origIdx, displayIdx) => {
+            {(() => {
+              const special =
+                currentQuestion.questionFormat === 'count' ||
+                currentQuestion.questionFormat === 'combination';
+              const mapValid = shuffledMap.length === currentQuestion.choices.length;
+              const displayMap =
+                answerState !== 'idle' || special || !mapValid
+                  ? currentQuestion.choices.map((_, i) => i)
+                  : shuffledMap;
+              return displayMap;
+            })().map((origIdx, displayIdx) => {
               const choice = currentQuestion.choices[origIdx];
               const isCorrect = origIdx === currentQuestion.correctIndex;
               const isSelected = origIdx === selected;
@@ -355,7 +366,8 @@ export default function ReviewScreen() {
                   {answerState === 'correct' ? '正解！' : '不正解'}
                 </Text>
               </View>
-              <Text style={s.explainText} selectable>{relabelChoiceRefs(currentQuestion.explanation, shuffledMap)}</Text>
+              {/* 解説は解答後のみ表示 → 表示順は常に元データ順なので恒等マップで番号一致 */}
+              <Text style={s.explainText} selectable>{relabelChoiceRefs(currentQuestion.explanation, currentQuestion.choices.map((_, i) => i))}</Text>
 
               {/* 難易度セレクター（次へ進むボタンを兼ねる） */}
               <View style={s.confidenceSection}>

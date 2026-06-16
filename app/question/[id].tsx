@@ -310,7 +310,10 @@ export default function QuestionDetailScreen() {
     setAiLoading(true);
 
     try {
-      const context = buildAIContext(q, selected, state, shuffledMap);
+      // AIを開けるのは解答後のみ。解答後の表示順は常に元データ順 (恒等マップ) なので
+      // 画面の選択肢ラベルと完全一致する。relabel/コンテキストも元順で番号が揃う。
+      const displayMap = q.choices.map((_, i) => i);
+      const context = buildAIContext(q, selected, state, displayMap);
       const history = [...aiMessages, { role: 'user' as const, content: userMsg }];
       const result = await askAI(context, history);
       if (result.remaining !== null) {
@@ -358,6 +361,11 @@ export default function QuestionDetailScreen() {
 
   const catColor = CATEGORY_COLORS[q.category];
   const answered = state !== 'idle';
+  // [2026-06-16] 解答後は選択肢を元データ順 (恒等マップ) で表示し、解説の「選択肢N」やAI
+  // コンテキストと番号を完全一致させる (relabelChoiceRefs が N→A/B/C/D を元順で返す)。
+  // 未回答中は位置暗記防止のため shuffledMap のまま。個数/組み合わせは元々 [0,1,2,3] 固定。
+  // 正誤判定・selected/correctIndex は origIdx 基準のまま不変 (並べ替えは表示のみ)。
+  const displayMap = answered && !isSpecialFormat ? q.choices.map((_, i) => i) : shuffledMap;
 
   /** AI チャット UI（モーダル内 or サイドパネル共通） */
   const renderAIChat = () => (
@@ -387,11 +395,11 @@ export default function QuestionDetailScreen() {
           {aiTargetChoice !== null ? (
             <View style={s.aiContextCard}>
               <View style={s.aiContextHeader}>
-                <Text style={s.aiContextTitle}>📋 選択肢{LABELS[shuffledMap.indexOf(aiTargetChoice)]}について質問中</Text>
+                <Text style={s.aiContextTitle}>📋 選択肢{LABELS[displayMap.indexOf(aiTargetChoice)]}について質問中</Text>
               </View>
               <View style={s.aiContextBody}>
                 <View style={[s.aiContextChoice, aiTargetChoice === q.correctIndex ? s.aiContextChoiceCorrect : s.aiContextChoiceWrong]}>
-                  <Text style={[s.aiContextChoiceLabel, aiTargetChoice === q.correctIndex ? s.aiContextChoiceLabelCorrect : s.aiContextChoiceLabelWrong]}>{LABELS[shuffledMap.indexOf(aiTargetChoice)]}</Text>
+                  <Text style={[s.aiContextChoiceLabel, aiTargetChoice === q.correctIndex ? s.aiContextChoiceLabelCorrect : s.aiContextChoiceLabelWrong]}>{LABELS[displayMap.indexOf(aiTargetChoice)]}</Text>
                   <Text style={s.aiContextChoiceText}>{q.choices[aiTargetChoice]}</Text>
                   <Text style={{ fontSize: 12 }}>{aiTargetChoice === q.correctIndex ? ' ✓' : ' ✗'}</Text>
                 </View>
@@ -573,9 +581,9 @@ export default function QuestionDetailScreen() {
         />
       )}
 
-      {/* Choices (シャッフル済み) */}
+      {/* Choices (未回答: シャッフル / 解答後: 元データ順) */}
       <View style={s.choiceList}>
-        {shuffledMap.map((origIdx, displayIdx) => {
+        {displayMap.map((origIdx, displayIdx) => {
           const choice = q.choices[origIdx];
           const isCorrect = origIdx === q.correctIndex;
           const isSelected = origIdx === selected;
@@ -634,7 +642,7 @@ export default function QuestionDetailScreen() {
               {/* Per-choice explanation */}
               {choiceExpl && (
                 <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
-                  <Text style={s.choiceExplText} selectable>{relabelChoiceRefs(choiceExpl, shuffledMap)}</Text>
+                  <Text style={s.choiceExplText} selectable>{relabelChoiceRefs(choiceExpl, displayMap)}</Text>
                   <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
                     <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
                   </Pressable>
@@ -661,7 +669,7 @@ export default function QuestionDetailScreen() {
           <CoreEssenceBox essence={q.coreEssence} />
 
           <Text style={s.explainLabel}>解説</Text>
-          <Text style={s.explainText} selectable>{relabelChoiceRefs(q.explanation, shuffledMap)}</Text>
+          <Text style={s.explainText} selectable>{relabelChoiceRefs(q.explanation, displayMap)}</Text>
 
           {/* AI Button */}
           {/* [2026-06-XX] 無料も1日3回までAI質問可(案A)。回数ゲートはモーダル内 canUseAI()+InlineAILimitCTA。 */}

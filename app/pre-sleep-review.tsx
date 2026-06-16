@@ -197,6 +197,11 @@ export default function PreSleepReviewScreen() {
   const q = currentQuestion!;
   const catColor = CATEGORY_COLORS[q.category];
   const isCorrect = selected === q.correctIndex;
+  // [2026-06-16] 解答後は選択肢を元データ順 (恒等マップ) で表示し、解説の「選択肢N」と番号一致。
+  // 未回答中は位置暗記防止で shuffledMap のまま。個数/組み合わせは元々 [0,1,2,3]。
+  // 正誤判定・selected/correctIndex は origIdx 基準で不変 (並べ替えは表示のみ)。
+  const isSpecialFormat = q.questionFormat === 'count' || q.questionFormat === 'combination';
+  const displayMap = answered && !isSpecialFormat ? q.choices.map((_, i) => i) : shuffledMap;
 
   return (
     <SafeAreaView style={s.safe}>
@@ -296,9 +301,9 @@ export default function PreSleepReviewScreen() {
           </View>
         )}
 
-        {/* Choices */}
+        {/* Choices (未回答: シャッフル / 解答後: 元データ順) */}
         <View style={s.choiceList}>
-          {shuffledMap.map((origIdx, displayIdx) => {
+          {displayMap.map((origIdx, displayIdx) => {
             const choice = q.choices[origIdx];
             const isCorrectChoice = origIdx === q.correctIndex;
             const isSelected = origIdx === selected;
@@ -378,7 +383,7 @@ export default function PreSleepReviewScreen() {
             </View>
 
             <Text style={s.explainLabel}>解説</Text>
-            <Text style={s.explainText} selectable>{relabelChoiceRefs(q.explanation, shuffledMap)}</Text>
+            <Text style={s.explainText} selectable>{relabelChoiceRefs(q.explanation, displayMap)}</Text>
 
             {/* Difficulty Selector（選んだ瞬間に記録して次へ＝1タップ。メイン問題画面と統一） */}
             <View style={s.confidenceSection}>
