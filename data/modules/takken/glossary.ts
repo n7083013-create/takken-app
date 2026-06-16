@@ -252,7 +252,7 @@ export const takkenGlossary: GlossaryTerm[] = [
     reading: 'しゅとくじこう',
     category: 'kenri',
     definition:
-      '他人の物を長期間占有し続けると、自分の物になる制度。自分の物だと信じて占有していた場合は10年、知っていた場合は20年で所有権を取得できます。',
+      '他人の物を長期間占有し続けると、自分の物になる制度。自分の物だと過失なく信じて占有（善意無過失）した場合は10年、それ以外（善意有過失・悪意）は20年で時効取得できます（民法162条）。',
     relatedTerms: ['senyuu', 'shoumetsu-jikou'],
   },
   {
@@ -548,7 +548,7 @@ export const takkenGlossary: GlossaryTerm[] = [
     reading: 'くーりんぐおふ',
     category: 'takkengyoho',
     definition:
-      '不動産会社から直接購入する場合で、事務所以外の場所（喫茶店や自宅など）で契約した場合に、8日以内なら無条件で解約できる制度。書面で通知が必要です。買主保護の重要な制度です。',
+      '宅建業者が売主で、事務所等以外の場所（喫茶店や自宅など）で契約した場合の買主保護制度。クーリング・オフできる旨を書面で告げられた日から8日以内であれば書面で解除できる。ただし買主が物件の引渡しを受け、かつ代金全額を支払った後はできない。',
     relatedTerms: ['tebiki-seigen', 'juuyou-jikou-setsumei'],
   },
   {
@@ -624,7 +624,7 @@ export const takkenGlossary: GlossaryTerm[] = [
     reading: 'かいはつきょか',
     category: 'horei_seigen',
     definition:
-      '一定以上の規模の土地を造成して建物を建てる場合に必要な許可。市街化区域では1,000㎡以上、市街化調整区域では原則すべてに必要です。都道府県知事等に申請します。',
+      '一定規模以上の土地を造成して建物を建てる場合に必要な許可。市街化区域は原則1,000㎡以上（区域により引下げあり）、市街化調整区域は規模にかかわらず原則必要（農林漁業用建築物等の例外あり）。都道府県知事等に申請します。',
     relatedTerms: ['youto-chiiki', 'shigaika-kuiki', 'shigaika-chousei-kuiki'],
   },
   {
@@ -651,7 +651,7 @@ export const takkenGlossary: GlossaryTerm[] = [
     reading: 'ぜんめんどうろ',
     category: 'horei_seigen',
     definition:
-      '敷地に面している道路のこと。前面道路の幅が12m未満の場合、容積率が制限されます。また、建築基準法では敷地は幅4m以上の道路に2m以上接していなければなりません（接道義務）。',
+      '敷地に面している道路のこと。前面道路の幅員が12m未満の場合、その幅員（m）に用途地域ごとの法定乗数（住居系4/10・その他6/10等）を乗じた値と指定容積率の小さい方が容積率になります。',
     relatedTerms: ['youseki-ritsu', 'setsudou-gimu'],
   },
   {
@@ -660,7 +660,7 @@ export const takkenGlossary: GlossaryTerm[] = [
     reading: 'せつどうぎむ',
     category: 'horei_seigen',
     definition:
-      '建物を建てる敷地は、幅4m以上の道路に2m以上接していなければならないというルール。消防車や救急車が入れるようにするためです。これを満たさないと建築確認が下りません。',
+      '都市計画区域・準都市計画区域内では、建築物の敷地は原則として幅員4m以上の道路に2m以上接していなければならない（接道義務）。これを満たさない敷地には建築物を建てられない。',
     relatedTerms: ['zenmen-douro', 'setback'],
   },
   {
