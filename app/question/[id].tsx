@@ -22,6 +22,7 @@ import { Input } from '../../components/ui/Input';
 import { CATEGORY_LABELS, CATEGORY_COLORS, Category, ConfidenceLevel, AIChatMessage } from '../../types';
 import { getQuestionById, getGlossaryByTags, getGlossaryBySlug, ALL_QUESTIONS } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
+import { relabelChoiceRefs } from '../../utils/relabelChoiceRefs';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { ReportModal } from '../../components/ReportModal';
 import { HighlightedText } from '../../components/HighlightedText';
@@ -633,7 +634,7 @@ export default function QuestionDetailScreen() {
               {/* Per-choice explanation */}
               {choiceExpl && (
                 <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
-                  <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
+                  <Text style={s.choiceExplText} selectable>{relabelChoiceRefs(choiceExpl, shuffledMap)}</Text>
                   <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)} accessibilityRole="button" accessibilityLabel={`選択肢${LABELS[displayIdx]}についてAIに聞く`}>
                     <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
                   </Pressable>
@@ -660,7 +661,7 @@ export default function QuestionDetailScreen() {
           <CoreEssenceBox essence={q.coreEssence} />
 
           <Text style={s.explainLabel}>解説</Text>
-          <Text style={s.explainText} selectable>{q.explanation}</Text>
+          <Text style={s.explainText} selectable>{relabelChoiceRefs(q.explanation, shuffledMap)}</Text>
 
           {/* AI Button */}
           {/* [2026-06-XX] 無料も1日3回までAI質問可(案A)。回数ゲートはモーダル内 canUseAI()+InlineAILimitCTA。 */}

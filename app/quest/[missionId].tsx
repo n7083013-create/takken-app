@@ -34,6 +34,7 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from '../../types';
 import { getQuestQuestions, getQuestMission } from '../../data/quests';
 import { getQuestionById } from '../../data';
 import { useProgressStore } from '../../store/useProgressStore';
+import { relabelChoiceRefs } from '../../utils/relabelChoiceRefs';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useQuestStore } from '../../store/useQuestStore';
 import { askAI } from '../../services/claude';
@@ -581,7 +582,7 @@ export default function QuestSessionScreen() {
                   if (!choiceExpl) return null;
                   return (
                     <View style={[s.choiceExplBox, isCorrectAnswer ? s.choiceExplCorrect : isWrongAnswer ? s.choiceExplWrong : s.choiceExplNeutral]}>
-                      <Text style={s.choiceExplText} selectable>{choiceExpl}</Text>
+                      <Text style={s.choiceExplText} selectable>{relabelChoiceRefs(choiceExpl, shuffledMap)}</Text>
                       <Pressable style={s.choiceAiBtn} onPress={() => askAboutChoice(origIdx, displayIdx)}>
                         <Text style={s.choiceAiBtnText}>🤖 AIに聞く</Text>
                       </Pressable>
@@ -599,7 +600,7 @@ export default function QuestSessionScreen() {
             <Text style={s.explanationLabel}>
               {answerState === 'correct' ? '✅ 正解！' : '❌ 不正解'}
             </Text>
-            <Text style={s.explanationText} selectable>{currentQuestion.explanation}</Text>
+            <Text style={s.explanationText} selectable>{relabelChoiceRefs(currentQuestion.explanation, shuffledMap)}</Text>
             {/* [2026-06-XX] 無料も1日3回までAI質問可(案A)。回数ゲートはモーダル内 canUseAI()+上限CTA。 */}
             <Pressable style={[s.aiBtn, Shadow.sm]} onPress={() => openAI()}>
               <Text style={s.aiBtnIcon}>🤖</Text>

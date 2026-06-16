@@ -12,6 +12,7 @@ import { useRouter, Stack } from 'expo-router';
 import { FontSize, LineHeight, Spacing, BorderRadius, Shadow } from '../constants/theme';
 import { useThemeColors, ThemeColors } from '../hooks/useThemeColors';
 import { useProgressStore } from '../store/useProgressStore';
+import { relabelChoiceRefs } from '../utils/relabelChoiceRefs';
 import { CATEGORY_LABELS, CATEGORY_COLORS, type Category, type ConfidenceLevel } from '../types';
 import { getQuestionById } from '../data';
 import { useAchievementChecker } from '../hooks/useAchievementChecker';
@@ -377,7 +378,7 @@ export default function PreSleepReviewScreen() {
             </View>
 
             <Text style={s.explainLabel}>解説</Text>
-            <Text style={s.explainText} selectable>{q.explanation}</Text>
+            <Text style={s.explainText} selectable>{relabelChoiceRefs(q.explanation, shuffledMap)}</Text>
 
             {/* Difficulty Selector（選んだ瞬間に記録して次へ＝1タップ。メイン問題画面と統一） */}
             <View style={s.confidenceSection}>

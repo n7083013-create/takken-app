@@ -30,6 +30,7 @@ import {
 } from '../types';
 import { getQuestionById } from '../data';
 import { useProgressStore } from '../store/useProgressStore';
+import { relabelChoiceRefs } from '../utils/relabelChoiceRefs';
 import { useAchievementChecker } from '../hooks/useAchievementChecker';
 import { useAnswerFeedback } from '../components/AnswerFeedback';
 import { EmptyState } from '../components/EmptyState';
@@ -354,7 +355,7 @@ export default function ReviewScreen() {
                   {answerState === 'correct' ? '正解！' : '不正解'}
                 </Text>
               </View>
-              <Text style={s.explainText} selectable>{currentQuestion.explanation}</Text>
+              <Text style={s.explainText} selectable>{relabelChoiceRefs(currentQuestion.explanation, shuffledMap)}</Text>
 
               {/* 難易度セレクター（次へ進むボタンを兼ねる） */}
               <View style={s.confidenceSection}>
